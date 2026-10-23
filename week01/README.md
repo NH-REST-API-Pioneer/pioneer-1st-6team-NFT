@@ -22,7 +22,7 @@ API 키를 발급받아 첫 호출을 해 보고, 팀 저장소를 만들어 팀
 | 요청 값 | ① `grant_type: client_credentials` (APP Key·Secret은 환경변수로 전달, form-urlencoded)<br>② `sym: A016C000` (코스피200 F 202612) |
 | 응답 확인 | ① HTTP 200 · `token_type` Bearer · `expires_in` 86400(24시간)<br>② HTTP 200 · `sym_nm` 코스피200 F 202612 · `last_pric` 857.00 · `chg` -36.05 (`rt` -4.04%) · `bid_pric` 857.00 / `ask_pric` 857.20 · `mltplr` 250000 · `rem_dy` 50 |
 | 호출 시각 | 2026-10-22 20:43 (장 마감 후 — 현재가는 당일 마지막 체결가) |
-| 실행 근거 | [`results/token.json`](results/token.json) · [`results/domestic_price.json`](results/domestic_price.json) |
+| 실행 근거 | [`results/domestic_price.json`](results/domestic_price.json) (토큰 응답 `results/token.json` 은 인증정보라 저장소에 올리지 않음) |
 
 ![첫 API 호출 성공](screenshots/첫api호출성공.png)
 

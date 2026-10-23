@@ -8,6 +8,9 @@ credentials*
 secrets*
 *.pem
 *.key
+token*.json
+# R 실행 기록
+.Rhistory
 # 개발 산출물
 .venv/
 venv/
