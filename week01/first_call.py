@@ -18,7 +18,7 @@ from pathlib import Path
 
 import requests
 
-BASE_URL = "https://api.futures.co.kr"  # 실전(조회만). 모의는 https://apidemo.futures.co.kr (모의용 키 필요)
+BASE_URL = "https://apidemo.futures.co.kr"  # 실전(조회만). 모의는 https://apidemo.futures.co.kr (모의용 키 필요)
 SYMBOL = "A016C000"                     # 코스피200 F 202612
 ENV_NAME = "demo" if "apidemo" in BASE_URL else "real"
 
