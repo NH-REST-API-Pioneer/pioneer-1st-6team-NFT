@@ -11,6 +11,10 @@ secrets*
 token*.json
 # R 실행 기록
 .Rhistory
+# AI 도구 설정
+CLAUDE.md
+claude.md
+.claude/
 # 개발 산출물
 .venv/
 venv/
