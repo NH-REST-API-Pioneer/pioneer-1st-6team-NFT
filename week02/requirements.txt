@@ -1,0 +1,3 @@
+# week02 — Python 3.12 이상 (3.9 에서도 결과는 같음, 이슈 #1)
+requests>=2.31
+matplotlib>=3.8   # plot_backtest*.py 차트용

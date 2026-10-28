@@ -142,7 +142,7 @@ class WilderATR:
         if self.value is None:
             self.ranges.append(tr)
             if len(self.ranges) == self.period:
-                self.value = sum(self.ranges) / self.period
+                self.value = math.fsum(self.ranges) / self.period   # fsum: 파이썬 버전과 상관없이 같은 값
         else:
             self.value = (self.value * (self.period - 1) + tr) / self.period
         return self.value
@@ -281,6 +281,25 @@ class VWAPReversion:
 
 def stop_price(side: str, entry: float, stop_ticks: int) -> float:
     return round(entry - stop_ticks * TICK, 1) if side == "buy" else round(entry + stop_ticks * TICK, 1)
+
+
+def tick_up(price: float) -> float:
+    """price 이상인 가장 가까운 호가. 이미 호가면 그대로 (부동소수 잡음은 6자리에서 버림)."""
+    return round(math.ceil(round(price / TICK, 6)) * TICK, 1)
+
+
+def tick_down(price: float) -> float:
+    """price 이하인 가장 가까운 호가."""
+    return round(math.floor(round(price / TICK, 6)) * TICK, 1)
+
+
+def take_profit_price(side: str, target: float) -> float:
+    """익절 목표(VWAP·중심선)를 **불리한 쪽 호가**로 맞춘 값 — 가격이 여기까지 와야 닿은 것으로 봅니다.
+
+    매수 보유는 올림, 매도 보유는 내림. 실제 체결가는 늘 0.1원 단위라, 틱이 아닌 목표값 그대로
+    체결된 것으로 세면 손익이 반 틱 경계에 걸려 계산 환경마다 1틱씩 달라집니다 (이슈 #1).
+    """
+    return tick_up(target) if side == "buy" else tick_down(target)
 
 
 def pnl_ticks(side: str, entry: float, exit_: float) -> int:

@@ -7,10 +7,10 @@
   "hold_min": 30,
   "trades": 64,
   "win_rate": 0.453,
-  "net_pnl": -78000,
-  "profit_factor": 0.73,
-  "max_drawdown": 104000.0,
-  "neighbor_avg_pnl": -101400,
+  "net_pnl": -70000,
+  "profit_factor": 0.76,
+  "max_drawdown": 100000.0,
+  "neighbor_avg_pnl": -94600,
   "eligible": true
  },
  {
@@ -21,10 +21,10 @@
   "hold_min": 60,
   "trades": 62,
   "win_rate": 0.419,
-  "net_pnl": -84000,
-  "profit_factor": 0.72,
-  "max_drawdown": 110000.0,
-  "neighbor_avg_pnl": -103000,
+  "net_pnl": -76000,
+  "profit_factor": 0.74,
+  "max_drawdown": 106000.0,
+  "neighbor_avg_pnl": -96000,
   "eligible": true
  },
  {
@@ -35,10 +35,10 @@
   "hold_min": 120,
   "trades": 60,
   "win_rate": 0.433,
-  "net_pnl": -82000,
-  "profit_factor": 0.72,
-  "max_drawdown": 112000.0,
-  "neighbor_avg_pnl": -116000,
+  "net_pnl": -73000,
+  "profit_factor": 0.75,
+  "max_drawdown": 108000.0,
+  "neighbor_avg_pnl": -109000,
   "eligible": true
  },
  {
@@ -49,10 +49,10 @@
   "hold_min": 30,
   "trades": 69,
   "win_rate": 0.478,
-  "net_pnl": -150000,
-  "profit_factor": 0.6,
-  "max_drawdown": 150000.0,
-  "neighbor_avg_pnl": -113833,
+  "net_pnl": -141000,
+  "profit_factor": 0.63,
+  "max_drawdown": 141000.0,
+  "neighbor_avg_pnl": -105833,
   "eligible": true
  },
  {
@@ -63,10 +63,10 @@
   "hold_min": 60,
   "trades": 65,
   "win_rate": 0.462,
-  "net_pnl": -164000,
-  "profit_factor": 0.59,
-  "max_drawdown": 164000.0,
-  "neighbor_avg_pnl": -107714,
+  "net_pnl": -155000,
+  "profit_factor": 0.61,
+  "max_drawdown": 155000.0,
+  "neighbor_avg_pnl": -99000,
   "eligible": true
  },
  {
@@ -77,10 +77,10 @@
   "hold_min": 120,
   "trades": 63,
   "win_rate": 0.476,
-  "net_pnl": -165000,
-  "profit_factor": 0.59,
-  "max_drawdown": 165000.0,
-  "neighbor_avg_pnl": -104500,
+  "net_pnl": -155000,
+  "profit_factor": 0.61,
+  "max_drawdown": 155000.0,
+  "neighbor_avg_pnl": -95000,
   "eligible": true
  },
  {
@@ -91,10 +91,10 @@
   "hold_min": 30,
   "trades": 72,
   "win_rate": 0.5,
-  "net_pnl": -147000,
-  "profit_factor": 0.64,
-  "max_drawdown": 151000.0,
-  "neighbor_avg_pnl": -120833,
+  "net_pnl": -137000,
+  "profit_factor": 0.66,
+  "max_drawdown": 143000.0,
+  "neighbor_avg_pnl": -112833,
   "eligible": true
  },
  {
@@ -105,10 +105,10 @@
   "hold_min": 60,
   "trades": 65,
   "win_rate": 0.523,
-  "net_pnl": -136000,
-  "profit_factor": 0.64,
-  "max_drawdown": 155000.0,
-  "neighbor_avg_pnl": -101857,
+  "net_pnl": -126000,
+  "profit_factor": 0.67,
+  "max_drawdown": 148000.0,
+  "neighbor_avg_pnl": -92143,
   "eligible": true
  },
  {
@@ -119,10 +119,10 @@
   "hold_min": 120,
   "trades": 59,
   "win_rate": 0.542,
-  "net_pnl": -144000,
-  "profit_factor": 0.61,
-  "max_drawdown": 163000.0,
-  "neighbor_avg_pnl": -97667,
+  "net_pnl": -133000,
+  "profit_factor": 0.64,
+  "max_drawdown": 159000.0,
+  "neighbor_avg_pnl": -87000,
   "eligible": true
  },
  {
@@ -133,10 +133,10 @@
   "hold_min": 30,
   "trades": 76,
   "win_rate": 0.526,
-  "net_pnl": -112000,
-  "profit_factor": 0.71,
-  "max_drawdown": 127000.0,
-  "neighbor_avg_pnl": -83000,
+  "net_pnl": -105000,
+  "profit_factor": 0.73,
+  "max_drawdown": 123000.0,
+  "neighbor_avg_pnl": -74600,
   "eligible": true
  },
  {
@@ -146,11 +146,11 @@
   "stop_atr": 3.0,
   "hold_min": 60,
   "trades": 64,
-  "win_rate": 0.578,
-  "net_pnl": -78000,
-  "profit_factor": 0.78,
-  "max_drawdown": 124000.0,
-  "neighbor_avg_pnl": -55667,
+  "win_rate": 0.594,
+  "net_pnl": -67000,
+  "profit_factor": 0.81,
+  "max_drawdown": 123000.0,
+  "neighbor_avg_pnl": -46000,
   "eligible": true
  },
  {
@@ -160,11 +160,11 @@
   "stop_atr": 3.0,
   "hold_min": 120,
   "trades": 60,
-  "win_rate": 0.633,
-  "net_pnl": -70000,
-  "profit_factor": 0.81,
-  "max_drawdown": 104000.0,
-  "neighbor_avg_pnl": -49000,
+  "win_rate": 0.65,
+  "net_pnl": -57000,
+  "profit_factor": 0.84,
+  "max_drawdown": 102000.0,
+  "neighbor_avg_pnl": -37400,
   "eligible": true
  },
  {
@@ -175,10 +175,10 @@
   "hold_min": 30,
   "trades": 67,
   "win_rate": 0.478,
-  "net_pnl": -57000,
-  "profit_factor": 0.84,
-  "max_drawdown": 147000.0,
-  "neighbor_avg_pnl": -33200,
+  "net_pnl": -51000,
+  "profit_factor": 0.86,
+  "max_drawdown": 146000.0,
+  "neighbor_avg_pnl": -25600,
   "eligible": true
  },
  {
@@ -189,10 +189,10 @@
   "hold_min": 60,
   "trades": 64,
   "win_rate": 0.469,
-  "net_pnl": -64000,
-  "profit_factor": 0.82,
-  "max_drawdown": 142000.0,
-  "neighbor_avg_pnl": -33667,
+  "net_pnl": -58000,
+  "profit_factor": 0.84,
+  "max_drawdown": 141000.0,
+  "neighbor_avg_pnl": -25667,
   "eligible": true
  },
  {
@@ -203,10 +203,10 @@
   "hold_min": 120,
   "trades": 63,
   "win_rate": 0.46,
-  "net_pnl": -77000,
-  "profit_factor": 0.79,
-  "max_drawdown": 142000.0,
-  "neighbor_avg_pnl": -36400,
+  "net_pnl": -71000,
+  "profit_factor": 0.8,
+  "max_drawdown": 141000.0,
+  "neighbor_avg_pnl": -27600,
   "eligible": true
  },
  {
@@ -216,11 +216,11 @@
   "stop_atr": 1.5,
   "hold_min": 30,
   "trades": 83,
-  "win_rate": 0.506,
-  "net_pnl": -89000,
-  "profit_factor": 0.81,
-  "max_drawdown": 197000.0,
-  "neighbor_avg_pnl": -88167,
+  "win_rate": 0.518,
+  "net_pnl": -80000,
+  "profit_factor": 0.83,
+  "max_drawdown": 194000.0,
+  "neighbor_avg_pnl": -79500,
   "eligible": true
  },
  {
@@ -230,11 +230,11 @@
   "stop_atr": 1.5,
   "hold_min": 60,
   "trades": 76,
-  "win_rate": 0.526,
-  "net_pnl": -58000,
-  "profit_factor": 0.87,
-  "max_drawdown": 153000.0,
-  "neighbor_avg_pnl": -76857,
+  "win_rate": 0.539,
+  "net_pnl": -47000,
+  "profit_factor": 0.89,
+  "max_drawdown": 149000.0,
+  "neighbor_avg_pnl": -67571,
   "eligible": true
  },
  {
@@ -244,11 +244,11 @@
   "stop_atr": 1.5,
   "hold_min": 120,
   "trades": 72,
-  "win_rate": 0.528,
-  "net_pnl": -88000,
-  "profit_factor": 0.8,
-  "max_drawdown": 162000.0,
-  "neighbor_avg_pnl": -86333,
+  "win_rate": 0.542,
+  "net_pnl": -77000,
+  "profit_factor": 0.83,
+  "max_drawdown": 158000.0,
+  "neighbor_avg_pnl": -76833,
   "eligible": true
  },
  {
@@ -258,11 +258,11 @@
   "stop_atr": 2.0,
   "hold_min": 30,
   "trades": 91,
-  "win_rate": 0.516,
-  "net_pnl": -179000,
-  "profit_factor": 0.69,
-  "max_drawdown": 259000.0,
-  "neighbor_avg_pnl": -108167,
+  "win_rate": 0.527,
+  "net_pnl": -169000,
+  "profit_factor": 0.71,
+  "max_drawdown": 256000.0,
+  "neighbor_avg_pnl": -98333,
   "eligible": true
  },
  {
@@ -272,11 +272,11 @@
   "stop_atr": 2.0,
   "hold_min": 60,
   "trades": 81,
-  "win_rate": 0.543,
-  "net_pnl": -147000,
-  "profit_factor": 0.74,
-  "max_drawdown": 220000.0,
-  "neighbor_avg_pnl": -102571,
+  "win_rate": 0.556,
+  "net_pnl": -135000,
+  "profit_factor": 0.76,
+  "max_drawdown": 216000.0,
+  "neighbor_avg_pnl": -91571,
   "eligible": true
  },
  {
@@ -286,11 +286,11 @@
   "stop_atr": 2.0,
   "hold_min": 120,
   "trades": 75,
-  "win_rate": 0.547,
-  "net_pnl": -175000,
-  "profit_factor": 0.69,
-  "max_drawdown": 228000.0,
-  "neighbor_avg_pnl": -96667,
+  "win_rate": 0.56,
+  "net_pnl": -163000,
+  "profit_factor": 0.71,
+  "max_drawdown": 224000.0,
+  "neighbor_avg_pnl": -84833,
   "eligible": true
  },
  {
@@ -300,11 +300,11 @@
   "stop_atr": 3.0,
   "hold_min": 30,
   "trades": 114,
-  "win_rate": 0.579,
-  "net_pnl": -92000,
-  "profit_factor": 0.86,
-  "max_drawdown": 167000.0,
-  "neighbor_avg_pnl": -69400,
+  "win_rate": 0.588,
+  "net_pnl": -83000,
+  "profit_factor": 0.88,
+  "max_drawdown": 162000.0,
+  "neighbor_avg_pnl": -59200,
   "eligible": true
  },
  {
@@ -314,11 +314,11 @@
   "stop_atr": 3.0,
   "hold_min": 60,
   "trades": 91,
-  "win_rate": 0.637,
-  "net_pnl": -7000,
-  "profit_factor": 0.99,
-  "max_drawdown": 110000.0,
-  "neighbor_avg_pnl": -72333,
+  "win_rate": 0.648,
+  "net_pnl": 7000,
+  "profit_factor": 1.01,
+  "max_drawdown": 108000.0,
+  "neighbor_avg_pnl": -61167,
   "eligible": true
  },
  {
@@ -328,11 +328,11 @@
   "stop_atr": 3.0,
   "hold_min": 120,
   "trades": 82,
-  "win_rate": 0.622,
-  "net_pnl": -77000,
-  "profit_factor": 0.87,
-  "max_drawdown": 149000.0,
-  "neighbor_avg_pnl": -35200,
+  "win_rate": 0.634,
+  "net_pnl": -61000,
+  "profit_factor": 0.9,
+  "max_drawdown": 147000.0,
+  "neighbor_avg_pnl": -22000,
   "eligible": true
  },
  {
@@ -343,10 +343,10 @@
   "hold_min": 30,
   "trades": 52,
   "win_rate": 0.404,
-  "net_pnl": -73000,
-  "profit_factor": 0.73,
-  "max_drawdown": 143000.0,
-  "neighbor_avg_pnl": -37500,
+  "net_pnl": -67000,
+  "profit_factor": 0.75,
+  "max_drawdown": 142000.0,
+  "neighbor_avg_pnl": -32833,
   "eligible": true
  },
  {
@@ -357,10 +357,10 @@
   "hold_min": 60,
   "trades": 50,
   "win_rate": 0.36,
-  "net_pnl": -85000,
-  "profit_factor": 0.7,
-  "max_drawdown": 145000.0,
-  "neighbor_avg_pnl": -40714,
+  "net_pnl": -80000,
+  "profit_factor": 0.72,
+  "max_drawdown": 142000.0,
+  "neighbor_avg_pnl": -36000,
   "eligible": true
  },
  {
@@ -371,10 +371,10 @@
   "hold_min": 120,
   "trades": 50,
   "win_rate": 0.36,
-  "net_pnl": -103000,
-  "profit_factor": 0.64,
-  "max_drawdown": 145000.0,
-  "neighbor_avg_pnl": -25333,
+  "net_pnl": -98000,
+  "profit_factor": 0.66,
+  "max_drawdown": 142000.0,
+  "neighbor_avg_pnl": -19167,
   "eligible": true
  },
  {
@@ -385,10 +385,10 @@
   "hold_min": 30,
   "trades": 53,
   "win_rate": 0.491,
-  "net_pnl": -71000,
-  "profit_factor": 0.76,
-  "max_drawdown": 142000.0,
-  "neighbor_avg_pnl": -45714,
+  "net_pnl": -65000,
+  "profit_factor": 0.78,
+  "max_drawdown": 141000.0,
+  "neighbor_avg_pnl": -40571,
   "eligible": true
  },
  {
@@ -399,10 +399,10 @@
   "hold_min": 60,
   "trades": 51,
   "win_rate": 0.51,
-  "net_pnl": -44000,
-  "profit_factor": 0.85,
-  "max_drawdown": 122000.0,
-  "neighbor_avg_pnl": -13250,
+  "net_pnl": -38000,
+  "profit_factor": 0.87,
+  "max_drawdown": 121000.0,
+  "neighbor_avg_pnl": -7500,
   "eligible": true
  },
  {
@@ -413,10 +413,10 @@
   "hold_min": 120,
   "trades": 51,
   "win_rate": 0.51,
-  "net_pnl": -19000,
-  "profit_factor": 0.94,
-  "max_drawdown": 91000.0,
-  "neighbor_avg_pnl": -16429,
+  "net_pnl": -10000,
+  "profit_factor": 0.97,
+  "max_drawdown": 90000.0,
+  "neighbor_avg_pnl": -9714,
   "eligible": true
  },
  {
@@ -427,10 +427,10 @@
   "hold_min": 30,
   "trades": 54,
   "win_rate": 0.537,
-  "net_pnl": -23000,
-  "profit_factor": 0.92,
-  "max_drawdown": 117000.0,
-  "neighbor_avg_pnl": -34571,
+  "net_pnl": -18000,
+  "profit_factor": 0.94,
+  "max_drawdown": 116000.0,
+  "neighbor_avg_pnl": -29286,
   "eligible": true
  },
  {
@@ -441,10 +441,10 @@
   "hold_min": 60,
   "trades": 50,
   "win_rate": 0.6,
-  "net_pnl": 63000,
-  "profit_factor": 1.24,
-  "max_drawdown": 78000.0,
-  "neighbor_avg_pnl": 7000,
+  "net_pnl": 69000,
+  "profit_factor": 1.26,
+  "max_drawdown": 77000.0,
+  "neighbor_avg_pnl": 13000,
   "eligible": true
  },
  {
@@ -455,10 +455,10 @@
   "hold_min": 120,
   "trades": 50,
   "win_rate": 0.58,
-  "net_pnl": 64000,
-  "profit_factor": 1.23,
-  "max_drawdown": 48000.0,
-  "neighbor_avg_pnl": 36571,
+  "net_pnl": 73000,
+  "profit_factor": 1.27,
+  "max_drawdown": 47000.0,
+  "neighbor_avg_pnl": 44286,
   "eligible": true
  },
  {
@@ -469,10 +469,10 @@
   "hold_min": 30,
   "trades": 54,
   "win_rate": 0.574,
-  "net_pnl": 24000,
-  "profit_factor": 1.09,
-  "max_drawdown": 97000.0,
-  "neighbor_avg_pnl": -18333,
+  "net_pnl": 29000,
+  "profit_factor": 1.11,
+  "max_drawdown": 96000.0,
+  "neighbor_avg_pnl": -13833,
   "eligible": true
  },
  {
@@ -483,10 +483,10 @@
   "hold_min": 60,
   "trades": 48,
   "win_rate": 0.646,
-  "net_pnl": 97000,
-  "profit_factor": 1.44,
+  "net_pnl": 102000,
+  "profit_factor": 1.47,
   "max_drawdown": 52000.0,
-  "neighbor_avg_pnl": 53714,
+  "neighbor_avg_pnl": 59857,
   "eligible": true
  },
  {
@@ -497,10 +497,10 @@
   "hold_min": 120,
   "trades": 46,
   "win_rate": 0.696,
-  "net_pnl": 169000,
-  "profit_factor": 2.1,
+  "net_pnl": 178000,
+  "profit_factor": 2.16,
   "max_drawdown": 41000.0,
-  "neighbor_avg_pnl": 61000,
+  "neighbor_avg_pnl": 68833,
   "eligible": true
  },
  {
@@ -511,10 +511,10 @@
   "hold_min": 30,
   "trades": 56,
   "win_rate": 0.464,
-  "net_pnl": 48000,
-  "profit_factor": 1.17,
-  "max_drawdown": 104000.0,
-  "neighbor_avg_pnl": -31333,
+  "net_pnl": 52000,
+  "profit_factor": 1.19,
+  "max_drawdown": 103000.0,
+  "neighbor_avg_pnl": -27000,
   "eligible": true
  },
  {
@@ -525,10 +525,10 @@
   "hold_min": 60,
   "trades": 53,
   "win_rate": 0.434,
-  "net_pnl": 19000,
-  "profit_factor": 1.07,
-  "max_drawdown": 88000.0,
-  "neighbor_avg_pnl": -857,
+  "net_pnl": 22000,
+  "profit_factor": 1.08,
+  "max_drawdown": 87000.0,
+  "neighbor_avg_pnl": 3714,
   "eligible": true
  },
  {
@@ -539,10 +539,10 @@
   "hold_min": 120,
   "trades": 53,
   "win_rate": 0.434,
-  "net_pnl": 34000,
-  "profit_factor": 1.12,
-  "max_drawdown": 73000.0,
-  "neighbor_avg_pnl": -18500,
+  "net_pnl": 39000,
+  "profit_factor": 1.14,
+  "max_drawdown": 71000.0,
+  "neighbor_avg_pnl": -13333,
   "eligible": true
  },
  {
@@ -553,10 +553,10 @@
   "hold_min": 30,
   "trades": 63,
   "win_rate": 0.524,
-  "net_pnl": -13000,
-  "profit_factor": 0.97,
-  "max_drawdown": 114000.0,
-  "neighbor_avg_pnl": -30286,
+  "net_pnl": -8000,
+  "profit_factor": 0.98,
+  "max_drawdown": 112000.0,
+  "neighbor_avg_pnl": -25286,
   "eligible": true
  },
  {
@@ -567,10 +567,10 @@
   "hold_min": 60,
   "trades": 59,
   "win_rate": 0.525,
-  "net_pnl": 57000,
-  "profit_factor": 1.16,
-  "max_drawdown": 72000.0,
-  "neighbor_avg_pnl": -5500,
+  "net_pnl": 62000,
+  "profit_factor": 1.18,
+  "max_drawdown": 70000.0,
+  "neighbor_avg_pnl": 125,
   "eligible": true
  },
  {
@@ -581,10 +581,10 @@
   "hold_min": 120,
   "trades": 56,
   "win_rate": 0.536,
-  "net_pnl": 37000,
-  "profit_factor": 1.11,
-  "max_drawdown": 65000.0,
-  "neighbor_avg_pnl": 13857,
+  "net_pnl": 43000,
+  "profit_factor": 1.12,
+  "max_drawdown": 62000.0,
+  "neighbor_avg_pnl": 20857,
   "eligible": true
  },
  {
@@ -595,10 +595,10 @@
   "hold_min": 30,
   "trades": 65,
   "win_rate": 0.538,
-  "net_pnl": -58000,
-  "profit_factor": 0.87,
-  "max_drawdown": 148000.0,
-  "neighbor_avg_pnl": -50857,
+  "net_pnl": -53000,
+  "profit_factor": 0.88,
+  "max_drawdown": 145000.0,
+  "neighbor_avg_pnl": -45429,
   "eligible": true
  },
  {
@@ -609,10 +609,10 @@
   "hold_min": 60,
   "trades": 61,
   "win_rate": 0.557,
-  "net_pnl": 2000,
-  "profit_factor": 1.0,
-  "max_drawdown": 105000.0,
-  "neighbor_avg_pnl": -625,
+  "net_pnl": 8000,
+  "profit_factor": 1.02,
+  "max_drawdown": 103000.0,
+  "neighbor_avg_pnl": 5500,
   "eligible": true
  },
  {
@@ -623,10 +623,10 @@
   "hold_min": 120,
   "trades": 59,
   "win_rate": 0.593,
-  "net_pnl": 24000,
-  "profit_factor": 1.06,
-  "max_drawdown": 89000.0,
-  "neighbor_avg_pnl": 21714,
+  "net_pnl": 31000,
+  "profit_factor": 1.07,
+  "max_drawdown": 86000.0,
+  "neighbor_avg_pnl": 29429,
   "eligible": true
  },
  {
@@ -637,10 +637,10 @@
   "hold_min": 30,
   "trades": 67,
   "win_rate": 0.582,
-  "net_pnl": 23000,
-  "profit_factor": 1.05,
-  "max_drawdown": 120000.0,
-  "neighbor_avg_pnl": -15000,
+  "net_pnl": 28000,
+  "profit_factor": 1.06,
+  "max_drawdown": 118000.0,
+  "neighbor_avg_pnl": -9667,
   "eligible": true
  },
  {
@@ -651,10 +651,10 @@
   "hold_min": 60,
   "trades": 62,
   "win_rate": 0.613,
-  "net_pnl": 120000,
-  "profit_factor": 1.31,
-  "max_drawdown": 106000.0,
-  "neighbor_avg_pnl": 38571,
+  "net_pnl": 126000,
+  "profit_factor": 1.32,
+  "max_drawdown": 105000.0,
+  "neighbor_avg_pnl": 45143,
   "eligible": true
  },
  {
@@ -665,10 +665,10 @@
   "hold_min": 120,
   "trades": 58,
   "win_rate": 0.672,
-  "net_pnl": 175000,
-  "profit_factor": 1.49,
-  "max_drawdown": 91000.0,
-  "neighbor_avg_pnl": 44000,
+  "net_pnl": 184000,
+  "profit_factor": 1.52,
+  "max_drawdown": 89000.0,
+  "neighbor_avg_pnl": 52500,
   "eligible": true
  },
  {
@@ -679,10 +679,10 @@
   "hold_min": 30,
   "trades": 36,
   "win_rate": 0.361,
-  "net_pnl": -4000,
-  "profit_factor": 0.98,
-  "max_drawdown": 96000.0,
-  "neighbor_avg_pnl": -16167,
+  "net_pnl": -2000,
+  "profit_factor": 0.99,
+  "max_drawdown": 94000.0,
+  "neighbor_avg_pnl": -14167,
   "eligible": true
  },
  {
@@ -693,10 +693,10 @@
   "hold_min": 60,
   "trades": 35,
   "win_rate": 0.371,
-  "net_pnl": -8000,
-  "profit_factor": 0.96,
-  "max_drawdown": 100000.0,
-  "neighbor_avg_pnl": -3429,
+  "net_pnl": -6000,
+  "profit_factor": 0.97,
+  "max_drawdown": 98000.0,
+  "neighbor_avg_pnl": -1429,
   "eligible": true
  },
  {
@@ -707,10 +707,10 @@
   "hold_min": 120,
   "trades": 35,
   "win_rate": 0.343,
-  "net_pnl": -13000,
-  "profit_factor": 0.94,
-  "max_drawdown": 106000.0,
-  "neighbor_avg_pnl": -7333,
+  "net_pnl": -10000,
+  "profit_factor": 0.95,
+  "max_drawdown": 104000.0,
+  "neighbor_avg_pnl": -4667,
   "eligible": true
  },
  {
@@ -721,10 +721,10 @@
   "hold_min": 30,
   "trades": 35,
   "win_rate": 0.429,
-  "net_pnl": -29000,
-  "profit_factor": 0.88,
-  "max_drawdown": 133000.0,
-  "neighbor_avg_pnl": -27143,
+  "net_pnl": -27000,
+  "profit_factor": 0.89,
+  "max_drawdown": 131000.0,
+  "neighbor_avg_pnl": -25000,
   "eligible": true
  },
  {
@@ -735,10 +735,10 @@
   "hold_min": 60,
   "trades": 34,
   "win_rate": 0.5,
-  "net_pnl": 13000,
-  "profit_factor": 1.06,
+  "net_pnl": 15000,
+  "profit_factor": 1.07,
   "max_drawdown": 96000.0,
-  "neighbor_avg_pnl": -6500,
+  "neighbor_avg_pnl": -3875,
   "eligible": true
  },
  {
@@ -749,10 +749,10 @@
   "hold_min": 120,
   "trades": 34,
   "win_rate": 0.471,
-  "net_pnl": 3000,
-  "profit_factor": 1.01,
-  "max_drawdown": 111000.0,
-  "neighbor_avg_pnl": 714,
+  "net_pnl": 6000,
+  "profit_factor": 1.03,
+  "max_drawdown": 109000.0,
+  "neighbor_avg_pnl": 4714,
   "eligible": true
  },
  {
@@ -763,10 +763,10 @@
   "hold_min": 30,
   "trades": 36,
   "win_rate": 0.472,
-  "net_pnl": -25000,
-  "profit_factor": 0.9,
-  "max_drawdown": 129000.0,
-  "neighbor_avg_pnl": -29857,
+  "net_pnl": -23000,
+  "profit_factor": 0.91,
+  "max_drawdown": 127000.0,
+  "neighbor_avg_pnl": -27857,
   "eligible": true
  },
  {
@@ -777,10 +777,10 @@
   "hold_min": 60,
   "trades": 35,
   "win_rate": 0.543,
-  "net_pnl": 27000,
-  "profit_factor": 1.12,
-  "max_drawdown": 82000.0,
-  "neighbor_avg_pnl": 4375,
+  "net_pnl": 30000,
+  "profit_factor": 1.13,
+  "max_drawdown": 79000.0,
+  "neighbor_avg_pnl": 7000,
   "eligible": true
  },
  {
@@ -791,10 +791,10 @@
   "hold_min": 120,
   "trades": 34,
   "win_rate": 0.559,
-  "net_pnl": 45000,
-  "profit_factor": 1.2,
-  "max_drawdown": 69000.0,
-  "neighbor_avg_pnl": -143,
+  "net_pnl": 50000,
+  "profit_factor": 1.22,
+  "max_drawdown": 65000.0,
+  "neighbor_avg_pnl": 3714,
   "eligible": true
  },
  {
@@ -805,10 +805,10 @@
   "hold_min": 30,
   "trades": 33,
   "win_rate": 0.485,
-  "net_pnl": -76000,
+  "net_pnl": -74000,
   "profit_factor": 0.74,
-  "max_drawdown": 180000.0,
-  "neighbor_avg_pnl": -20000,
+  "max_drawdown": 178000.0,
+  "neighbor_avg_pnl": -18167,
   "eligible": true
  },
  {
@@ -819,10 +819,10 @@
   "hold_min": 60,
   "trades": 33,
   "win_rate": 0.576,
-  "net_pnl": -11000,
-  "profit_factor": 0.96,
-  "max_drawdown": 120000.0,
-  "neighbor_avg_pnl": 4000,
+  "net_pnl": -9000,
+  "profit_factor": 0.97,
+  "max_drawdown": 118000.0,
+  "neighbor_avg_pnl": 6714,
   "eligible": true
  },
  {
@@ -833,10 +833,10 @@
   "hold_min": 120,
   "trades": 31,
   "win_rate": 0.581,
-  "net_pnl": -33000,
-  "profit_factor": 0.89,
-  "max_drawdown": 147000.0,
-  "neighbor_avg_pnl": 22833,
+  "net_pnl": -29000,
+  "profit_factor": 0.9,
+  "max_drawdown": 144000.0,
+  "neighbor_avg_pnl": 27167,
   "eligible": true
  },
  {
@@ -847,10 +847,10 @@
   "hold_min": 30,
   "trades": 38,
   "win_rate": 0.421,
-  "net_pnl": 35000,
-  "profit_factor": 1.18,
-  "max_drawdown": 56000.0,
-  "neighbor_avg_pnl": -10167,
+  "net_pnl": 37000,
+  "profit_factor": 1.19,
+  "max_drawdown": 54000.0,
+  "neighbor_avg_pnl": -8500,
   "eligible": true
  },
  {
@@ -861,10 +861,10 @@
   "hold_min": 60,
   "trades": 37,
   "win_rate": 0.459,
-  "net_pnl": 63000,
-  "profit_factor": 1.33,
+  "net_pnl": 65000,
+  "profit_factor": 1.34,
   "max_drawdown": 29000.0,
-  "neighbor_avg_pnl": -3429,
+  "neighbor_avg_pnl": -1286,
   "eligible": true
  },
  {
@@ -875,10 +875,10 @@
   "hold_min": 120,
   "trades": 36,
   "win_rate": 0.444,
-  "net_pnl": 57000,
-  "profit_factor": 1.3,
-  "max_drawdown": 38000.0,
-  "neighbor_avg_pnl": -3167,
+  "net_pnl": 61000,
+  "profit_factor": 1.32,
+  "max_drawdown": 37000.0,
+  "neighbor_avg_pnl": -167,
   "eligible": true
  },
  {
@@ -889,10 +889,10 @@
   "hold_min": 30,
   "trades": 38,
   "win_rate": 0.421,
-  "net_pnl": -62000,
-  "profit_factor": 0.77,
-  "max_drawdown": 111000.0,
-  "neighbor_avg_pnl": -20000,
+  "net_pnl": -60000,
+  "profit_factor": 0.78,
+  "max_drawdown": 109000.0,
+  "neighbor_avg_pnl": -18000,
   "eligible": true
  },
  {
@@ -903,10 +903,10 @@
   "hold_min": 60,
   "trades": 37,
   "win_rate": 0.459,
-  "net_pnl": -24000,
-  "profit_factor": 0.91,
-  "max_drawdown": 89000.0,
-  "neighbor_avg_pnl": -5000,
+  "net_pnl": -21000,
+  "profit_factor": 0.92,
+  "max_drawdown": 87000.0,
+  "neighbor_avg_pnl": -2500,
   "eligible": true
  },
  {
@@ -917,10 +917,10 @@
   "hold_min": 120,
   "trades": 36,
   "win_rate": 0.444,
-  "net_pnl": -23000,
-  "profit_factor": 0.91,
-  "max_drawdown": 78000.0,
-  "neighbor_avg_pnl": 4000,
+  "net_pnl": -18000,
+  "profit_factor": 0.93,
+  "max_drawdown": 75000.0,
+  "neighbor_avg_pnl": 7429,
   "eligible": true
  },
  {
@@ -931,10 +931,10 @@
   "hold_min": 30,
   "trades": 37,
   "win_rate": 0.486,
-  "net_pnl": -44000,
-  "profit_factor": 0.84,
-  "max_drawdown": 118000.0,
-  "neighbor_avg_pnl": -37000,
+  "net_pnl": -42000,
+  "profit_factor": 0.85,
+  "max_drawdown": 116000.0,
+  "neighbor_avg_pnl": -35000,
   "eligible": true
  },
  {
@@ -945,10 +945,10 @@
   "hold_min": 60,
   "trades": 35,
   "win_rate": 0.486,
-  "net_pnl": -33000,
-  "profit_factor": 0.88,
-  "max_drawdown": 130000.0,
-  "neighbor_avg_pnl": -6375,
+  "net_pnl": -30000,
+  "profit_factor": 0.89,
+  "max_drawdown": 128000.0,
+  "neighbor_avg_pnl": -3375,
   "eligible": true
  },
  {
@@ -959,10 +959,10 @@
   "hold_min": 120,
   "trades": 34,
   "win_rate": 0.471,
-  "net_pnl": -13000,
-  "profit_factor": 0.95,
-  "max_drawdown": 108000.0,
-  "neighbor_avg_pnl": -9286,
+  "net_pnl": -8000,
+  "profit_factor": 0.97,
+  "max_drawdown": 105000.0,
+  "neighbor_avg_pnl": -5143,
   "eligible": true
  },
  {
@@ -973,10 +973,10 @@
   "hold_min": 30,
   "trades": 36,
   "win_rate": 0.528,
-  "net_pnl": -11000,
+  "net_pnl": -9000,
   "profit_factor": 0.96,
-  "max_drawdown": 85000.0,
-  "neighbor_avg_pnl": -33833,
+  "max_drawdown": 83000.0,
+  "neighbor_avg_pnl": -31833,
   "eligible": true
  },
  {
@@ -987,10 +987,10 @@
   "hold_min": 60,
   "trades": 33,
   "win_rate": 0.606,
-  "net_pnl": 18000,
-  "profit_factor": 1.07,
+  "net_pnl": 21000,
+  "profit_factor": 1.09,
   "max_drawdown": 81000.0,
-  "neighbor_avg_pnl": -10857,
+  "neighbor_avg_pnl": -8000,
   "eligible": true
  },
  {
@@ -1001,10 +1001,10 @@
   "hold_min": 120,
   "trades": 31,
   "win_rate": 0.516,
-  "net_pnl": -28000,
-  "profit_factor": 0.9,
-  "max_drawdown": 118000.0,
-  "neighbor_avg_pnl": 333,
+  "net_pnl": -23000,
+  "profit_factor": 0.92,
+  "max_drawdown": 116000.0,
+  "neighbor_avg_pnl": 4333,
   "eligible": true
  },
  {
@@ -1018,7 +1018,7 @@
   "net_pnl": 2000,
   "profit_factor": 1.03,
   "max_drawdown": 30000.0,
-  "neighbor_avg_pnl": -12200,
+  "neighbor_avg_pnl": -11800,
   "eligible": false
  },
  {
@@ -1032,7 +1032,7 @@
   "net_pnl": 20000,
   "profit_factor": 1.3,
   "max_drawdown": 30000.0,
-  "neighbor_avg_pnl": 3333,
+  "neighbor_avg_pnl": 4000,
   "eligible": false
  },
  {
@@ -1046,7 +1046,7 @@
   "net_pnl": 7000,
   "profit_factor": 1.1,
   "max_drawdown": 30000.0,
-  "neighbor_avg_pnl": -3200,
+  "neighbor_avg_pnl": -2200,
   "eligible": false
  },
  {
@@ -1060,7 +1060,7 @@
   "net_pnl": 2000,
   "profit_factor": 1.03,
   "max_drawdown": 40000.0,
-  "neighbor_avg_pnl": -6333,
+  "neighbor_avg_pnl": -5833,
   "eligible": false
  },
  {
@@ -1071,10 +1071,10 @@
   "hold_min": 60,
   "trades": 13,
   "win_rate": 0.538,
-  "net_pnl": 35000,
-  "profit_factor": 1.45,
+  "net_pnl": 36000,
+  "profit_factor": 1.46,
   "max_drawdown": 35000.0,
-  "neighbor_avg_pnl": 15429,
+  "neighbor_avg_pnl": 16286,
   "eligible": false
  },
  {
@@ -1085,10 +1085,10 @@
   "hold_min": 120,
   "trades": 13,
   "win_rate": 0.538,
-  "net_pnl": 22000,
-  "profit_factor": 1.28,
+  "net_pnl": 23000,
+  "profit_factor": 1.29,
   "max_drawdown": 35000.0,
-  "neighbor_avg_pnl": 8000,
+  "neighbor_avg_pnl": 9167,
   "eligible": false
  },
  {
@@ -1102,7 +1102,7 @@
   "net_pnl": -7000,
   "profit_factor": 0.91,
   "max_drawdown": 49000.0,
-  "neighbor_avg_pnl": -11167,
+  "neighbor_avg_pnl": -10667,
   "eligible": false
  },
  {
@@ -1113,10 +1113,10 @@
   "hold_min": 60,
   "trades": 13,
   "win_rate": 0.538,
-  "net_pnl": 19000,
-  "profit_factor": 1.2,
+  "net_pnl": 20000,
+  "profit_factor": 1.21,
   "max_drawdown": 46000.0,
-  "neighbor_avg_pnl": 17143,
+  "neighbor_avg_pnl": 18286,
   "eligible": false
  },
  {
@@ -1127,10 +1127,10 @@
   "hold_min": 120,
   "trades": 13,
   "win_rate": 0.538,
-  "net_pnl": 6000,
-  "profit_factor": 1.06,
+  "net_pnl": 7000,
+  "profit_factor": 1.07,
   "max_drawdown": 50000.0,
-  "neighbor_avg_pnl": 11000,
+  "neighbor_avg_pnl": 12667,
   "eligible": false
  },
  {
@@ -1144,7 +1144,7 @@
   "net_pnl": -6000,
   "profit_factor": 0.92,
   "max_drawdown": 48000.0,
-  "neighbor_avg_pnl": -13400,
+  "neighbor_avg_pnl": -12800,
   "eligible": false
  },
  {
@@ -1155,10 +1155,10 @@
   "hold_min": 60,
   "trades": 11,
   "win_rate": 0.636,
-  "net_pnl": 23000,
-  "profit_factor": 1.26,
+  "net_pnl": 24000,
+  "profit_factor": 1.27,
   "max_drawdown": 34000.0,
-  "neighbor_avg_pnl": 11833,
+  "neighbor_avg_pnl": 12833,
   "eligible": false
  },
  {
@@ -1169,10 +1169,10 @@
   "hold_min": 120,
   "trades": 11,
   "win_rate": 0.636,
-  "net_pnl": 2000,
-  "profit_factor": 1.02,
+  "net_pnl": 3000,
+  "profit_factor": 1.03,
   "max_drawdown": 54000.0,
-  "neighbor_avg_pnl": 800,
+  "neighbor_avg_pnl": 2400,
   "eligible": false
  },
  {
@@ -1186,7 +1186,7 @@
   "net_pnl": -56000,
   "profit_factor": 0.27,
   "max_drawdown": 62000.0,
-  "neighbor_avg_pnl": -11800,
+  "neighbor_avg_pnl": -11400,
   "eligible": false
  },
  {
@@ -1200,7 +1200,7 @@
   "net_pnl": -38000,
   "profit_factor": 0.53,
   "max_drawdown": 49000.0,
-  "neighbor_avg_pnl": -500,
+  "neighbor_avg_pnl": 167,
   "eligible": false
  },
  {
@@ -1214,7 +1214,7 @@
   "net_pnl": -50000,
   "profit_factor": 0.38,
   "max_drawdown": 56000.0,
-  "neighbor_avg_pnl": 3600,
+  "neighbor_avg_pnl": 4800,
   "eligible": false
  },
  {
@@ -1228,7 +1228,7 @@
   "net_pnl": -40000,
   "profit_factor": 0.44,
   "max_drawdown": 48000.0,
-  "neighbor_avg_pnl": -28833,
+  "neighbor_avg_pnl": -28333,
   "eligible": false
  },
  {
@@ -1239,10 +1239,10 @@
   "hold_min": 60,
   "trades": 11,
   "win_rate": 0.455,
-  "net_pnl": 1000,
-  "profit_factor": 1.01,
+  "net_pnl": 2000,
+  "profit_factor": 1.03,
   "max_drawdown": 51000.0,
-  "neighbor_avg_pnl": -10000,
+  "neighbor_avg_pnl": -9000,
   "eligible": false
  },
  {
@@ -1253,10 +1253,10 @@
   "hold_min": 120,
   "trades": 11,
   "win_rate": 0.455,
-  "net_pnl": -17000,
-  "profit_factor": 0.78,
+  "net_pnl": -16000,
+  "profit_factor": 0.8,
   "max_drawdown": 51000.0,
-  "neighbor_avg_pnl": -10667,
+  "neighbor_avg_pnl": -9167,
   "eligible": false
  },
  {
@@ -1270,7 +1270,7 @@
   "net_pnl": -53000,
   "profit_factor": 0.38,
   "max_drawdown": 61000.0,
-  "neighbor_avg_pnl": -18000,
+  "neighbor_avg_pnl": -17500,
   "eligible": false
  },
  {
@@ -1281,10 +1281,10 @@
   "hold_min": 60,
   "trades": 11,
   "win_rate": 0.455,
-  "net_pnl": -11000,
-  "profit_factor": 0.88,
+  "net_pnl": -10000,
+  "profit_factor": 0.89,
   "max_drawdown": 58000.0,
-  "neighbor_avg_pnl": -8857,
+  "neighbor_avg_pnl": -7714,
   "eligible": false
  },
  {
@@ -1295,10 +1295,10 @@
   "hold_min": 120,
   "trades": 11,
   "win_rate": 0.455,
-  "net_pnl": -29000,
-  "profit_factor": 0.68,
+  "net_pnl": -28000,
+  "profit_factor": 0.69,
   "max_drawdown": 63000.0,
-  "neighbor_avg_pnl": -11167,
+  "neighbor_avg_pnl": -9500,
   "eligible": false
  },
  {
@@ -1312,7 +1312,7 @@
   "net_pnl": -26000,
   "profit_factor": 0.46,
   "max_drawdown": 35000.0,
-  "neighbor_avg_pnl": -11400,
+  "neighbor_avg_pnl": -10800,
   "eligible": false
  },
  {
@@ -1323,10 +1323,10 @@
   "hold_min": 60,
   "trades": 9,
   "win_rate": 0.556,
-  "net_pnl": 2000,
-  "profit_factor": 1.03,
+  "net_pnl": 3000,
+  "profit_factor": 1.04,
   "max_drawdown": 41000.0,
-  "neighbor_avg_pnl": -2833,
+  "neighbor_avg_pnl": -1667,
   "eligible": false
  },
  {
@@ -1337,10 +1337,10 @@
   "hold_min": 120,
   "trades": 9,
   "win_rate": 0.444,
-  "net_pnl": -37000,
-  "profit_factor": 0.57,
+  "net_pnl": -36000,
+  "profit_factor": 0.59,
   "max_drawdown": 71000.0,
-  "neighbor_avg_pnl": -6800,
+  "neighbor_avg_pnl": -5000,
   "eligible": false
  },
  {
@@ -1351,10 +1351,10 @@
   "hold_min": 30,
   "trades": 55,
   "win_rate": 0.491,
-  "net_pnl": -143000,
-  "profit_factor": 0.53,
-  "max_drawdown": 149000.0,
-  "neighbor_avg_pnl": -97167,
+  "net_pnl": -138000,
+  "profit_factor": 0.54,
+  "max_drawdown": 146000.0,
+  "neighbor_avg_pnl": -91167,
   "eligible": true
  },
  {
@@ -1365,10 +1365,10 @@
   "hold_min": 60,
   "trades": 53,
   "win_rate": 0.453,
-  "net_pnl": -145000,
-  "profit_factor": 0.53,
-  "max_drawdown": 156000.0,
-  "neighbor_avg_pnl": -95429,
+  "net_pnl": -140000,
+  "profit_factor": 0.55,
+  "max_drawdown": 153000.0,
+  "neighbor_avg_pnl": -88714,
   "eligible": true
  },
  {
@@ -1379,10 +1379,10 @@
   "hold_min": 120,
   "trades": 53,
   "win_rate": 0.453,
-  "net_pnl": -151000,
-  "profit_factor": 0.53,
-  "max_drawdown": 166000.0,
-  "neighbor_avg_pnl": -97667,
+  "net_pnl": -145000,
+  "profit_factor": 0.54,
+  "max_drawdown": 163000.0,
+  "neighbor_avg_pnl": -90167,
   "eligible": true
  },
  {
@@ -1393,10 +1393,10 @@
   "hold_min": 30,
   "trades": 57,
   "win_rate": 0.561,
-  "net_pnl": -134000,
-  "profit_factor": 0.56,
-  "max_drawdown": 169000.0,
-  "neighbor_avg_pnl": -95571,
+  "net_pnl": -128000,
+  "profit_factor": 0.58,
+  "max_drawdown": 167000.0,
+  "neighbor_avg_pnl": -89143,
   "eligible": true
  },
  {
@@ -1407,10 +1407,10 @@
   "hold_min": 60,
   "trades": 53,
   "win_rate": 0.566,
-  "net_pnl": -117000,
-  "profit_factor": 0.6,
-  "max_drawdown": 161000.0,
-  "neighbor_avg_pnl": -88750,
+  "net_pnl": -110000,
+  "profit_factor": 0.63,
+  "max_drawdown": 159000.0,
+  "neighbor_avg_pnl": -81250,
   "eligible": true
  },
  {
@@ -1421,10 +1421,10 @@
   "hold_min": 120,
   "trades": 53,
   "win_rate": 0.566,
-  "net_pnl": -130000,
-  "profit_factor": 0.58,
-  "max_drawdown": 178000.0,
-  "neighbor_avg_pnl": -95143,
+  "net_pnl": -122000,
+  "profit_factor": 0.61,
+  "max_drawdown": 176000.0,
+  "neighbor_avg_pnl": -86571,
   "eligible": true
  },
  {
@@ -1434,11 +1434,11 @@
   "stop_atr": 2.0,
   "hold_min": 30,
   "trades": 60,
-  "win_rate": 0.6,
-  "net_pnl": -125000,
-  "profit_factor": 0.61,
-  "max_drawdown": 164000.0,
-  "neighbor_avg_pnl": -98000,
+  "win_rate": 0.617,
+  "net_pnl": -118000,
+  "profit_factor": 0.63,
+  "max_drawdown": 160000.0,
+  "neighbor_avg_pnl": -90571,
   "eligible": true
  },
  {
@@ -1448,11 +1448,11 @@
   "stop_atr": 2.0,
   "hold_min": 60,
   "trades": 56,
-  "win_rate": 0.571,
-  "net_pnl": -96000,
-  "profit_factor": 0.69,
-  "max_drawdown": 135000.0,
-  "neighbor_avg_pnl": -97875,
+  "win_rate": 0.589,
+  "net_pnl": -87000,
+  "profit_factor": 0.71,
+  "max_drawdown": 132000.0,
+  "neighbor_avg_pnl": -89500,
   "eligible": true
  },
  {
@@ -1462,11 +1462,11 @@
   "stop_atr": 2.0,
   "hold_min": 120,
   "trades": 53,
-  "win_rate": 0.604,
-  "net_pnl": -104000,
-  "profit_factor": 0.68,
-  "max_drawdown": 133000.0,
-  "neighbor_avg_pnl": -89857,
+  "win_rate": 0.623,
+  "net_pnl": -94000,
+  "profit_factor": 0.71,
+  "max_drawdown": 130000.0,
+  "neighbor_avg_pnl": -80286,
   "eligible": true
  },
  {
@@ -1476,11 +1476,11 @@
   "stop_atr": 3.0,
   "hold_min": 30,
   "trades": 63,
-  "win_rate": 0.603,
-  "net_pnl": -122000,
-  "profit_factor": 0.63,
-  "max_drawdown": 161000.0,
-  "neighbor_avg_pnl": -81333,
+  "win_rate": 0.619,
+  "net_pnl": -115000,
+  "profit_factor": 0.65,
+  "max_drawdown": 157000.0,
+  "neighbor_avg_pnl": -74000,
   "eligible": true
  },
  {
@@ -1490,11 +1490,11 @@
   "stop_atr": 3.0,
   "hold_min": 60,
   "trades": 56,
-  "win_rate": 0.571,
-  "net_pnl": -106000,
-  "profit_factor": 0.66,
-  "max_drawdown": 162000.0,
-  "neighbor_avg_pnl": -85857,
+  "win_rate": 0.589,
+  "net_pnl": -97000,
+  "profit_factor": 0.69,
+  "max_drawdown": 160000.0,
+  "neighbor_avg_pnl": -77143,
   "eligible": true
  },
  {
@@ -1504,11 +1504,11 @@
   "stop_atr": 3.0,
   "hold_min": 120,
   "trades": 52,
-  "win_rate": 0.635,
-  "net_pnl": -115000,
-  "profit_factor": 0.65,
-  "max_drawdown": 149000.0,
-  "neighbor_avg_pnl": -71833,
+  "win_rate": 0.654,
+  "net_pnl": -104000,
+  "profit_factor": 0.69,
+  "max_drawdown": 145000.0,
+  "neighbor_avg_pnl": -61167,
   "eligible": true
  },
  {
@@ -1519,10 +1519,10 @@
   "hold_min": 30,
   "trades": 83,
   "win_rate": 0.53,
-  "net_pnl": 17000,
-  "profit_factor": 1.04,
+  "net_pnl": 28000,
+  "profit_factor": 1.07,
   "max_drawdown": 101000.0,
-  "neighbor_avg_pnl": -62333,
+  "neighbor_avg_pnl": -54000,
   "eligible": true
  },
  {
@@ -1533,10 +1533,10 @@
   "hold_min": 60,
   "trades": 77,
   "win_rate": 0.571,
-  "net_pnl": 55000,
-  "profit_factor": 1.15,
+  "net_pnl": 69000,
+  "profit_factor": 1.19,
   "max_drawdown": 97000.0,
-  "neighbor_avg_pnl": -57571,
+  "neighbor_avg_pnl": -48714,
   "eligible": true
  },
  {
@@ -1547,10 +1547,10 @@
   "hold_min": 120,
   "trades": 72,
   "win_rate": 0.556,
-  "net_pnl": 18000,
-  "profit_factor": 1.05,
+  "net_pnl": 31000,
+  "profit_factor": 1.08,
   "max_drawdown": 105000.0,
-  "neighbor_avg_pnl": -74500,
+  "neighbor_avg_pnl": -65333,
   "eligible": true
  },
  {
@@ -1561,10 +1561,10 @@
   "hold_min": 30,
   "trades": 94,
   "win_rate": 0.543,
-  "net_pnl": -72000,
-  "profit_factor": 0.86,
-  "max_drawdown": 185000.0,
-  "neighbor_avg_pnl": -76714,
+  "net_pnl": -61000,
+  "profit_factor": 0.88,
+  "max_drawdown": 182000.0,
+  "neighbor_avg_pnl": -67143,
   "eligible": true
  },
  {
@@ -1575,10 +1575,10 @@
   "hold_min": 60,
   "trades": 79,
   "win_rate": 0.582,
-  "net_pnl": -43000,
-  "profit_factor": 0.91,
-  "max_drawdown": 159000.0,
-  "neighbor_avg_pnl": -69750,
+  "net_pnl": -30000,
+  "profit_factor": 0.94,
+  "max_drawdown": 158000.0,
+  "neighbor_avg_pnl": -59375,
   "eligible": true
  },
  {
@@ -1589,10 +1589,10 @@
   "hold_min": 120,
   "trades": 73,
   "win_rate": 0.589,
-  "net_pnl": -80000,
-  "profit_factor": 0.83,
-  "max_drawdown": 178000.0,
-  "neighbor_avg_pnl": -56857,
+  "net_pnl": -68000,
+  "profit_factor": 0.85,
+  "max_drawdown": 177000.0,
+  "neighbor_avg_pnl": -45571,
   "eligible": true
  },
  {
@@ -1603,10 +1603,10 @@
   "hold_min": 30,
   "trades": 105,
   "win_rate": 0.524,
-  "net_pnl": -116000,
-  "profit_factor": 0.82,
-  "max_drawdown": 210000.0,
-  "neighbor_avg_pnl": -123286,
+  "net_pnl": -102000,
+  "profit_factor": 0.84,
+  "max_drawdown": 200000.0,
+  "neighbor_avg_pnl": -113000,
   "eligible": true
  },
  {
@@ -1617,10 +1617,10 @@
   "hold_min": 60,
   "trades": 83,
   "win_rate": 0.59,
-  "net_pnl": -165000,
-  "profit_factor": 0.73,
-  "max_drawdown": 244000.0,
-  "neighbor_avg_pnl": -107625,
+  "net_pnl": -151000,
+  "profit_factor": 0.75,
+  "max_drawdown": 236000.0,
+  "neighbor_avg_pnl": -96500,
   "eligible": true
  },
  {
@@ -1631,10 +1631,10 @@
   "hold_min": 120,
   "trades": 77,
   "win_rate": 0.597,
-  "net_pnl": -148000,
-  "profit_factor": 0.74,
-  "max_drawdown": 207000.0,
-  "neighbor_avg_pnl": -92857,
+  "net_pnl": -134000,
+  "profit_factor": 0.76,
+  "max_drawdown": 198000.0,
+  "neighbor_avg_pnl": -80429,
   "eligible": true
  },
  {
@@ -1645,10 +1645,10 @@
   "hold_min": 30,
   "trades": 116,
   "win_rate": 0.543,
-  "net_pnl": -72000,
-  "profit_factor": 0.9,
-  "max_drawdown": 221000.0,
-  "neighbor_avg_pnl": -118667,
+  "net_pnl": -57000,
+  "profit_factor": 0.92,
+  "max_drawdown": 210000.0,
+  "neighbor_avg_pnl": -109000,
   "eligible": true
  },
  {
@@ -1659,10 +1659,10 @@
   "hold_min": 60,
   "trades": 91,
   "win_rate": 0.615,
-  "net_pnl": -160000,
-  "profit_factor": 0.76,
-  "max_drawdown": 220000.0,
-  "neighbor_avg_pnl": -104429,
+  "net_pnl": -147000,
+  "profit_factor": 0.78,
+  "max_drawdown": 211000.0,
+  "neighbor_avg_pnl": -92571,
   "eligible": true
  },
  {
@@ -1673,10 +1673,10 @@
   "hold_min": 120,
   "trades": 78,
   "win_rate": 0.667,
-  "net_pnl": -99000,
-  "profit_factor": 0.83,
-  "max_drawdown": 156000.0,
-  "neighbor_avg_pnl": -102667,
+  "net_pnl": -81000,
+  "profit_factor": 0.86,
+  "max_drawdown": 150000.0,
+  "neighbor_avg_pnl": -90167,
   "eligible": true
  },
  {
@@ -1687,10 +1687,10 @@
   "hold_min": 30,
   "trades": 47,
   "win_rate": 0.489,
-  "net_pnl": -35000,
-  "profit_factor": 0.85,
+  "net_pnl": -32000,
+  "profit_factor": 0.86,
   "max_drawdown": 84000.0,
-  "neighbor_avg_pnl": -48714,
+  "neighbor_avg_pnl": -45429,
   "eligible": true
  },
  {
@@ -1701,10 +1701,10 @@
   "hold_min": 60,
   "trades": 47,
   "win_rate": 0.532,
-  "net_pnl": 8000,
-  "profit_factor": 1.03,
+  "net_pnl": 11000,
+  "profit_factor": 1.04,
   "max_drawdown": 85000.0,
-  "neighbor_avg_pnl": -21500,
+  "neighbor_avg_pnl": -17625,
   "eligible": true
  },
  {
@@ -1715,10 +1715,10 @@
   "hold_min": 120,
   "trades": 47,
   "win_rate": 0.511,
-  "net_pnl": 13000,
-  "profit_factor": 1.05,
-  "max_drawdown": 62000.0,
-  "neighbor_avg_pnl": -24571,
+  "net_pnl": 19000,
+  "profit_factor": 1.07,
+  "max_drawdown": 61000.0,
+  "neighbor_avg_pnl": -19286,
   "eligible": true
  },
  {
@@ -1729,10 +1729,10 @@
   "hold_min": 30,
   "trades": 49,
   "win_rate": 0.531,
-  "net_pnl": 12000,
-  "profit_factor": 1.05,
-  "max_drawdown": 102000.0,
-  "neighbor_avg_pnl": -25125,
+  "net_pnl": 15000,
+  "profit_factor": 1.06,
+  "max_drawdown": 101000.0,
+  "neighbor_avg_pnl": -21500,
   "eligible": true
  },
  {
@@ -1743,10 +1743,10 @@
   "hold_min": 60,
   "trades": 47,
   "win_rate": 0.66,
-  "net_pnl": 100000,
-  "profit_factor": 1.44,
-  "max_drawdown": 57000.0,
-  "neighbor_avg_pnl": 18000,
+  "net_pnl": 104000,
+  "profit_factor": 1.45,
+  "max_drawdown": 56000.0,
+  "neighbor_avg_pnl": 22444,
   "eligible": true
  },
  {
@@ -1757,10 +1757,10 @@
   "hold_min": 120,
   "trades": 46,
   "win_rate": 0.652,
-  "net_pnl": 93000,
-  "profit_factor": 1.38,
+  "net_pnl": 101000,
+  "profit_factor": 1.42,
   "max_drawdown": 52000.0,
-  "neighbor_avg_pnl": 31500,
+  "neighbor_avg_pnl": 37750,
   "eligible": true
  },
  {
@@ -1771,10 +1771,10 @@
   "hold_min": 30,
   "trades": 48,
   "win_rate": 0.542,
-  "net_pnl": -28000,
-  "profit_factor": 0.89,
-  "max_drawdown": 125000.0,
-  "neighbor_avg_pnl": -26375,
+  "net_pnl": -25000,
+  "profit_factor": 0.91,
+  "max_drawdown": 124000.0,
+  "neighbor_avg_pnl": -22750,
   "eligible": true
  },
  {
@@ -1785,10 +1785,10 @@
   "hold_min": 60,
   "trades": 46,
   "win_rate": 0.674,
-  "net_pnl": 69000,
-  "profit_factor": 1.27,
-  "max_drawdown": 88000.0,
-  "neighbor_avg_pnl": 30667,
+  "net_pnl": 73000,
+  "profit_factor": 1.29,
+  "max_drawdown": 87000.0,
+  "neighbor_avg_pnl": 35222,
   "eligible": true
  },
  {
@@ -1799,10 +1799,10 @@
   "hold_min": 120,
   "trades": 43,
   "win_rate": 0.721,
-  "net_pnl": 118000,
-  "profit_factor": 1.58,
-  "max_drawdown": 62000.0,
-  "neighbor_avg_pnl": 38500,
+  "net_pnl": 125000,
+  "profit_factor": 1.62,
+  "max_drawdown": 60000.0,
+  "neighbor_avg_pnl": 45125,
   "eligible": true
  },
  {
@@ -1813,10 +1813,10 @@
   "hold_min": 30,
   "trades": 48,
   "win_rate": 0.542,
-  "net_pnl": -19000,
-  "profit_factor": 0.93,
-  "max_drawdown": 125000.0,
-  "neighbor_avg_pnl": -21429,
+  "net_pnl": -16000,
+  "profit_factor": 0.94,
+  "max_drawdown": 124000.0,
+  "neighbor_avg_pnl": -17714,
   "eligible": true
  },
  {
@@ -1827,10 +1827,10 @@
   "hold_min": 60,
   "trades": 45,
   "win_rate": 0.667,
-  "net_pnl": 89000,
-  "profit_factor": 1.39,
-  "max_drawdown": 77000.0,
-  "neighbor_avg_pnl": 21375,
+  "net_pnl": 93000,
+  "profit_factor": 1.41,
+  "max_drawdown": 76000.0,
+  "neighbor_avg_pnl": 25875,
   "eligible": true
  },
  {
@@ -1841,10 +1841,10 @@
   "hold_min": 120,
   "trades": 41,
   "win_rate": 0.732,
-  "net_pnl": 133000,
-  "profit_factor": 1.73,
+  "net_pnl": 140000,
+  "profit_factor": 1.77,
   "max_drawdown": 66000.0,
-  "neighbor_avg_pnl": 40857,
+  "neighbor_avg_pnl": 47857,
   "eligible": true
  },
  {
@@ -1855,10 +1855,10 @@
   "hold_min": 30,
   "trades": 54,
   "win_rate": 0.426,
-  "net_pnl": -99000,
-  "profit_factor": 0.69,
-  "max_drawdown": 166000.0,
-  "neighbor_avg_pnl": 2857,
+  "net_pnl": -95000,
+  "profit_factor": 0.7,
+  "max_drawdown": 163000.0,
+  "neighbor_avg_pnl": 7429,
   "eligible": true
  },
  {
@@ -1869,10 +1869,10 @@
   "hold_min": 60,
   "trades": 49,
   "win_rate": 0.469,
-  "net_pnl": -59000,
-  "profit_factor": 0.81,
-  "max_drawdown": 114000.0,
-  "neighbor_avg_pnl": 6750,
+  "net_pnl": -54000,
+  "profit_factor": 0.83,
+  "max_drawdown": 111000.0,
+  "neighbor_avg_pnl": 12000,
   "eligible": true
  },
  {
@@ -1883,10 +1883,10 @@
   "hold_min": 120,
   "trades": 47,
   "win_rate": 0.468,
-  "net_pnl": -44000,
-  "profit_factor": 0.86,
-  "max_drawdown": 104000.0,
-  "neighbor_avg_pnl": 31857,
+  "net_pnl": -37000,
+  "profit_factor": 0.88,
+  "max_drawdown": 101000.0,
+  "neighbor_avg_pnl": 38429,
   "eligible": true
  },
  {
@@ -1897,10 +1897,10 @@
   "hold_min": 30,
   "trades": 56,
   "win_rate": 0.518,
-  "net_pnl": -37000,
-  "profit_factor": 0.89,
-  "max_drawdown": 152000.0,
-  "neighbor_avg_pnl": -25500,
+  "net_pnl": -33000,
+  "profit_factor": 0.9,
+  "max_drawdown": 150000.0,
+  "neighbor_avg_pnl": -20875,
   "eligible": true
  },
  {
@@ -1911,10 +1911,10 @@
   "hold_min": 60,
   "trades": 51,
   "win_rate": 0.588,
-  "net_pnl": 37000,
-  "profit_factor": 1.11,
+  "net_pnl": 42000,
+  "profit_factor": 1.13,
   "max_drawdown": 96000.0,
-  "neighbor_avg_pnl": 21444,
+  "neighbor_avg_pnl": 26778,
   "eligible": true
  },
  {
@@ -1925,10 +1925,10 @@
   "hold_min": 120,
   "trades": 50,
   "win_rate": 0.64,
-  "net_pnl": 112000,
-  "profit_factor": 1.36,
+  "net_pnl": 119000,
+  "profit_factor": 1.38,
   "max_drawdown": 102000.0,
-  "neighbor_avg_pnl": 28125,
+  "neighbor_avg_pnl": 35125,
   "eligible": true
  },
  {
@@ -1939,10 +1939,10 @@
   "hold_min": 30,
   "trades": 56,
   "win_rate": 0.482,
-  "net_pnl": -122000,
-  "profit_factor": 0.69,
-  "max_drawdown": 214000.0,
-  "neighbor_avg_pnl": -39000,
+  "net_pnl": -117000,
+  "profit_factor": 0.71,
+  "max_drawdown": 211000.0,
+  "neighbor_avg_pnl": -34000,
   "eligible": true
  },
  {
@@ -1953,10 +1953,10 @@
   "hold_min": 60,
   "trades": 53,
   "win_rate": 0.585,
-  "net_pnl": -31000,
-  "profit_factor": 0.92,
-  "max_drawdown": 121000.0,
-  "neighbor_avg_pnl": -11444,
+  "net_pnl": -26000,
+  "profit_factor": 0.94,
+  "max_drawdown": 119000.0,
+  "neighbor_avg_pnl": -5778,
   "eligible": true
  },
  {
@@ -1967,10 +1967,10 @@
   "hold_min": 120,
   "trades": 50,
   "win_rate": 0.64,
-  "net_pnl": 62000,
-  "profit_factor": 1.17,
+  "net_pnl": 69000,
+  "profit_factor": 1.19,
   "max_drawdown": 104000.0,
-  "neighbor_avg_pnl": 18000,
+  "neighbor_avg_pnl": 25250,
   "eligible": true
  },
  {
@@ -1981,10 +1981,10 @@
   "hold_min": 30,
   "trades": 57,
   "win_rate": 0.526,
-  "net_pnl": -73000,
-  "profit_factor": 0.81,
-  "max_drawdown": 169000.0,
-  "neighbor_avg_pnl": -37857,
+  "net_pnl": -68000,
+  "profit_factor": 0.83,
+  "max_drawdown": 167000.0,
+  "neighbor_avg_pnl": -32714,
   "eligible": true
  },
  {
@@ -1995,10 +1995,10 @@
   "hold_min": 60,
   "trades": 52,
   "win_rate": 0.615,
-  "net_pnl": -38000,
-  "profit_factor": 0.91,
-  "max_drawdown": 122000.0,
-  "neighbor_avg_pnl": -12375,
+  "net_pnl": -34000,
+  "profit_factor": 0.92,
+  "max_drawdown": 119000.0,
+  "neighbor_avg_pnl": -6500,
   "eligible": true
  },
  {
@@ -2009,10 +2009,10 @@
   "hold_min": 120,
   "trades": 47,
   "win_rate": 0.702,
-  "net_pnl": 56000,
-  "profit_factor": 1.16,
+  "net_pnl": 64000,
+  "profit_factor": 1.18,
   "max_drawdown": 116000.0,
-  "neighbor_avg_pnl": 24429,
+  "neighbor_avg_pnl": 32429,
   "eligible": true
  },
  {
@@ -2026,7 +2026,7 @@
   "net_pnl": -24000,
   "profit_factor": 0.84,
   "max_drawdown": 77000.0,
-  "neighbor_avg_pnl": -32571,
+  "neighbor_avg_pnl": -31571,
   "eligible": true
  },
  {
@@ -2040,7 +2040,7 @@
   "net_pnl": -18000,
   "profit_factor": 0.88,
   "max_drawdown": 72000.0,
-  "neighbor_avg_pnl": -11750,
+  "neighbor_avg_pnl": -10250,
   "eligible": true
  },
  {
@@ -2051,10 +2051,10 @@
   "hold_min": 120,
   "trades": 25,
   "win_rate": 0.48,
-  "net_pnl": 0,
-  "profit_factor": 1.0,
+  "net_pnl": 2000,
+  "profit_factor": 1.01,
   "max_drawdown": 75000.0,
-  "neighbor_avg_pnl": -16714,
+  "neighbor_avg_pnl": -14143,
   "eligible": true
  },
  {
@@ -2065,10 +2065,10 @@
   "hold_min": 30,
   "trades": 27,
   "win_rate": 0.481,
-  "net_pnl": -43000,
+  "net_pnl": -42000,
   "profit_factor": 0.77,
-  "max_drawdown": 93000.0,
-  "neighbor_avg_pnl": -19000,
+  "max_drawdown": 92000.0,
+  "neighbor_avg_pnl": -18125,
   "eligible": true
  },
  {
@@ -2079,10 +2079,10 @@
   "hold_min": 60,
   "trades": 26,
   "win_rate": 0.538,
-  "net_pnl": -12000,
-  "profit_factor": 0.93,
-  "max_drawdown": 66000.0,
-  "neighbor_avg_pnl": 1444,
+  "net_pnl": -11000,
+  "profit_factor": 0.94,
+  "max_drawdown": 65000.0,
+  "neighbor_avg_pnl": 2889,
   "eligible": true
  },
  {
@@ -2093,10 +2093,10 @@
   "hold_min": 120,
   "trades": 25,
   "win_rate": 0.56,
-  "net_pnl": -20000,
-  "profit_factor": 0.89,
+  "net_pnl": -17000,
+  "profit_factor": 0.91,
   "max_drawdown": 89000.0,
-  "neighbor_avg_pnl": 2500,
+  "neighbor_avg_pnl": 5250,
   "eligible": true
  },
  {
@@ -2110,7 +2110,7 @@
   "net_pnl": -57000,
   "profit_factor": 0.71,
   "max_drawdown": 124000.0,
-  "neighbor_avg_pnl": -32000,
+  "neighbor_avg_pnl": -31125,
   "eligible": true
  },
  {
@@ -2124,7 +2124,7 @@
   "net_pnl": -36000,
   "profit_factor": 0.82,
   "max_drawdown": 106000.0,
-  "neighbor_avg_pnl": 2000,
+  "neighbor_avg_pnl": 3667,
   "eligible": true
  },
  {
@@ -2135,10 +2135,10 @@
   "hold_min": 120,
   "trades": 24,
   "win_rate": 0.583,
-  "net_pnl": -55000,
-  "profit_factor": 0.75,
-  "max_drawdown": 135000.0,
-  "neighbor_avg_pnl": 5500,
+  "net_pnl": -53000,
+  "profit_factor": 0.76,
+  "max_drawdown": 134000.0,
+  "neighbor_avg_pnl": 8875,
   "eligible": true
  },
  {
@@ -2152,7 +2152,7 @@
   "net_pnl": -91000,
   "profit_factor": 0.58,
   "max_drawdown": 158000.0,
-  "neighbor_avg_pnl": -38714,
+  "neighbor_avg_pnl": -37714,
   "eligible": true
  },
  {
@@ -2163,10 +2163,10 @@
   "hold_min": 60,
   "trades": 24,
   "win_rate": 0.583,
-  "net_pnl": -28000,
+  "net_pnl": -27000,
   "profit_factor": 0.86,
-  "max_drawdown": 105000.0,
-  "neighbor_avg_pnl": -11250,
+  "max_drawdown": 104000.0,
+  "neighbor_avg_pnl": -9500,
   "eligible": true
  },
  {
@@ -2176,11 +2176,11 @@
   "stop_atr": 3.0,
   "hold_min": 120,
   "trades": 23,
-  "win_rate": 0.609,
-  "net_pnl": -40000,
-  "profit_factor": 0.8,
-  "max_drawdown": 126000.0,
-  "neighbor_avg_pnl": -5286,
+  "win_rate": 0.652,
+  "net_pnl": -36000,
+  "profit_factor": 0.82,
+  "max_drawdown": 123000.0,
+  "neighbor_avg_pnl": -2286,
   "eligible": true
  },
  {
@@ -2194,7 +2194,7 @@
   "net_pnl": -50000,
   "profit_factor": 0.75,
   "max_drawdown": 102000.0,
-  "neighbor_avg_pnl": -32000,
+  "neighbor_avg_pnl": -31000,
   "eligible": true
  },
  {
@@ -2205,10 +2205,10 @@
   "hold_min": 60,
   "trades": 28,
   "win_rate": 0.393,
-  "net_pnl": -65000,
-  "profit_factor": 0.69,
+  "net_pnl": -64000,
+  "profit_factor": 0.7,
   "max_drawdown": 112000.0,
-  "neighbor_avg_pnl": -24000,
+  "neighbor_avg_pnl": -22625,
   "eligible": true
  },
  {
@@ -2219,10 +2219,10 @@
   "hold_min": 120,
   "trades": 28,
   "win_rate": 0.393,
-  "net_pnl": -30000,
-  "profit_factor": 0.86,
-  "max_drawdown": 95000.0,
-  "neighbor_avg_pnl": -15429,
+  "net_pnl": -27000,
+  "profit_factor": 0.87,
+  "max_drawdown": 94000.0,
+  "neighbor_avg_pnl": -12857,
   "eligible": true
  },
  {
@@ -2236,7 +2236,7 @@
   "net_pnl": -25000,
   "profit_factor": 0.88,
   "max_drawdown": 89000.0,
-  "neighbor_avg_pnl": -39875,
+  "neighbor_avg_pnl": -39000,
   "eligible": true
  },
  {
@@ -2250,7 +2250,7 @@
   "net_pnl": -56000,
   "profit_factor": 0.75,
   "max_drawdown": 119000.0,
-  "neighbor_avg_pnl": -13444,
+  "neighbor_avg_pnl": -11778,
   "eligible": true
  },
  {
@@ -2261,10 +2261,10 @@
   "hold_min": 120,
   "trades": 27,
   "win_rate": 0.481,
-  "net_pnl": -15000,
-  "profit_factor": 0.93,
-  "max_drawdown": 97000.0,
-  "neighbor_avg_pnl": -10500,
+  "net_pnl": -13000,
+  "profit_factor": 0.94,
+  "max_drawdown": 96000.0,
+  "neighbor_avg_pnl": -7500,
   "eligible": true
  },
  {
@@ -2278,7 +2278,7 @@
   "net_pnl": -17000,
   "profit_factor": 0.91,
   "max_drawdown": 61000.0,
-  "neighbor_avg_pnl": -51125,
+  "neighbor_avg_pnl": -50125,
   "eligible": true
  },
  {
@@ -2289,10 +2289,10 @@
   "hold_min": 60,
   "trades": 27,
   "win_rate": 0.63,
-  "net_pnl": -6000,
-  "profit_factor": 0.97,
+  "net_pnl": -5000,
+  "profit_factor": 0.98,
   "max_drawdown": 86000.0,
-  "neighbor_avg_pnl": -37667,
+  "neighbor_avg_pnl": -36111,
   "eligible": true
  },
  {
@@ -2303,10 +2303,10 @@
   "hold_min": 120,
   "trades": 26,
   "win_rate": 0.538,
-  "net_pnl": -21000,
-  "profit_factor": 0.91,
+  "net_pnl": -18000,
+  "profit_factor": 0.92,
   "max_drawdown": 123000.0,
-  "neighbor_avg_pnl": -26125,
+  "neighbor_avg_pnl": -23375,
   "eligible": true
  },
  {
@@ -2320,7 +2320,7 @@
   "net_pnl": -98000,
   "profit_factor": 0.57,
   "max_drawdown": 129000.0,
-  "neighbor_avg_pnl": -52857,
+  "neighbor_avg_pnl": -51714,
   "eligible": true
  },
  {
@@ -2331,10 +2331,10 @@
   "hold_min": 60,
   "trades": 23,
   "win_rate": 0.609,
-  "net_pnl": -115000,
+  "net_pnl": -114000,
   "profit_factor": 0.57,
-  "max_drawdown": 153000.0,
-  "neighbor_avg_pnl": -38125,
+  "max_drawdown": 152000.0,
+  "neighbor_avg_pnl": -36500,
   "eligible": true
  },
  {
@@ -2345,10 +2345,10 @@
   "hold_min": 120,
   "trades": 23,
   "win_rate": 0.522,
-  "net_pnl": -108000,
-  "profit_factor": 0.6,
-  "max_drawdown": 169000.0,
-  "neighbor_avg_pnl": -25857,
+  "net_pnl": -106000,
+  "profit_factor": 0.61,
+  "max_drawdown": 168000.0,
+  "neighbor_avg_pnl": -22143,
   "eligible": true
  },
  {
@@ -2362,7 +2362,7 @@
   "net_pnl": -23000,
   "profit_factor": 0.67,
   "max_drawdown": 53000.0,
-  "neighbor_avg_pnl": -9667,
+  "neighbor_avg_pnl": -9500,
   "eligible": false
  },
  {
@@ -2373,10 +2373,10 @@
   "hold_min": 60,
   "trades": 12,
   "win_rate": 0.5,
-  "net_pnl": 22000,
-  "profit_factor": 1.33,
+  "net_pnl": 23000,
+  "profit_factor": 1.35,
   "max_drawdown": 35000.0,
-  "neighbor_avg_pnl": 2429,
+  "neighbor_avg_pnl": 3000,
   "eligible": false
  },
  {
@@ -2387,10 +2387,10 @@
   "hold_min": 120,
   "trades": 12,
   "win_rate": 0.5,
-  "net_pnl": 5000,
-  "profit_factor": 1.08,
+  "net_pnl": 6000,
+  "profit_factor": 1.09,
   "max_drawdown": 41000.0,
-  "neighbor_avg_pnl": 3167,
+  "neighbor_avg_pnl": 4167,
   "eligible": false
  },
  {
@@ -2404,7 +2404,7 @@
   "net_pnl": 1000,
   "profit_factor": 1.02,
   "max_drawdown": 44000.0,
-  "neighbor_avg_pnl": -9571,
+  "neighbor_avg_pnl": -9286,
   "eligible": false
  },
  {
@@ -2415,10 +2415,10 @@
   "hold_min": 60,
   "trades": 11,
   "win_rate": 0.636,
-  "net_pnl": 31000,
-  "profit_factor": 1.5,
+  "net_pnl": 32000,
+  "profit_factor": 1.52,
   "max_drawdown": 27000.0,
-  "neighbor_avg_pnl": 16625,
+  "neighbor_avg_pnl": 17500,
   "eligible": false
  },
  {
@@ -2429,10 +2429,10 @@
   "hold_min": 120,
   "trades": 11,
   "win_rate": 0.636,
-  "net_pnl": 14000,
-  "profit_factor": 1.23,
+  "net_pnl": 15000,
+  "profit_factor": 1.24,
   "max_drawdown": 35000.0,
-  "neighbor_avg_pnl": 5286,
+  "neighbor_avg_pnl": 6571,
   "eligible": false
  },
  {
@@ -2446,7 +2446,7 @@
   "net_pnl": -4000,
   "profit_factor": 0.92,
   "max_drawdown": 49000.0,
-  "neighbor_avg_pnl": 2571,
+  "neighbor_avg_pnl": 2714,
   "eligible": false
  },
  {
@@ -2457,10 +2457,10 @@
   "hold_min": 60,
   "trades": 11,
   "win_rate": 0.727,
-  "net_pnl": 47000,
-  "profit_factor": 1.8,
+  "net_pnl": 48000,
+  "profit_factor": 1.81,
   "max_drawdown": 30000.0,
-  "neighbor_avg_pnl": 15375,
+  "neighbor_avg_pnl": 16125,
   "eligible": false
  },
  {
@@ -2471,10 +2471,10 @@
   "hold_min": 120,
   "trades": 11,
   "win_rate": 0.636,
-  "net_pnl": 7000,
-  "profit_factor": 1.1,
+  "net_pnl": 8000,
+  "profit_factor": 1.12,
   "max_drawdown": 51000.0,
-  "neighbor_avg_pnl": 6000,
+  "neighbor_avg_pnl": 7143,
   "eligible": false
  },
  {
@@ -2488,7 +2488,7 @@
   "net_pnl": 19000,
   "profit_factor": 1.7,
   "max_drawdown": 26000.0,
-  "neighbor_avg_pnl": -5000,
+  "neighbor_avg_pnl": -4833,
   "eligible": false
  },
  {
@@ -2499,10 +2499,10 @@
   "hold_min": 60,
   "trades": 10,
   "win_rate": 0.8,
-  "net_pnl": 65000,
-  "profit_factor": 2.59,
+  "net_pnl": 66000,
+  "profit_factor": 2.61,
   "max_drawdown": 28000.0,
-  "neighbor_avg_pnl": 18857,
+  "neighbor_avg_pnl": 19714,
   "eligible": false
  },
  {
@@ -2513,10 +2513,10 @@
   "hold_min": 120,
   "trades": 10,
   "win_rate": 0.7,
-  "net_pnl": 45000,
-  "profit_factor": 2.45,
+  "net_pnl": 46000,
+  "profit_factor": 2.48,
   "max_drawdown": 24000.0,
-  "neighbor_avg_pnl": 6167,
+  "neighbor_avg_pnl": 7667,
   "eligible": false
  },
  {
@@ -2530,7 +2530,7 @@
   "net_pnl": -18000,
   "profit_factor": 0.67,
   "max_drawdown": 32000.0,
-  "neighbor_avg_pnl": -15500,
+  "neighbor_avg_pnl": -15333,
   "eligible": false
  },
  {
@@ -2541,10 +2541,10 @@
   "hold_min": 60,
   "trades": 11,
   "win_rate": 0.545,
-  "net_pnl": 19000,
-  "profit_factor": 1.31,
+  "net_pnl": 20000,
+  "profit_factor": 1.32,
   "max_drawdown": 34000.0,
-  "neighbor_avg_pnl": -4000,
+  "neighbor_avg_pnl": -3286,
   "eligible": false
  },
  {
@@ -2555,10 +2555,10 @@
   "hold_min": 120,
   "trades": 11,
   "win_rate": 0.545,
-  "net_pnl": 9000,
-  "profit_factor": 1.15,
+  "net_pnl": 10000,
+  "profit_factor": 1.16,
   "max_drawdown": 34000.0,
-  "neighbor_avg_pnl": -833,
+  "neighbor_avg_pnl": 333,
   "eligible": false
  },
  {
@@ -2572,7 +2572,7 @@
   "net_pnl": -5000,
   "profit_factor": 0.9,
   "max_drawdown": 21000.0,
-  "neighbor_avg_pnl": -1571,
+  "neighbor_avg_pnl": -1429,
   "eligible": false
  },
  {
@@ -2583,10 +2583,10 @@
   "hold_min": 60,
   "trades": 11,
   "win_rate": 0.636,
-  "net_pnl": 25000,
-  "profit_factor": 1.39,
+  "net_pnl": 26000,
+  "profit_factor": 1.41,
   "max_drawdown": 37000.0,
-  "neighbor_avg_pnl": 10750,
+  "neighbor_avg_pnl": 11500,
   "eligible": false
  },
  {
@@ -2597,10 +2597,10 @@
   "hold_min": 120,
   "trades": 11,
   "win_rate": 0.636,
-  "net_pnl": 15000,
-  "profit_factor": 1.23,
+  "net_pnl": 16000,
+  "profit_factor": 1.25,
   "max_drawdown": 37000.0,
-  "neighbor_avg_pnl": 8429,
+  "neighbor_avg_pnl": 9571,
   "eligible": false
  },
  {
@@ -2614,7 +2614,7 @@
   "net_pnl": 20000,
   "profit_factor": 1.71,
   "max_drawdown": 26000.0,
-  "neighbor_avg_pnl": -1571,
+  "neighbor_avg_pnl": -1429,
   "eligible": false
  },
  {
@@ -2625,10 +2625,10 @@
   "hold_min": 60,
   "trades": 10,
   "win_rate": 0.7,
-  "net_pnl": 31000,
-  "profit_factor": 1.5,
+  "net_pnl": 32000,
+  "profit_factor": 1.52,
   "max_drawdown": 49000.0,
-  "neighbor_avg_pnl": 19125,
+  "neighbor_avg_pnl": 20000,
   "eligible": false
  },
  {
@@ -2639,10 +2639,10 @@
   "hold_min": 120,
   "trades": 10,
   "win_rate": 0.6,
-  "net_pnl": 5000,
-  "profit_factor": 1.07,
+  "net_pnl": 6000,
+  "profit_factor": 1.08,
   "max_drawdown": 49000.0,
-  "neighbor_avg_pnl": 8857,
+  "neighbor_avg_pnl": 10143,
   "eligible": false
  },
  {
@@ -2656,7 +2656,7 @@
   "net_pnl": 11000,
   "profit_factor": 1.3,
   "max_drawdown": 35000.0,
-  "neighbor_avg_pnl": -7167,
+  "neighbor_avg_pnl": -7000,
   "eligible": false
  },
  {
@@ -2667,10 +2667,10 @@
   "hold_min": 60,
   "trades": 10,
   "win_rate": 0.7,
-  "net_pnl": 16000,
-  "profit_factor": 1.21,
+  "net_pnl": 17000,
+  "profit_factor": 1.22,
   "max_drawdown": 64000.0,
-  "neighbor_avg_pnl": 10000,
+  "neighbor_avg_pnl": 10857,
   "eligible": false
  },
  {
@@ -2681,10 +2681,10 @@
   "hold_min": 120,
   "trades": 10,
   "win_rate": 0.6,
-  "net_pnl": 19000,
-  "profit_factor": 1.33,
+  "net_pnl": 20000,
+  "profit_factor": 1.34,
   "max_drawdown": 35000.0,
-  "neighbor_avg_pnl": -6500,
+  "neighbor_avg_pnl": -5333,
   "eligible": false
  },
  {
@@ -2695,10 +2695,10 @@
   "hold_min": 30,
   "trades": 44,
   "win_rate": 0.386,
-  "net_pnl": -208000,
-  "profit_factor": 0.3,
-  "max_drawdown": 209000.0,
-  "neighbor_avg_pnl": -106600,
+  "net_pnl": -205000,
+  "profit_factor": 0.31,
+  "max_drawdown": 208000.0,
+  "neighbor_avg_pnl": -101800,
   "eligible": true
  },
  {
@@ -2709,10 +2709,10 @@
   "hold_min": 60,
   "trades": 42,
   "win_rate": 0.381,
-  "net_pnl": -236000,
-  "profit_factor": 0.28,
-  "max_drawdown": 242000.0,
-  "neighbor_avg_pnl": -130167,
+  "net_pnl": -232000,
+  "profit_factor": 0.29,
+  "max_drawdown": 239000.0,
+  "neighbor_avg_pnl": -125167,
   "eligible": true
  },
  {
@@ -2723,10 +2723,10 @@
   "hold_min": 120,
   "trades": 42,
   "win_rate": 0.381,
-  "net_pnl": -260000,
-  "profit_factor": 0.26,
-  "max_drawdown": 266000.0,
-  "neighbor_avg_pnl": -130800,
+  "net_pnl": -256000,
+  "profit_factor": 0.27,
+  "max_drawdown": 263000.0,
+  "neighbor_avg_pnl": -124200,
   "eligible": true
  },
  {
@@ -2737,10 +2737,10 @@
   "hold_min": 30,
   "trades": 44,
   "win_rate": 0.523,
-  "net_pnl": -74000,
-  "profit_factor": 0.65,
-  "max_drawdown": 83000.0,
-  "neighbor_avg_pnl": -95167,
+  "net_pnl": -71000,
+  "profit_factor": 0.66,
+  "max_drawdown": 81000.0,
+  "neighbor_avg_pnl": -90167,
   "eligible": true
  },
  {
@@ -2751,10 +2751,10 @@
   "hold_min": 60,
   "trades": 42,
   "win_rate": 0.5,
-  "net_pnl": -98000,
-  "profit_factor": 0.59,
-  "max_drawdown": 116000.0,
-  "neighbor_avg_pnl": -101429,
+  "net_pnl": -92000,
+  "profit_factor": 0.61,
+  "max_drawdown": 115000.0,
+  "neighbor_avg_pnl": -95857,
   "eligible": true
  },
  {
@@ -2765,10 +2765,10 @@
   "hold_min": 120,
   "trades": 41,
   "win_rate": 0.537,
-  "net_pnl": -142000,
-  "profit_factor": 0.53,
-  "max_drawdown": 147000.0,
-  "neighbor_avg_pnl": -107167,
+  "net_pnl": -135000,
+  "profit_factor": 0.55,
+  "max_drawdown": 142000.0,
+  "neighbor_avg_pnl": -99833,
   "eligible": true
  },
  {
@@ -2779,10 +2779,10 @@
   "hold_min": 30,
   "trades": 44,
   "win_rate": 0.523,
-  "net_pnl": -43000,
-  "profit_factor": 0.76,
-  "max_drawdown": 61000.0,
-  "neighbor_avg_pnl": -71000,
+  "net_pnl": -40000,
+  "profit_factor": 0.78,
+  "max_drawdown": 60000.0,
+  "neighbor_avg_pnl": -65833,
   "eligible": true
  },
  {
@@ -2793,10 +2793,10 @@
   "hold_min": 60,
   "trades": 41,
   "win_rate": 0.488,
-  "net_pnl": -99000,
-  "profit_factor": 0.57,
-  "max_drawdown": 137000.0,
-  "neighbor_avg_pnl": -70429,
+  "net_pnl": -93000,
+  "profit_factor": 0.6,
+  "max_drawdown": 136000.0,
+  "neighbor_avg_pnl": -64286,
   "eligible": true
  },
  {
@@ -2807,10 +2807,10 @@
   "hold_min": 120,
   "trades": 39,
   "win_rate": 0.564,
-  "net_pnl": -114000,
-  "profit_factor": 0.58,
-  "max_drawdown": 158000.0,
-  "neighbor_avg_pnl": -95500,
+  "net_pnl": -107000,
+  "profit_factor": 0.61,
+  "max_drawdown": 155000.0,
+  "neighbor_avg_pnl": -87167,
   "eligible": true
  },
  {
@@ -2821,10 +2821,10 @@
   "hold_min": 30,
   "trades": 44,
   "win_rate": 0.523,
-  "net_pnl": -54000,
-  "profit_factor": 0.71,
-  "max_drawdown": 72000.0,
-  "neighbor_avg_pnl": -76400,
+  "net_pnl": -51000,
+  "profit_factor": 0.73,
+  "max_drawdown": 71000.0,
+  "neighbor_avg_pnl": -70800,
   "eligible": true
  },
  {
@@ -2835,10 +2835,10 @@
   "hold_min": 60,
   "trades": 41,
   "win_rate": 0.488,
-  "net_pnl": -119000,
-  "profit_factor": 0.53,
-  "max_drawdown": 157000.0,
-  "neighbor_avg_pnl": -104167,
+  "net_pnl": -113000,
+  "profit_factor": 0.55,
+  "max_drawdown": 156000.0,
+  "neighbor_avg_pnl": -98000,
   "eligible": true
  },
  {
@@ -2849,10 +2849,10 @@
   "hold_min": 120,
   "trades": 39,
   "win_rate": 0.564,
-  "net_pnl": -185000,
-  "profit_factor": 0.46,
-  "max_drawdown": 209000.0,
-  "neighbor_avg_pnl": -102200,
+  "net_pnl": -178000,
+  "profit_factor": 0.48,
+  "max_drawdown": 206000.0,
+  "neighbor_avg_pnl": -93600,
   "eligible": true
  },
  {
@@ -2863,10 +2863,10 @@
   "hold_min": 30,
   "trades": 76,
   "win_rate": 0.474,
-  "net_pnl": -58000,
-  "profit_factor": 0.86,
-  "max_drawdown": 138000.0,
-  "neighbor_avg_pnl": -63400,
+  "net_pnl": -48000,
+  "profit_factor": 0.89,
+  "max_drawdown": 134000.0,
+  "neighbor_avg_pnl": -55800,
   "eligible": true
  },
  {
@@ -2877,10 +2877,10 @@
   "hold_min": 60,
   "trades": 67,
   "win_rate": 0.522,
-  "net_pnl": -127000,
-  "profit_factor": 0.72,
-  "max_drawdown": 188000.0,
-  "neighbor_avg_pnl": -67333,
+  "net_pnl": -118000,
+  "profit_factor": 0.74,
+  "max_drawdown": 185000.0,
+  "neighbor_avg_pnl": -58667,
   "eligible": true
  },
  {
@@ -2891,10 +2891,10 @@
   "hold_min": 120,
   "trades": 61,
   "win_rate": 0.508,
-  "net_pnl": -150000,
-  "profit_factor": 0.66,
-  "max_drawdown": 199000.0,
-  "neighbor_avg_pnl": -70600,
+  "net_pnl": -140000,
+  "profit_factor": 0.68,
+  "max_drawdown": 196000.0,
+  "neighbor_avg_pnl": -61400,
   "eligible": true
  },
  {
@@ -2905,10 +2905,10 @@
   "hold_min": 30,
   "trades": 80,
   "win_rate": 0.487,
-  "net_pnl": -135000,
-  "profit_factor": 0.74,
-  "max_drawdown": 204000.0,
-  "neighbor_avg_pnl": -68667,
+  "net_pnl": -125000,
+  "profit_factor": 0.76,
+  "max_drawdown": 196000.0,
+  "neighbor_avg_pnl": -60833,
   "eligible": true
  },
  {
@@ -2919,10 +2919,10 @@
   "hold_min": 60,
   "trades": 70,
   "win_rate": 0.586,
-  "net_pnl": -158000,
-  "profit_factor": 0.69,
-  "max_drawdown": 220000.0,
-  "neighbor_avg_pnl": -70286,
+  "net_pnl": -149000,
+  "profit_factor": 0.71,
+  "max_drawdown": 217000.0,
+  "neighbor_avg_pnl": -61000,
   "eligible": true
  },
  {
@@ -2933,10 +2933,10 @@
   "hold_min": 120,
   "trades": 63,
   "win_rate": 0.635,
-  "net_pnl": -119000,
-  "profit_factor": 0.75,
-  "max_drawdown": 194000.0,
-  "neighbor_avg_pnl": -80667,
+  "net_pnl": -106000,
+  "profit_factor": 0.78,
+  "max_drawdown": 193000.0,
+  "neighbor_avg_pnl": -70500,
   "eligible": true
  },
  {
@@ -2947,10 +2947,10 @@
   "hold_min": 30,
   "trades": 81,
   "win_rate": 0.494,
-  "net_pnl": -128000,
-  "profit_factor": 0.76,
-  "max_drawdown": 228000.0,
-  "neighbor_avg_pnl": -85833,
+  "net_pnl": -118000,
+  "profit_factor": 0.78,
+  "max_drawdown": 220000.0,
+  "neighbor_avg_pnl": -77500,
   "eligible": true
  },
  {
@@ -2961,10 +2961,10 @@
   "hold_min": 60,
   "trades": 72,
   "win_rate": 0.639,
-  "net_pnl": -120000,
-  "profit_factor": 0.79,
-  "max_drawdown": 229000.0,
-  "neighbor_avg_pnl": -117857,
+  "net_pnl": -111000,
+  "profit_factor": 0.8,
+  "max_drawdown": 226000.0,
+  "neighbor_avg_pnl": -108286,
   "eligible": true
  },
  {
@@ -2975,10 +2975,10 @@
   "hold_min": 120,
   "trades": 64,
   "win_rate": 0.656,
-  "net_pnl": -89000,
-  "profit_factor": 0.84,
-  "max_drawdown": 170000.0,
-  "neighbor_avg_pnl": -106500,
+  "net_pnl": -75000,
+  "profit_factor": 0.86,
+  "max_drawdown": 163000.0,
+  "neighbor_avg_pnl": -96000,
   "eligible": true
  },
  {
@@ -2989,10 +2989,10 @@
   "hold_min": 30,
   "trades": 83,
   "win_rate": 0.506,
-  "net_pnl": -149000,
-  "profit_factor": 0.74,
-  "max_drawdown": 228000.0,
-  "neighbor_avg_pnl": -87400,
+  "net_pnl": -139000,
+  "profit_factor": 0.75,
+  "max_drawdown": 220000.0,
+  "neighbor_avg_pnl": -79200,
   "eligible": true
  },
  {
@@ -3003,10 +3003,10 @@
   "hold_min": 60,
   "trades": 68,
   "win_rate": 0.588,
-  "net_pnl": -244000,
-  "profit_factor": 0.61,
-  "max_drawdown": 329000.0,
-  "neighbor_avg_pnl": -117500,
+  "net_pnl": -235000,
+  "profit_factor": 0.62,
+  "max_drawdown": 326000.0,
+  "neighbor_avg_pnl": -108167,
   "eligible": true
  },
  {
@@ -3017,10 +3017,10 @@
   "hold_min": 120,
   "trades": 59,
   "win_rate": 0.627,
-  "net_pnl": -172000,
-  "profit_factor": 0.68,
-  "max_drawdown": 240000.0,
-  "neighbor_avg_pnl": -114200,
+  "net_pnl": -159000,
+  "profit_factor": 0.7,
+  "max_drawdown": 230000.0,
+  "neighbor_avg_pnl": -102800,
   "eligible": true
  },
  {
@@ -3031,10 +3031,10 @@
   "hold_min": 30,
   "trades": 36,
   "win_rate": 0.528,
-  "net_pnl": -22000,
-  "profit_factor": 0.88,
+  "net_pnl": -20000,
+  "profit_factor": 0.89,
   "max_drawdown": 76000.0,
-  "neighbor_avg_pnl": -9667,
+  "neighbor_avg_pnl": -6833,
   "eligible": true
  },
  {
@@ -3045,10 +3045,10 @@
   "hold_min": 60,
   "trades": 36,
   "win_rate": 0.583,
-  "net_pnl": 57000,
-  "profit_factor": 1.33,
+  "net_pnl": 60000,
+  "profit_factor": 1.34,
   "max_drawdown": 61000.0,
-  "neighbor_avg_pnl": 2714,
+  "neighbor_avg_pnl": 6286,
   "eligible": true
  },
  {
@@ -3059,10 +3059,10 @@
   "hold_min": 120,
   "trades": 36,
   "win_rate": 0.583,
-  "net_pnl": 25000,
-  "profit_factor": 1.13,
+  "net_pnl": 31000,
+  "profit_factor": 1.16,
   "max_drawdown": 61000.0,
-  "neighbor_avg_pnl": -5167,
+  "neighbor_avg_pnl": -500,
   "eligible": true
  },
  {
@@ -3073,10 +3073,10 @@
   "hold_min": 30,
   "trades": 35,
   "win_rate": 0.629,
-  "net_pnl": 47000,
-  "profit_factor": 1.35,
+  "net_pnl": 49000,
+  "profit_factor": 1.37,
   "max_drawdown": 33000.0,
-  "neighbor_avg_pnl": 20857,
+  "neighbor_avg_pnl": 23429,
   "eligible": true
  },
  {
@@ -3087,10 +3087,10 @@
   "hold_min": 60,
   "trades": 35,
   "win_rate": 0.686,
-  "net_pnl": 116000,
-  "profit_factor": 1.81,
+  "net_pnl": 119000,
+  "profit_factor": 1.83,
   "max_drawdown": 31000.0,
-  "neighbor_avg_pnl": 59125,
+  "neighbor_avg_pnl": 63000,
   "eligible": true
  },
  {
@@ -3101,10 +3101,10 @@
   "hold_min": 120,
   "trades": 35,
   "win_rate": 0.686,
-  "net_pnl": 78000,
-  "profit_factor": 1.46,
+  "net_pnl": 84000,
+  "profit_factor": 1.49,
   "max_drawdown": 40000.0,
-  "neighbor_avg_pnl": 37857,
+  "neighbor_avg_pnl": 43857,
   "eligible": true
  },
  {
@@ -3115,10 +3115,10 @@
   "hold_min": 30,
   "trades": 35,
   "win_rate": 0.629,
-  "net_pnl": 54000,
-  "profit_factor": 1.43,
+  "net_pnl": 56000,
+  "profit_factor": 1.44,
   "max_drawdown": 38000.0,
-  "neighbor_avg_pnl": 22857,
+  "neighbor_avg_pnl": 25429,
   "eligible": true
  },
  {
@@ -3129,10 +3129,10 @@
   "hold_min": 60,
   "trades": 35,
   "win_rate": 0.686,
-  "net_pnl": 97000,
-  "profit_factor": 1.6,
+  "net_pnl": 100000,
+  "profit_factor": 1.62,
   "max_drawdown": 41000.0,
-  "neighbor_avg_pnl": 42500,
+  "neighbor_avg_pnl": 46375,
   "eligible": true
  },
  {
@@ -3143,10 +3143,10 @@
   "hold_min": 120,
   "trades": 35,
   "win_rate": 0.686,
-  "net_pnl": 46000,
-  "profit_factor": 1.23,
+  "net_pnl": 52000,
+  "profit_factor": 1.26,
   "max_drawdown": 55000.0,
-  "neighbor_avg_pnl": 30429,
+  "neighbor_avg_pnl": 36143,
   "eligible": true
  },
  {
@@ -3157,10 +3157,10 @@
   "hold_min": 30,
   "trades": 34,
   "win_rate": 0.618,
-  "net_pnl": 51000,
-  "profit_factor": 1.41,
+  "net_pnl": 53000,
+  "profit_factor": 1.43,
   "max_drawdown": 49000.0,
-  "neighbor_avg_pnl": 15500,
+  "neighbor_avg_pnl": 18167,
   "eligible": true
  },
  {
@@ -3171,10 +3171,10 @@
   "hold_min": 60,
   "trades": 34,
   "win_rate": 0.676,
-  "net_pnl": 63000,
-  "profit_factor": 1.39,
+  "net_pnl": 66000,
+  "profit_factor": 1.41,
   "max_drawdown": 49000.0,
-  "neighbor_avg_pnl": 27286,
+  "neighbor_avg_pnl": 31286,
   "eligible": true
  },
  {
@@ -3185,10 +3185,10 @@
   "hold_min": 120,
   "trades": 34,
   "win_rate": 0.706,
-  "net_pnl": 9000,
-  "profit_factor": 1.04,
+  "net_pnl": 15000,
+  "profit_factor": 1.07,
   "max_drawdown": 85000.0,
-  "neighbor_avg_pnl": 18667,
+  "neighbor_avg_pnl": 24667,
   "eligible": true
  },
  {
@@ -3199,10 +3199,10 @@
   "hold_min": 30,
   "trades": 44,
   "win_rate": 0.636,
-  "net_pnl": 136000,
-  "profit_factor": 1.59,
+  "net_pnl": 141000,
+  "profit_factor": 1.61,
   "max_drawdown": 49000.0,
-  "neighbor_avg_pnl": 2333,
+  "neighbor_avg_pnl": 6500,
   "eligible": true
  },
  {
@@ -3213,10 +3213,10 @@
   "hold_min": 60,
   "trades": 42,
   "win_rate": 0.619,
-  "net_pnl": 143000,
-  "profit_factor": 1.57,
+  "net_pnl": 148000,
+  "profit_factor": 1.59,
   "max_drawdown": 55000.0,
-  "neighbor_avg_pnl": 33000,
+  "neighbor_avg_pnl": 37857,
   "eligible": true
  },
  {
@@ -3227,10 +3227,10 @@
   "hold_min": 120,
   "trades": 41,
   "win_rate": 0.634,
-  "net_pnl": 135000,
-  "profit_factor": 1.56,
+  "net_pnl": 142000,
+  "profit_factor": 1.58,
   "max_drawdown": 55000.0,
-  "neighbor_avg_pnl": 9833,
+  "neighbor_avg_pnl": 16167,
   "eligible": true
  },
  {
@@ -3241,10 +3241,10 @@
   "hold_min": 30,
   "trades": 45,
   "win_rate": 0.622,
-  "net_pnl": 78000,
-  "profit_factor": 1.29,
-  "max_drawdown": 77000.0,
-  "neighbor_avg_pnl": 22857,
+  "net_pnl": 82000,
+  "profit_factor": 1.3,
+  "max_drawdown": 76000.0,
+  "neighbor_avg_pnl": 27143,
   "eligible": true
  },
  {
@@ -3255,10 +3255,10 @@
   "hold_min": 60,
   "trades": 43,
   "win_rate": 0.721,
-  "net_pnl": 150000,
-  "profit_factor": 1.6,
+  "net_pnl": 155000,
+  "profit_factor": 1.62,
   "max_drawdown": 72000.0,
-  "neighbor_avg_pnl": 46625,
+  "neighbor_avg_pnl": 51750,
   "eligible": true
  },
  {
@@ -3269,10 +3269,10 @@
   "hold_min": 120,
   "trades": 41,
   "win_rate": 0.707,
-  "net_pnl": 135000,
-  "profit_factor": 1.53,
-  "max_drawdown": 74000.0,
-  "neighbor_avg_pnl": 47000,
+  "net_pnl": 144000,
+  "profit_factor": 1.56,
+  "max_drawdown": 73000.0,
+  "neighbor_avg_pnl": 53714,
   "eligible": true
  },
  {
@@ -3283,10 +3283,10 @@
   "hold_min": 30,
   "trades": 43,
   "win_rate": 0.628,
-  "net_pnl": 48000,
-  "profit_factor": 1.16,
+  "net_pnl": 52000,
+  "profit_factor": 1.18,
   "max_drawdown": 103000.0,
-  "neighbor_avg_pnl": -10857,
+  "neighbor_avg_pnl": -6571,
   "eligible": true
  },
  {
@@ -3297,10 +3297,10 @@
   "hold_min": 60,
   "trades": 41,
   "win_rate": 0.707,
-  "net_pnl": 58000,
-  "profit_factor": 1.18,
+  "net_pnl": 63000,
+  "profit_factor": 1.2,
   "max_drawdown": 89000.0,
-  "neighbor_avg_pnl": 16500,
+  "neighbor_avg_pnl": 21375,
   "eligible": true
  },
  {
@@ -3311,10 +3311,10 @@
   "hold_min": 120,
   "trades": 39,
   "win_rate": 0.667,
-  "net_pnl": 34000,
-  "profit_factor": 1.11,
+  "net_pnl": 41000,
+  "profit_factor": 1.13,
   "max_drawdown": 90000.0,
-  "neighbor_avg_pnl": 25571,
+  "neighbor_avg_pnl": 33000,
   "eligible": true
  },
  {
@@ -3325,10 +3325,10 @@
   "hold_min": 30,
   "trades": 42,
   "win_rate": 0.643,
-  "net_pnl": 61000,
-  "profit_factor": 1.23,
+  "net_pnl": 65000,
+  "profit_factor": 1.25,
   "max_drawdown": 76000.0,
-  "neighbor_avg_pnl": -30333,
+  "neighbor_avg_pnl": -26000,
   "eligible": true
  },
  {
@@ -3339,10 +3339,10 @@
   "hold_min": 60,
   "trades": 38,
   "win_rate": 0.711,
-  "net_pnl": 15000,
-  "profit_factor": 1.05,
+  "net_pnl": 20000,
+  "profit_factor": 1.06,
   "max_drawdown": 103000.0,
-  "neighbor_avg_pnl": -16429,
+  "neighbor_avg_pnl": -11429,
   "eligible": true
  },
  {
@@ -3353,10 +3353,10 @@
   "hold_min": 120,
   "trades": 37,
   "win_rate": 0.703,
-  "net_pnl": 46000,
-  "profit_factor": 1.17,
-  "max_drawdown": 85000.0,
-  "neighbor_avg_pnl": -18333,
+  "net_pnl": 55000,
+  "profit_factor": 1.21,
+  "max_drawdown": 84000.0,
+  "neighbor_avg_pnl": -11167,
   "eligible": true
  },
  {
@@ -3367,10 +3367,10 @@
   "hold_min": 30,
   "trades": 19,
   "win_rate": 0.421,
-  "net_pnl": -55000,
-  "profit_factor": 0.62,
+  "net_pnl": -54000,
+  "profit_factor": 0.63,
   "max_drawdown": 112000.0,
-  "neighbor_avg_pnl": -24667,
+  "neighbor_avg_pnl": -23833,
   "eligible": true
  },
  {
@@ -3381,10 +3381,10 @@
   "hold_min": 60,
   "trades": 19,
   "win_rate": 0.526,
-  "net_pnl": -15000,
-  "profit_factor": 0.89,
+  "net_pnl": -13000,
+  "profit_factor": 0.9,
   "max_drawdown": 87000.0,
-  "neighbor_avg_pnl": -15143,
+  "neighbor_avg_pnl": -13857,
   "eligible": true
  },
  {
@@ -3395,10 +3395,10 @@
   "hold_min": 120,
   "trades": 19,
   "win_rate": 0.474,
-  "net_pnl": -54000,
-  "profit_factor": 0.65,
+  "net_pnl": -52000,
+  "profit_factor": 0.66,
   "max_drawdown": 117000.0,
-  "neighbor_avg_pnl": -13500,
+  "neighbor_avg_pnl": -11000,
   "eligible": true
  },
  {
@@ -3409,10 +3409,10 @@
   "hold_min": 30,
   "trades": 19,
   "win_rate": 0.526,
-  "net_pnl": -18000,
-  "profit_factor": 0.86,
+  "net_pnl": -17000,
+  "profit_factor": 0.87,
   "max_drawdown": 90000.0,
-  "neighbor_avg_pnl": -13571,
+  "neighbor_avg_pnl": -12571,
   "eligible": true
  },
  {
@@ -3423,10 +3423,10 @@
   "hold_min": 60,
   "trades": 19,
   "win_rate": 0.632,
-  "net_pnl": 42000,
-  "profit_factor": 1.45,
+  "net_pnl": 44000,
+  "profit_factor": 1.47,
   "max_drawdown": 48000.0,
-  "neighbor_avg_pnl": 7625,
+  "neighbor_avg_pnl": 9375,
   "eligible": true
  },
  {
@@ -3437,10 +3437,10 @@
   "hold_min": 120,
   "trades": 19,
   "win_rate": 0.632,
-  "net_pnl": -8000,
-  "profit_factor": 0.94,
-  "max_drawdown": 87000.0,
-  "neighbor_avg_pnl": -6714,
+  "net_pnl": -5000,
+  "profit_factor": 0.96,
+  "max_drawdown": 86000.0,
+  "neighbor_avg_pnl": -3857,
   "eligible": true
  },
  {
@@ -3451,10 +3451,10 @@
   "hold_min": 30,
   "trades": 18,
   "win_rate": 0.5,
-  "net_pnl": -12000,
-  "profit_factor": 0.89,
+  "net_pnl": -11000,
+  "profit_factor": 0.9,
   "max_drawdown": 69000.0,
-  "neighbor_avg_pnl": -11714,
+  "neighbor_avg_pnl": -10857,
   "eligible": true
  },
  {
@@ -3465,10 +3465,10 @@
   "hold_min": 60,
   "trades": 18,
   "win_rate": 0.611,
-  "net_pnl": 33000,
-  "profit_factor": 1.38,
+  "net_pnl": 35000,
+  "profit_factor": 1.4,
   "max_drawdown": 39000.0,
-  "neighbor_avg_pnl": 10000,
+  "neighbor_avg_pnl": 11750,
   "eligible": true
  },
  {
@@ -3479,10 +3479,10 @@
   "hold_min": 120,
   "trades": 18,
   "win_rate": 0.667,
-  "net_pnl": -9000,
-  "profit_factor": 0.93,
-  "max_drawdown": 81000.0,
-  "neighbor_avg_pnl": -10571,
+  "net_pnl": -5000,
+  "profit_factor": 0.96,
+  "max_drawdown": 80000.0,
+  "neighbor_avg_pnl": -7714,
   "eligible": true
  },
  {
@@ -3493,10 +3493,10 @@
   "hold_min": 30,
   "trades": 18,
   "win_rate": 0.5,
-  "net_pnl": -12000,
-  "profit_factor": 0.89,
+  "net_pnl": -11000,
+  "profit_factor": 0.9,
   "max_drawdown": 69000.0,
-  "neighbor_avg_pnl": -13667,
+  "neighbor_avg_pnl": -12833,
   "eligible": true
  },
  {
@@ -3507,10 +3507,10 @@
   "hold_min": 60,
   "trades": 18,
   "win_rate": 0.611,
-  "net_pnl": 49000,
-  "profit_factor": 1.69,
+  "net_pnl": 51000,
+  "profit_factor": 1.72,
   "max_drawdown": 32000.0,
-  "neighbor_avg_pnl": 2000,
+  "neighbor_avg_pnl": 3857,
   "eligible": true
  },
  {
@@ -3521,10 +3521,10 @@
   "hold_min": 120,
   "trades": 18,
   "win_rate": 0.667,
-  "net_pnl": 9000,
-  "profit_factor": 1.09,
+  "net_pnl": 13000,
+  "profit_factor": 1.13,
   "max_drawdown": 63000.0,
-  "neighbor_avg_pnl": -9833,
+  "neighbor_avg_pnl": -6333,
   "eligible": true
  },
  {
@@ -3538,7 +3538,7 @@
   "net_pnl": -28000,
   "profit_factor": 0.8,
   "max_drawdown": 64000.0,
-  "neighbor_avg_pnl": -9500,
+  "neighbor_avg_pnl": -8500,
   "eligible": true
  },
  {
@@ -3552,7 +3552,7 @@
   "net_pnl": -61000,
   "profit_factor": 0.66,
   "max_drawdown": 99000.0,
-  "neighbor_avg_pnl": -2000,
+  "neighbor_avg_pnl": -429,
   "eligible": true
  },
  {
@@ -3563,10 +3563,10 @@
   "hold_min": 120,
   "trades": 19,
   "win_rate": 0.421,
-  "net_pnl": -50000,
-  "profit_factor": 0.72,
+  "net_pnl": -49000,
+  "profit_factor": 0.73,
   "max_drawdown": 106000.0,
-  "neighbor_avg_pnl": -5833,
+  "neighbor_avg_pnl": -3333,
   "eligible": true
  },
  {
@@ -3580,7 +3580,7 @@
   "net_pnl": -49000,
   "profit_factor": 0.7,
   "max_drawdown": 87000.0,
-  "neighbor_avg_pnl": -11429,
+  "neighbor_avg_pnl": -10571,
   "eligible": true
  },
  {
@@ -3591,10 +3591,10 @@
   "hold_min": 60,
   "trades": 19,
   "win_rate": 0.632,
-  "net_pnl": -36000,
-  "profit_factor": 0.79,
+  "net_pnl": -35000,
+  "profit_factor": 0.8,
   "max_drawdown": 97000.0,
-  "neighbor_avg_pnl": -5750,
+  "neighbor_avg_pnl": -4375,
   "eligible": true
  },
  {
@@ -3605,10 +3605,10 @@
   "hold_min": 120,
   "trades": 19,
   "win_rate": 0.526,
-  "net_pnl": -61000,
-  "profit_factor": 0.7,
+  "net_pnl": -59000,
+  "profit_factor": 0.71,
   "max_drawdown": 134000.0,
-  "neighbor_avg_pnl": -2143,
+  "neighbor_avg_pnl": 571,
   "eligible": true
  },
  {
@@ -3622,7 +3622,7 @@
   "net_pnl": -77000,
   "profit_factor": 0.6,
   "max_drawdown": 117000.0,
-  "neighbor_avg_pnl": -19857,
+  "neighbor_avg_pnl": -19000,
   "eligible": true
  },
  {
@@ -3633,10 +3633,10 @@
   "hold_min": 60,
   "trades": 19,
   "win_rate": 0.632,
-  "net_pnl": -61000,
-  "profit_factor": 0.69,
+  "net_pnl": -60000,
+  "profit_factor": 0.7,
   "max_drawdown": 115000.0,
-  "neighbor_avg_pnl": -13875,
+  "neighbor_avg_pnl": -12250,
   "eligible": true
  },
  {
@@ -3647,10 +3647,10 @@
   "hold_min": 120,
   "trades": 19,
   "win_rate": 0.526,
-  "net_pnl": -79000,
-  "profit_factor": 0.64,
+  "net_pnl": -77000,
+  "profit_factor": 0.65,
   "max_drawdown": 153000.0,
-  "neighbor_avg_pnl": -18571,
+  "neighbor_avg_pnl": -15429,
   "eligible": true
  },
  {
@@ -3664,7 +3664,7 @@
   "net_pnl": -74000,
   "profit_factor": 0.61,
   "max_drawdown": 114000.0,
-  "neighbor_avg_pnl": -26833,
+  "neighbor_avg_pnl": -25833,
   "eligible": true
  },
  {
@@ -3675,10 +3675,10 @@
   "hold_min": 60,
   "trades": 19,
   "win_rate": 0.632,
-  "net_pnl": -61000,
-  "profit_factor": 0.69,
+  "net_pnl": -60000,
+  "profit_factor": 0.7,
   "max_drawdown": 110000.0,
-  "neighbor_avg_pnl": -25857,
+  "neighbor_avg_pnl": -23857,
   "eligible": true
  },
  {
@@ -3689,10 +3689,10 @@
   "hold_min": 120,
   "trades": 18,
   "win_rate": 0.556,
-  "net_pnl": -52000,
-  "profit_factor": 0.73,
-  "max_drawdown": 121000.0,
-  "neighbor_avg_pnl": -25500,
+  "net_pnl": -48000,
+  "profit_factor": 0.75,
+  "max_drawdown": 119000.0,
+  "neighbor_avg_pnl": -22333,
   "eligible": true
  },
  {
@@ -3706,7 +3706,7 @@
   "net_pnl": -41000,
   "profit_factor": 0.24,
   "max_drawdown": 53000.0,
-  "neighbor_avg_pnl": -19600,
+  "neighbor_avg_pnl": -19200,
   "eligible": false
  },
  {
@@ -3717,10 +3717,10 @@
   "hold_min": 60,
   "trades": 6,
   "win_rate": 0.5,
-  "net_pnl": -17000,
-  "profit_factor": 0.65,
+  "net_pnl": -16000,
+  "profit_factor": 0.67,
   "max_drawdown": 48000.0,
-  "neighbor_avg_pnl": -4833,
+  "neighbor_avg_pnl": -3833,
   "eligible": false
  },
  {
@@ -3731,10 +3731,10 @@
   "hold_min": 120,
   "trades": 6,
   "win_rate": 0.333,
-  "net_pnl": -33000,
-  "profit_factor": 0.44,
+  "net_pnl": -32000,
+  "profit_factor": 0.46,
   "max_drawdown": 53000.0,
-  "neighbor_avg_pnl": -10600,
+  "neighbor_avg_pnl": -9400,
   "eligible": false
  },
  {
@@ -3748,7 +3748,7 @@
   "net_pnl": -25000,
   "profit_factor": 0.4,
   "max_drawdown": 37000.0,
-  "neighbor_avg_pnl": -6000,
+  "neighbor_avg_pnl": -5667,
   "eligible": false
  },
  {
@@ -3759,10 +3759,10 @@
   "hold_min": 60,
   "trades": 6,
   "win_rate": 0.667,
-  "net_pnl": 1000,
-  "profit_factor": 1.03,
+  "net_pnl": 2000,
+  "profit_factor": 1.06,
   "max_drawdown": 34000.0,
-  "neighbor_avg_pnl": 9714,
+  "neighbor_avg_pnl": 10714,
   "eligible": false
  },
  {
@@ -3773,9 +3773,23 @@
   "hold_min": 120,
   "trades": 6,
   "win_rate": 0.5,
-  "net_pnl": -23000,
-  "profit_factor": 0.57,
+  "net_pnl": -22000,
+  "profit_factor": 0.58,
   "max_drawdown": 43000.0,
+  "neighbor_avg_pnl": 0,
+  "eligible": false
+ },
+ {
+  "bar_min": 10,
+  "band_k": 2.5,
+  "confirm": true,
+  "stop_atr": 2.0,
+  "hold_min": 30,
+  "trades": 6,
+  "win_rate": 0.5,
+  "net_pnl": -5000,
+  "profit_factor": 0.77,
+  "max_drawdown": 17000.0,
   "neighbor_avg_pnl": -1333,
   "eligible": false
  },
@@ -3784,27 +3798,13 @@
   "band_k": 2.5,
   "confirm": true,
   "stop_atr": 2.0,
-  "hold_min": 30,
-  "trades": 6,
-  "win_rate": 0.5,
-  "net_pnl": -5000,
-  "profit_factor": 0.77,
-  "max_drawdown": 17000.0,
-  "neighbor_avg_pnl": -1667,
-  "eligible": false
- },
- {
-  "bar_min": 10,
-  "band_k": 2.5,
-  "confirm": true,
-  "stop_atr": 2.0,
   "hold_min": 60,
   "trades": 6,
   "win_rate": 0.667,
-  "net_pnl": 10000,
-  "profit_factor": 1.4,
+  "net_pnl": 11000,
+  "profit_factor": 1.44,
   "max_drawdown": 25000.0,
-  "neighbor_avg_pnl": 17571,
+  "neighbor_avg_pnl": 18571,
   "eligible": false
  },
  {
@@ -3815,10 +3815,10 @@
   "hold_min": 120,
   "trades": 6,
   "win_rate": 0.5,
-  "net_pnl": -20000,
-  "profit_factor": 0.6,
+  "net_pnl": -19000,
+  "profit_factor": 0.62,
   "max_drawdown": 40000.0,
-  "neighbor_avg_pnl": 1500,
+  "neighbor_avg_pnl": 3000,
   "eligible": false
  },
  {
@@ -3832,7 +3832,7 @@
   "net_pnl": -5000,
   "profit_factor": 0.77,
   "max_drawdown": 17000.0,
-  "neighbor_avg_pnl": 7600,
+  "neighbor_avg_pnl": 8000,
   "eligible": false
  },
  {
@@ -3843,10 +3843,10 @@
   "hold_min": 60,
   "trades": 6,
   "win_rate": 0.667,
-  "net_pnl": 10000,
-  "profit_factor": 1.4,
+  "net_pnl": 11000,
+  "profit_factor": 1.44,
   "max_drawdown": 25000.0,
-  "neighbor_avg_pnl": 26667,
+  "neighbor_avg_pnl": 27667,
   "eligible": false
  },
  {
@@ -3857,10 +3857,10 @@
   "hold_min": 120,
   "trades": 6,
   "win_rate": 0.5,
-  "net_pnl": -16000,
-  "profit_factor": 0.65,
+  "net_pnl": -15000,
+  "profit_factor": 0.67,
   "max_drawdown": 36000.0,
-  "neighbor_avg_pnl": 16800,
+  "neighbor_avg_pnl": 18400,
   "eligible": false
  },
  {
@@ -3874,7 +3874,7 @@
   "net_pnl": 22000,
   "profit_factor": 2.38,
   "max_drawdown": 14000.0,
-  "neighbor_avg_pnl": -4800,
+  "neighbor_avg_pnl": -4600,
   "eligible": false
  },
  {
@@ -3883,26 +3883,26 @@
   "confirm": false,
   "stop_atr": 1.0,
   "hold_min": 60,
+  "trades": 6,
+  "win_rate": 0.667,
+  "net_pnl": 38000,
+  "profit_factor": 2.36,
+  "max_drawdown": 28000.0,
+  "neighbor_avg_pnl": 8833,
+  "eligible": false
+ },
+ {
+  "bar_min": 10,
+  "band_k": 2.5,
+  "confirm": false,
+  "stop_atr": 1.0,
+  "hold_min": 120,
   "trades": 6,
   "win_rate": 0.667,
   "net_pnl": 37000,
   "profit_factor": 2.32,
   "max_drawdown": 28000.0,
-  "neighbor_avg_pnl": 8167,
-  "eligible": false
- },
- {
-  "bar_min": 10,
-  "band_k": 2.5,
-  "confirm": false,
-  "stop_atr": 1.0,
-  "hold_min": 120,
-  "trades": 6,
-  "win_rate": 0.667,
-  "net_pnl": 36000,
-  "profit_factor": 2.29,
-  "max_drawdown": 28000.0,
-  "neighbor_avg_pnl": 200,
+  "neighbor_avg_pnl": 1200,
   "eligible": false
  },
  {
@@ -3916,7 +3916,7 @@
   "net_pnl": 26000,
   "profit_factor": 3.17,
   "max_drawdown": 10000.0,
-  "neighbor_avg_pnl": 3167,
+  "neighbor_avg_pnl": 3333,
   "eligible": false
  },
  {
@@ -3927,10 +3927,10 @@
   "hold_min": 60,
   "trades": 6,
   "win_rate": 0.833,
-  "net_pnl": 50000,
-  "profit_factor": 3.38,
+  "net_pnl": 51000,
+  "profit_factor": 3.43,
   "max_drawdown": 21000.0,
-  "neighbor_avg_pnl": 21143,
+  "neighbor_avg_pnl": 22000,
   "eligible": false
  },
  {
@@ -3941,10 +3941,10 @@
   "hold_min": 120,
   "trades": 6,
   "win_rate": 0.667,
-  "net_pnl": 38000,
-  "profit_factor": 2.46,
+  "net_pnl": 39000,
+  "profit_factor": 2.5,
   "max_drawdown": 26000.0,
-  "neighbor_avg_pnl": 9500,
+  "neighbor_avg_pnl": 10667,
   "eligible": false
  },
  {
@@ -3958,7 +3958,7 @@
   "net_pnl": 26000,
   "profit_factor": 3.17,
   "max_drawdown": 10000.0,
-  "neighbor_avg_pnl": 7833,
+  "neighbor_avg_pnl": 8000,
   "eligible": false
  },
  {
@@ -3969,10 +3969,10 @@
   "hold_min": 60,
   "trades": 6,
   "win_rate": 0.833,
-  "net_pnl": 57000,
-  "profit_factor": 5.07,
+  "net_pnl": 58000,
+  "profit_factor": 5.14,
   "max_drawdown": 14000.0,
-  "neighbor_avg_pnl": 21857,
+  "neighbor_avg_pnl": 22714,
   "eligible": false
  },
  {
@@ -3983,10 +3983,10 @@
   "hold_min": 120,
   "trades": 6,
   "win_rate": 0.667,
-  "net_pnl": 40000,
-  "profit_factor": 2.67,
+  "net_pnl": 41000,
+  "profit_factor": 2.71,
   "max_drawdown": 24000.0,
-  "neighbor_avg_pnl": 6833,
+  "neighbor_avg_pnl": 8000,
   "eligible": false
  },
  {
@@ -4000,7 +4000,7 @@
   "net_pnl": 26000,
   "profit_factor": 3.17,
   "max_drawdown": 10000.0,
-  "neighbor_avg_pnl": 3000,
+  "neighbor_avg_pnl": 3200,
   "eligible": false
  },
  {
@@ -4011,10 +4011,10 @@
   "hold_min": 60,
   "trades": 6,
   "win_rate": 0.833,
-  "net_pnl": 57000,
-  "profit_factor": 5.07,
+  "net_pnl": 58000,
+  "profit_factor": 5.14,
   "max_drawdown": 14000.0,
-  "neighbor_avg_pnl": 14667,
+  "neighbor_avg_pnl": 15500,
   "eligible": false
  },
  {
@@ -4025,10 +4025,10 @@
   "hold_min": 120,
   "trades": 6,
   "win_rate": 0.667,
-  "net_pnl": 40000,
-  "profit_factor": 2.67,
+  "net_pnl": 41000,
+  "profit_factor": 2.71,
   "max_drawdown": 24000.0,
-  "neighbor_avg_pnl": 9600,
+  "neighbor_avg_pnl": 11200,
   "eligible": false
  }
 ]

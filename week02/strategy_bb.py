@@ -2,7 +2,7 @@
 
 VWAP 후보(strategy.py)와 같은 구조입니다. 1분봉을 넣으면 판정 봉을 쌓고, 판정 봉이 닫힐 때
 한 번 판단합니다. 체결(어떤 값에 사고팔았나)은 여기서 다루지 않습니다 — backtest_bb.py 가
-VWAP 후보와 **같은 체결 모형(min1-v1)** 으로 셉니다. 1분봉·ATR·손절가·손익 틱 계산은
+VWAP 후보와 **같은 체결 모형(min1-v2)** 으로 셉니다. 1분봉·ATR·손절가·손익 틱 계산은
 strategy.py 의 것을 그대로 가져다 씁니다.
 
 ## 규칙 요약 (값은 Params)
@@ -102,8 +102,9 @@ class RollingBollinger:
         self.window.append(close)
         if len(self.window) < self.period:
             return None, None, None
-        mid = sum(self.window) / self.period
-        spread = math.sqrt(sum((v - mid) ** 2 for v in self.window) / self.period)
+        # fsum: 정확히 반올림한 합이라 파이썬 버전(3.12 의 sum() 변경)과 상관없이 같은 값 — 이슈 #1
+        mid = math.fsum(self.window) / self.period
+        spread = math.sqrt(math.fsum((v - mid) ** 2 for v in self.window) / self.period)
         return mid + self.k * spread, mid, mid - self.k * spread
 
 
@@ -131,8 +132,8 @@ class WilderRSI:
             self.losses.append(loss)
             if len(self.gains) < self.period:
                 return None
-            self.avg_gain = sum(self.gains) / self.period
-            self.avg_loss = sum(self.losses) / self.period
+            self.avg_gain = math.fsum(self.gains) / self.period
+            self.avg_loss = math.fsum(self.losses) / self.period
         else:
             self.avg_gain = (self.avg_gain * (self.period - 1) + gain) / self.period
             self.avg_loss = (self.avg_loss * (self.period - 1) + loss) / self.period

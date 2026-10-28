@@ -1,11 +1,13 @@
 """VWAP 밴드 평균회귀 백테스트 — strategy.py 판정을 지난 1분봉에 그대로 흘립니다.
 
-체결 모형 (`min1-v1`):
+체결 모형 (`min1-v2`):
 - 판정 봉이 닫히면 **다음 1분봉 시가**에 시장가 진입, 불리한 쪽 슬리피지 1틱.
-- 보유 중에는 1분봉마다 손절·익절을 봅니다. 익절 목표는 **직전 1분봉까지의 VWAP**.
+- 보유 중에는 1분봉마다 손절·익절을 봅니다. 익절 목표는 **직전 1분봉까지의 VWAP** 을
+  불리한 쪽 호가로 맞춘 값(매수 올림·매도 내림, `strategy.take_profit_price`).
   같은 1분봉에서 손절·익절이 함께 닿으면 손절로 셉니다 (보수적).
-- 손절은 손절값(갭이면 시가)에, 익절은 목표값(갭이면 시가)에 닿은 뒤 시장가로 나간다고 보고
+- 손절은 손절값(갭이면 시가)에, 익절은 맞춘 목표값(갭이면 시가)에 닿은 뒤 시장가로 나간다고 보고
   불리한 쪽 슬리피지 1틱. 시간 청산·장 마감 정리는 다음 1분봉 시가 + 슬리피지 1틱.
+  → 체결가는 모두 0.1원 단위입니다 (`min1-v1` 은 익절이 틱 단위가 아니었음 — 이슈 #1).
 - 수수료 0원 (모의계좌 수수료 확인 전). 1계약.
 
 사용법 (week02/ 에서):
@@ -23,7 +25,8 @@ import json
 from dataclasses import asdict, replace
 from pathlib import Path
 
-from strategy import (TICK, TICK_VALUE, Minute, Params, VWAPReversion, minutes_of, pnl_ticks, stop_price)
+from strategy import (TICK, TICK_VALUE, Minute, Params, VWAPReversion, minutes_of, pnl_ticks, stop_price,
+                      take_profit_price)
 
 HERE = Path(__file__).parent
 DATA = HERE / "results" / "data" / "bars_1m_A756B000.csv"
@@ -99,10 +102,12 @@ def run(minutes: list[Minute], p: Params, keep_signals: bool = False) -> dict:
                 close(m, min(m.open, pos["stop"]) - slip, "손절")
             elif side == "sell" and m.high >= pos["stop"]:
                 close(m, max(m.open, pos["stop"]) + slip, "손절")
-            elif target is not None and side == "buy" and m.high >= target:
-                close(m, max(m.open, target) - slip, "익절(VWAP)")
-            elif target is not None and side == "sell" and m.low <= target:
-                close(m, min(m.open, target) + slip, "익절(VWAP)")
+            elif target is not None:
+                tp = take_profit_price(side, target)    # 불리한 쪽 호가로 맞춘 목표
+                if side == "buy" and m.high >= tp:
+                    close(m, max(m.open, tp) - slip, "익절(VWAP)")
+                elif side == "sell" and m.low <= tp:
+                    close(m, min(m.open, tp) + slip, "익절(VWAP)")
 
         # 3) 전략에 이 분을 넣고, 닫힌 판정 봉의 신호를 받음
         for s in strat.on_minute(m):

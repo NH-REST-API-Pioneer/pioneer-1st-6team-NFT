@@ -1,12 +1,12 @@
 """볼린저 밴드 + RSI 평균회귀 백테스트 — strategy_bb.py 판정을 지난 1분봉에 그대로 흘립니다.
 
-체결 모형은 VWAP 후보(backtest.py)와 **같은 `min1-v1`** 입니다. 두 후보를 같은 자로 재기 위해
+체결 모형은 VWAP 후보(backtest.py)와 **같은 `min1-v2`** 입니다 (익절 목표를 불리한 쪽 호가로 맞춤 — 이슈 #1). 두 후보를 같은 자로 재기 위해
 데이터 읽기(load_minutes)·요약(summarize)·출력(fmt)은 backtest.py 의 것을 그대로 씁니다.
 다른 점은 익절 목표 하나 — VWAP 대신 **마지막으로 닫힌 판정 봉의 볼린저 중심선** 입니다.
 
 - 판정 봉이 닫히면 **다음 1분봉 시가**에 시장가 진입, 불리한 쪽 슬리피지 1틱.
 - 보유 중에는 1분봉마다 손절·익절을 봅니다. 같은 1분봉에서 둘 다 닿으면 손절 (보수적).
-- 손절은 손절값(갭이면 시가), 익절은 목표값(갭이면 시가) + 불리한 쪽 슬리피지 1틱.
+- 손절은 손절값(갭이면 시가), 익절은 불리한 쪽 호가로 맞춘 목표값(갭이면 시가) + 불리한 쪽 슬리피지 1틱.
   시간 청산·장 마감 정리는 다음 1분봉 시가 + 슬리피지 1틱. 수수료 0원. 1계약.
 
 학습/검증은 **한 번에 이어서 돌린 뒤 거래를 날짜로 나눕니다.** 밴드·RSI·ATR 이 날을 넘겨 이어지는 지표라,
@@ -29,7 +29,7 @@ from dataclasses import asdict, replace
 from pathlib import Path
 
 from backtest import SLIP_TICKS, fmt, load_minutes, summarize
-from strategy import TICK, TICK_VALUE, Minute, minutes_of, pnl_ticks, stop_price
+from strategy import TICK, TICK_VALUE, Minute, minutes_of, pnl_ticks, stop_price, take_profit_price
 from strategy_bb import BBRSIReversion, Params
 
 HERE = Path(__file__).parent
@@ -93,10 +93,12 @@ def run(minutes: list[Minute], p: Params, keep_signals: bool = False) -> dict:
                 close(m, min(m.open, pos["stop"]) - slip, "손절")
             elif side == "sell" and m.high >= pos["stop"]:
                 close(m, max(m.open, pos["stop"]) + slip, "손절")
-            elif target is not None and side == "buy" and m.high >= target:
-                close(m, max(m.open, target) - slip, "익절(중심선)")
-            elif target is not None and side == "sell" and m.low <= target:
-                close(m, min(m.open, target) + slip, "익절(중심선)")
+            elif target is not None:
+                tp = take_profit_price(side, target)    # 불리한 쪽 호가로 맞춘 목표
+                if side == "buy" and m.high >= tp:
+                    close(m, max(m.open, tp) - slip, "익절(중심선)")
+                elif side == "sell" and m.low <= tp:
+                    close(m, min(m.open, tp) + slip, "익절(중심선)")
 
         # 3) 전략에 이 분을 넣고, 닫힌 판정 봉의 신호를 받음
         for s in strat.on_minute(m):
