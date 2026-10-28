@@ -208,6 +208,47 @@ class NHClient:
             "fut_cidx_exp_mod": "0",
         })
 
+    # ---- 국내 계좌 (조회) ----
+    def deposit(self, biz_dt: str) -> dict:
+        return self.post("/trade/v1/domestic/deposit", {"biz_dt": biz_dt}, kind="account")
+
+    def open_interest(self) -> dict:
+        """잔고(보유 포지션) — 계좌 전체. 종목은 호출한 쪽이 거릅니다."""
+        return self.post("/trade/v1/domestic/open-interest", {"nxt_key": ""}, kind="account")
+
+    def orderable_quantity(self, sym: str, side: str, price: str = "0") -> dict:
+        return self.post("/trade/v1/domestic/orderable-quantity", {
+            "ord_sts": "1", "sym": sym, "trd_div": _TRD_DIV[side], "ord_pric": price,
+        }, kind="account")
+
+    def order_history(self) -> dict:
+        """주간 주문·체결·미체결 전체 (당일)."""
+        return self.post("/trade/v1/domestic/order-history", {
+            "trd_div": "0", "exec_div": "0", "trd_tm_div_cd": "1", "ord_div_cd": "0", "nxt_key": "",
+        }, kind="account")
+
+    # ---- 국내 주문 — 모의 서버에서만 ----
+    def _orders_allowed(self) -> None:
+        if self.env != "demo":
+            raise SystemExit("주문은 모의 서버(demo)에서만 보냅니다. 중단합니다.")
+
+    def market_order(self, sym: str, side: str, qty: int = 1, exec_cnd: str = "1") -> dict:
+        """시장가 신규주문. exec_cnd: 1 FAS · 2 FOK · 3 FAK. 재시도하지 않습니다 (중복 주문 방지)."""
+        self._orders_allowed()
+        return self.post("/trade/v1/domestic/order", {
+            "sym": sym, "trd_div": _TRD_DIV[side], "ord_tp_cd": "2", "ord_qty": str(qty),
+            "ord_pric": "0", "exec_cnd_cd": exec_cnd,
+        }, kind="order", retries=1)
+
+    def cancel_order(self, sym: str, side: str, org_ord_no: str, qty: int = 1) -> dict:
+        self._orders_allowed()
+        return self.post("/trade/v1/domestic/cancel", {
+            "sym": sym, "trd_div": _TRD_DIV[side], "ord_qty": str(qty), "org_ord_no": org_ord_no,
+        }, kind="order", retries=1)
+
+
+_TRD_DIV = {"buy": "1", "sell": "2"}
+
 
 def rows(body: dict) -> list[dict]:
     """`Occurs1` 배열을 꺼내고 필드명 앞의 `occurs1_` 를 뗍니다.
