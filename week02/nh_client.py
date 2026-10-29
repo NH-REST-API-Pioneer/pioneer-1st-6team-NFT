@@ -108,11 +108,14 @@ class NHClient:
 
         self.throttles["auth"].wait()
         # 토큰 발급만 form-urlencoded 입니다 (data=)
-        res = self.session.post(
-            f"{self.base}/auth-service/v1/token",
-            data={"grant_type": "client_credentials", "appkey": self.app_key, "appsecret": self.app_secret},
-            timeout=self.timeout,
-        )
+        try:
+            res = self.session.post(
+                f"{self.base}/auth-service/v1/token",
+                data={"grant_type": "client_credentials", "appkey": self.app_key, "appsecret": self.app_secret},
+                timeout=self.timeout,
+            )
+        except requests.RequestException as e:      # 연결 끊김·시간 초과도 NHError 로 — 호출한 쪽이 한 가지만 잡게
+            raise NHError("/auth-service/v1/token", 0, f"{type(e).__name__}: {e}") from None
         body = self._json(res, "/auth-service/v1/token")
         if not body.get("access_token"):
             safe = {k: v for k, v in body.items() if "token" not in k}
@@ -144,21 +147,32 @@ class NHClient:
 
     # ---- 공통 호출 ----
     def post(self, path: str, body: dict, kind: str = "market", retries: int = 3) -> dict:
-        """JSON 본문 POST. 호출 제한 초과(429·EGW020·EGW036)면 간격을 두고 다시 보냅니다."""
+        """JSON 본문 POST. 호출 제한 초과(429·EGW020·EGW036)면 간격을 두고 다시 보냅니다.
+
+        연결 끊김·시간 초과(requests 예외)도 NHError 로 바꿔 올립니다 — 실행기가 한 종류만 잡으면 되게.
+        주문(retries=1)은 시간 초과여도 다시 보내지 않습니다 (서버가 이미 받았을 수 있음).
+        """
+        res = None
         for attempt in range(retries):
             self.throttles[kind].wait()
-            res = self.session.post(
-                f"{self.base}{path}",
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {self.token()}",
-                    # Postman 은 안 보내지만 week01 first_call.py 가 보내서 성공한 헤더
-                    "appkey": self.app_key,
-                    "appsecret": self.app_secret,
-                },
-                json=body,
-                timeout=self.timeout,
-            )
+            try:
+                res = self.session.post(
+                    f"{self.base}{path}",
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {self.token()}",
+                        # Postman 은 안 보내지만 week01 first_call.py 가 보내서 성공한 헤더
+                        "appkey": self.app_key,
+                        "appsecret": self.app_secret,
+                    },
+                    json=body,
+                    timeout=self.timeout,
+                )
+            except requests.RequestException as e:
+                if attempt + 1 < retries:
+                    time.sleep(1.0 * (attempt + 1))
+                    continue
+                raise NHError(path, 0, f"{type(e).__name__}: {e}") from None
             text = res.text
             if res.status_code == 429 or "EGW020" in text or "EGW036" in text:
                 time.sleep(1.0 * (attempt + 1))
@@ -168,7 +182,7 @@ class NHClient:
                 self._token_file().unlink(missing_ok=True)
                 continue
             return self._json(res, path)
-        raise NHError(path, res.status_code, res.text)
+        raise NHError(path, res.status_code if res is not None else 0, res.text if res is not None else "")
 
     @staticmethod
     def _json(res: requests.Response, path: str) -> dict:

@@ -61,6 +61,19 @@ def to_minute(r: dict) -> Minute:
 PRIVATE_KEYS = {"ac_no", "ac_nm", "user_ip_addr", "ord_id"}
 
 
+def num(v) -> float | None:
+    """응답 숫자 문자열("-00000000000044000.000" 처럼 0 채움·부호 포함)을 float 로. 못 읽으면 None."""
+    try:
+        s = str(v).strip()
+        return float(s) if s else None
+    except (TypeError, ValueError):
+        return None
+
+
+#: 예수금 응답에서 기록하는 칸 — 하루 누적 값 (수수료·확정손익)
+ACCOUNT_KEYS = ("fee", "fut_cls_pl_amt", "pl_tot_pric", "ord_psb_tot_amt")
+
+
 def scrub(obj):
     """dict·list 안의 PRIVATE_KEYS 를 모두 지운 사본."""
     if isinstance(obj, dict):
@@ -83,7 +96,7 @@ class Journal:
         rec = {"kind": kind, "at": datetime.now().isoformat(timespec="seconds"), **data}
         self.f.write(json.dumps(rec, ensure_ascii=False) + "\n")
         self.f.flush()
-        if kind in ("event", "order", "fill", "trade") or (kind == "signal" and data.get("side")):
+        if kind in ("event", "order", "fill", "trade", "account") or (kind == "signal" and data.get("side")):
             msg = data.get("text") or data.get("reason") or ""
             print(f"[{data.get('clock', rec['at'][11:19])}] {kind:6s} {msg} "
                   f"{ {k: v for k, v in data.items() if k not in ('text', 'reason', 'clock', 'raw')} }")
@@ -96,6 +109,10 @@ class PaperBroker:
 
     def __init__(self, journal: Journal):
         self.j = journal
+        self.last_fill_fee: float | None = None    # 종이 체결은 수수료를 모름
+
+    def account(self, clock: str = "", why: str = "") -> dict | None:
+        return None
 
     def fill(self, side: str, ref_price: float, clock: str, why: str) -> float | None:
         px = round(ref_price + SLIP if side == "buy" else ref_price - SLIP, 1)
@@ -112,9 +129,37 @@ class MockAccountBroker:
 
     def __init__(self, client, sym: str, journal: Journal, exec_cnd: str):
         self.c, self.sym, self.j, self.exec_cnd = client, sym, journal, exec_cnd
+        self.today = datetime.now().strftime("%Y%m%d")
+        self.last_fee: float | None = None         # 마지막으로 본 예수금 fee (하루 누적)
+        self.last_fill_fee: float | None = None    # 직전 체결의 수수료 (fee 차이) — 모르면 None
+
+    def account(self, clock: str = "", why: str = "") -> dict | None:
+        """예수금의 수수료·확정손익(하루 누적)을 읽어 기록합니다. 실패해도 매매는 그대로 — None 만 돌려줌."""
+        try:
+            dep = self.c.deposit(self.today)
+            snap = {k: num(dep.get(k)) for k in ACCOUNT_KEYS}
+        except Exception as e:      # 기록용 조회라 어떤 오류도 매매를 멈추지 않게
+            self.j.write("event", clock=clock, text=f"예수금 조회 실패 ({why})", error=f"{type(e).__name__}: {str(e)[:200]}")
+            return None
+        if why:
+            self.j.write("account", clock=clock, text=f"계좌 · {why}", **snap)
+        return snap
+
+    def _fee_after_fill(self, clock: str) -> float | None:
+        """체결 직후 fee 차이 = 이 체결의 수수료. 반영이 늦으면 1초 뒤 한 번 더 봅니다."""
+        before = self.last_fee
+        snap = self.account(clock)
+        if snap and before is not None and snap["fee"] == before:
+            time.sleep(1.0)
+            snap = self.account(clock) or snap
+        if not snap or snap["fee"] is None:
+            return None
+        self.last_fee = snap["fee"]
+        return None if before is None else round(snap["fee"] - before, 2)
 
     def fill(self, side: str, ref_price: float, clock: str, why: str) -> float | None:
         from nh_client import NHError, rows
+        self.last_fill_fee = None
         try:
             res = self.c.market_order(self.sym, side, 1, self.exec_cnd)
         except NHError as e:
@@ -140,9 +185,12 @@ class MockAccountBroker:
             last = mine[0]
             sts = str(last.get("ord_sts", "")).strip()
             if sts == "6":
-                px = (float(last.get("avg_exec_pric") or 0) or float(last.get("exec_pric") or 0)) or None
+                # avg_exec_pric 가 "0000…0.000" 으로 올 때가 있어 0 이면 exec_pric 를 씀 (10/29 은석님 수정)
+                px = (num(last.get("avg_exec_pric")) or num(last.get("exec_pric"))) or None
+                self.last_fill_fee = self._fee_after_fill(clock)
                 self.j.write("fill", clock=clock, side=side, price=px, ord_no=ord_no, source="order-history",
-                             exec_qty=last.get("exec_qty"), exec_tm=last.get("exch_exec_tm"), text="모의계좌 체결")
+                             exec_qty=last.get("exec_qty"), exec_tm=last.get("exch_exec_tm"),
+                             fee=self.last_fill_fee, fee_total=self.last_fee, text="모의계좌 체결")
                 return px
             if sts in ("8", "9"):
                 self.j.write("event", clock=clock, ord_no=ord_no, text=f"주문 {last.get('ord_sts_nm')}",
@@ -163,7 +211,7 @@ class MockAccountBroker:
             return None
         for r in oi:
             if str(r.get("sym", "")).strip() == self.sym:
-                n = int(float(r.get("opint_qty") or 0))
+                n = int(num(r.get("opint_qty")) or 0)
                 qty += n if str(r.get("trd_div")).strip() == "1" else -n
         return qty
 
@@ -246,7 +294,8 @@ class Runner:
             px = price      # 체결은 됐는데 체결가를 못 받음 → 현재가로 기록하고 보유로 다룸
             self.j.write("event", clock=clock, text=f"체결가 미확인 · 잔고 {held:+d} → 현재가 {px} 로 기록")
         self.pos = {"side": e["side"], "entry": px, "entry_time": clock, "signal_time": e["signal"],
-                    "stop_ticks": e["stop_ticks"], "stop": stop_price(e["side"], px, e["stop_ticks"])}
+                    "stop_ticks": e["stop_ticks"], "stop": stop_price(e["side"], px, e["stop_ticks"]),
+                    "entry_fee": getattr(self.broker, "last_fill_fee", None)}
         self.strat.on_entry()
         self.j.write("event", clock=clock, text=f"진입 {e['side']} {px} · 손절 {self.pos['stop']} ({e['stop_ticks']}틱)")
 
@@ -264,11 +313,18 @@ class Runner:
                 self.j.write("event", clock=clock, text=f"청산 안 됨 ({reason}) · 잔고 {held} — 10초쯤 뒤 다시 시도")
                 return
         ticks = pnl_ticks(self.pos["side"], self.pos["entry"], px)
+        exit_fee = getattr(self.broker, "last_fill_fee", None)
+        entry_fee = self.pos.get("entry_fee")
+        fee = None if entry_fee is None or exit_fee is None else entry_fee + exit_fee
         t = {**self.pos, "exit": px, "exit_time": clock, "reason": reason, "ticks": ticks,
-             "pnl": ticks * TICK_VALUE, "entry_date": self.live_date, "exit_date": self.live_date}
+             "pnl": ticks * TICK_VALUE, "exit_fee": exit_fee, "fee": fee,
+             "pnl_after_fee": None if fee is None else ticks * TICK_VALUE - fee,
+             "entry_date": self.live_date, "exit_date": self.live_date}
         self.trades.append(t)
-        self.j.write("trade", clock=clock, text=f"{reason} {ticks:+d}틱 ({t['pnl']:+,}원)",
-                     **{k: t[k] for k in ("side", "entry", "exit", "entry_time", "exit_time", "ticks", "pnl")})
+        fee_txt = "" if fee is None else f" · 수수료 {fee:,.0f}원 → {t['pnl_after_fee']:+,.0f}원"
+        self.j.write("trade", clock=clock, text=f"{reason} {ticks:+d}틱 ({t['pnl']:+,}원){fee_txt}",
+                     **{k: t[k] for k in ("side", "entry", "exit", "entry_time", "exit_time", "ticks", "pnl",
+                                          "fee", "pnl_after_fee")})
         self.strat.on_exit(t["pnl"], stopped=reason == "손절")
         self.pos = None
 
@@ -298,6 +354,20 @@ def replay(strategy_name: str, date: str, out: Path) -> dict:
 
 
 # ---------------------------------------------------------------- 실제 실행
+def count_stops(journal: Path, date: str) -> int:
+    """기록 파일에서 그날(date) 손절로 끝난 거래 수. 파일이 없거나 못 읽으면 0."""
+    n = 0
+    try:
+        for line in journal.read_text(encoding="utf-8").splitlines():
+            rec = json.loads(line)
+            if (rec.get("kind") == "trade" and str(rec.get("at", "")).replace("-", "")[:8] == date
+                    and str(rec.get("text", "")).startswith("손절")):
+                n += 1
+    except (OSError, ValueError):
+        return n
+    return n
+
+
 def live(strategy_name: str, orders: bool, exec_cnd: str, sym: str | None, out: Path) -> dict:
     from nh_client import NHClient, NHError, rows
     if datetime.now().astimezone().utcoffset().total_seconds() != 9 * 3600:
@@ -325,16 +395,16 @@ def live(strategy_name: str, orders: bool, exec_cnd: str, sym: str | None, out: 
         if held is None:
             raise SystemExit("시작 잔고를 확인하지 못해 중단합니다.")
         j.write("event", text=f"시작 잔고 {sym} {held:+d}계약")
+        account_start = broker.account(datetime.now().strftime("%H%M%S"), "시작 (수수료·확정손익은 하루 누적)")
+        if account_start:
+            broker.last_fee = account_start["fee"]
         if held:
             side = "sell" if held > 0 else "buy"
             for _ in range(abs(held)):
                 broker.fill(side, 0.0, datetime.now().strftime("%H%M%S"), "시작 전 남은 잔고 정리")
-        try:
-            dep = client.deposit(today)
-            j.write("event", text="예수금", ord_psb_tot_amt=dep.get("ord_psb_tot_amt"),
-                    init_mrgn_tot_amt=dep.get("init_mrgn_tot_amt"))
-        except NHError as e:
-            j.write("event", text="예수금 조회 실패", error=str(e)[:200])
+    else:
+        account_start = None
+    account_end = None
 
     def completed_minutes(req_qty: int) -> list[Minute]:
         now_min = datetime.now().strftime("%H%M") + "00"
@@ -344,6 +414,11 @@ def live(strategy_name: str, orders: bool, exec_cnd: str, sym: str | None, out: 
     hist = completed_minutes(1500)
     r.warmup(hist)
     r.live_date = today          # 준비 봉에서 난 오늘 신호로는 진입하지 않음 — 이 뒤로 닫히는 봉부터
+    # 같은 날 다시 켠 경우: 앞선 실행의 손절 횟수를 이어받아 「손절 2회」 한도가 지켜지게
+    stops_today = count_stops(out / "journal.jsonl", today)
+    if stops_today:
+        r.strat.day.stops = stops_today
+        j.write("event", text=f"오늘 앞선 실행의 손절 {stops_today}회를 이어받음 (한도 {r.p.max_stops_per_day}회)")
     last_fed = (hist[-1].date, hist[-1].time) if hist else ("", "")
     seen_minute = datetime.now().strftime("%H%M")
 
@@ -361,15 +436,17 @@ def live(strategy_name: str, orders: bool, exec_cnd: str, sym: str | None, out: 
                         r.on_minute_closed(m)
                         last_fed = (m.date, m.time)
                     seen_minute = now.strftime("%H%M")
-                except NHError as e:
-                    j.write("event", clock=clock, text="차트(분) 조회 실패 — 다음 초에 다시", error=str(e)[:200])
+                except Exception as e:      # 연결·응답 문제로 하루 실행이 멈추지 않게 — 기록하고 다음 초에 다시
+                    j.write("event", clock=clock, text="차트(분) 처리 실패 — 다음 초에 다시",
+                            error=f"{type(e).__name__}: {str(e)[:200]}")
             try:
                 q = client.price(sym)
-                px = float(q.get("last_pric") or 0)
+                px = num(q.get("last_pric")) or 0
                 if px > 0:
                     r.on_price(clock, px)
-            except NHError as e:
-                j.write("event", clock=clock, text="현재가 조회 실패", error=str(e)[:200])
+            except Exception as e:
+                j.write("event", clock=clock, text="현재가 처리 실패 — 다음 초에 다시",
+                        error=f"{type(e).__name__}: {str(e)[:200]}")
             time.sleep(max(0.0, 1.0 - (datetime.now() - now).total_seconds()))
     except KeyboardInterrupt:
         j.write("event", text="Ctrl+C — 보유가 있으면 정리하고 끝냄")
@@ -377,7 +454,9 @@ def live(strategy_name: str, orders: bool, exec_cnd: str, sym: str | None, out: 
         r.force_flat(datetime.now().strftime("%H%M%S"))
         if orders:
             j.write("event", text=f"끝 잔고 {sym} {broker.position()}계약")
-    return {"sym": sym, "trades": r.trades, "summary": summarize(r.trades)}
+            account_end = broker.account(datetime.now().strftime("%H%M%S"), "끝 (수수료·확정손익은 하루 누적)")
+    return {"sym": sym, "trades": r.trades, "summary": summarize(r.trades),
+            "account_start": account_start, "account_end": account_end}
 
 
 def order_test(exec_cnd: str, out: Path) -> dict:
@@ -391,6 +470,9 @@ def order_test(exec_cnd: str, out: Path) -> dict:
               key=lambda f: f["exp_mon"])["sym_exch"]
     b = MockAccountBroker(client, sym, j, exec_cnd)
     j.write("event", text=f"주문 점검 시작 · {sym} · scopes {client.scope} · 잔고 {b.position()}")
+    start = b.account(datetime.now().strftime("%H%M%S"), "주문 점검 시작")
+    if start:
+        b.last_fee = start["fee"]
     clock = lambda: datetime.now().strftime("%H%M%S")
     buy = b.fill("buy", 0.0, clock(), "주문 점검 매수")
     j.write("event", text=f"매수 뒤 잔고 {b.position()}")
@@ -430,7 +512,10 @@ def main() -> None:
         res = replay(args.strategy, args.replay, out)
     else:
         res = live(args.strategy, args.orders, args.exec_cnd, args.sym, out)
-    (out / "summary.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+    summary = out / "summary.json"
+    if summary.exists():        # 같은 날 다시 켰으면 앞선 실행의 요약을 덮어쓰지 않음 (기록 파일은 이어 씀)
+        summary = out / f"summary_{datetime.now().strftime('%H%M%S')}.json"
+    summary.write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     s = res["summary"]
     print(f"\n끝: 거래 {s['trades']} · 순손익 {s['net_pnl']:+,}원 · {s['by_reason']}  → {out.relative_to(HERE)}")
 
