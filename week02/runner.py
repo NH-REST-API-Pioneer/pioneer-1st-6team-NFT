@@ -57,8 +57,21 @@ def to_minute(r: dict) -> Minute:
                   float(r["low_pric"]), float(r["close_pric"]), float(r.get("cum_trd_qty") or 0))
 
 
+#: 기록·결과 파일에 남기지 않는 응답 칸 — 계좌 식별정보·개인정보 (주문내역·잔고 응답에 들어 있음)
+PRIVATE_KEYS = {"ac_no", "ac_nm", "user_ip_addr", "ord_id"}
+
+
+def scrub(obj):
+    """dict·list 안의 PRIVATE_KEYS 를 모두 지운 사본."""
+    if isinstance(obj, dict):
+        return {k: scrub(v) for k, v in obj.items() if k not in PRIVATE_KEYS}
+    if isinstance(obj, list):
+        return [scrub(v) for v in obj]
+    return obj
+
+
 class Journal:
-    """한 줄 = 한 사건 (jsonl). 키·토큰은 넣지 않습니다."""
+    """한 줄 = 한 사건 (jsonl). 키·토큰과 계좌 식별정보(PRIVATE_KEYS)는 넣지 않습니다."""
 
     def __init__(self, path: Path):
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -66,6 +79,7 @@ class Journal:
         self.f = path.open("a", encoding="utf-8")
 
     def write(self, kind: str, **data) -> None:
+        data = scrub(data)
         rec = {"kind": kind, "at": datetime.now().isoformat(timespec="seconds"), **data}
         self.f.write(json.dumps(rec, ensure_ascii=False) + "\n")
         self.f.flush()
@@ -388,7 +402,7 @@ def order_test(exec_cnd: str, out: Path) -> dict:
         trades.append({"side": "buy", "entry": buy, "exit": sell, "ticks": ticks, "pnl": ticks * TICK_VALUE,
                        "reason": "주문 점검", "exit_date": datetime.now().strftime("%Y%m%d")})
     return {"sym": sym, "trades": trades, "summary": summarize(trades),
-            "order_history": rows(client.order_history())}
+            "order_history": scrub(rows(client.order_history()))}
 
 
 def main() -> None:
