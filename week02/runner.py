@@ -126,7 +126,7 @@ class MockAccountBroker:
             last = mine[0]
             sts = str(last.get("ord_sts", "")).strip()
             if sts == "6":
-                px = float(last.get("avg_exec_pric") or last.get("exec_pric") or 0) or None
+                px = (float(last.get("avg_exec_pric") or 0) or float(last.get("exec_pric") or 0)) or None
                 self.j.write("fill", clock=clock, side=side, price=px, ord_no=ord_no, source="order-history",
                              exec_qty=last.get("exec_qty"), exec_tm=last.get("exch_exec_tm"), text="모의계좌 체결")
                 return px
