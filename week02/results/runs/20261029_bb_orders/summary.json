@@ -1,0 +1,51 @@
+{
+ "sym": "A756B000",
+ "trades": [
+  {
+   "side": "buy",
+   "entry": 1334.2,
+   "entry_time": "100003",
+   "signal_time": "095900",
+   "stop_ticks": 20,
+   "stop": 1332.2,
+   "exit": 1332.1,
+   "exit_time": "101400",
+   "reason": "손절",
+   "ticks": -21,
+   "pnl": -21000,
+   "entry_date": "20261029",
+   "exit_date": "20261029"
+  },
+  {
+   "side": "buy",
+   "entry": 1332.7,
+   "entry_time": "102003",
+   "signal_time": "101900",
+   "stop_ticks": 21,
+   "stop": 1330.6,
+   "exit": 1330.5,
+   "exit_time": "105440",
+   "reason": "손절",
+   "ticks": -22,
+   "pnl": -22000,
+   "entry_date": "20261029",
+   "exit_date": "20261029"
+  }
+ ],
+ "summary": {
+  "trades": 2,
+  "wins": 0,
+  "win_rate": 0.0,
+  "net_pnl": -43000,
+  "profit_factor": 0.0,
+  "avg_win": null,
+  "avg_loss": -21500,
+  "max_drawdown": 43000.0,
+  "by_reason": {
+   "손절": 2
+  },
+  "by_day": {
+   "20261029": -43000
+  }
+ }
+}
