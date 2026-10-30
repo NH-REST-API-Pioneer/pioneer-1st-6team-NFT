@@ -1,0 +1,61 @@
+{
+ "trades": [
+  {
+   "side": "buy",
+   "entry": 1336.0,
+   "entry_time": "094500",
+   "signal_time": "094400",
+   "stop_ticks": 32,
+   "stop": 1332.8,
+   "entry_fee": 690.0,
+   "exit": 1332.7,
+   "exit_time": "101100",
+   "reason": "손절",
+   "ticks": -33,
+   "pnl": -33000,
+   "exit_fee": 690.0,
+   "fee": 1380.0,
+   "pnl_after_fee": -34380.0,
+   "entry_date": "20261029",
+   "exit_date": "20261029"
+  },
+  {
+   "side": "buy",
+   "entry": 1332.9,
+   "entry_time": "102400",
+   "signal_time": "102300",
+   "stop_ticks": 32,
+   "stop": 1329.7,
+   "entry_fee": 690.0,
+   "exit": 1333.7,
+   "exit_time": "122400",
+   "reason": "시간 청산",
+   "ticks": 8,
+   "pnl": 8000,
+   "exit_fee": 690.0,
+   "fee": 1380.0,
+   "pnl_after_fee": 6620.0,
+   "entry_date": "20261029",
+   "exit_date": "20261029"
+  }
+ ],
+ "summary": {
+  "trades": 2,
+  "wins": 1,
+  "win_rate": 0.5,
+  "net_pnl": -25000,
+  "profit_factor": 0.24,
+  "avg_win": 8000,
+  "avg_loss": -33000,
+  "max_drawdown": 33000.0,
+  "by_reason": {
+   "손절": 1,
+   "시간 청산": 1
+  },
+  "by_day": {
+   "20261029": -25000
+  },
+  "fee_total": 2760.0,
+  "net_pnl_after_fee": -27760.0
+ }
+}

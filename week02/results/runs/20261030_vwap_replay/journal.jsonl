@@ -1,0 +1,29 @@
+{"kind": "event", "at": "2026-10-30T16:11:49", "text": "준비 봉 3589개 (20261019 103500 ~ 20261029 154500)"}
+{"kind": "signal", "at": "2026-10-30T16:11:49", "clock": "093800", "date": "20261030", "bar": "093600", "close": 1338.8, "side": "sell", "reason": "상단 이탈 뒤 복귀", "stop_ticks": 31, "vwap": 1337.951, "sigma": 0.859, "upper": 1339.239, "lower": 1336.663, "atr": 1.015}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "093900", "side": "sell", "price": 1338.8, "source": "paper", "fee": 690.0, "text": "종이 체결 · 진입 (sell)"}
+{"kind": "event", "at": "2026-10-30T16:11:49", "clock": "093900", "text": "진입 sell 1338.8 · 손절 1341.9 (31틱)"}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "094000", "side": "buy", "price": 1338.0, "source": "paper", "fee": 690.0, "text": "종이 체결 · 청산 · 익절"}
+{"kind": "trade", "at": "2026-10-30T16:11:49", "clock": "094000", "text": "익절 +8틱 (+8,000원) · 수수료 1,380원 → +6,620원", "side": "sell", "entry": 1338.8, "exit": 1338.0, "entry_time": "093900", "exit_time": "094000", "ticks": 8, "pnl": 8000, "fee": 1380.0, "pnl_after_fee": 6620.0}
+{"kind": "signal", "at": "2026-10-30T16:11:49", "clock": "102900", "date": "20261030", "bar": "102700", "close": 1337.2, "side": "buy", "reason": "하단 이탈 뒤 복귀", "stop_ticks": 30, "vwap": 1338.023, "sigma": 0.724, "upper": 1339.109, "lower": 1336.937, "atr": 0.972}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "103000", "side": "buy", "price": 1337.2, "source": "paper", "fee": 690.0, "text": "종이 체결 · 진입 (buy)"}
+{"kind": "event", "at": "2026-10-30T16:11:49", "clock": "103000", "text": "진입 buy 1337.2 · 손절 1334.2 (30틱)"}
+{"kind": "signal", "at": "2026-10-30T16:11:49", "clock": "104400", "date": "20261030", "bar": "104200", "close": 1337.1, "side": null, "reason": "buy 신호 · 보유 중", "stop_ticks": 28, "vwap": 1337.904, "sigma": 0.767, "upper": 1339.055, "lower": 1336.754, "atr": 0.916}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "105200", "side": "sell", "price": 1337.8, "source": "paper", "fee": 690.0, "text": "종이 체결 · 청산 · 익절"}
+{"kind": "trade", "at": "2026-10-30T16:11:49", "clock": "105200", "text": "익절 +6틱 (+6,000원) · 수수료 1,380원 → +4,620원", "side": "buy", "entry": 1337.2, "exit": 1337.8, "entry_time": "103000", "exit_time": "105200", "ticks": 6, "pnl": 6000, "fee": 1380.0, "pnl_after_fee": 4620.0}
+{"kind": "signal", "at": "2026-10-30T16:11:49", "clock": "110800", "date": "20261030", "bar": "110600", "close": 1336.7, "side": "buy", "reason": "하단 이탈 뒤 복귀", "stop_ticks": 25, "vwap": 1337.78, "sigma": 0.793, "upper": 1338.969, "lower": 1336.591, "atr": 0.802}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "110900", "side": "buy", "price": 1336.8, "source": "paper", "fee": 690.0, "text": "종이 체결 · 진입 (buy)"}
+{"kind": "event", "at": "2026-10-30T16:11:49", "clock": "110900", "text": "진입 buy 1336.8 · 손절 1334.3 (25틱)"}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "111900", "side": "sell", "price": 1337.7, "source": "paper", "fee": 690.0, "text": "종이 체결 · 청산 · 익절"}
+{"kind": "trade", "at": "2026-10-30T16:11:49", "clock": "111900", "text": "익절 +9틱 (+9,000원) · 수수료 1,380원 → +7,620원", "side": "buy", "entry": 1336.8, "exit": 1337.7, "entry_time": "110900", "exit_time": "111900", "ticks": 9, "pnl": 9000, "fee": 1380.0, "pnl_after_fee": 7620.0}
+{"kind": "signal", "at": "2026-10-30T16:11:49", "clock": "123500", "date": "20261030", "bar": "123300", "close": 1336.0, "side": "buy", "reason": "하단 이탈 뒤 복귀", "stop_ticks": 22, "vwap": 1337.436, "sigma": 1.125, "upper": 1339.124, "lower": 1335.749, "atr": 0.704}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "123600", "side": "buy", "price": 1336.1, "source": "paper", "fee": 690.0, "text": "종이 체결 · 진입 (buy)"}
+{"kind": "event", "at": "2026-10-30T16:11:49", "clock": "123600", "text": "진입 buy 1336.1 · 손절 1333.9 (22틱)"}
+{"kind": "signal", "at": "2026-10-30T16:11:49", "clock": "131100", "date": "20261030", "bar": "130900", "close": 1336.0, "side": null, "reason": "buy 신호 · 보유 중", "stop_ticks": 20, "vwap": 1337.308, "sigma": 1.16, "upper": 1339.048, "lower": 1335.569, "atr": 0.636}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "142400", "side": "sell", "price": 1333.8, "source": "paper", "fee": 690.0, "text": "종이 체결 · 청산 · 손절"}
+{"kind": "trade", "at": "2026-10-30T16:11:49", "clock": "142400", "text": "손절 -23틱 (-23,000원) · 수수료 1,380원 → -24,380원", "side": "buy", "entry": 1336.1, "exit": 1333.8, "entry_time": "123600", "exit_time": "142400", "ticks": -23, "pnl": -23000, "fee": 1380.0, "pnl_after_fee": -24380.0}
+{"kind": "signal", "at": "2026-10-30T16:11:49", "clock": "143500", "date": "20261030", "bar": "143300", "close": 1335.3, "side": "buy", "reason": "하단 이탈 뒤 복귀", "stop_ticks": 20, "vwap": 1337.041, "sigma": 1.252, "upper": 1338.919, "lower": 1335.163, "atr": 0.641}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "143600", "side": "buy", "price": 1335.3, "source": "paper", "fee": 690.0, "text": "종이 체결 · 진입 (buy)"}
+{"kind": "event", "at": "2026-10-30T16:11:49", "clock": "143600", "text": "진입 buy 1335.3 · 손절 1333.3 (20틱)"}
+{"kind": "signal", "at": "2026-10-30T16:11:49", "clock": "144400", "date": "20261030", "bar": "144200", "close": 1335.7, "side": null, "reason": "buy 신호 · 보유 중", "stop_ticks": 21, "vwap": 1336.998, "sigma": 1.269, "upper": 1338.903, "lower": 1335.094, "atr": 0.675}
+{"kind": "fill", "at": "2026-10-30T16:11:49", "clock": "151800", "side": "sell", "price": 1333.2, "source": "paper", "fee": 690.0, "text": "종이 체결 · 청산 · 손절"}
+{"kind": "trade", "at": "2026-10-30T16:11:49", "clock": "151800", "text": "손절 -21틱 (-21,000원) · 수수료 1,380원 → -22,380원", "side": "buy", "entry": 1335.3, "exit": 1333.2, "entry_time": "143600", "exit_time": "151800", "ticks": -21, "pnl": -21000, "fee": 1380.0, "pnl_after_fee": -22380.0}

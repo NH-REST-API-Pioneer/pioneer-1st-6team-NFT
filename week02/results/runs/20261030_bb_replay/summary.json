@@ -1,0 +1,79 @@
+{
+ "trades": [
+  {
+   "side": "sell",
+   "entry": 1339.6,
+   "entry_time": "093500",
+   "signal_time": "093400",
+   "stop_ticks": 18,
+   "stop": 1341.4,
+   "entry_fee": 690.0,
+   "exit": 1337.7,
+   "exit_time": "101700",
+   "reason": "익절",
+   "ticks": 19,
+   "pnl": 19000,
+   "exit_fee": 690.0,
+   "fee": 1380.0,
+   "pnl_after_fee": 17620.0,
+   "entry_date": "20261030",
+   "exit_date": "20261030"
+  },
+  {
+   "side": "buy",
+   "entry": 1334.9,
+   "entry_time": "121000",
+   "signal_time": "120900",
+   "stop_ticks": 16,
+   "stop": 1333.3,
+   "entry_fee": 690.0,
+   "exit": 1336.7,
+   "exit_time": "124000",
+   "reason": "익절",
+   "ticks": 18,
+   "pnl": 18000,
+   "exit_fee": 690.0,
+   "fee": 1380.0,
+   "pnl_after_fee": 16620.0,
+   "entry_date": "20261030",
+   "exit_date": "20261030"
+  },
+  {
+   "side": "buy",
+   "entry": 1334.1,
+   "entry_time": "142500",
+   "signal_time": "142400",
+   "stop_ticks": 13,
+   "stop": 1332.8,
+   "entry_fee": 690.0,
+   "exit": 1335.8,
+   "exit_time": "144400",
+   "reason": "익절",
+   "ticks": 17,
+   "pnl": 17000,
+   "exit_fee": 690.0,
+   "fee": 1380.0,
+   "pnl_after_fee": 15620.0,
+   "entry_date": "20261030",
+   "exit_date": "20261030"
+  }
+ ],
+ "summary": {
+  "trades": 3,
+  "wins": 3,
+  "win_rate": 1.0,
+  "net_pnl": 54000,
+  "profit_factor": null,
+  "avg_win": 18000,
+  "avg_loss": null,
+  "max_drawdown": 0.0,
+  "by_reason": {
+   "익절": 3
+  },
+  "by_day": {
+   "20261030": 54000
+  },
+  "fee_total": 4140.0,
+  "net_pnl_after_fee": 49860.0
+ }
+}

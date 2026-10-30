@@ -22,6 +22,7 @@
   caffeinate -i -s python3 runner.py --strategy vwap --orders     # 모의계좌 주문
   caffeinate -i -s python3 runner.py --strategy bb                 # 종이 체결
   python3 runner.py --strategy vwap --replay 20261027              # 지난 하루 다시 돌리기
+  python3 runner.py --strategy vwap --replay 20261030 --data results/data/bars_1m_A756B000_20261030.csv
   python3 runner.py --order-test                                   # 장중에 주문 경로만 점검 (매수 1 → 매도 1)
 """
 from __future__ import annotations
@@ -40,6 +41,7 @@ from strategy import TICK, TICK_VALUE, Minute, minutes_of, pnl_ticks, stop_price
 
 HERE = Path(__file__).parent
 SLIP = TICK                      # 종이 체결 슬리피지 1틱 (백테스트와 같음)
+PAPER_FEE = 690.0                # 종이 체결 수수료 (1계약 1번 체결) — 10/30 모의계좌 체결마다 690원
 END_TIME = "153100"              # 15:30 정리 뒤 이 시각에 끝냄
 
 
@@ -98,25 +100,29 @@ class Journal:
         self.f.flush()
         if kind in ("event", "order", "fill", "trade", "account") or (kind == "signal" and data.get("side")):
             msg = data.get("text") or data.get("reason") or ""
-            print(f"[{data.get('clock', rec['at'][11:19])}] {kind:6s} {msg} "
+            c = str(data.get("clock", ""))
+            hms = f"{c[:2]}:{c[2:4]}:{c[4:6]}" if len(c) == 6 and c.isdigit() else rec["at"][11:19]
+            print(f"[{hms}] {kind:6s} {msg} "
                   f"{ {k: v for k, v in data.items() if k not in ('text', 'reason', 'clock', 'raw')} }")
 
 
 # ---------------------------------------------------------------- 체결 담당
 class PaperBroker:
-    """주문을 내지 않고 기준가 ∓ 1틱(불리한 쪽)으로 체결된 것으로 봅니다."""
+    """주문을 내지 않고 기준가 ∓ 1틱(불리한 쪽)으로 체결된 것으로 봅니다. 수수료는 체결마다 fee 원."""
     mode = "paper"
 
-    def __init__(self, journal: Journal):
+    def __init__(self, journal: Journal, fee: float = PAPER_FEE):
         self.j = journal
-        self.last_fill_fee: float | None = None    # 종이 체결은 수수료를 모름
+        self.fee = fee
+        self.last_fill_fee: float | None = fee
 
     def account(self, clock: str = "", why: str = "") -> dict | None:
         return None
 
     def fill(self, side: str, ref_price: float, clock: str, why: str) -> float | None:
         px = round(ref_price + SLIP if side == "buy" else ref_price - SLIP, 1)
-        self.j.write("fill", clock=clock, side=side, price=px, source="paper", text=f"종이 체결 · {why}")
+        self.j.write("fill", clock=clock, side=side, price=px, source="paper", fee=self.fee,
+                     text=f"종이 체결 · {why}")
         return px
 
     def position(self) -> int | None:
@@ -334,10 +340,10 @@ class Runner:
 
 
 # ---------------------------------------------------------------- 다시 돌리기
-def replay(strategy_name: str, date: str, out: Path) -> dict:
+def replay(strategy_name: str, date: str, out: Path, data: Path | None = None) -> dict:
     j = Journal(out / "journal.jsonl")
     r = Runner(strategy_name, PaperBroker(j), j)
-    ms = load_minutes()
+    ms = load_minutes(data) if data else load_minutes()
     r.warmup([m for m in ms if m.date < date])
     r.live_date = date
     today = [m for m in ms if m.date == date]
@@ -495,6 +501,7 @@ def main() -> None:
     ap.add_argument("--exec-cnd", default="1", choices=["1", "2", "3"], help="체결조건 1 FAS · 2 FOK · 3 FAK")
     ap.add_argument("--sym", help="종목코드 (안 주면 미국달러 최근월물)")
     ap.add_argument("--replay", metavar="YYYYMMDD", help="받아 둔 1분봉으로 그날 다시 돌리기")
+    ap.add_argument("--data", type=Path, help="--replay 에 쓸 1분봉 CSV (안 주면 results/data/bars_1m_A756B000.csv)")
     args = ap.parse_args()
 
     if not args.order_test and not args.strategy:
@@ -509,7 +516,7 @@ def main() -> None:
     mode = "replay" if args.replay else ("orders" if args.orders else "paper")
     out = HERE / "results" / "runs" / f"{stamp}_{args.strategy}_{mode}"
     if args.replay:
-        res = replay(args.strategy, args.replay, out)
+        res = replay(args.strategy, args.replay, out, args.data)
     else:
         res = live(args.strategy, args.orders, args.exec_cnd, args.sym, out)
     summary = out / "summary.json"

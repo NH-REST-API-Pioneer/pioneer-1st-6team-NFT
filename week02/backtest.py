@@ -151,13 +151,18 @@ def summarize(trades: list[dict]) -> dict:
         by_reason[t["reason"]] = by_reason.get(t["reason"], 0) + 1
         by_day[t["exit_date"]] = by_day.get(t["exit_date"], 0) + t["pnl"]
     gp, gl = sum(wins), -sum(losses)
-    return {
+    out = {
         "trades": n, "wins": len(wins), "win_rate": round(len(wins) / n, 3) if n else None,
         "net_pnl": sum(pnl), "profit_factor": round(gp / gl, 2) if gl > 0 else None,
         "avg_win": round(gp / len(wins)) if wins else None,
         "avg_loss": round(-gl / len(losses)) if losses else None,
         "max_drawdown": mdd, "by_reason": by_reason, "by_day": by_day,
     }
+    fees = [t.get("fee") for t in trades]
+    if trades and None not in fees:      # 실행기 거래(수수료를 아는 경우)만 — 백테스트 거래에는 fee 가 없음
+        out["fee_total"] = sum(fees)
+        out["net_pnl_after_fee"] = sum(pnl) - sum(fees)
+    return out
 
 
 GRID = {
