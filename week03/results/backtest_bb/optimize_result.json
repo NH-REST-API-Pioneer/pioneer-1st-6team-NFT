@@ -1,0 +1,3275 @@
+{
+ "train_days": [
+  "20261012",
+  "20261013",
+  "20261014",
+  "20261015",
+  "20261016",
+  "20261019",
+  "20261020",
+  "20261021",
+  "20261022",
+  "20261023",
+  "20261026"
+ ],
+ "test_days": [
+  "20261027",
+  "20261028",
+  "20261029",
+  "20261030",
+  "20261102"
+ ],
+ "grid": {
+  "bar_min": [
+   1,
+   5,
+   15
+  ],
+  "band_k": [
+   1.5,
+   2.0,
+   2.5
+  ],
+  "rsi_buy": [
+   30.0,
+   35.0,
+   40.0,
+   100.0
+  ],
+  "confirm": [
+   true,
+   false
+  ],
+  "stop_atr": [
+   1.5,
+   2.0,
+   3.0
+  ],
+  "hold_min": [
+   60,
+   120
+  ]
+ },
+ "min_trades": 15,
+ "fee": 0.0,
+ "split": "전체 기간을 이어서 돌린 뒤 진입일로 학습/검증을 나눔",
+ "picked": {
+  "출발값": {
+   "params": {
+    "bar_min": 5,
+    "bb_period": 20,
+    "band_k": 1.5,
+    "rsi_period": 14,
+    "rsi_buy": 35.0,
+    "confirm": false,
+    "stop_atr": 1.5,
+    "atr_period": 14,
+    "min_stop_ticks": 3,
+    "min_edge_ticks": 3,
+    "hold_min": 120,
+    "cooldown_bars": 1,
+    "max_stops_per_day": 2,
+    "session_start": "082500",
+    "entry_start": "082500",
+    "entry_end": "233000",
+    "flatten_at": "235000"
+   },
+   "train": {
+    "bar_min": 5,
+    "band_k": 1.5,
+    "rsi_buy": 35.0,
+    "confirm": false,
+    "stop_atr": 1.5,
+    "hold_min": 120,
+    "trades": 36,
+    "win_rate": 0.333,
+    "net_pnl": -132.5,
+    "profit_factor": 0.67,
+    "max_drawdown": 187.5,
+    "neighbor_avg_pnl": -144.7,
+    "eligible": true
+   },
+   "test": {
+    "trades": 13,
+    "wins": 3,
+    "win_rate": 0.231,
+    "net_pnl": -85.0,
+    "profit_factor": 0.47,
+    "avg_win": 25.0,
+    "avg_loss": -16.0,
+    "max_drawdown": 92.5,
+    "fee_total": 0.0,
+    "by_reason": {
+     "손절": 10,
+     "익절": 3
+    },
+    "by_block": {
+     "서울 장": {
+      "trades": 8,
+      "pnl": -15.0
+     },
+     "런던": {
+      "trades": 2,
+      "pnl": -25.0
+     },
+     "개장 전": {
+      "trades": 3,
+      "pnl": -45.0
+     }
+    },
+    "by_day": {
+     "20261027": -5.0,
+     "20261028": -27.5,
+     "20261029": -32.5,
+     "20261030": 20.0,
+     "20261102": -40.0
+    }
+   },
+   "test_trades": [
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "090900",
+     "entry_date": "20261027",
+     "entry_time": "091000",
+     "entry": 0.7552,
+     "stop": 0.7558,
+     "stop_ticks": 6,
+     "target": null,
+     "deadline": "111000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261027",
+     "exit_time": "091700",
+     "exit": 0.7559,
+     "reason": "손절",
+     "ticks": -7,
+     "fee": 0.0,
+     "pnl": -17.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "092900",
+     "entry_date": "20261027",
+     "entry_time": "093000",
+     "entry": 0.7558,
+     "stop": 0.7564,
+     "stop_ticks": 6,
+     "target": null,
+     "deadline": "113000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261027",
+     "exit_time": "094800",
+     "exit": 0.7548,
+     "reason": "익절",
+     "ticks": 10,
+     "fee": 0.0,
+     "pnl": 25.0
+    },
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "165700",
+     "entry_date": "20261027",
+     "entry_time": "170100",
+     "entry": 0.7543,
+     "stop": 0.7539,
+     "stop_ticks": 4,
+     "target": null,
+     "deadline": "190100",
+     "deadline_reason": "시간 청산",
+     "block": "런던",
+     "exit_date": "20261027",
+     "exit_time": "172200",
+     "exit": 0.7538,
+     "reason": "손절",
+     "ticks": -5,
+     "fee": 0.0,
+     "pnl": -12.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "083400",
+     "entry_date": "20261028",
+     "entry_time": "084400",
+     "entry": 0.7544,
+     "stop": 0.7547,
+     "stop_ticks": 3,
+     "target": null,
+     "deadline": "104400",
+     "deadline_reason": "시간 청산",
+     "block": "개장 전",
+     "exit_date": "20261028",
+     "exit_time": "084500",
+     "exit": 0.7548,
+     "reason": "손절",
+     "ticks": -4,
+     "fee": 0.0,
+     "pnl": -10.0
+    },
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "092400",
+     "entry_date": "20261028",
+     "entry_time": "092500",
+     "entry": 0.7528,
+     "stop": 0.7522,
+     "stop_ticks": 6,
+     "target": null,
+     "deadline": "112500",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261028",
+     "exit_time": "092900",
+     "exit": 0.7521,
+     "reason": "손절",
+     "ticks": -7,
+     "fee": 0.0,
+     "pnl": -17.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "085400",
+     "entry_date": "20261029",
+     "entry_time": "085500",
+     "entry": 0.7463,
+     "stop": 0.7468,
+     "stop_ticks": 5,
+     "target": null,
+     "deadline": "105500",
+     "deadline_reason": "시간 청산",
+     "block": "개장 전",
+     "exit_date": "20261029",
+     "exit_time": "090300",
+     "exit": 0.7469,
+     "reason": "손절",
+     "ticks": -6,
+     "fee": 0.0,
+     "pnl": -15.0
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "090900",
+     "entry_date": "20261029",
+     "entry_time": "091000",
+     "entry": 0.7465,
+     "stop": 0.7471,
+     "stop_ticks": 6,
+     "target": null,
+     "deadline": "111000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261029",
+     "exit_time": "091100",
+     "exit": 0.7472,
+     "reason": "손절",
+     "ticks": -7,
+     "fee": 0.0,
+     "pnl": -17.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "120900",
+     "entry_date": "20261030",
+     "entry_time": "121000",
+     "entry": 0.749,
+     "stop": 0.7497,
+     "stop_ticks": 7,
+     "target": null,
+     "deadline": "141000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261030",
+     "exit_time": "124100",
+     "exit": 0.7479,
+     "reason": "익절",
+     "ticks": 11,
+     "fee": 0.0,
+     "pnl": 27.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "142400",
+     "entry_date": "20261030",
+     "entry_time": "142500",
+     "entry": 0.7493,
+     "stop": 0.7498,
+     "stop_ticks": 5,
+     "target": null,
+     "deadline": "162500",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261030",
+     "exit_time": "144500",
+     "exit": 0.7484,
+     "reason": "익절",
+     "ticks": 9,
+     "fee": 0.0,
+     "pnl": 22.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "151900",
+     "entry_date": "20261030",
+     "entry_time": "152000",
+     "entry": 0.7498,
+     "stop": 0.7504,
+     "stop_ticks": 6,
+     "target": null,
+     "deadline": "172000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261030",
+     "exit_time": "162000",
+     "exit": 0.7505,
+     "reason": "손절",
+     "ticks": -7,
+     "fee": 0.0,
+     "pnl": -17.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "200700",
+     "entry_date": "20261030",
+     "entry_time": "202100",
+     "entry": 0.7495,
+     "stop": 0.7499,
+     "stop_ticks": 4,
+     "target": null,
+     "deadline": "222100",
+     "deadline_reason": "시간 청산",
+     "block": "런던",
+     "exit_date": "20261030",
+     "exit_time": "202900",
+     "exit": 0.75,
+     "reason": "손절",
+     "ticks": -5,
+     "fee": 0.0,
+     "pnl": -12.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "082500",
+     "entry_date": "20261102",
+     "entry_time": "083200",
+     "entry": 0.7496,
+     "stop": 0.7501,
+     "stop_ticks": 5,
+     "target": null,
+     "deadline": "103200",
+     "deadline_reason": "시간 청산",
+     "block": "개장 전",
+     "exit_date": "20261102",
+     "exit_time": "084400",
+     "exit": 0.7504,
+     "reason": "손절",
+     "ticks": -8,
+     "fee": 0.0,
+     "pnl": -20.0
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "085200",
+     "entry_date": "20261102",
+     "entry_time": "090100",
+     "entry": 0.75,
+     "stop": 0.7507,
+     "stop_ticks": 7,
+     "target": null,
+     "deadline": "110100",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261102",
+     "exit_time": "090100",
+     "exit": 0.7508,
+     "reason": "손절",
+     "ticks": -8,
+     "fee": 0.0,
+     "pnl": -20.0
+    }
+   ],
+   "test_signals": [
+    {
+     "date": "20261027",
+     "time": "083200",
+     "bar": "083000",
+     "close": 0.7548,
+     "rsi": 61.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "084900",
+     "bar": "084500",
+     "close": 0.7548,
+     "rsi": 61.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "085200",
+     "bar": "085000",
+     "close": 0.7549,
+     "rsi": 62.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "090400",
+     "bar": "090000",
+     "close": 0.7549,
+     "rsi": 61.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "090900",
+     "bar": "090500",
+     "close": 0.7552,
+     "rsi": 65.9,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 66 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261027",
+     "time": "091400",
+     "bar": "091000",
+     "close": 0.7551,
+     "rsi": 63.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "091900",
+     "bar": "091500",
+     "close": 0.756,
+     "rsi": 73.9,
+     "side": null,
+     "reason": "sell 신호 · 청산 뒤 대기"
+    },
+    {
+     "date": "20261027",
+     "time": "092400",
+     "bar": "092000",
+     "close": 0.7556,
+     "rsi": 64.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 65 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "092900",
+     "bar": "092500",
+     "close": 0.7557,
+     "rsi": 65.9,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 66 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261027",
+     "time": "101700",
+     "bar": "101500",
+     "close": 0.7544,
+     "rsi": 42.4,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 42 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "104900",
+     "bar": "104500",
+     "close": 0.756,
+     "rsi": 62.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 62 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "120200",
+     "bar": "120000",
+     "close": 0.7549,
+     "rsi": 42.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 42 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "120900",
+     "bar": "120500",
+     "close": 0.7547,
+     "rsi": 39.4,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "121300",
+     "bar": "121000",
+     "close": 0.7546,
+     "rsi": 38.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 38 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "121900",
+     "bar": "121500",
+     "close": 0.7546,
+     "rsi": 38.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 38 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "122400",
+     "bar": "122000",
+     "close": 0.7545,
+     "rsi": 36.5,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 36 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "131900",
+     "bar": "131500",
+     "close": 0.7554,
+     "rsi": 59.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 59 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "132200",
+     "bar": "132000",
+     "close": 0.7554,
+     "rsi": 59.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 59 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "135400",
+     "bar": "135000",
+     "close": 0.7556,
+     "rsi": 61.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "142900",
+     "bar": "142500",
+     "close": 0.7557,
+     "rsi": 59.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 60 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "143400",
+     "bar": "143000",
+     "close": 0.7558,
+     "rsi": 61.5,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "143800",
+     "bar": "143500",
+     "close": 0.7558,
+     "rsi": 61.5,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "154300",
+     "bar": "154000",
+     "close": 0.755,
+     "rsi": 38.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "154700",
+     "bar": "154500",
+     "close": 0.7549,
+     "rsi": 37.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 37 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "165700",
+     "bar": "165500",
+     "close": 0.7546,
+     "rsi": 33.9,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 34 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261027",
+     "time": "170300",
+     "bar": "170000",
+     "close": 0.7544,
+     "rsi": 30.5,
+     "side": null,
+     "reason": "buy 신호 · 보유 중"
+    },
+    {
+     "date": "20261027",
+     "time": "170700",
+     "bar": "170500",
+     "close": 0.7544,
+     "rsi": 30.5,
+     "side": null,
+     "reason": "buy 신호 · 보유 중"
+    },
+    {
+     "date": "20261027",
+     "time": "171300",
+     "bar": "171000",
+     "close": 0.7542,
+     "rsi": 27.4,
+     "side": null,
+     "reason": "buy 신호 · 보유 중"
+    },
+    {
+     "date": "20261027",
+     "time": "171700",
+     "bar": "171500",
+     "close": 0.7541,
+     "rsi": 26.0,
+     "side": null,
+     "reason": "buy 신호 · 청산 뒤 대기"
+    },
+    {
+     "date": "20261027",
+     "time": "172200",
+     "bar": "172000",
+     "close": 0.7539,
+     "rsi": 23.3,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261027",
+     "time": "172600",
+     "bar": "172500",
+     "close": 0.7538,
+     "rsi": 22.1,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261027",
+     "time": "183900",
+     "bar": "183500",
+     "close": 0.7532,
+     "rsi": 24.3,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261027",
+     "time": "184200",
+     "bar": "184000",
+     "close": 0.7532,
+     "rsi": 24.3,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261027",
+     "time": "190200",
+     "bar": "190000",
+     "close": 0.7534,
+     "rsi": 38.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 38 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "190900",
+     "bar": "190500",
+     "close": 0.7527,
+     "rsi": 30.1,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261027",
+     "time": "191200",
+     "bar": "191000",
+     "close": 0.7529,
+     "rsi": 34.3,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261027",
+     "time": "191600",
+     "bar": "191500",
+     "close": 0.7527,
+     "rsi": 32.2,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261027",
+     "time": "192700",
+     "bar": "192500",
+     "close": 0.7527,
+     "rsi": 34.9,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261027",
+     "time": "200900",
+     "bar": "200500",
+     "close": 0.754,
+     "rsi": 56.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 57 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "212800",
+     "bar": "212500",
+     "close": 0.7541,
+     "rsi": 59.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 60 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "232400",
+     "bar": "232000",
+     "close": 0.7538,
+     "rsi": 57.4,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 57 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "232800",
+     "bar": "232500",
+     "close": 0.7538,
+     "rsi": 57.4,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 57 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "233400",
+     "bar": "233000",
+     "close": 0.7541,
+     "rsi": 64.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 64 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261027",
+     "time": "233900",
+     "bar": "233500",
+     "close": 0.7542,
+     "rsi": 66.0,
+     "side": null,
+     "reason": "sell 신호 · 진입 시간 밖"
+    },
+    {
+     "date": "20261027",
+     "time": "234300",
+     "bar": "234000",
+     "close": 0.7542,
+     "rsi": 66.0,
+     "side": null,
+     "reason": "sell 신호 · 진입 시간 밖"
+    },
+    {
+     "date": "20261028",
+     "time": "083400",
+     "bar": "083000",
+     "close": 0.7543,
+     "rsi": 65.4,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 65 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "084400",
+     "bar": "084000",
+     "close": 0.7545,
+     "rsi": 69.2,
+     "side": null,
+     "reason": "sell 신호 · 보유 중"
+    },
+    {
+     "date": "20261028",
+     "time": "091900",
+     "bar": "091500",
+     "close": 0.7531,
+     "rsi": 35.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 35 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "092400",
+     "bar": "092000",
+     "close": 0.7528,
+     "rsi": 30.9,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 31 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "092900",
+     "bar": "092500",
+     "close": 0.7522,
+     "rsi": 24.6,
+     "side": null,
+     "reason": "buy 신호 · 청산 뒤 대기"
+    },
+    {
+     "date": "20261028",
+     "time": "093400",
+     "bar": "093000",
+     "close": 0.7525,
+     "rsi": 32.0,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "093900",
+     "bar": "093500",
+     "close": 0.7514,
+     "rsi": 23.0,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "094400",
+     "bar": "094000",
+     "close": 0.7516,
+     "rsi": 27.0,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "094900",
+     "bar": "094500",
+     "close": 0.7518,
+     "rsi": 30.9,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "095400",
+     "bar": "095000",
+     "close": 0.7509,
+     "rsi": 24.6,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "095900",
+     "bar": "095500",
+     "close": 0.751,
+     "rsi": 26.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "100400",
+     "bar": "100000",
+     "close": 0.7502,
+     "rsi": 21.9,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "100900",
+     "bar": "100500",
+     "close": 0.7506,
+     "rsi": 28.5,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "101900",
+     "bar": "101500",
+     "close": 0.75,
+     "rsi": 26.6,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "102400",
+     "bar": "102000",
+     "close": 0.7497,
+     "rsi": 25.0,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "102900",
+     "bar": "102500",
+     "close": 0.7489,
+     "rsi": 21.3,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "103400",
+     "bar": "103000",
+     "close": 0.7491,
+     "rsi": 24.3,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "103900",
+     "bar": "103500",
+     "close": 0.7486,
+     "rsi": 22.1,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "104400",
+     "bar": "104000",
+     "close": 0.7487,
+     "rsi": 23.6,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "112900",
+     "bar": "112500",
+     "close": 0.7479,
+     "rsi": 25.2,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "113400",
+     "bar": "113000",
+     "close": 0.7475,
+     "rsi": 23.0,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "113900",
+     "bar": "113500",
+     "close": 0.7472,
+     "rsi": 21.5,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "121900",
+     "bar": "121500",
+     "close": 0.7472,
+     "rsi": 32.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "122400",
+     "bar": "122000",
+     "close": 0.7472,
+     "rsi": 32.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "124900",
+     "bar": "124500",
+     "close": 0.7467,
+     "rsi": 28.9,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "130300",
+     "bar": "130000",
+     "close": 0.7464,
+     "rsi": 27.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "130800",
+     "bar": "130500",
+     "close": 0.7463,
+     "rsi": 26.6,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "134400",
+     "bar": "134000",
+     "close": 0.7457,
+     "rsi": 27.8,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "134900",
+     "bar": "134500",
+     "close": 0.7455,
+     "rsi": 26.2,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "135400",
+     "bar": "135000",
+     "close": 0.7454,
+     "rsi": 25.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "135900",
+     "bar": "135500",
+     "close": 0.7452,
+     "rsi": 23.9,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "143900",
+     "bar": "143500",
+     "close": 0.7472,
+     "rsi": 57.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 58 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "144400",
+     "bar": "144000",
+     "close": 0.7476,
+     "rsi": 62.7,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "150400",
+     "bar": "150000",
+     "close": 0.7482,
+     "rsi": 67.0,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "150800",
+     "bar": "150500",
+     "close": 0.7481,
+     "rsi": 65.2,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "151400",
+     "bar": "151000",
+     "close": 0.7482,
+     "rsi": 66.2,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "162400",
+     "bar": "162000",
+     "close": 0.7485,
+     "rsi": 65.4,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "162900",
+     "bar": "162500",
+     "close": 0.7487,
+     "rsi": 67.4,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "172700",
+     "bar": "172500",
+     "close": 0.7467,
+     "rsi": 39.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "173200",
+     "bar": "173000",
+     "close": 0.7465,
+     "rsi": 37.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 37 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "173800",
+     "bar": "173500",
+     "close": 0.7465,
+     "rsi": 37.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 37 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "174300",
+     "bar": "174000",
+     "close": 0.7465,
+     "rsi": 37.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 37 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "193900",
+     "bar": "193500",
+     "close": 0.7473,
+     "rsi": 54.5,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 55 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "201900",
+     "bar": "201500",
+     "close": 0.7465,
+     "rsi": 40.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 40 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "202400",
+     "bar": "202000",
+     "close": 0.7462,
+     "rsi": 36.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 36 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261028",
+     "time": "202900",
+     "bar": "202500",
+     "close": 0.7459,
+     "rsi": 32.5,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "205400",
+     "bar": "205000",
+     "close": 0.7458,
+     "rsi": 31.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "205800",
+     "bar": "205500",
+     "close": 0.7447,
+     "rsi": 22.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "210400",
+     "bar": "210000",
+     "close": 0.7445,
+     "rsi": 21.2,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "210900",
+     "bar": "210500",
+     "close": 0.7446,
+     "rsi": 23.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "211300",
+     "bar": "211000",
+     "close": 0.7449,
+     "rsi": 29.7,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261028",
+     "time": "233400",
+     "bar": "233000",
+     "close": 0.745,
+     "rsi": 31.9,
+     "side": null,
+     "reason": "buy 신호 · 진입 시간 밖"
+    },
+    {
+     "date": "20261028",
+     "time": "233800",
+     "bar": "233500",
+     "close": 0.7448,
+     "rsi": 28.9,
+     "side": null,
+     "reason": "buy 신호 · 진입 시간 밖"
+    },
+    {
+     "date": "20261028",
+     "time": "234400",
+     "bar": "234000",
+     "close": 0.7448,
+     "rsi": 28.9,
+     "side": null,
+     "reason": "buy 신호 · 진입 시간 밖"
+    },
+    {
+     "date": "20261028",
+     "time": "234700",
+     "bar": "234500",
+     "close": 0.7448,
+     "rsi": 28.9,
+     "side": null,
+     "reason": "buy 신호 · 진입 시간 밖"
+    },
+    {
+     "date": "20261028",
+     "time": "235400",
+     "bar": "235000",
+     "close": 0.7448,
+     "rsi": 28.9,
+     "side": null,
+     "reason": "buy 신호 · 진입 시간 밖"
+    },
+    {
+     "date": "20261029",
+     "time": "084900",
+     "bar": "084500",
+     "close": 0.7459,
+     "rsi": 61.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "085400",
+     "bar": "085000",
+     "close": 0.7464,
+     "rsi": 68.6,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 69 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261029",
+     "time": "090400",
+     "bar": "090000",
+     "close": 0.7464,
+     "rsi": 63.6,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 64 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "090900",
+     "bar": "090500",
+     "close": 0.7466,
+     "rsi": 65.8,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 66 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261029",
+     "time": "091400",
+     "bar": "091000",
+     "close": 0.7477,
+     "rsi": 75.1,
+     "side": null,
+     "reason": "sell 신호 · 청산 뒤 대기"
+    },
+    {
+     "date": "20261029",
+     "time": "091900",
+     "bar": "091500",
+     "close": 0.747,
+     "rsi": 63.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "092400",
+     "bar": "092000",
+     "close": 0.747,
+     "rsi": 63.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "092900",
+     "bar": "092500",
+     "close": 0.7477,
+     "rsi": 69.0,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "093400",
+     "bar": "093000",
+     "close": 0.7484,
+     "rsi": 73.4,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "093900",
+     "bar": "093500",
+     "close": 0.7483,
+     "rsi": 71.8,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "094400",
+     "bar": "094000",
+     "close": 0.7483,
+     "rsi": 71.8,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "095400",
+     "bar": "095000",
+     "close": 0.7487,
+     "rsi": 74.5,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "095900",
+     "bar": "095500",
+     "close": 0.7494,
+     "rsi": 78.4,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "100400",
+     "bar": "100000",
+     "close": 0.7496,
+     "rsi": 79.4,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "101400",
+     "bar": "101000",
+     "close": 0.7504,
+     "rsi": 78.5,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "101900",
+     "bar": "101500",
+     "close": 0.7502,
+     "rsi": 75.5,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "102400",
+     "bar": "102000",
+     "close": 0.7504,
+     "rsi": 76.5,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "103400",
+     "bar": "103000",
+     "close": 0.7509,
+     "rsi": 78.9,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "125400",
+     "bar": "125000",
+     "close": 0.7491,
+     "rsi": 44.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 44 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "125900",
+     "bar": "125500",
+     "close": 0.749,
+     "rsi": 43.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 43 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "130400",
+     "bar": "130000",
+     "close": 0.749,
+     "rsi": 43.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 43 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "131900",
+     "bar": "131500",
+     "close": 0.7489,
+     "rsi": 42.5,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 42 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "132400",
+     "bar": "132000",
+     "close": 0.7486,
+     "rsi": 38.5,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "132900",
+     "bar": "132500",
+     "close": 0.7487,
+     "rsi": 40.5,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 41 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "133400",
+     "bar": "133000",
+     "close": 0.7485,
+     "rsi": 37.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 38 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "133700",
+     "bar": "133500",
+     "close": 0.7485,
+     "rsi": 37.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 38 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "134400",
+     "bar": "134000",
+     "close": 0.7479,
+     "rsi": 30.9,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "134800",
+     "bar": "134500",
+     "close": 0.7482,
+     "rsi": 37.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 37 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "154900",
+     "bar": "154500",
+     "close": 0.7486,
+     "rsi": 52.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 53 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "155300",
+     "bar": "155000",
+     "close": 0.7486,
+     "rsi": 52.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 53 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "155800",
+     "bar": "155500",
+     "close": 0.7488,
+     "rsi": 57.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 57 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "160300",
+     "bar": "160000",
+     "close": 0.7489,
+     "rsi": 59.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 59 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "160900",
+     "bar": "160500",
+     "close": 0.7488,
+     "rsi": 56.4,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 56 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "163400",
+     "bar": "163000",
+     "close": 0.7479,
+     "rsi": 36.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 36 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "163800",
+     "bar": "163500",
+     "close": 0.748,
+     "rsi": 39.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "165900",
+     "bar": "165500",
+     "close": 0.749,
+     "rsi": 61.4,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "175400",
+     "bar": "175000",
+     "close": 0.7473,
+     "rsi": 32.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "191100",
+     "bar": "191000",
+     "close": 0.7474,
+     "rsi": 39.4,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "191700",
+     "bar": "191500",
+     "close": 0.747,
+     "rsi": 33.7,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "210400",
+     "bar": "210000",
+     "close": 0.7471,
+     "rsi": 37.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 37 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "220700",
+     "bar": "220500",
+     "close": 0.7479,
+     "rsi": 61.7,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 62 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "221400",
+     "bar": "221000",
+     "close": 0.7478,
+     "rsi": 58.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 58 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "223400",
+     "bar": "223000",
+     "close": 0.7479,
+     "rsi": 57.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 57 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "223900",
+     "bar": "223500",
+     "close": 0.7478,
+     "rsi": 54.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 55 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261029",
+     "time": "230400",
+     "bar": "230000",
+     "close": 0.747,
+     "rsi": 41.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 41 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "082500",
+     "bar": "082500",
+     "close": 0.748,
+     "rsi": 60.7,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "084400",
+     "bar": "084000",
+     "close": 0.7464,
+     "rsi": 36.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 37 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "084900",
+     "bar": "084500",
+     "close": 0.7466,
+     "rsi": 40.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 40 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "085400",
+     "bar": "085000",
+     "close": 0.7464,
+     "rsi": 38.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 38 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "090400",
+     "bar": "090000",
+     "close": 0.7483,
+     "rsi": 60.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "093400",
+     "bar": "093000",
+     "close": 0.7464,
+     "rsi": 41.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 41 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "113900",
+     "bar": "113500",
+     "close": 0.7468,
+     "rsi": 42.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 42 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "120400",
+     "bar": "120000",
+     "close": 0.7482,
+     "rsi": 61.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "120900",
+     "bar": "120500",
+     "close": 0.7489,
+     "rsi": 67.2,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 67 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261030",
+     "time": "121400",
+     "bar": "121000",
+     "close": 0.7491,
+     "rsi": 68.7,
+     "side": null,
+     "reason": "sell 신호 · 보유 중"
+    },
+    {
+     "date": "20261030",
+     "time": "121900",
+     "bar": "121500",
+     "close": 0.7491,
+     "rsi": 68.7,
+     "side": null,
+     "reason": "sell 신호 · 보유 중"
+    },
+    {
+     "date": "20261030",
+     "time": "142400",
+     "bar": "142000",
+     "close": 0.7494,
+     "rsi": 68.0,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 68 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261030",
+     "time": "142800",
+     "bar": "142500",
+     "close": 0.749,
+     "rsi": 60.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "145400",
+     "bar": "145000",
+     "close": 0.7492,
+     "rsi": 60.6,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "145900",
+     "bar": "145500",
+     "close": 0.7493,
+     "rsi": 61.6,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 62 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "151900",
+     "bar": "151500",
+     "close": 0.7498,
+     "rsi": 65.4,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 65 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261030",
+     "time": "152400",
+     "bar": "152000",
+     "close": 0.7497,
+     "rsi": 63.7,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 64 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "162400",
+     "bar": "162000",
+     "close": 0.7504,
+     "rsi": 69.4,
+     "side": null,
+     "reason": "sell 신호 · 청산 뒤 대기"
+    },
+    {
+     "date": "20261030",
+     "time": "174400",
+     "bar": "174000",
+     "close": 0.7494,
+     "rsi": 44.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 45 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "175400",
+     "bar": "175000",
+     "close": 0.7493,
+     "rsi": 43.7,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 44 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "175900",
+     "bar": "175500",
+     "close": 0.7492,
+     "rsi": 42.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 42 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "180300",
+     "bar": "180000",
+     "close": 0.7492,
+     "rsi": 42.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 42 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "180900",
+     "bar": "180500",
+     "close": 0.749,
+     "rsi": 38.6,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "181100",
+     "bar": "181000",
+     "close": 0.749,
+     "rsi": 38.6,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "182400",
+     "bar": "182000",
+     "close": 0.749,
+     "rsi": 39.4,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "194800",
+     "bar": "194500",
+     "close": 0.7489,
+     "rsi": 41.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 41 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "195800",
+     "bar": "195500",
+     "close": 0.7498,
+     "rsi": 63.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "200200",
+     "bar": "200000",
+     "close": 0.7497,
+     "rsi": 60.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 60 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "200700",
+     "bar": "200500",
+     "close": 0.75,
+     "rsi": 65.1,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 65 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261030",
+     "time": "201200",
+     "bar": "201000",
+     "close": 0.7498,
+     "rsi": 59.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 60 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "202900",
+     "bar": "202500",
+     "close": 0.75,
+     "rsi": 61.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "214800",
+     "bar": "214500",
+     "close": 0.749,
+     "rsi": 39.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "215300",
+     "bar": "215000",
+     "close": 0.749,
+     "rsi": 39.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "220300",
+     "bar": "220000",
+     "close": 0.7489,
+     "rsi": 37.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 37 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "220900",
+     "bar": "220500",
+     "close": 0.7489,
+     "rsi": 37.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 37 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "225400",
+     "bar": "225000",
+     "close": 0.7504,
+     "rsi": 72.3,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261030",
+     "time": "225900",
+     "bar": "225500",
+     "close": 0.7504,
+     "rsi": 72.3,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "082500",
+     "bar": "082500",
+     "close": 0.7506,
+     "rsi": 67.6,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 68 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261102",
+     "time": "084400",
+     "bar": "084000",
+     "close": 0.7505,
+     "rsi": 60.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 61 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "084800",
+     "bar": "084500",
+     "close": 0.7507,
+     "rsi": 62.7,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "085200",
+     "bar": "085000",
+     "close": 0.7513,
+     "rsi": 67.4,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 67 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261102",
+     "time": "092800",
+     "bar": "092500",
+     "close": 0.7484,
+     "rsi": 39.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "093400",
+     "bar": "093000",
+     "close": 0.7483,
+     "rsi": 38.4,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 38 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "093900",
+     "bar": "093500",
+     "close": 0.747,
+     "rsi": 30.7,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "094400",
+     "bar": "094000",
+     "close": 0.7467,
+     "rsi": 29.2,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "094900",
+     "bar": "094500",
+     "close": 0.7463,
+     "rsi": 27.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "095400",
+     "bar": "095000",
+     "close": 0.7461,
+     "rsi": 26.5,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "111400",
+     "bar": "111000",
+     "close": 0.746,
+     "rsi": 34.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "111900",
+     "bar": "111500",
+     "close": 0.7456,
+     "rsi": 31.8,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "112400",
+     "bar": "112000",
+     "close": 0.745,
+     "rsi": 28.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "112900",
+     "bar": "112500",
+     "close": 0.7445,
+     "rsi": 25.9,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "113400",
+     "bar": "113000",
+     "close": 0.7446,
+     "rsi": 27.3,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "113900",
+     "bar": "113500",
+     "close": 0.7449,
+     "rsi": 31.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "114400",
+     "bar": "114000",
+     "close": 0.7446,
+     "rsi": 29.6,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "115900",
+     "bar": "115500",
+     "close": 0.7441,
+     "rsi": 26.5,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "121400",
+     "bar": "121000",
+     "close": 0.7433,
+     "rsi": 24.7,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "121900",
+     "bar": "121500",
+     "close": 0.7428,
+     "rsi": 22.4,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "135400",
+     "bar": "135000",
+     "close": 0.744,
+     "rsi": 49.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 49 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "140400",
+     "bar": "140000",
+     "close": 0.7442,
+     "rsi": 52.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 52 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "140900",
+     "bar": "140500",
+     "close": 0.7444,
+     "rsi": 54.5,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 55 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "141400",
+     "bar": "141000",
+     "close": 0.7443,
+     "rsi": 53.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 53 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "141900",
+     "bar": "141500",
+     "close": 0.7449,
+     "rsi": 60.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 60 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "142400",
+     "bar": "142000",
+     "close": 0.7451,
+     "rsi": 62.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 62 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "142900",
+     "bar": "142500",
+     "close": 0.7451,
+     "rsi": 62.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 62 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "143400",
+     "bar": "143000",
+     "close": 0.7453,
+     "rsi": 64.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 64 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "143900",
+     "bar": "143500",
+     "close": 0.7453,
+     "rsi": 64.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 64 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "144400",
+     "bar": "144000",
+     "close": 0.7455,
+     "rsi": 66.2,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "144900",
+     "bar": "144500",
+     "close": 0.7455,
+     "rsi": 66.2,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "145900",
+     "bar": "145500",
+     "close": 0.7457,
+     "rsi": 67.5,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "150900",
+     "bar": "150500",
+     "close": 0.7459,
+     "rsi": 68.6,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "154900",
+     "bar": "154500",
+     "close": 0.7441,
+     "rsi": 40.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 41 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "171100",
+     "bar": "171000",
+     "close": 0.7447,
+     "rsi": 54.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 54 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "172600",
+     "bar": "172500",
+     "close": 0.745,
+     "rsi": 58.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 58 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "173100",
+     "bar": "173000",
+     "close": 0.7453,
+     "rsi": 61.6,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 62 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "173900",
+     "bar": "173500",
+     "close": 0.7454,
+     "rsi": 62.7,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "174400",
+     "bar": "174000",
+     "close": 0.7454,
+     "rsi": 62.7,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "174700",
+     "bar": "174500",
+     "close": 0.7455,
+     "rsi": 64.0,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 64 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "175400",
+     "bar": "175000",
+     "close": 0.7457,
+     "rsi": 66.4,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "175700",
+     "bar": "175500",
+     "close": 0.7457,
+     "rsi": 66.4,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "180900",
+     "bar": "180500",
+     "close": 0.746,
+     "rsi": 68.9,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "181200",
+     "bar": "181000",
+     "close": 0.7461,
+     "rsi": 70.1,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "181800",
+     "bar": "181500",
+     "close": 0.7462,
+     "rsi": 71.2,
+     "side": null,
+     "reason": "sell 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261102",
+     "time": "193100",
+     "bar": "193000",
+     "close": 0.745,
+     "rsi": 43.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 43 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "202900",
+     "bar": "202500",
+     "close": 0.7458,
+     "rsi": 59.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 59 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "205400",
+     "bar": "205000",
+     "close": 0.7449,
+     "rsi": 42.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 42 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "205600",
+     "bar": "205500",
+     "close": 0.7449,
+     "rsi": 42.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 42 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "210300",
+     "bar": "210000",
+     "close": 0.7449,
+     "rsi": 42.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 42 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "215700",
+     "bar": "215500",
+     "close": 0.7447,
+     "rsi": 40.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 40 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "220300",
+     "bar": "220000",
+     "close": 0.7446,
+     "rsi": 38.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 38 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "220900",
+     "bar": "220500",
+     "close": 0.7446,
+     "rsi": 38.3,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 38 가 걸러 진입 안 함"
+    }
+   ]
+  },
+  "학습1위": {
+   "params": {
+    "bar_min": 15,
+    "bb_period": 20,
+    "band_k": 2.5,
+    "rsi_period": 14,
+    "rsi_buy": 35.0,
+    "confirm": false,
+    "stop_atr": 1.5,
+    "atr_period": 14,
+    "min_stop_ticks": 3,
+    "min_edge_ticks": 3,
+    "hold_min": 60,
+    "cooldown_bars": 1,
+    "max_stops_per_day": 2,
+    "session_start": "082500",
+    "entry_start": "082500",
+    "entry_end": "233000",
+    "flatten_at": "235000"
+   },
+   "train": {
+    "bar_min": 15,
+    "band_k": 2.5,
+    "rsi_buy": 35.0,
+    "confirm": false,
+    "stop_atr": 1.5,
+    "hold_min": 60,
+    "trades": 15,
+    "win_rate": 0.4,
+    "net_pnl": 90.0,
+    "profit_factor": 1.55,
+    "max_drawdown": 80.0,
+    "neighbor_avg_pnl": -28.6,
+    "eligible": true
+   },
+   "test": {
+    "trades": 7,
+    "wins": 3,
+    "win_rate": 0.429,
+    "net_pnl": -72.5,
+    "profit_factor": 0.24,
+    "avg_win": 7.5,
+    "avg_loss": -23.8,
+    "max_drawdown": 95.0,
+    "fee_total": 0.0,
+    "by_reason": {
+     "시간 청산": 3,
+     "손절": 3,
+     "익절": 1
+    },
+    "by_block": {
+     "런던": {
+      "trades": 1,
+      "pnl": -7.5
+     },
+     "서울 장": {
+      "trades": 6,
+      "pnl": -65.0
+     }
+    },
+    "by_day": {
+     "20261027": -7.5,
+     "20261028": -57.5,
+     "20261029": -22.5,
+     "20261102": 15.0
+    }
+   },
+   "test_trades": [
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "172200",
+     "entry_date": "20261027",
+     "entry_time": "173000",
+     "entry": 0.7541,
+     "stop": 0.7533,
+     "stop_ticks": 8,
+     "target": null,
+     "deadline": "183000",
+     "deadline_reason": "시간 청산",
+     "block": "런던",
+     "exit_date": "20261027",
+     "exit_time": "183000",
+     "exit": 0.7538,
+     "reason": "시간 청산",
+     "ticks": -3,
+     "fee": 0.0,
+     "pnl": -7.5
+    },
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "093900",
+     "entry_date": "20261028",
+     "entry_time": "094000",
+     "entry": 0.7517,
+     "stop": 0.7507,
+     "stop_ticks": 10,
+     "target": null,
+     "deadline": "104000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261028",
+     "exit_time": "095500",
+     "exit": 0.7506,
+     "reason": "손절",
+     "ticks": -11,
+     "fee": 0.0,
+     "pnl": -27.5
+    },
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "102400",
+     "entry_date": "20261028",
+     "entry_time": "102500",
+     "entry": 0.7497,
+     "stop": 0.7486,
+     "stop_ticks": 11,
+     "target": null,
+     "deadline": "112500",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261028",
+     "exit_time": "102700",
+     "exit": 0.7485,
+     "reason": "손절",
+     "ticks": -12,
+     "fee": 0.0,
+     "pnl": -30.0
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "093900",
+     "entry_date": "20261029",
+     "entry_time": "094000",
+     "entry": 0.7482,
+     "stop": 0.7493,
+     "stop_ticks": 11,
+     "target": null,
+     "deadline": "104000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261029",
+     "exit_time": "095900",
+     "exit": 0.7494,
+     "reason": "손절",
+     "ticks": -12,
+     "fee": 0.0,
+     "pnl": -30.0
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "102400",
+     "entry_date": "20261029",
+     "entry_time": "102500",
+     "entry": 0.7503,
+     "stop": 0.7516,
+     "stop_ticks": 13,
+     "target": null,
+     "deadline": "112500",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261029",
+     "exit_time": "112500",
+     "exit": 0.75,
+     "reason": "시간 청산",
+     "ticks": 3,
+     "fee": 0.0,
+     "pnl": 7.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "085200",
+     "entry_date": "20261102",
+     "entry_time": "090100",
+     "entry": 0.75,
+     "stop": 0.751,
+     "stop_ticks": 10,
+     "target": null,
+     "deadline": "100100",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261102",
+     "exit_time": "090900",
+     "exit": 0.7496,
+     "reason": "익절",
+     "ticks": 4,
+     "fee": 0.0,
+     "pnl": 10.0
+    },
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "095400",
+     "entry_date": "20261102",
+     "entry_time": "095500",
+     "entry": 0.7462,
+     "stop": 0.7449,
+     "stop_ticks": 13,
+     "target": null,
+     "deadline": "105500",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261102",
+     "exit_time": "105500",
+     "exit": 0.7464,
+     "reason": "시간 청산",
+     "ticks": 2,
+     "fee": 0.0,
+     "pnl": 5.0
+    }
+   ],
+   "test_signals": [
+    {
+     "date": "20261027",
+     "time": "172200",
+     "bar": "171000",
+     "close": 0.7539,
+     "rsi": 32.5,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 32 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "093900",
+     "bar": "092500",
+     "close": 0.7514,
+     "rsi": 26.7,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 27 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "095400",
+     "bar": "094000",
+     "close": 0.7509,
+     "rsi": 24.2,
+     "side": null,
+     "reason": "buy 신호 · 보유 중"
+    },
+    {
+     "date": "20261028",
+     "time": "100900",
+     "bar": "095500",
+     "close": 0.7506,
+     "rsi": 22.8,
+     "side": null,
+     "reason": "buy 신호 · 청산 뒤 대기"
+    },
+    {
+     "date": "20261028",
+     "time": "102400",
+     "bar": "101000",
+     "close": 0.7497,
+     "rsi": 19.2,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 19 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "103900",
+     "bar": "102500",
+     "close": 0.7486,
+     "rsi": 15.9,
+     "side": null,
+     "reason": "buy 신호 · 청산 뒤 대기"
+    },
+    {
+     "date": "20261028",
+     "time": "210900",
+     "bar": "205500",
+     "close": 0.7446,
+     "rsi": 27.8,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "093900",
+     "bar": "092500",
+     "close": 0.7483,
+     "rsi": 67.5,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 67 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261029",
+     "time": "095400",
+     "bar": "094000",
+     "close": 0.7487,
+     "rsi": 69.6,
+     "side": null,
+     "reason": "sell 신호 · 보유 중"
+    },
+    {
+     "date": "20261029",
+     "time": "102400",
+     "bar": "101000",
+     "close": 0.7504,
+     "rsi": 76.8,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 77 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261029",
+     "time": "175400",
+     "bar": "174000",
+     "close": 0.7473,
+     "rsi": 39.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "085400",
+     "bar": "084000",
+     "close": 0.7464,
+     "rsi": 36.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 36 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "120900",
+     "bar": "115500",
+     "close": 0.7489,
+     "rsi": 61.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 62 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "225400",
+     "bar": "224000",
+     "close": 0.7504,
+     "rsi": 62.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "085200",
+     "bar": "084000",
+     "close": 0.7513,
+     "rsi": 67.3,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 67 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261102",
+     "time": "093900",
+     "bar": "092500",
+     "close": 0.747,
+     "rsi": 35.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 36 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "095400",
+     "bar": "094000",
+     "close": 0.7461,
+     "rsi": 32.1,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 32 · 원화 강세(환율 하락) 쪽"
+    }
+   ]
+  },
+  "이웃평균1위": {
+   "params": {
+    "bar_min": 15,
+    "bb_period": 20,
+    "band_k": 2.5,
+    "rsi_period": 14,
+    "rsi_buy": 35.0,
+    "confirm": false,
+    "stop_atr": 1.5,
+    "atr_period": 14,
+    "min_stop_ticks": 3,
+    "min_edge_ticks": 3,
+    "hold_min": 60,
+    "cooldown_bars": 1,
+    "max_stops_per_day": 2,
+    "session_start": "082500",
+    "entry_start": "082500",
+    "entry_end": "233000",
+    "flatten_at": "235000"
+   },
+   "train": {
+    "bar_min": 15,
+    "band_k": 2.5,
+    "rsi_buy": 35.0,
+    "confirm": false,
+    "stop_atr": 1.5,
+    "hold_min": 60,
+    "trades": 15,
+    "win_rate": 0.4,
+    "net_pnl": 90.0,
+    "profit_factor": 1.55,
+    "max_drawdown": 80.0,
+    "neighbor_avg_pnl": -28.6,
+    "eligible": true
+   },
+   "test": {
+    "trades": 7,
+    "wins": 3,
+    "win_rate": 0.429,
+    "net_pnl": -72.5,
+    "profit_factor": 0.24,
+    "avg_win": 7.5,
+    "avg_loss": -23.8,
+    "max_drawdown": 95.0,
+    "fee_total": 0.0,
+    "by_reason": {
+     "시간 청산": 3,
+     "손절": 3,
+     "익절": 1
+    },
+    "by_block": {
+     "런던": {
+      "trades": 1,
+      "pnl": -7.5
+     },
+     "서울 장": {
+      "trades": 6,
+      "pnl": -65.0
+     }
+    },
+    "by_day": {
+     "20261027": -7.5,
+     "20261028": -57.5,
+     "20261029": -22.5,
+     "20261102": 15.0
+    }
+   },
+   "test_trades": [
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "172200",
+     "entry_date": "20261027",
+     "entry_time": "173000",
+     "entry": 0.7541,
+     "stop": 0.7533,
+     "stop_ticks": 8,
+     "target": null,
+     "deadline": "183000",
+     "deadline_reason": "시간 청산",
+     "block": "런던",
+     "exit_date": "20261027",
+     "exit_time": "183000",
+     "exit": 0.7538,
+     "reason": "시간 청산",
+     "ticks": -3,
+     "fee": 0.0,
+     "pnl": -7.5
+    },
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "093900",
+     "entry_date": "20261028",
+     "entry_time": "094000",
+     "entry": 0.7517,
+     "stop": 0.7507,
+     "stop_ticks": 10,
+     "target": null,
+     "deadline": "104000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261028",
+     "exit_time": "095500",
+     "exit": 0.7506,
+     "reason": "손절",
+     "ticks": -11,
+     "fee": 0.0,
+     "pnl": -27.5
+    },
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "102400",
+     "entry_date": "20261028",
+     "entry_time": "102500",
+     "entry": 0.7497,
+     "stop": 0.7486,
+     "stop_ticks": 11,
+     "target": null,
+     "deadline": "112500",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261028",
+     "exit_time": "102700",
+     "exit": 0.7485,
+     "reason": "손절",
+     "ticks": -12,
+     "fee": 0.0,
+     "pnl": -30.0
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "093900",
+     "entry_date": "20261029",
+     "entry_time": "094000",
+     "entry": 0.7482,
+     "stop": 0.7493,
+     "stop_ticks": 11,
+     "target": null,
+     "deadline": "104000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261029",
+     "exit_time": "095900",
+     "exit": 0.7494,
+     "reason": "손절",
+     "ticks": -12,
+     "fee": 0.0,
+     "pnl": -30.0
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "102400",
+     "entry_date": "20261029",
+     "entry_time": "102500",
+     "entry": 0.7503,
+     "stop": 0.7516,
+     "stop_ticks": 13,
+     "target": null,
+     "deadline": "112500",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261029",
+     "exit_time": "112500",
+     "exit": 0.75,
+     "reason": "시간 청산",
+     "ticks": 3,
+     "fee": 0.0,
+     "pnl": 7.5
+    },
+    {
+     "side": "sell",
+     "window": null,
+     "signal_time": "085200",
+     "entry_date": "20261102",
+     "entry_time": "090100",
+     "entry": 0.75,
+     "stop": 0.751,
+     "stop_ticks": 10,
+     "target": null,
+     "deadline": "100100",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261102",
+     "exit_time": "090900",
+     "exit": 0.7496,
+     "reason": "익절",
+     "ticks": 4,
+     "fee": 0.0,
+     "pnl": 10.0
+    },
+    {
+     "side": "buy",
+     "window": null,
+     "signal_time": "095400",
+     "entry_date": "20261102",
+     "entry_time": "095500",
+     "entry": 0.7462,
+     "stop": 0.7449,
+     "stop_ticks": 13,
+     "target": null,
+     "deadline": "105500",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261102",
+     "exit_time": "105500",
+     "exit": 0.7464,
+     "reason": "시간 청산",
+     "ticks": 2,
+     "fee": 0.0,
+     "pnl": 5.0
+    }
+   ],
+   "test_signals": [
+    {
+     "date": "20261027",
+     "time": "172200",
+     "bar": "171000",
+     "close": 0.7539,
+     "rsi": 32.5,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 32 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "093900",
+     "bar": "092500",
+     "close": 0.7514,
+     "rsi": 26.7,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 27 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "095400",
+     "bar": "094000",
+     "close": 0.7509,
+     "rsi": 24.2,
+     "side": null,
+     "reason": "buy 신호 · 보유 중"
+    },
+    {
+     "date": "20261028",
+     "time": "100900",
+     "bar": "095500",
+     "close": 0.7506,
+     "rsi": 22.8,
+     "side": null,
+     "reason": "buy 신호 · 청산 뒤 대기"
+    },
+    {
+     "date": "20261028",
+     "time": "102400",
+     "bar": "101000",
+     "close": 0.7497,
+     "rsi": 19.2,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 19 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "103900",
+     "bar": "102500",
+     "close": 0.7486,
+     "rsi": 15.9,
+     "side": null,
+     "reason": "buy 신호 · 청산 뒤 대기"
+    },
+    {
+     "date": "20261028",
+     "time": "210900",
+     "bar": "205500",
+     "close": 0.7446,
+     "rsi": 27.8,
+     "side": null,
+     "reason": "buy 신호 · 오늘 손절 2회 도달"
+    },
+    {
+     "date": "20261029",
+     "time": "093900",
+     "bar": "092500",
+     "close": 0.7483,
+     "rsi": 67.5,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 67 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261029",
+     "time": "095400",
+     "bar": "094000",
+     "close": 0.7487,
+     "rsi": 69.6,
+     "side": null,
+     "reason": "sell 신호 · 보유 중"
+    },
+    {
+     "date": "20261029",
+     "time": "102400",
+     "bar": "101000",
+     "close": 0.7504,
+     "rsi": 76.8,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 77 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261029",
+     "time": "175400",
+     "bar": "174000",
+     "close": 0.7473,
+     "rsi": 39.2,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 39 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "085400",
+     "bar": "084000",
+     "close": 0.7464,
+     "rsi": 36.1,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 36 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "120900",
+     "bar": "115500",
+     "close": 0.7489,
+     "rsi": 61.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 62 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261030",
+     "time": "225400",
+     "bar": "224000",
+     "close": 0.7504,
+     "rsi": 62.9,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 63 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "085200",
+     "bar": "084000",
+     "close": 0.7513,
+     "rsi": 67.3,
+     "side": "sell",
+     "reason": "상단 이탈 · RSI 67 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261102",
+     "time": "093900",
+     "bar": "092500",
+     "close": 0.747,
+     "rsi": 35.8,
+     "side": null,
+     "reason": "이탈 신호 후보 · RSI 36 가 걸러 진입 안 함"
+    },
+    {
+     "date": "20261102",
+     "time": "095400",
+     "bar": "094000",
+     "close": 0.7461,
+     "rsi": 32.1,
+     "side": "buy",
+     "reason": "하단 이탈 · RSI 32 · 원화 강세(환율 하락) 쪽"
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,17 @@
+{
+  "nxt_key": "",
+  "Occurs1": [
+    {
+      "occurs1_sym": "MKUX26",
+      "occurs1_lst_sett_dt": "20261116",
+      "occurs1_exch_cd": "SGX",
+      "occurs1_exp_dt": "20261116",
+      "occurs1_sett_nm": "현금",
+      "occurs1_rem_dy": "000013",
+      "occurs1_fst_ntf_dt": "20261116",
+      "occurs1_prd_cd": "MKU",
+      "occurs1_sym_nm": "SGX 미니 원달러"
+    }
+  ],
+  "nrec": "0001"
+}
