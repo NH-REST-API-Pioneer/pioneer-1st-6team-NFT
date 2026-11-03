@@ -1,0 +1,97 @@
+{
+  "train_days": [
+    "20261013",
+    "20261014",
+    "20261015",
+    "20261016",
+    "20261019",
+    "20261020",
+    "20261021",
+    "20261022",
+    "20261023",
+    "20261026",
+    "20261027"
+  ],
+  "test_days": [
+    "20261028",
+    "20261029",
+    "20261030",
+    "20261102"
+  ],
+  "slip_ticks": 1.0,
+  "fee_usd_per_side": 2.0,
+  "roundtrip_cost_ticks": 3.6,
+  "standard": {
+    "window": 1,
+    "move_won": 0.5,
+    "rho_max": 0.5,
+    "hold_min": 20,
+    "tp_ticks": null,
+    "sl_ticks": 5,
+    "max_stops_per_day": 3,
+    "cooldown_min": 1,
+    "entry_start": "0900",
+    "entry_end": "1520",
+    "flatten_at": "1540"
+  },
+  "standard_train": {
+    "n": 66,
+    "net_total": -130.6,
+    "net_mean": -1.979,
+    "gross_mean": 1.621,
+    "win": 36.4,
+    "usd": -326.5,
+    "mdd": -148.8
+  },
+  "standard_test": {
+    "n": 19,
+    "net_total": -54.4,
+    "net_mean": -2.863,
+    "gross_mean": 0.737,
+    "win": 31.6,
+    "usd": -136.0,
+    "mdd": -75.2
+  },
+  "grid_size": 486,
+  "grid_eligible": 486,
+  "grid_positive_pct": 8.6,
+  "chosen": {
+    "window": 3,
+    "move_won": 0.7,
+    "rho_max": 0.3,
+    "hold_min": 30,
+    "tp_ticks": null,
+    "sl_ticks": 8,
+    "max_stops_per_day": 3,
+    "cooldown_min": 1,
+    "entry_start": "0900",
+    "entry_end": "1520",
+    "flatten_at": "1540"
+  },
+  "chosen_train": {
+    "n": 33,
+    "net_total": 61.2,
+    "net_mean": 1.855,
+    "gross_mean": 5.455,
+    "win": 54.5,
+    "usd": 153.0,
+    "mdd": -28.6
+  },
+  "chosen_test": {
+    "n": 11,
+    "net_total": -66.6,
+    "net_mean": -6.055,
+    "gross_mean": -2.455,
+    "win": 18.2,
+    "usd": -166.5,
+    "mdd": -79.4
+  },
+  "random_baseline_test": {
+    "mean": -41.75,
+    "p95": 5.4
+  },
+  "test_exit_reasons": {
+    "시간": 7,
+    "손절": 4
+  }
+}

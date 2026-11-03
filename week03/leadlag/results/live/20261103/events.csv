@@ -1,0 +1,217 @@
+ts,kind,side,price,bid,ask,krx,dk,rho,spread,reason,ord_no,gross_ticks,net_ticks,net_usd,held_s,note
+2026-11-03T09:24:48.870,시작,,,,,,,,,,,,,,,"주문 끔 · {'lookback_s': 45, 'move_won': 0.5, 'rho_max': 0.5, 'max_spread_ticks': 2, 'tp_ticks': None, 'sl_ticks': 5, 'hold_s': 300, 'cooldown_s': 60, 'max_stops_per_day': 3, 'entry_start': '090000', 'entry_end': '152000', 'flatten_at': '154000'}"
+2026-11-03T09:24:49.070,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T09:24:49.075,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T09:31:35.334,진입신호,-1,0.7446,0.7446,0.7448,1342.9,0.6,0.45,2,,,,,,,
+2026-11-03T09:31:35.334,진입,-1,0.7446,0.7446,0.7448,1342.9,,,,,,,,,,종이 체결(반대 호가)
+2026-11-03T09:35:20.182,청산신호,1,0.7451,0.7449,0.7451,1342.2,,,,손절,,,,,,
+2026-11-03T09:35:20.183,청산,1,0.7451,0.7449,0.7451,1342.2,,,,손절,,-5.0,-6.6,-16.5,224.8,종이 체결(반대 호가)
+2026-11-03T09:40:41.769,진입신호,-1,0.7452,0.7452,0.7453,1342.4,0.5,-0.36,1,,,,,,,
+2026-11-03T09:40:41.769,진입,-1,0.7452,0.7452,0.7453,1342.4,,,,,,,,,,종이 체결(반대 호가)
+2026-11-03T09:45:42.170,청산신호,1,0.7443,0.7441,0.7443,1343.4,,,,시간,,,,,,
+2026-11-03T09:45:42.170,청산,1,0.7443,0.7441,0.7443,1343.4,,,,시간,,9.0,7.4,18.5,300.4,종이 체결(반대 호가)
+2026-11-03T09:52:23.433,진입신호,1,0.745,0.7449,0.745,1341.9,-0.5,0.36,1,,,,,,,
+2026-11-03T09:52:23.434,진입,1,0.745,0.7449,0.745,1341.9,,,,,,,,,,종이 체결(반대 호가)
+2026-11-03T09:56:53.799,청산신호,-1,0.7445,0.7445,0.7447,1342.7,,,,손절,,,,,,
+2026-11-03T09:56:53.799,청산,-1,0.7445,0.7445,0.7447,1342.7,,,,손절,,-5.0,-6.6,-16.5,270.4,종이 체결(반대 호가)
+2026-11-03T10:31:25.229,진입신호,1,0.7446,0.7445,0.7446,1342.5,-0.5,0.36,1,,,,,,,
+2026-11-03T10:31:25.230,진입,1,0.7446,0.7445,0.7446,1342.5,,,,,,,,,,종이 체결(반대 호가)
+2026-11-03T10:36:26.075,청산신호,-1,0.7445,0.7445,0.7447,1342.6,,,,시간,,,,,,
+2026-11-03T10:36:26.076,청산,-1,0.7445,0.7445,0.7447,1342.6,,,,시간,,-1.0,-2.6,-6.5,300.8,종이 체결(반대 호가)
+2026-11-03T13:12:55.282,시작,,,,,,,,,,,,,,,"주문 끔 · {'lookback_s': 45, 'move_won': 0.5, 'rho_max': 0.5, 'max_spread_ticks': 2, 'tp_ticks': None, 'sl_ticks': 5, 'hold_s': 300, 'cooldown_s': 60, 'max_stops_per_day': 3, 'entry_start': '090000', 'entry_end': '152000', 'flatten_at': '154000'}"
+2026-11-03T13:12:55.480,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T13:12:55.484,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T13:45:41.701,끊김,,,,,,,,,,,,,,,해외 ConnectionError: 60초 무응답
+2026-11-03T13:46:02.773,끊김,,,,,,,,,,,,,,,"해외 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T13:46:05.952,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T13:58:19.507,끊김,,,,,,,,,,,,,,,해외 ConnectionError: 60초 무응답
+2026-11-03T13:58:50.298,끊김,,,,,,,,,,,,,,,"해외 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T13:58:53.449,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T14:03:07.094,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:03:28.174,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:03:31.335,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:04:41.480,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:05:14.491,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:05:17.656,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:06:27.767,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:07:00.777,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:07:04.025,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:08:14.137,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:08:47.151,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:08:50.414,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:10:00.569,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:10:33.611,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:10:36.840,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:11:46.971,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:12:19.986,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:12:23.133,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:13:33.259,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:14:06.272,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:14:09.790,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:15:12.029,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:15:15.799,끊김,,,,,,,,,,,,,,,"국내 ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+2026-11-03T14:15:18.954,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:16:04.514,끊김,,,,,,,,,,,,,,,해외 ConnectionError: 60초 무응답
+2026-11-03T14:16:25.590,끊김,,,,,,,,,,,,,,,"해외 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:16:28.831,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T14:16:29.069,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:17:02.079,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:17:05.241,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:18:15.358,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:18:48.372,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:18:51.517,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:20:01.648,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:20:34.664,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:20:37.822,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:21:47.940,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:22:20.951,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:22:24.086,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:23:34.254,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:24:07.265,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:24:10.427,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:25:20.586,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:25:53.595,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:25:56.803,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:27:06.968,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:27:39.982,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:27:43.200,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:28:53.410,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:29:26.427,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:29:29.594,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:30:39.772,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:31:12.787,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:31:15.945,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:32:26.103,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:32:59.113,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:33:02.351,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:34:12.445,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:34:45.464,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:34:48.625,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:35:58.751,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:36:31.764,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:36:35.466,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:37:45.616,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:38:18.634,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:38:21.812,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:39:31.936,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:40:04.941,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:40:08.084,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:41:18.191,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:41:51.202,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:41:54.354,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:43:04.467,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:43:37.484,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:43:40.618,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:44:50.766,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:45:23.775,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:45:26.909,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:46:37.009,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:47:10.018,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:47:14.188,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:47:19.710,진입신호,-1,0.7456,0.7456,0.7457,1340.9,1.9,-0.0,1,,,,,,,
+2026-11-03T14:47:19.710,진입,-1,0.7456,0.7456,0.7457,1340.9,,,,,,,,,,종이 체결(반대 호가)
+2026-11-03T14:48:34.214,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:49:07.237,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:49:10.380,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:50:20.501,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:50:53.510,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:50:56.716,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:52:06.822,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:52:20.291,청산신호,1,0.7458,0.7456,0.7458,1340.8,,,,시간,,,,,,
+2026-11-03T14:52:20.291,청산,1,0.7458,0.7456,0.7458,1340.8,,,,시간,,-2.0,-3.6,-9.0,300.6,종이 체결(반대 호가)
+2026-11-03T14:52:39.828,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:52:43.004,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:52:50.685,끊김,,,,,,,,,,,,,,,해외 ConnectionError: 60초 무응답
+2026-11-03T14:53:24.062,끊김,,,,,,,,,,,,,,,"해외 NHError: /auth-service/v1/token → HTTP 0: ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:53:27.843,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T14:53:53.105,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:54:26.114,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:54:29.250,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:55:39.350,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:56:12.361,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:56:15.493,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:57:25.604,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:57:58.617,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:58:01.745,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T14:59:11.846,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T14:59:14.668,끊김,,,,,,,,,,,,,,,해외 ConnectionError: 60초 무응답
+2026-11-03T14:59:35.738,끊김,,,,,,,,,,,,,,,"해외 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:59:38.872,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T14:59:44.852,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T14:59:48.025,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:00:58.139,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:01:31.151,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:01:34.288,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:02:44.402,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:03:17.408,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:03:20.558,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:04:30.658,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:05:03.668,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:05:06.823,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:06:16.907,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:06:49.916,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:06:53.044,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:08:03.131,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:08:36.142,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:08:39.278,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:09:49.375,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:10:22.383,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:10:25.525,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:11:35.614,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:12:08.622,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:12:11.763,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:13:21.867,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:13:54.875,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:13:58.000,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:15:08.097,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:15:41.105,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:15:44.261,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:16:54.391,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:17:27.405,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:17:30.530,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:18:40.620,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:19:13.624,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:19:17.785,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:20:27.895,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:20:31.490,끊김,,,,,,,,,,,,,,,"국내 ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+2026-11-03T15:20:34.611,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:21:44.702,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:22:17.717,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:22:20.845,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:23:30.941,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:24:03.960,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:24:07.187,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:25:17.308,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:25:50.371,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:25:53.525,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:27:03.632,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:27:37.013,끊김,,,,,,,,,,,,,,,"국내 NHError: /auth-service/v1/token → HTTP 0: ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:27:40.816,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:36:51.063,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:37:12.153,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:37:15.311,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:37:23.976,끊김,,,,,,,,,,,,,,,해외 ConnectionError: 60초 무응답
+2026-11-03T15:37:45.041,끊김,,,,,,,,,,,,,,,"해외 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:37:48.171,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T15:38:25.431,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:38:58.440,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:39:01.599,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:40:09.021,끊김,,,,,,,,,,,,,,,해외 ConnectionError: 60초 무응답
+2026-11-03T15:40:11.785,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:40:30.085,끊김,,,,,,,,,,,,,,,"해외 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:40:33.238,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T15:40:44.793,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:40:47.910,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:42:22.765,끊김,,,,,,,,,,,,,,,해외 ConnectionError: 60초 무응답
+2026-11-03T15:42:27.988,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:42:43.833,끊김,,,,,,,,,,,,,,,"해외 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:42:46.968,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T15:42:49.050,끊김,,,,,,,,,,,,,,,"국내 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:42:52.177,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:44:05.699,끊김,,,,,,,,,,,,,,,해외 ConnectionError: 60초 무응답
+2026-11-03T15:44:07.320,끊김,,,,,,,,,,,,,,,국내 ConnectionError: 60초 무응답
+2026-11-03T15:44:11.843,끊김,,,,,,,,,,,,,,,"국내 ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+2026-11-03T15:44:14.989,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-03T15:44:38.716,끊김,,,,,,,,,,,,,,,"해외 ReadTimeout: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Read timed out. (read timeout=30)"
+2026-11-03T15:44:41.868,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-03T15:45:01.065,종료,,,,,,,,,,,,,,,"{""day"": ""20261103"", ""orders"": false, ""params"": {""lookback_s"": 45, ""move_won"": 0.5, ""rho_max"": 0.5, ""max_spread_ticks"": 2, ""tp_ticks"": null, ""sl_ticks"": 5, ""hold_s"": 300, ""cooldown_s"": 60, ""max_stops_per_day"": 3, ""entry_start"": ""090000"", ""entry_end"": ""152000"", ""flatten_at"": ""154000""}, ""trades"": 1, ""net_usd"": -9.0, ""win"": 0, ""events"": {""시작"": 1, ""접속"": 65, ""끊김"": 126, ""진입신호"": 1, ""진입"": 1, ""청산신호"": 1, ""청산"": 1}}"

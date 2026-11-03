@@ -1,0 +1,30 @@
+{
+  "day": "20261103",
+  "orders": false,
+  "params": {
+    "lookback_s": 45,
+    "move_won": 0.5,
+    "rho_max": 0.5,
+    "max_spread_ticks": 2,
+    "tp_ticks": null,
+    "sl_ticks": 5,
+    "hold_s": 300,
+    "cooldown_s": 60,
+    "max_stops_per_day": 3,
+    "entry_start": "090000",
+    "entry_end": "152000",
+    "flatten_at": "154000"
+  },
+  "trades": 1,
+  "net_usd": -9.0,
+  "win": 0,
+  "events": {
+    "시작": 1,
+    "접속": 65,
+    "끊김": 126,
+    "진입신호": 1,
+    "진입": 1,
+    "청산신호": 1,
+    "청산": 1
+  }
+}
