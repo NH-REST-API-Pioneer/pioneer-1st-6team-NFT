@@ -4,7 +4,7 @@
   python3 backtest_link.py                   # 학습 10/13~10/27, 검증 10/28~11/02
   python3 backtest_link.py --slip 0.5        # 슬리피지 민감도
 
-비용 (2026-11-02 모의계좌 확인, 구상 문서 6-3절):
+비용 (2026-11-02 모의계좌 확인, 근거 문서 5절):
   수수료 편도 $2 = 0.8틱. 슬리피지 편도 --slip 틱 (기본 1 — 그날 호가 차이 2틱을 그대로 낸다고 봄).
   왕복 비용 = 2 × (0.8 + slip) = 기본 3.6틱.
 결과: results/backtest_link/ (조합표·거래 목록·요약), results/charts/backtest_link_equity.png

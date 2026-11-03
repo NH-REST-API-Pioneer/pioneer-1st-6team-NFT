@@ -1,4 +1,4 @@
-"""KRX→MKU 연계 실시간 실행기 (기록기 겸용). 구상 문서 6-4·6-5절: 1분봉으로는 늦어서 초 단위로 실행한다.
+"""KRX→MKU 연계 실시간 실행기 (기록기 겸용). 근거 문서 6-2절: 1분봉으로는 늦어서 초 단위로 실행한다.
 
 사용법 (week03/leadlag/ 에서):
   python3 ws_trader.py                          # 주문 끔: 기록 + 종이 매매 (화요일 기록용)
@@ -36,7 +36,7 @@ from ws_probe import WS_URLS, ws_key
 HERE = Path(__file__).parent
 TICK = 0.0001
 TICK_USD = 2.5
-FEE_TICKS = 2.0 / TICK_USD        # 수수료 편도 $2 (구상 문서 6-3절)
+FEE_TICKS = 2.0 / TICK_USD        # 수수료 편도 $2 (근거 문서 5절)
 SILENCE_S = 60                    # 이 시간 동안 아무 메시지(pingpong 포함)도 없으면 다시 접속
 
 
