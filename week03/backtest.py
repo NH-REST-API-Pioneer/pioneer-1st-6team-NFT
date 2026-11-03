@@ -14,15 +14,15 @@
     (후보 A 는 2주차처럼 진입가에서 stop_ticks 만큼).
 - 시간 청산(후보 A: 진입 + hold_min, 후보 B: 그것과 다음 개장 시점 중 먼저)과 23:50 정리는
   그 시각 이후 첫 1분봉 시가 + 슬리피지 1틱. 23:50 뒤에 봉이 없으면 다음 날 첫 봉(자정 뒤)에서 정리합니다.
-- 수수료는 0 이 기본입니다 (해외 모의계좌 수수료 확인 전). --fee 로 왕복 수수료(US$)를 줄 수 있습니다. 1계약.
+- 수수료는 왕복 US$4 (편도 $2, 11/02 해외 모의계좌에서 1계약 사고팔아 확인)가 기본입니다. --fee 로 바꿀 수 있습니다. 1계약.
 
 학습/검증은 **한 번에 이어서 돌린 뒤 거래를 진입일로 나눕니다** (2주차 backtest_bb.py 와 같은 이유 —
 후보 A 의 밴드·RSI·ATR 이 날을 넘겨 이어짐). 보유는 날을 넘기지 않아 학습 + 검증 = 전체입니다.
 
 사용법 (week03/ 에서):
-  python3 backtest.py                          # 두 후보 출발값(Params 기본값), 전체 기간
+  python3 backtest.py                          # 세 후보 출발값(Params 기본값), 전체 기간
   python3 backtest.py --strategy orb --ranges  # 후보 B 개장 범위 폭 분포
-  python3 backtest.py --optimize               # 두 후보 학습 최적화 → 검증
+  python3 backtest.py --optimize               # 세 후보 학습 최적화 → 검증 (후보 B 는 세 개장 · 서울만 따로)
   python3 backtest.py --optimize --strategy bb --train-end 20261026
 """
 from __future__ import annotations
@@ -43,9 +43,11 @@ from common import (FLATTEN_AT, PRICE_DECIMALS, TICK, TICK_VALUE, Minute, hhmmss
 HERE = Path(__file__).parent
 DATA = HERE / "results" / "data" / "bars_1m_MKUX26.csv"
 SLIP_TICKS = 1
+FEE = 4.0   # 왕복 US$ (편도 $2)
 # 11월물이 최근월물로 거래가 붙은 날부터 (매매 시간 안 1분봉이 하루 350개 이상), 다 찬 마지막 날까지
 DATA_FROM, DATA_TO = "20261012", "20261102"
 TRAIN_END = "20261026"   # 학습 10/12~10/26 (11일) · 검증 10/27~11/02 (5일)
+SEOUL_ONLY = (("서울", "090000"),)
 
 STRATEGIES = {
     "bb": {"name": "후보 A 볼린저+RSI", "module": strategy_bb, "out": HERE / "results" / "backtest_bb",
@@ -60,6 +62,13 @@ STRATEGIES = {
             "grid": {"range_min": [10, 15, 30], "entry_min": [30, 60, 120], "buffer_ticks": [0, 2],
                      "target_r": [0.5, 1.0, 1.5, 2.0], "hold_min": [60, 120, 240]},
             "min_trades": 10},
+    # 수수료를 넣으면 런던·뉴욕은 학습에서 손실이라 서울 개장만 따로 (학습 11일이라 거래가 많아야 11건)
+    "orb_seoul": {"name": "후보 B 세션 개장 돌파 (서울만)", "module": strategy_orb,
+                  "out": HERE / "results" / "backtest_orb_seoul",
+                  "standard": strategy_orb.Params(windows=SEOUL_ONLY),
+                  "grid": {"range_min": [10, 15, 30], "entry_min": [30, 60, 120], "buffer_ticks": [0, 2],
+                           "target_r": [0.5, 1.0, 1.5, 2.0], "hold_min": [60, 120, 240]},
+                  "min_trades": 6},
 }
 
 # 진입 시각으로 나누는 시간대 (한국 시간)
@@ -78,7 +87,7 @@ def load_minutes(path: Path = DATA, start: str = DATA_FROM, end: str = DATA_TO) 
                 for r in csv.DictReader(f) if start <= r["ref_dt"] <= end]
 
 
-def run(minutes: list[Minute], kind: str, p, keep_signals: bool = False, fee: float = 0.0) -> dict:
+def run(minutes: list[Minute], kind: str, p, keep_signals: bool = False, fee: float = FEE) -> dict:
     strat = strategy_bb.BBRSIReversion(p) if kind == "bb" else strategy_orb.SessionBreakout(p)
     trades: list[dict] = []
     signals: list[dict] = []
@@ -215,7 +224,7 @@ def split(res: dict, train_end: str) -> tuple[dict, dict, list[dict], list[dict]
     return summarize(tr), summarize(te), te, sig
 
 
-def optimize(minutes: list[Minute], kind: str, train_end: str, min_trades: int, fee: float) -> list[dict]:
+def optimize(minutes: list[Minute], kind: str, train_end: str, min_trades: int, fee: float = FEE) -> list[dict]:
     spec = STRATEGIES[kind]
     grid, keys, rows = spec["grid"], list(spec["grid"]), []
     for values in itertools.product(*grid.values()):
@@ -276,19 +285,19 @@ def show_ranges(minutes: list[Minute], p: strategy_orb.Params) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--strategy", choices=["bb", "orb", "both"], default="both")
+    ap.add_argument("--strategy", choices=["bb", "orb", "orb_seoul", "all"], default="all")
     ap.add_argument("--from", dest="start", default=DATA_FROM)
     ap.add_argument("--to", dest="end", default=DATA_TO)
     ap.add_argument("--optimize", action="store_true")
     ap.add_argument("--standard", action="store_true", help="후보 A 를 2주차 정석 출발값으로")
     ap.add_argument("--ranges", action="store_true", help="후보 B 개장 범위 폭 분포만 출력")
     ap.add_argument("--train-end", default=TRAIN_END, help="학습 기간 마지막 날 (그 다음 날부터 검증)")
-    ap.add_argument("--fee", type=float, default=0.0, help="왕복 수수료 US$ (기본 0)")
+    ap.add_argument("--fee", type=float, default=FEE, help=f"왕복 수수료 US$ (기본 {FEE})")
     args = ap.parse_args()
 
     minutes = load_minutes(start=args.start, end=args.end)
     days = sorted({m.date for m in minutes if in_trading_hours(m.time)})
-    kinds = ["bb", "orb"] if args.strategy == "both" else [args.strategy]
+    kinds = ["bb", "orb", "orb_seoul"] if args.strategy == "all" else [args.strategy]
     if args.ranges:
         show_ranges(minutes, strategy_orb.Params())
         return
@@ -298,7 +307,7 @@ def main() -> None:
         out = spec["out"]
         out.mkdir(parents=True, exist_ok=True)
         if not args.optimize:
-            p = spec["standard"] if (args.standard or kind == "orb") else spec["module"].Params()
+            p = spec["standard"] if (args.standard or kind != "bb") else spec["module"].Params()
             res = run(minutes, kind, p, keep_signals=True, fee=args.fee)
             print(f"[{spec['name']}] 기간 {days[0]}~{days[-1]} ({len(days)}일) · {label(kind, asdict(p))}\n  {fmt(res['summary'])}")
             (out / "start_all.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")

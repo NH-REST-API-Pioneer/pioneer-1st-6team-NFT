@@ -1,15 +1,16 @@
 """두 후보 백테스트 결과를 차트 이미지(PNG)로 그립니다 — 전략 설계 문서에 넣는 그림.
 
 색·글꼴·검증 구간 표시는 2주차 plot_backtest.py 와 같은 모양입니다 (이익 빨강 · 손실 파랑,
-두 계열 비교는 파랑·주황). 후보 B 의 두 값(선택 · 출발)은 같은 빨강에 실선·점선으로 나눕니다.
+두 계열 비교는 파랑·주황). 후보 B 의 두 경우(서울만 · 세 개장)는 같은 빨강에 실선·점선으로 나눕니다.
 
-거래 목록은 backtest.run() 을 그 자리에서 다시 돌려 얻습니다 (16일 한 번에 0.1초 안). 최적화 표는
-backtest.py --optimize 가 남긴 results/backtest_orb/optimize_grid.json 을 읽습니다.
+손익은 모두 수수료 왕복 US$4 (backtest.FEE) 를 뺀 값입니다. 거래 목록은 backtest.run() 을 그 자리에서
+다시 돌려 얻습니다 (16일 한 번에 0.1초 안). 최적화 표는 backtest.py --optimize 가 남긴
+results/backtest_orb_seoul/optimize_grid.json 을 읽습니다.
 
-  01 누적손익        A 출발값 · B 출발값 · B 선택 값 (10/12~11/02)
-  02 일별손익        B 선택 값
-  03 개장별손익      B 선택 값, 학습 / 검증
-  04 범위x익절-히트맵  B 학습 순손익 (나머지 값은 선택 값으로 고정)
+  01 누적손익        A 출발값 · B 세 개장 · B 서울만 (선택 값, 10/12~11/02)
+  02 일별손익        B 선택 값 (서울만)
+  03 개장별손익      B 세 개장, 학습 / 검증 — 서울만 남긴 이유
+  04 범위x익절-히트맵  B 서울만 학습 순손익 (나머지 값은 선택 값으로 고정)
   05 개장범위폭      서울 · 런던 · 뉴욕 첫 10분 범위 폭 분포
   06 기간비교        최근 16일 vs 앞쪽 15일
   07 하루예시        11/02 서울 개장 돌파 매도
@@ -65,9 +66,10 @@ def usd(v: float, digits: int = 0) -> str:
 
 USD = FuncFormatter(lambda v, _: usd(v))
 
-# 문서 8절의 선택 값
-B_PICK = replace(strategy_orb.Params(), range_min=10, entry_min=60, buffer_ticks=0, target_r=2.0, hold_min=60)
-A_START, B_START = strategy_bb.Params(), strategy_orb.Params()
+# 문서 8절의 선택 값: 서울 개장만 (B_PICK3 은 같은 값으로 세 개장 모두)
+B_PICK3 = replace(strategy_orb.Params(), range_min=10, entry_min=60, buffer_ticks=0, target_r=2.0, hold_min=60)
+B_PICK = replace(B_PICK3, windows=bt.SEOUL_ONLY)
+A_START = strategy_bb.Params()
 A_TRAIN1 = replace(A_START, bar_min=15, band_k=2.5, rsi_buy=35.0, confirm=False, stop_atr=1.5, hold_min=60)
 EARLY = ("20260921", "20261009")
 DAY_START, DAY_SPAN = minutes_of(SESSION_START), minutes_of("240000") - minutes_of(SESSION_START)
@@ -104,8 +106,8 @@ def equity(minutes, days) -> Path:
     idx = {d: i for i, d in enumerate(days)}
     fig, ax = plt.subplots(figsize=(9, 4.4))
     mark_test(ax, days, len(days) + 1.6)
-    for kind, p, who, color, style in (("orb", B_PICK, "B 선택 값 (범위 10분 · 익절 2.0배 · 60분)", RED, "-"),
-                                       ("orb", B_START, "B 출발값 (범위 15분 · 익절 1.0배 · 120분)", RED, "--"),
+    for kind, p, who, color, style in (("orb", B_PICK, "B 선택 값 · 서울만 (범위 10분 · 익절 2.0배 · 60분)", RED, "-"),
+                                       ("orb", B_PICK3, "B 같은 값 · 세 개장 (서울 · 런던 · 뉴욕)", RED, "--"),
                                        ("bb", A_START, "A 출발값 (2주차 채택값)", BLUE, "-")):
         xs, ys, total = [0.0], [0.0], 0.0
         for t in bt.run(minutes, kind, p)["trades"]:
@@ -123,7 +125,7 @@ def equity(minutes, days) -> Path:
     ax.yaxis.set_major_formatter(USD)
     day_ticks(ax, days, 0.5)
     ax.set_xlim(0, len(days) + 1.6)
-    ax.set_title("누적 실현 손익 — MKUX26 · 1계약, 슬리피지 왕복 2틱, 수수료 0", pad=18)
+    ax.set_title("누적 실현 손익 — MKUX26 · 1계약, 슬리피지 왕복 2틱 + 수수료 왕복 $4", pad=18)
     ax.legend(loc="upper left", frameon=False, fontsize=8.5)
     return save(fig, "01-누적손익.png")
 
@@ -143,13 +145,13 @@ def daily(minutes, days) -> Path:
     day_ticks(ax, days, 0.5)
     ax.set_xlim(0, len(days))
     plus = sum(v > 0 for v in vals)
-    ax.set_title(f"일별 순손익 — 후보 B 선택 값 · 이익 {plus}일, 손실 {sum(v < 0 for v in vals)}일", pad=18)
+    ax.set_title(f"일별 순손익 — 후보 B 선택 값 (서울만) · 이익 {plus}일, 손실 {sum(v < 0 for v in vals)}일", pad=18)
     return save(fig, "02-일별손익.png")
 
 
 def by_window(minutes) -> Path:
-    tr, te, _, _ = bt.split(bt.run(minutes, "orb", B_PICK), bt.TRAIN_END)
-    names = [n for n, _ in B_PICK.windows]
+    tr, te, _, _ = bt.split(bt.run(minutes, "orb", B_PICK3), bt.TRAIN_END)
+    names = [n for n, _ in B_PICK3.windows]
     fig, ax = plt.subplots(figsize=(7, 3.8))
     w = 0.36
     for k, (s, who, color) in enumerate(((tr, "학습 10/12~10/26", BLUE), (te, "검증 10/27~11/02", ORANGE))):
@@ -162,16 +164,16 @@ def by_window(minutes) -> Path:
                         ha="center", va="bottom" if v >= 0 else "top", fontsize=8, color=INK2)
     ax.axhline(0, color=INK2, lw=0.8)
     ax.yaxis.set_major_formatter(USD)
-    ax.set_xticks(range(len(names)), [f"{n} {o[:2]}:{o[2:4]}" for n, o in B_PICK.windows])
+    ax.set_xticks(range(len(names)), [f"{n} {o[:2]}:{o[2:4]}" for n, o in B_PICK3.windows])
     ax.margins(y=0.25)
-    ax.set_title("개장별 순손익 — 후보 B 선택 값", pad=10)
+    ax.set_title("개장별 순손익 — 후보 B 세 개장 (범위 10분 · 익절 2.0배 · 60분)", pad=10)
     ax.legend(loc="upper right", frameon=False, fontsize=8.5)
     return save(fig, "03-개장별손익.png")
 
 
 def heatmap() -> Path:
     """기준 범위 × 익절 배수. 나머지(대기 60분 · 여유 0틱 · 시간 청산 60분)는 선택 값으로 고정."""
-    rows = json.loads((HERE / "results" / "backtest_orb" / "optimize_grid.json").read_text(encoding="utf-8"))
+    rows = json.loads((HERE / "results" / "backtest_orb_seoul" / "optimize_grid.json").read_text(encoding="utf-8"))
     fixed = {"entry_min": B_PICK.entry_min, "buffer_ticks": B_PICK.buffer_ticks, "hold_min": B_PICK.hold_min}
     ranges, targets = [10, 15, 30], [0.5, 1.0, 1.5, 2.0]
     cell = {(r["range_min"], r["target_r"]): r for r in rows if all(r[k] == v for k, v in fixed.items())}
@@ -192,14 +194,14 @@ def heatmap() -> Path:
     ax.set_ylabel("기준 범위")
     ax.grid(False)
     fig.colorbar(im, ax=ax, format=USD, shrink=0.85).outline.set_visible(False)
-    ax.set_title("학습 순손익 (US$) — 후보 B · 대기 60분 · 여유 0틱 · 시간 청산 60분", fontsize=10.5, pad=10)
+    ax.set_title("학습 순손익 (US$) — 후보 B 서울만 · 대기 60분 · 여유 0틱 · 시간 청산 60분", fontsize=10.5, pad=10)
     return save(fig, "04-범위x익절-히트맵.png")
 
 
 def range_widths(minutes, days) -> Path:
     """개장마다 첫 10분 범위 폭 (틱). 점 하나 = 하루, 굵은 가로선 = 중앙값."""
     fig, ax = plt.subplots(figsize=(7, 3.8))
-    for i, (name, open_) in enumerate(B_PICK.windows):
+    for i, (name, open_) in enumerate(B_PICK3.windows):
         a = minutes_of(open_)
         widths = []
         for d in days:
@@ -214,7 +216,7 @@ def range_widths(minutes, days) -> Path:
     ax.axhline(B_PICK.min_range_ticks, color=INK2, lw=0.9, ls=":")
     ax.annotate(f"잡음 필터 {B_PICK.min_range_ticks}틱 (이보다 좁으면 진입 안 함)", (-0.55, B_PICK.min_range_ticks),
                 xytext=(0, 3), textcoords="offset points", va="bottom", fontsize=8, color=INK2)
-    ax.set_xticks(range(3), [f"{n} {o[:2]}:{o[2:4]}" for n, o in B_PICK.windows])
+    ax.set_xticks(range(3), [f"{n} {o[:2]}:{o[2:4]}" for n, o in B_PICK3.windows])
     ax.set_xlim(-0.6, 2.6)
     ax.set_ylim(bottom=0)
     ax.set_ylabel("범위 폭 (틱, 1틱 ≈ 0.18원)")
@@ -224,7 +226,7 @@ def range_widths(minutes, days) -> Path:
 
 def periods(recent, early) -> Path:
     cands = (("A 출발값", "bb", A_START), ("A 학습 1위", "bb", A_TRAIN1),
-             ("B 출발값", "orb", B_START), ("B 선택 값", "orb", B_PICK))
+             ("B 세 개장", "orb", B_PICK3), ("B 서울만 (선택)", "orb", B_PICK))
     fig, ax = plt.subplots(figsize=(8, 4))
     w = 0.36
     for k, (mins, who, color) in enumerate(((recent, "10/12~11/02 (16일, 백테스트 기간)", BLUE),
@@ -239,8 +241,8 @@ def periods(recent, early) -> Path:
     ax.yaxis.set_major_formatter(USD)
     ax.set_xticks(range(len(cands)), [c[0] for c in cands])
     ax.margins(y=0.15)
-    ax.set_title("기간에 따라 뒤집히는 우열 — 순손익 (수수료 0)", pad=10)
-    ax.legend(loc="lower left", frameon=False, fontsize=8.5)
+    ax.set_title("기간에 따라 뒤집히는 우열 — 순손익 (수수료 왕복 $4 반영)", pad=10)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=2, frameon=False, fontsize=8.5)
     return save(fig, "06-기간비교.png")
 
 
@@ -272,7 +274,8 @@ def example_day(minutes, date: str = "20261102") -> Path:
     ax.annotate(f"매도 진입 {t['entry_time'][:2]}:{t['entry_time'][2:4]}  {t['entry']:.4f}", (e, t["entry"]),
                 xytext=(-8, -12), textcoords="offset points", ha="right", va="top", fontsize=8.5, color=INK)
     ax.scatter([xit], [t["exit"]], marker="o", s=70, color=RED, zorder=5, edgecolor="white", lw=1.5)
-    ax.annotate(f"익절 청산 {t['exit_time'][:2]}:{t['exit_time'][2:4]}  {t['exit']:.4f}  {t['ticks']:+d}틱 = {usd(t['pnl'], 1)}",
+    exit_label = f"익절 청산 {t['exit_time'][:2]}:{t['exit_time'][2:4]}  {t['exit']:.4f}  {t['ticks']:+d}틱 − 수수료 ${t['fee']:g} = {usd(t['pnl'], 1)}"
+    ax.annotate(exit_label.replace("$", r"\$"),   # $ 두 개면 matplotlib 이 수식으로 읽음
                 (xit, t["exit"]), xytext=(xit + 14, t["exit"] - 0.00035), textcoords="data", va="center", fontsize=8.5,
                 color=INK, arrowprops={"arrowstyle": "-", "color": INK2, "lw": 0.8})
     ticks = list(range(lo_t, hi_t + 1, 15))

@@ -47,7 +47,7 @@
   ]
  },
  "min_trades": 10,
- "fee": 0.0,
+ "fee": 4.0,
  "split": "전체 기간을 이어서 돌린 뒤 진입일로 학습/검증을 나눔",
  "picked": {
   "출발값": {
@@ -84,23 +84,23 @@
     "target_r": 1.0,
     "hold_min": 120,
     "trades": 25,
-    "win_rate": 0.44,
-    "net_pnl": -67.5,
-    "profit_factor": 0.77,
-    "max_drawdown": 125.0,
-    "neighbor_avg_pnl": -103.1,
+    "win_rate": 0.32,
+    "net_pnl": -167.5,
+    "profit_factor": 0.53,
+    "max_drawdown": 193.5,
+    "neighbor_avg_pnl": -202.2,
     "eligible": true
    },
    "test": {
     "trades": 12,
-    "wins": 9,
-    "win_rate": 0.75,
-    "net_pnl": 155.0,
-    "profit_factor": 5.77,
-    "avg_win": 20.8,
-    "avg_loss": -10.8,
-    "max_drawdown": 17.5,
-    "fee_total": 0.0,
+    "wins": 8,
+    "win_rate": 0.667,
+    "net_pnl": 107.0,
+    "profit_factor": 3.33,
+    "avg_win": 19.1,
+    "avg_loss": -11.5,
+    "max_drawdown": 23.0,
+    "fee_total": 48.0,
     "by_reason": {
      "시간 청산": 3,
      "익절": 8,
@@ -109,36 +109,36 @@
     "by_block": {
      "서울 장": {
       "trades": 4,
-      "pnl": 110.0
+      "pnl": 94.0
      },
      "뉴욕": {
       "trades": 4,
-      "pnl": 17.5
+      "pnl": 1.5
      },
      "런던": {
       "trades": 4,
-      "pnl": 27.5
+      "pnl": 11.5
      }
     },
     "by_day": {
-     "20261027": -2.5,
-     "20261028": 30.0,
-     "20261029": 50.0,
-     "20261030": 15.0,
-     "20261102": 62.5
+     "20261027": -10.5,
+     "20261028": 18.0,
+     "20261029": 38.0,
+     "20261030": 7.0,
+     "20261102": 54.5
     },
     "by_window": {
      "서울": {
       "trades": 4,
-      "pnl": 110.0
+      "pnl": 94.0
      },
      "뉴욕": {
       "trades": 4,
-      "pnl": 17.5
+      "pnl": 1.5
      },
      "런던": {
       "trades": 4,
-      "pnl": 27.5
+      "pnl": 11.5
      }
     }
    },
@@ -161,8 +161,8 @@
      "exit": 0.7557,
      "reason": "시간 청산",
      "ticks": -4,
-     "fee": 0.0,
-     "pnl": -10.0
+     "fee": 4.0,
+     "pnl": -14.0
     },
     {
      "side": "buy",
@@ -182,8 +182,8 @@
      "exit": 0.7542,
      "reason": "익절",
      "ticks": 3,
-     "fee": 0.0,
-     "pnl": 7.5
+     "fee": 4.0,
+     "pnl": 3.5
     },
     {
      "side": "sell",
@@ -203,8 +203,8 @@
      "exit": 0.7522,
      "reason": "익절",
      "ticks": 8,
-     "fee": 0.0,
-     "pnl": 20.0
+     "fee": 4.0,
+     "pnl": 16.0
     },
     {
      "side": "sell",
@@ -224,8 +224,8 @@
      "exit": 0.7471,
      "reason": "시간 청산",
      "ticks": -2,
-     "fee": 0.0,
-     "pnl": -5.0
+     "fee": 4.0,
+     "pnl": -9.0
     },
     {
      "side": "sell",
@@ -245,8 +245,8 @@
      "exit": 0.7448,
      "reason": "익절",
      "ticks": 6,
-     "fee": 0.0,
-     "pnl": 15.0
+     "fee": 4.0,
+     "pnl": 11.0
     },
     {
      "side": "buy",
@@ -266,8 +266,8 @@
      "exit": 0.7503,
      "reason": "익절",
      "ticks": 20,
-     "fee": 0.0,
-     "pnl": 50.0
+     "fee": 4.0,
+     "pnl": 46.0
     },
     {
      "side": "sell",
@@ -287,8 +287,8 @@
      "exit": 0.7474,
      "reason": "익절",
      "ticks": 7,
-     "fee": 0.0,
-     "pnl": 17.5
+     "fee": 4.0,
+     "pnl": 13.5
     },
     {
      "side": "sell",
@@ -308,8 +308,8 @@
      "exit": 0.7476,
      "reason": "마감 정리",
      "ticks": -7,
-     "fee": 0.0,
-     "pnl": -17.5
+     "fee": 4.0,
+     "pnl": -21.5
     },
     {
      "side": "sell",
@@ -329,8 +329,8 @@
      "exit": 0.749,
      "reason": "시간 청산",
      "ticks": 1,
-     "fee": 0.0,
-     "pnl": 2.5
+     "fee": 4.0,
+     "pnl": -1.5
     },
     {
      "side": "buy",
@@ -350,8 +350,8 @@
      "exit": 0.7503,
      "reason": "익절",
      "ticks": 5,
-     "fee": 0.0,
-     "pnl": 12.5
+     "fee": 4.0,
+     "pnl": 8.5
     },
     {
      "side": "sell",
@@ -371,8 +371,8 @@
      "exit": 0.7465,
      "reason": "익절",
      "ticks": 20,
-     "fee": 0.0,
-     "pnl": 50.0
+     "fee": 4.0,
+     "pnl": 46.0
     },
     {
      "side": "buy",
@@ -392,8 +392,8 @@
      "exit": 0.7459,
      "reason": "익절",
      "ticks": 5,
-     "fee": 0.0,
-     "pnl": 12.5
+     "fee": 4.0,
+     "pnl": 8.5
     }
    ],
    "test_signals": [
@@ -3843,23 +3843,23 @@
     "target_r": 2.0,
     "hold_min": 60,
     "trades": 25,
-    "win_rate": 0.48,
-    "net_pnl": 87.5,
-    "profit_factor": 1.44,
-    "max_drawdown": 85.0,
-    "neighbor_avg_pnl": 22.5,
+    "win_rate": 0.36,
+    "net_pnl": -12.5,
+    "profit_factor": 0.95,
+    "max_drawdown": 122.5,
+    "neighbor_avg_pnl": -74.2,
     "eligible": true
    },
    "test": {
     "trades": 11,
-    "wins": 9,
-    "win_rate": 0.818,
-    "net_pnl": 197.5,
-    "profit_factor": 6.64,
-    "avg_win": 25.8,
-    "avg_loss": -17.5,
-    "max_drawdown": 30.0,
-    "fee_total": 0.0,
+    "wins": 6,
+    "win_rate": 0.545,
+    "net_pnl": 153.5,
+    "profit_factor": 4.23,
+    "avg_win": 33.5,
+    "avg_loss": -9.5,
+    "max_drawdown": 35.5,
+    "fee_total": 44.0,
     "by_reason": {
      "시간 청산": 6,
      "마감 정리": 1,
@@ -3868,36 +3868,36 @@
     "by_block": {
      "서울 장": {
       "trades": 4,
-      "pnl": 145.0
+      "pnl": 129.0
      },
      "뉴욕": {
       "trades": 4,
-      "pnl": 27.5
+      "pnl": 11.5
      },
      "런던": {
       "trades": 3,
-      "pnl": 25.0
+      "pnl": 13.0
      }
     },
     "by_day": {
-     "20261027": -27.5,
-     "20261028": 57.5,
-     "20261029": 62.5,
-     "20261030": 17.5,
-     "20261102": 87.5
+     "20261027": -35.5,
+     "20261028": 45.5,
+     "20261029": 50.5,
+     "20261030": 13.5,
+     "20261102": 79.5
     },
     "by_window": {
      "서울": {
       "trades": 4,
-      "pnl": 145.0
+      "pnl": 129.0
      },
      "뉴욕": {
       "trades": 4,
-      "pnl": 27.5
+      "pnl": 11.5
      },
      "런던": {
       "trades": 3,
-      "pnl": 25.0
+      "pnl": 13.0
      }
     }
    },
@@ -3920,8 +3920,8 @@
      "exit": 0.7549,
      "reason": "시간 청산",
      "ticks": -12,
-     "fee": 0.0,
-     "pnl": -30.0
+     "fee": 4.0,
+     "pnl": -34.0
     },
     {
      "side": "buy",
@@ -3941,8 +3941,8 @@
      "exit": 0.754,
      "reason": "마감 정리",
      "ticks": 1,
-     "fee": 0.0,
-     "pnl": 2.5
+     "fee": 4.0,
+     "pnl": -1.5
     },
     {
      "side": "sell",
@@ -3962,8 +3962,8 @@
      "exit": 0.7513,
      "reason": "익절",
      "ticks": 17,
-     "fee": 0.0,
-     "pnl": 42.5
+     "fee": 4.0,
+     "pnl": 38.5
     },
     {
      "side": "sell",
@@ -3983,8 +3983,8 @@
      "exit": 0.7468,
      "reason": "시간 청산",
      "ticks": 1,
-     "fee": 0.0,
-     "pnl": 2.5
+     "fee": 4.0,
+     "pnl": -1.5
     },
     {
      "side": "sell",
@@ -4004,8 +4004,8 @@
      "exit": 0.7449,
      "reason": "시간 청산",
      "ticks": 5,
-     "fee": 0.0,
-     "pnl": 12.5
+     "fee": 4.0,
+     "pnl": 8.5
     },
     {
      "side": "buy",
@@ -4025,8 +4025,8 @@
      "exit": 0.75,
      "reason": "시간 청산",
      "ticks": 26,
-     "fee": 0.0,
-     "pnl": 65.0
+     "fee": 4.0,
+     "pnl": 61.0
     },
     {
      "side": "sell",
@@ -4046,8 +4046,8 @@
      "exit": 0.7481,
      "reason": "시간 청산",
      "ticks": 1,
-     "fee": 0.0,
-     "pnl": 2.5
+     "fee": 4.0,
+     "pnl": -1.5
     },
     {
      "side": "sell",
@@ -4067,8 +4067,8 @@
      "exit": 0.7474,
      "reason": "시간 청산",
      "ticks": -2,
-     "fee": 0.0,
-     "pnl": -5.0
+     "fee": 4.0,
+     "pnl": -9.0
     },
     {
      "side": "buy",
@@ -4088,8 +4088,8 @@
      "exit": 0.7504,
      "reason": "익절",
      "ticks": 7,
-     "fee": 0.0,
-     "pnl": 17.5
+     "fee": 4.0,
+     "pnl": 13.5
     },
     {
      "side": "sell",
@@ -4109,8 +4109,8 @@
      "exit": 0.7466,
      "reason": "익절",
      "ticks": 27,
-     "fee": 0.0,
-     "pnl": 67.5
+     "fee": 4.0,
+     "pnl": 63.5
     },
     {
      "side": "buy",
@@ -4130,8 +4130,8 @@
      "exit": 0.7456,
      "reason": "익절",
      "ticks": 8,
-     "fee": 0.0,
-     "pnl": 20.0
+     "fee": 4.0,
+     "pnl": 16.0
     }
    ],
    "test_signals": [
@@ -7871,23 +7871,23 @@
     "target_r": 2.0,
     "hold_min": 60,
     "trades": 25,
-    "win_rate": 0.48,
-    "net_pnl": 87.5,
-    "profit_factor": 1.44,
-    "max_drawdown": 85.0,
-    "neighbor_avg_pnl": 22.5,
+    "win_rate": 0.36,
+    "net_pnl": -12.5,
+    "profit_factor": 0.95,
+    "max_drawdown": 122.5,
+    "neighbor_avg_pnl": -74.2,
     "eligible": true
    },
    "test": {
     "trades": 11,
-    "wins": 9,
-    "win_rate": 0.818,
-    "net_pnl": 197.5,
-    "profit_factor": 6.64,
-    "avg_win": 25.8,
-    "avg_loss": -17.5,
-    "max_drawdown": 30.0,
-    "fee_total": 0.0,
+    "wins": 6,
+    "win_rate": 0.545,
+    "net_pnl": 153.5,
+    "profit_factor": 4.23,
+    "avg_win": 33.5,
+    "avg_loss": -9.5,
+    "max_drawdown": 35.5,
+    "fee_total": 44.0,
     "by_reason": {
      "시간 청산": 6,
      "마감 정리": 1,
@@ -7896,36 +7896,36 @@
     "by_block": {
      "서울 장": {
       "trades": 4,
-      "pnl": 145.0
+      "pnl": 129.0
      },
      "뉴욕": {
       "trades": 4,
-      "pnl": 27.5
+      "pnl": 11.5
      },
      "런던": {
       "trades": 3,
-      "pnl": 25.0
+      "pnl": 13.0
      }
     },
     "by_day": {
-     "20261027": -27.5,
-     "20261028": 57.5,
-     "20261029": 62.5,
-     "20261030": 17.5,
-     "20261102": 87.5
+     "20261027": -35.5,
+     "20261028": 45.5,
+     "20261029": 50.5,
+     "20261030": 13.5,
+     "20261102": 79.5
     },
     "by_window": {
      "서울": {
       "trades": 4,
-      "pnl": 145.0
+      "pnl": 129.0
      },
      "뉴욕": {
       "trades": 4,
-      "pnl": 27.5
+      "pnl": 11.5
      },
      "런던": {
       "trades": 3,
-      "pnl": 25.0
+      "pnl": 13.0
      }
     }
    },
@@ -7948,8 +7948,8 @@
      "exit": 0.7549,
      "reason": "시간 청산",
      "ticks": -12,
-     "fee": 0.0,
-     "pnl": -30.0
+     "fee": 4.0,
+     "pnl": -34.0
     },
     {
      "side": "buy",
@@ -7969,8 +7969,8 @@
      "exit": 0.754,
      "reason": "마감 정리",
      "ticks": 1,
-     "fee": 0.0,
-     "pnl": 2.5
+     "fee": 4.0,
+     "pnl": -1.5
     },
     {
      "side": "sell",
@@ -7990,8 +7990,8 @@
      "exit": 0.7513,
      "reason": "익절",
      "ticks": 17,
-     "fee": 0.0,
-     "pnl": 42.5
+     "fee": 4.0,
+     "pnl": 38.5
     },
     {
      "side": "sell",
@@ -8011,8 +8011,8 @@
      "exit": 0.7468,
      "reason": "시간 청산",
      "ticks": 1,
-     "fee": 0.0,
-     "pnl": 2.5
+     "fee": 4.0,
+     "pnl": -1.5
     },
     {
      "side": "sell",
@@ -8032,8 +8032,8 @@
      "exit": 0.7449,
      "reason": "시간 청산",
      "ticks": 5,
-     "fee": 0.0,
-     "pnl": 12.5
+     "fee": 4.0,
+     "pnl": 8.5
     },
     {
      "side": "buy",
@@ -8053,8 +8053,8 @@
      "exit": 0.75,
      "reason": "시간 청산",
      "ticks": 26,
-     "fee": 0.0,
-     "pnl": 65.0
+     "fee": 4.0,
+     "pnl": 61.0
     },
     {
      "side": "sell",
@@ -8074,8 +8074,8 @@
      "exit": 0.7481,
      "reason": "시간 청산",
      "ticks": 1,
-     "fee": 0.0,
-     "pnl": 2.5
+     "fee": 4.0,
+     "pnl": -1.5
     },
     {
      "side": "sell",
@@ -8095,8 +8095,8 @@
      "exit": 0.7474,
      "reason": "시간 청산",
      "ticks": -2,
-     "fee": 0.0,
-     "pnl": -5.0
+     "fee": 4.0,
+     "pnl": -9.0
     },
     {
      "side": "buy",
@@ -8116,8 +8116,8 @@
      "exit": 0.7504,
      "reason": "익절",
      "ticks": 7,
-     "fee": 0.0,
-     "pnl": 17.5
+     "fee": 4.0,
+     "pnl": 13.5
     },
     {
      "side": "sell",
@@ -8137,8 +8137,8 @@
      "exit": 0.7466,
      "reason": "익절",
      "ticks": 27,
-     "fee": 0.0,
-     "pnl": 67.5
+     "fee": 4.0,
+     "pnl": 63.5
     },
     {
      "side": "buy",
@@ -8158,8 +8158,8 @@
      "exit": 0.7456,
      "reason": "익절",
      "ticks": 8,
-     "fee": 0.0,
-     "pnl": 20.0
+     "fee": 4.0,
+     "pnl": 16.0
     }
    ],
    "test_signals": [

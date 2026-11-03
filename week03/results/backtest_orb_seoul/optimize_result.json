@@ -1,0 +1,4319 @@
+{
+ "train_days": [
+  "20261012",
+  "20261013",
+  "20261014",
+  "20261015",
+  "20261016",
+  "20261019",
+  "20261020",
+  "20261021",
+  "20261022",
+  "20261023",
+  "20261026"
+ ],
+ "test_days": [
+  "20261027",
+  "20261028",
+  "20261029",
+  "20261030",
+  "20261102"
+ ],
+ "grid": {
+  "range_min": [
+   10,
+   15,
+   30
+  ],
+  "entry_min": [
+   30,
+   60,
+   120
+  ],
+  "buffer_ticks": [
+   0,
+   2
+  ],
+  "target_r": [
+   0.5,
+   1.0,
+   1.5,
+   2.0
+  ],
+  "hold_min": [
+   60,
+   120,
+   240
+  ]
+ },
+ "min_trades": 6,
+ "fee": 4.0,
+ "split": "전체 기간을 이어서 돌린 뒤 진입일로 학습/검증을 나눔",
+ "picked": {
+  "출발값": {
+   "params": {
+    "windows": [
+     [
+      "서울",
+      "090000"
+     ]
+    ],
+    "range_min": 15,
+    "entry_min": 60,
+    "buffer_ticks": 0,
+    "min_range_ticks": 4,
+    "max_range_ticks": 30,
+    "max_stop_ticks": 40,
+    "target_r": 1.0,
+    "hold_min": 120,
+    "max_stops_per_day": 2,
+    "flatten_at": "235000"
+   },
+   "train": {
+    "range_min": 15,
+    "entry_min": 60,
+    "buffer_ticks": 0,
+    "target_r": 1.0,
+    "hold_min": 120,
+    "trades": 11,
+    "win_rate": 0.545,
+    "net_pnl": -34.0,
+    "profit_factor": 0.84,
+    "max_drawdown": 94.0,
+    "neighbor_avg_pnl": -74.3,
+    "eligible": true
+   },
+   "test": {
+    "trades": 4,
+    "wins": 3,
+    "win_rate": 0.75,
+    "net_pnl": 94.0,
+    "profit_factor": 7.71,
+    "avg_win": 36.0,
+    "avg_loss": -14.0,
+    "max_drawdown": 14.0,
+    "fee_total": 16.0,
+    "by_reason": {
+     "시간 청산": 1,
+     "익절": 3
+    },
+    "by_block": {
+     "서울 장": {
+      "trades": 4,
+      "pnl": 94.0
+     }
+    },
+    "by_day": {
+     "20261027": -14.0,
+     "20261028": 16.0,
+     "20261029": 46.0,
+     "20261102": 46.0
+    },
+    "by_window": {
+     "서울": {
+      "trades": 4,
+      "pnl": 94.0
+     }
+    }
+   },
+   "test_trades": [
+    {
+     "side": "buy",
+     "window": "서울",
+     "signal_time": "091700",
+     "entry_date": "20261027",
+     "entry_time": "091800",
+     "entry": 0.7561,
+     "stop": 0.754,
+     "stop_ticks": 21,
+     "target": 0.7577,
+     "deadline": "111800",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261027",
+     "exit_time": "111900",
+     "exit": 0.7557,
+     "reason": "시간 청산",
+     "ticks": -4,
+     "fee": 4.0,
+     "pnl": -14.0
+    },
+    {
+     "side": "sell",
+     "window": "서울",
+     "signal_time": "091600",
+     "entry_date": "20261028",
+     "entry_time": "091700",
+     "entry": 0.753,
+     "stop": 0.7542,
+     "stop_ticks": 12,
+     "target": 0.7521,
+     "deadline": "111700",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261028",
+     "exit_time": "093100",
+     "exit": 0.7522,
+     "reason": "익절",
+     "ticks": 8,
+     "fee": 4.0,
+     "pnl": 16.0
+    },
+    {
+     "side": "buy",
+     "window": "서울",
+     "signal_time": "093000",
+     "entry_date": "20261029",
+     "entry_time": "093100",
+     "entry": 0.7483,
+     "stop": 0.7456,
+     "stop_ticks": 27,
+     "target": 0.7504,
+     "deadline": "113100",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261029",
+     "exit_time": "101300",
+     "exit": 0.7503,
+     "reason": "익절",
+     "ticks": 20,
+     "fee": 4.0,
+     "pnl": 46.0
+    },
+    {
+     "side": "sell",
+     "window": "서울",
+     "signal_time": "092700",
+     "entry_date": "20261102",
+     "entry_time": "092800",
+     "entry": 0.7485,
+     "stop": 0.7509,
+     "stop_ticks": 24,
+     "target": 0.7464,
+     "deadline": "112800",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261102",
+     "exit_time": "094600",
+     "exit": 0.7465,
+     "reason": "익절",
+     "ticks": 20,
+     "fee": 4.0,
+     "pnl": 46.0
+    }
+   ],
+   "test_signals": [
+    {
+     "date": "20261027",
+     "time": "091700",
+     "window": "서울",
+     "close": 0.7558,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": "buy",
+     "reason": "서울 개장 범위 위로 돌파 · 범위 16틱 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261027",
+     "time": "091800",
+     "window": "서울",
+     "close": 0.7559,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "091900",
+     "window": "서울",
+     "close": 0.756,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092000",
+     "window": "서울",
+     "close": 0.7558,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092100",
+     "window": "서울",
+     "close": 0.756,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092200",
+     "window": "서울",
+     "close": 0.756,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092700",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092800",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092900",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7559,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7558,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "093200",
+     "window": "서울",
+     "close": 0.7558,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "095700",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "095800",
+     "window": "서울",
+     "close": 0.7559,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "091600",
+     "window": "서울",
+     "close": 0.7532,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": "sell",
+     "reason": "서울 개장 범위 아래로 돌파 · 범위 9틱 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "091700",
+     "window": "서울",
+     "close": 0.753,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "091800",
+     "window": "서울",
+     "close": 0.7531,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "091900",
+     "window": "서울",
+     "close": 0.7531,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092000",
+     "window": "서울",
+     "close": 0.7529,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092100",
+     "window": "서울",
+     "close": 0.7528,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092200",
+     "window": "서울",
+     "close": 0.7527,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092300",
+     "window": "서울",
+     "close": 0.7527,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092400",
+     "window": "서울",
+     "close": 0.7528,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092500",
+     "window": "서울",
+     "close": 0.7525,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092600",
+     "window": "서울",
+     "close": 0.7524,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092800",
+     "window": "서울",
+     "close": 0.7523,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092900",
+     "window": "서울",
+     "close": 0.7522,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7522,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7521,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093200",
+     "window": "서울",
+     "close": 0.7523,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7526,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093400",
+     "window": "서울",
+     "close": 0.7525,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093500",
+     "window": "서울",
+     "close": 0.752,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093600",
+     "window": "서울",
+     "close": 0.7514,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093700",
+     "window": "서울",
+     "close": 0.7513,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093800",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093900",
+     "window": "서울",
+     "close": 0.7514,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094000",
+     "window": "서울",
+     "close": 0.7518,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094100",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094200",
+     "window": "서울",
+     "close": 0.7514,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094300",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094400",
+     "window": "서울",
+     "close": 0.7516,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094500",
+     "window": "서울",
+     "close": 0.7516,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094700",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094800",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094900",
+     "window": "서울",
+     "close": 0.7518,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095000",
+     "window": "서울",
+     "close": 0.7517,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095100",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095200",
+     "window": "서울",
+     "close": 0.7513,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095300",
+     "window": "서울",
+     "close": 0.7512,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095400",
+     "window": "서울",
+     "close": 0.7509,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095500",
+     "window": "서울",
+     "close": 0.7508,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095700",
+     "window": "서울",
+     "close": 0.7508,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095800",
+     "window": "서울",
+     "close": 0.7508,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095900",
+     "window": "서울",
+     "close": 0.751,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100000",
+     "window": "서울",
+     "close": 0.7506,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100100",
+     "window": "서울",
+     "close": 0.7507,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100200",
+     "window": "서울",
+     "close": 0.7504,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100300",
+     "window": "서울",
+     "close": 0.7504,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100400",
+     "window": "서울",
+     "close": 0.7502,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100500",
+     "window": "서울",
+     "close": 0.7502,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100700",
+     "window": "서울",
+     "close": 0.7506,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100800",
+     "window": "서울",
+     "close": 0.7506,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100900",
+     "window": "서울",
+     "close": 0.7506,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "101000",
+     "window": "서울",
+     "close": 0.7505,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "101100",
+     "window": "서울",
+     "close": 0.7509,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "101200",
+     "window": "서울",
+     "close": 0.7508,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "101300",
+     "window": "서울",
+     "close": 0.7508,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7479,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": "buy",
+     "reason": "서울 개장 범위 위로 돌파 · 범위 21틱 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261029",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7481,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093200",
+     "window": "서울",
+     "close": 0.7479,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093400",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093500",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093600",
+     "window": "서울",
+     "close": 0.7485,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093700",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093800",
+     "window": "서울",
+     "close": 0.7485,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093900",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094000",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094200",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094300",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094400",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094500",
+     "window": "서울",
+     "close": 0.7481,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094600",
+     "window": "서울",
+     "close": 0.748,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094700",
+     "window": "서울",
+     "close": 0.7481,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094800",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095000",
+     "window": "서울",
+     "close": 0.7485,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095100",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095300",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095400",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095500",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095600",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095700",
+     "window": "서울",
+     "close": 0.7488,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095800",
+     "window": "서울",
+     "close": 0.7491,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095900",
+     "window": "서울",
+     "close": 0.7494,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100000",
+     "window": "서울",
+     "close": 0.7495,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100100",
+     "window": "서울",
+     "close": 0.7492,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100200",
+     "window": "서울",
+     "close": 0.7492,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100300",
+     "window": "서울",
+     "close": 0.7494,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100400",
+     "window": "서울",
+     "close": 0.7496,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100500",
+     "window": "서울",
+     "close": 0.7498,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100600",
+     "window": "서울",
+     "close": 0.7497,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100700",
+     "window": "서울",
+     "close": 0.7493,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100800",
+     "window": "서울",
+     "close": 0.7493,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100900",
+     "window": "서울",
+     "close": 0.7492,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "101000",
+     "window": "서울",
+     "close": 0.7499,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "101100",
+     "window": "서울",
+     "close": 0.75,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "101200",
+     "window": "서울",
+     "close": 0.7501,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "101300",
+     "window": "서울",
+     "close": 0.7504,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "101400",
+     "window": "서울",
+     "close": 0.7504,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "092700",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": "sell",
+     "reason": "서울 개장 범위 아래로 돌파 · 범위 21틱 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261102",
+     "time": "092800",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093200",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093400",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093500",
+     "window": "서울",
+     "close": 0.7477,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093600",
+     "window": "서울",
+     "close": 0.7475,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093700",
+     "window": "서울",
+     "close": 0.7473,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093800",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093900",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094000",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094100",
+     "window": "서울",
+     "close": 0.7472,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094200",
+     "window": "서울",
+     "close": 0.7468,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094300",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094400",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094500",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094600",
+     "window": "서울",
+     "close": 0.7463,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094700",
+     "window": "서울",
+     "close": 0.7464,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094800",
+     "window": "서울",
+     "close": 0.7464,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094900",
+     "window": "서울",
+     "close": 0.7463,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095000",
+     "window": "서울",
+     "close": 0.7466,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095100",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095200",
+     "window": "서울",
+     "close": 0.7465,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095300",
+     "window": "서울",
+     "close": 0.7464,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095400",
+     "window": "서울",
+     "close": 0.7461,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095500",
+     "window": "서울",
+     "close": 0.7463,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095600",
+     "window": "서울",
+     "close": 0.7466,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095700",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095800",
+     "window": "서울",
+     "close": 0.7469,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095900",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100000",
+     "window": "서울",
+     "close": 0.7468,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100100",
+     "window": "서울",
+     "close": 0.7469,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100200",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100300",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100400",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100500",
+     "window": "서울",
+     "close": 0.7468,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100600",
+     "window": "서울",
+     "close": 0.7468,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100700",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100800",
+     "window": "서울",
+     "close": 0.7469,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100900",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "101000",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "101100",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "101200",
+     "window": "서울",
+     "close": 0.7472,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "101300",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "101400",
+     "window": "서울",
+     "close": 0.7474,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    }
+   ]
+  },
+  "학습1위": {
+   "params": {
+    "windows": [
+     [
+      "서울",
+      "090000"
+     ]
+    ],
+    "range_min": 15,
+    "entry_min": 30,
+    "buffer_ticks": 2,
+    "min_range_ticks": 4,
+    "max_range_ticks": 30,
+    "max_stop_ticks": 40,
+    "target_r": 1.5,
+    "hold_min": 60,
+    "max_stops_per_day": 2,
+    "flatten_at": "235000"
+   },
+   "train": {
+    "range_min": 15,
+    "entry_min": 30,
+    "buffer_ticks": 2,
+    "target_r": 1.5,
+    "hold_min": 60,
+    "trades": 8,
+    "win_rate": 0.5,
+    "net_pnl": 70.5,
+    "profit_factor": 1.77,
+    "max_drawdown": 43.0,
+    "neighbor_avg_pnl": -2.4,
+    "eligible": true
+   },
+   "test": {
+    "trades": 4,
+    "wins": 3,
+    "win_rate": 0.75,
+    "net_pnl": 51.5,
+    "profit_factor": 2.51,
+    "avg_win": 28.5,
+    "avg_loss": -34.0,
+    "max_drawdown": 34.0,
+    "fee_total": 16.0,
+    "by_reason": {
+     "시간 청산": 3,
+     "익절": 1
+    },
+    "by_block": {
+     "서울 장": {
+      "trades": 4,
+      "pnl": 51.5
+     }
+    },
+    "by_day": {
+     "20261027": -34.0,
+     "20261028": 28.5,
+     "20261029": 51.0,
+     "20261102": 6.0
+    },
+    "by_window": {
+     "서울": {
+      "trades": 4,
+      "pnl": 51.5
+     }
+    }
+   },
+   "test_trades": [
+    {
+     "side": "buy",
+     "window": "서울",
+     "signal_time": "091800",
+     "entry_date": "20261027",
+     "entry_time": "091900",
+     "entry": 0.7561,
+     "stop": 0.754,
+     "stop_ticks": 21,
+     "target": 0.7585,
+     "deadline": "101900",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261027",
+     "exit_time": "102300",
+     "exit": 0.7549,
+     "reason": "시간 청산",
+     "ticks": -12,
+     "fee": 4.0,
+     "pnl": -34.0
+    },
+    {
+     "side": "sell",
+     "window": "서울",
+     "signal_time": "091700",
+     "entry_date": "20261028",
+     "entry_time": "091800",
+     "entry": 0.753,
+     "stop": 0.7542,
+     "stop_ticks": 12,
+     "target": 0.7516,
+     "deadline": "101800",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261028",
+     "exit_time": "093600",
+     "exit": 0.7517,
+     "reason": "익절",
+     "ticks": 13,
+     "fee": 4.0,
+     "pnl": 28.5
+    },
+    {
+     "side": "buy",
+     "window": "서울",
+     "signal_time": "093100",
+     "entry_date": "20261029",
+     "entry_time": "093200",
+     "entry": 0.7482,
+     "stop": 0.7456,
+     "stop_ticks": 26,
+     "target": 0.7514,
+     "deadline": "103200",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261029",
+     "exit_time": "103200",
+     "exit": 0.7504,
+     "reason": "시간 청산",
+     "ticks": 22,
+     "fee": 4.0,
+     "pnl": 51.0
+    },
+    {
+     "side": "sell",
+     "window": "서울",
+     "signal_time": "092800",
+     "entry_date": "20261102",
+     "entry_time": "093000",
+     "entry": 0.7484,
+     "stop": 0.7509,
+     "stop_ticks": 25,
+     "target": 0.7452,
+     "deadline": "103000",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261102",
+     "exit_time": "103000",
+     "exit": 0.748,
+     "reason": "시간 청산",
+     "ticks": 4,
+     "fee": 4.0,
+     "pnl": 6.0
+    }
+   ],
+   "test_signals": [
+    {
+     "date": "20261027",
+     "time": "091800",
+     "window": "서울",
+     "close": 0.7559,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": "buy",
+     "reason": "서울 개장 범위 위로 돌파 · 범위 16틱 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261027",
+     "time": "091900",
+     "window": "서울",
+     "close": 0.756,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092100",
+     "window": "서울",
+     "close": 0.756,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092200",
+     "window": "서울",
+     "close": 0.756,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7559,
+     "range_high": 0.7556,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "091700",
+     "window": "서울",
+     "close": 0.753,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": "sell",
+     "reason": "서울 개장 범위 아래로 돌파 · 범위 9틱 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "092000",
+     "window": "서울",
+     "close": 0.7529,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092100",
+     "window": "서울",
+     "close": 0.7528,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092200",
+     "window": "서울",
+     "close": 0.7527,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092300",
+     "window": "서울",
+     "close": 0.7527,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092400",
+     "window": "서울",
+     "close": 0.7528,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092500",
+     "window": "서울",
+     "close": 0.7525,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092600",
+     "window": "서울",
+     "close": 0.7524,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092800",
+     "window": "서울",
+     "close": 0.7523,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092900",
+     "window": "서울",
+     "close": 0.7522,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7522,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7521,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093200",
+     "window": "서울",
+     "close": 0.7523,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7526,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093400",
+     "window": "서울",
+     "close": 0.7525,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093500",
+     "window": "서울",
+     "close": 0.752,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093600",
+     "window": "서울",
+     "close": 0.7514,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093700",
+     "window": "서울",
+     "close": 0.7513,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093800",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093900",
+     "window": "서울",
+     "close": 0.7514,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094000",
+     "window": "서울",
+     "close": 0.7518,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094100",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094200",
+     "window": "서울",
+     "close": 0.7514,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094300",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094400",
+     "window": "서울",
+     "close": 0.7516,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7481,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": "buy",
+     "reason": "서울 개장 범위 위로 돌파 · 범위 21틱 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261029",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093400",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093500",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093600",
+     "window": "서울",
+     "close": 0.7485,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093700",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093800",
+     "window": "서울",
+     "close": 0.7485,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093900",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094000",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094200",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094300",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094400",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7477,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "092800",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": "sell",
+     "reason": "서울 개장 범위 아래로 돌파 · 범위 21틱 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261102",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093400",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093500",
+     "window": "서울",
+     "close": 0.7477,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093600",
+     "window": "서울",
+     "close": 0.7475,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093700",
+     "window": "서울",
+     "close": 0.7473,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093800",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093900",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094000",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094100",
+     "window": "서울",
+     "close": 0.7472,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094200",
+     "window": "서울",
+     "close": 0.7468,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094300",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094400",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7488,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    }
+   ]
+  },
+  "이웃평균1위": {
+   "params": {
+    "windows": [
+     [
+      "서울",
+      "090000"
+     ]
+    ],
+    "range_min": 10,
+    "entry_min": 60,
+    "buffer_ticks": 0,
+    "min_range_ticks": 4,
+    "max_range_ticks": 30,
+    "max_stop_ticks": 40,
+    "target_r": 2.0,
+    "hold_min": 60,
+    "max_stops_per_day": 2,
+    "flatten_at": "235000"
+   },
+   "train": {
+    "range_min": 10,
+    "entry_min": 60,
+    "buffer_ticks": 0,
+    "target_r": 2.0,
+    "hold_min": 60,
+    "trades": 11,
+    "win_rate": 0.455,
+    "net_pnl": 58.5,
+    "profit_factor": 1.44,
+    "max_drawdown": 78.0,
+    "neighbor_avg_pnl": 27.1,
+    "eligible": true
+   },
+   "test": {
+    "trades": 4,
+    "wins": 3,
+    "win_rate": 0.75,
+    "net_pnl": 129.0,
+    "profit_factor": 4.79,
+    "avg_win": 54.3,
+    "avg_loss": -34.0,
+    "max_drawdown": 34.0,
+    "fee_total": 16.0,
+    "by_reason": {
+     "시간 청산": 2,
+     "익절": 2
+    },
+    "by_block": {
+     "서울 장": {
+      "trades": 4,
+      "pnl": 129.0
+     }
+    },
+    "by_day": {
+     "20261027": -34.0,
+     "20261028": 38.5,
+     "20261029": 61.0,
+     "20261102": 63.5
+    },
+    "by_window": {
+     "서울": {
+      "trades": 4,
+      "pnl": 129.0
+     }
+    }
+   },
+   "test_trades": [
+    {
+     "side": "buy",
+     "window": "서울",
+     "signal_time": "091700",
+     "entry_date": "20261027",
+     "entry_time": "091800",
+     "entry": 0.7561,
+     "stop": 0.754,
+     "stop_ticks": 21,
+     "target": 0.7591,
+     "deadline": "101800",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261027",
+     "exit_time": "102300",
+     "exit": 0.7549,
+     "reason": "시간 청산",
+     "ticks": -12,
+     "fee": 4.0,
+     "pnl": -34.0
+    },
+    {
+     "side": "sell",
+     "window": "서울",
+     "signal_time": "091600",
+     "entry_date": "20261028",
+     "entry_time": "091700",
+     "entry": 0.753,
+     "stop": 0.7542,
+     "stop_ticks": 12,
+     "target": 0.7512,
+     "deadline": "101700",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261028",
+     "exit_time": "093700",
+     "exit": 0.7513,
+     "reason": "익절",
+     "ticks": 17,
+     "fee": 4.0,
+     "pnl": 38.5
+    },
+    {
+     "side": "buy",
+     "window": "서울",
+     "signal_time": "091100",
+     "entry_date": "20261029",
+     "entry_time": "091200",
+     "entry": 0.7474,
+     "stop": 0.7456,
+     "stop_ticks": 18,
+     "target": 0.7504,
+     "deadline": "101200",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261029",
+     "exit_time": "101200",
+     "exit": 0.75,
+     "reason": "시간 청산",
+     "ticks": 26,
+     "fee": 4.0,
+     "pnl": 61.0
+    },
+    {
+     "side": "sell",
+     "window": "서울",
+     "signal_time": "091000",
+     "entry_date": "20261102",
+     "entry_time": "091100",
+     "entry": 0.7493,
+     "stop": 0.7509,
+     "stop_ticks": 16,
+     "target": 0.7465,
+     "deadline": "101100",
+     "deadline_reason": "시간 청산",
+     "block": "서울 장",
+     "exit_date": "20261102",
+     "exit_time": "094600",
+     "exit": 0.7466,
+     "reason": "익절",
+     "ticks": 27,
+     "fee": 4.0,
+     "pnl": 63.5
+    }
+   ],
+   "test_signals": [
+    {
+     "date": "20261027",
+     "time": "091700",
+     "window": "서울",
+     "close": 0.7558,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": "buy",
+     "reason": "서울 개장 범위 위로 돌파 · 범위 15틱 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261027",
+     "time": "091800",
+     "window": "서울",
+     "close": 0.7559,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "091900",
+     "window": "서울",
+     "close": 0.756,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092000",
+     "window": "서울",
+     "close": 0.7558,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092100",
+     "window": "서울",
+     "close": 0.756,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092200",
+     "window": "서울",
+     "close": 0.756,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092300",
+     "window": "서울",
+     "close": 0.7556,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092400",
+     "window": "서울",
+     "close": 0.7556,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092600",
+     "window": "서울",
+     "close": 0.7556,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092700",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092800",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "092900",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7559,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7558,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "093200",
+     "window": "서울",
+     "close": 0.7558,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "095700",
+     "window": "서울",
+     "close": 0.7557,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261027",
+     "time": "095800",
+     "window": "서울",
+     "close": 0.7559,
+     "range_high": 0.7555,
+     "range_low": 0.754,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "091600",
+     "window": "서울",
+     "close": 0.7532,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": "sell",
+     "reason": "서울 개장 범위 아래로 돌파 · 범위 9틱 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261028",
+     "time": "091700",
+     "window": "서울",
+     "close": 0.753,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "091800",
+     "window": "서울",
+     "close": 0.7531,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "091900",
+     "window": "서울",
+     "close": 0.7531,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092000",
+     "window": "서울",
+     "close": 0.7529,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092100",
+     "window": "서울",
+     "close": 0.7528,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092200",
+     "window": "서울",
+     "close": 0.7527,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092300",
+     "window": "서울",
+     "close": 0.7527,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092400",
+     "window": "서울",
+     "close": 0.7528,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092500",
+     "window": "서울",
+     "close": 0.7525,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092600",
+     "window": "서울",
+     "close": 0.7524,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092800",
+     "window": "서울",
+     "close": 0.7523,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "092900",
+     "window": "서울",
+     "close": 0.7522,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7522,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7521,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093200",
+     "window": "서울",
+     "close": 0.7523,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7526,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093400",
+     "window": "서울",
+     "close": 0.7525,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093500",
+     "window": "서울",
+     "close": 0.752,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093600",
+     "window": "서울",
+     "close": 0.7514,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093700",
+     "window": "서울",
+     "close": 0.7513,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093800",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "093900",
+     "window": "서울",
+     "close": 0.7514,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094000",
+     "window": "서울",
+     "close": 0.7518,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094100",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094200",
+     "window": "서울",
+     "close": 0.7514,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094300",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094400",
+     "window": "서울",
+     "close": 0.7516,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094500",
+     "window": "서울",
+     "close": 0.7516,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094700",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094800",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "094900",
+     "window": "서울",
+     "close": 0.7518,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095000",
+     "window": "서울",
+     "close": 0.7517,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095100",
+     "window": "서울",
+     "close": 0.7515,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095200",
+     "window": "서울",
+     "close": 0.7513,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095300",
+     "window": "서울",
+     "close": 0.7512,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095400",
+     "window": "서울",
+     "close": 0.7509,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095500",
+     "window": "서울",
+     "close": 0.7508,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095700",
+     "window": "서울",
+     "close": 0.7508,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095800",
+     "window": "서울",
+     "close": 0.7508,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "095900",
+     "window": "서울",
+     "close": 0.751,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100000",
+     "window": "서울",
+     "close": 0.7506,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100100",
+     "window": "서울",
+     "close": 0.7507,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100200",
+     "window": "서울",
+     "close": 0.7504,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100300",
+     "window": "서울",
+     "close": 0.7504,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100400",
+     "window": "서울",
+     "close": 0.7502,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100500",
+     "window": "서울",
+     "close": 0.7502,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100700",
+     "window": "서울",
+     "close": 0.7506,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100800",
+     "window": "서울",
+     "close": 0.7506,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261028",
+     "time": "100900",
+     "window": "서울",
+     "close": 0.7506,
+     "range_high": 0.7542,
+     "range_low": 0.7533,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "091100",
+     "window": "서울",
+     "close": 0.7473,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": "buy",
+     "reason": "서울 개장 범위 위로 돌파 · 범위 15틱 · 원화 강세(환율 하락) 쪽"
+    },
+    {
+     "date": "20261029",
+     "time": "091200",
+     "window": "서울",
+     "close": 0.7475,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "091300",
+     "window": "서울",
+     "close": 0.7475,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "091400",
+     "window": "서울",
+     "close": 0.7477,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "091500",
+     "window": "서울",
+     "close": 0.7473,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "092600",
+     "window": "서울",
+     "close": 0.7473,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "092700",
+     "window": "서울",
+     "close": 0.7473,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "092800",
+     "window": "서울",
+     "close": 0.7475,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "092900",
+     "window": "서울",
+     "close": 0.7477,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7479,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7481,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093200",
+     "window": "서울",
+     "close": 0.7479,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093400",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093500",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093600",
+     "window": "서울",
+     "close": 0.7485,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093700",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093800",
+     "window": "서울",
+     "close": 0.7485,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "093900",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094000",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094200",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094300",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094400",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094500",
+     "window": "서울",
+     "close": 0.7481,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094600",
+     "window": "서울",
+     "close": 0.748,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094700",
+     "window": "서울",
+     "close": 0.7481,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "094800",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095000",
+     "window": "서울",
+     "close": 0.7485,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095100",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095300",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095400",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095500",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095600",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095700",
+     "window": "서울",
+     "close": 0.7488,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095800",
+     "window": "서울",
+     "close": 0.7491,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "095900",
+     "window": "서울",
+     "close": 0.7494,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100000",
+     "window": "서울",
+     "close": 0.7495,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100100",
+     "window": "서울",
+     "close": 0.7492,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100200",
+     "window": "서울",
+     "close": 0.7492,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100300",
+     "window": "서울",
+     "close": 0.7494,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100400",
+     "window": "서울",
+     "close": 0.7496,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100500",
+     "window": "서울",
+     "close": 0.7498,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100600",
+     "window": "서울",
+     "close": 0.7497,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100700",
+     "window": "서울",
+     "close": 0.7493,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100800",
+     "window": "서울",
+     "close": 0.7493,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261029",
+     "time": "100900",
+     "window": "서울",
+     "close": 0.7492,
+     "range_high": 0.7471,
+     "range_low": 0.7456,
+     "side": null,
+     "reason": "buy 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "091000",
+     "window": "서울",
+     "close": 0.7494,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": "sell",
+     "reason": "서울 개장 범위 아래로 돌파 · 범위 14틱 · 원화 약세(환율 상승) 쪽"
+    },
+    {
+     "date": "20261102",
+     "time": "091100",
+     "window": "서울",
+     "close": 0.749,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "091200",
+     "window": "서울",
+     "close": 0.749,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "091300",
+     "window": "서울",
+     "close": 0.749,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "091400",
+     "window": "서울",
+     "close": 0.7493,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "091600",
+     "window": "서울",
+     "close": 0.7493,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "092000",
+     "window": "서울",
+     "close": 0.7494,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "092100",
+     "window": "서울",
+     "close": 0.7494,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "092300",
+     "window": "서울",
+     "close": 0.7492,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "092400",
+     "window": "서울",
+     "close": 0.7491,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "092600",
+     "window": "서울",
+     "close": 0.7488,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "092700",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "092800",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093000",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093100",
+     "window": "서울",
+     "close": 0.7487,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093200",
+     "window": "서울",
+     "close": 0.7486,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093300",
+     "window": "서울",
+     "close": 0.7484,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093400",
+     "window": "서울",
+     "close": 0.7483,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093500",
+     "window": "서울",
+     "close": 0.7477,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093600",
+     "window": "서울",
+     "close": 0.7475,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093700",
+     "window": "서울",
+     "close": 0.7473,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093800",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "093900",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094000",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094100",
+     "window": "서울",
+     "close": 0.7472,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094200",
+     "window": "서울",
+     "close": 0.7468,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094300",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094400",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094500",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094600",
+     "window": "서울",
+     "close": 0.7463,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094700",
+     "window": "서울",
+     "close": 0.7464,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094800",
+     "window": "서울",
+     "close": 0.7464,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "094900",
+     "window": "서울",
+     "close": 0.7463,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095000",
+     "window": "서울",
+     "close": 0.7466,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095100",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095200",
+     "window": "서울",
+     "close": 0.7465,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095300",
+     "window": "서울",
+     "close": 0.7464,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095400",
+     "window": "서울",
+     "close": 0.7461,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095500",
+     "window": "서울",
+     "close": 0.7463,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095600",
+     "window": "서울",
+     "close": 0.7466,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095700",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095800",
+     "window": "서울",
+     "close": 0.7469,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "095900",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100000",
+     "window": "서울",
+     "close": 0.7468,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100100",
+     "window": "서울",
+     "close": 0.7469,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100200",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100300",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100400",
+     "window": "서울",
+     "close": 0.7467,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100500",
+     "window": "서울",
+     "close": 0.7468,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100600",
+     "window": "서울",
+     "close": 0.7468,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100700",
+     "window": "서울",
+     "close": 0.747,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100800",
+     "window": "서울",
+     "close": 0.7469,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    },
+    {
+     "date": "20261102",
+     "time": "100900",
+     "window": "서울",
+     "close": 0.7471,
+     "range_high": 0.7509,
+     "range_low": 0.7495,
+     "side": null,
+     "reason": "sell 신호 · 서울 개장에서 이미 진입함"
+    }
+   ]
+  }
+ }
+}
