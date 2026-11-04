@@ -1,10 +1,14 @@
-"""ws_trader.Engine 판단 시험 — 접속·주문 없이 가짜 시세를 넣어 본다.
+"""ws_trader 시험 — 접속·주문 없이 가짜 시세·가짜 웹소켓을 넣어 본다 (Engine 판단, 재접속 대기).
 
   python3 -m unittest test_ws_trader -v
 """
+import asyncio
+import json
 import unittest
+from unittest import mock
 
-from ws_trader import TICK, Engine, LiveParams
+import ws_trader
+from ws_trader import TICK, Backoff, Engine, LiveParams
 
 
 def engine(**kw) -> Engine:
@@ -90,6 +94,124 @@ class EngineTest(unittest.TestCase):
         self.warm(e)
         self.assertIsNotNone(e.on_krx(1340.8, 31, "100031"))
         self.assertIsNone(e.on_krx(1341.0, 32, "100032"))              # 주문 대기 중
+
+
+class BackoffTest(unittest.TestCase):
+    def test_waits_grow_then_give_up(self):
+        b = Backoff()
+        self.assertEqual([b.fail() for _ in range(5)], [10, 30, 60, 120, 300])
+        self.assertIsNone(b.fail())                                     # 6번째 연속 실패 → 포기
+
+    def test_ok_resets(self):
+        b = Backoff()
+        b.fail(); b.fail()
+        b.ok()
+        self.assertEqual(b.fail(), 10)
+
+
+# ---- stream() 재접속 시험: 가짜 웹소켓 ----
+INIT = json.dumps({"code": "INIT", "msg": "INIT_SUCCESS"})
+RT_INIT = json.dumps({"code": "RT_INIT", "data": {"action": "A", "action_code": "KA", "action_sym": "A756B000"}, "msg": ""})
+PING = json.dumps({"code": "pingpong", "msg": "pingpong"})
+
+
+class FakeWS:
+    """script 의 메시지를 차례로 주고, 다 떨어지면 조용해진다 (11/03 처럼 소켓은 안 닫힘)."""
+
+    def __init__(self, script):
+        self.script, self.sent = list(script), []
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, *a):
+        return False
+
+    async def send(self, raw):
+        self.sent.append(raw)
+
+    async def recv(self):
+        if self.script:
+            return self.script.pop(0)
+        await asyncio.sleep(3600)
+
+
+class FakeRec:
+    def __init__(self):
+        self.events = []
+
+    def message(self, conn, raw):
+        pass
+
+    def event(self, kind, **kw):
+        self.events.append((kind, kw.get("note", "")))
+
+
+class StreamTest(unittest.TestCase):
+    def run_stream(self, scripts, key_errors=0, max_fails=3, handler=None):
+        t = ws_trader.Trader.__new__(ws_trader.Trader)
+        t.rec, t.eng, t.stop = FakeRec(), Engine(LiveParams()), None
+        conns, keys = [], {"n": 0}
+
+        def fake_key(client):
+            keys["n"] += 1
+            if keys["n"] <= key_errors:
+                raise SystemExit("웹소켓 키 발급 실패: EGW020")
+            return "k"
+
+        def fake_connect(url, **kw):
+            ws = FakeWS(scripts[min(len(conns), len(scripts) - 1)])
+            conns.append(ws)
+            return ws
+
+        async def noop(code, body):
+            pass
+
+        client = mock.Mock(env=next(iter(ws_trader.WS_URLS)), token=lambda: "tok")
+
+        async def go():
+            t.stop = asyncio.Event()
+            await asyncio.wait_for(t.stream("국내", client, [("KA", "A756B000")], handler or noop), 10)
+
+        with mock.patch.object(ws_trader, "ws_key", fake_key), \
+             mock.patch.object(ws_trader.websockets, "connect", fake_connect), \
+             mock.patch.object(ws_trader, "Backoff", lambda: Backoff(steps=(0.01, 0.02), max_fails=max_fails)), \
+             mock.patch.object(ws_trader, "FIRST_MSG_S", 0.3), mock.patch.object(ws_trader, "SILENCE_S", 0.5):
+            asyncio.run(go())
+        return t.rec.events, conns, keys["n"]
+
+    def test_rt_init_then_silence_gives_up(self):
+        # 11/03 국내: 접속·RT_INIT 은 되는데 그 뒤 아무것도 없음 → 대기 늘려 가다 상한에서 중단 (무한 반복 안 함)
+        events, conns, nkeys = self.run_stream([[INIT, RT_INIT]], max_fails=3)
+        kinds = [k for k, _ in events]
+        self.assertEqual(kinds.count("끊김"), 3)
+        self.assertEqual(kinds[-1], "중단")
+        self.assertEqual(len(conns), 3)
+        self.assertEqual(nkeys, 3)
+        self.assertIn("첫 메시지 없음", events[1][1])
+
+    def test_key_error_backs_off_not_exit(self):
+        # 키 발급 실패(SystemExit)도 프로그램을 끄지 않고 같은 대기 규칙으로 처리
+        events, conns, nkeys = self.run_stream([[INIT, RT_INIT]], key_errors=3, max_fails=3)
+        self.assertEqual([k for k, _ in events][-1], "중단")
+        self.assertEqual(nkeys, 3)
+        self.assertEqual(len(conns), 0)
+
+    def test_pingpong_echoed(self):
+        events, conns, _ = self.run_stream([[INIT, RT_INIT, PING]], max_fails=1)
+        self.assertIn(PING, conns[0].sent)
+        self.assertIn("0.5초 무응답", events[1][1])                    # 첫 메시지 뒤엔 SILENCE_S 기준
+
+    def test_handler_error_does_not_reconnect(self):
+        data = json.dumps({"header": {"action_code": "KA"}, "body": {}})
+
+        async def bad(code, body):
+            raise KeyError("last_pric")
+
+        events, conns, _ = self.run_stream([[INIT, RT_INIT, data, data]], max_fails=1, handler=bad)
+        kinds = [k for k, _ in events]
+        self.assertEqual(kinds.count("처리오류"), 2)
+        self.assertEqual(len(conns), 1)                                  # 처리 오류로는 다시 접속 안 함
 
 
 if __name__ == "__main__":

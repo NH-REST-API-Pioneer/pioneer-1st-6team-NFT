@@ -5,7 +5,8 @@
   python3 ws_trader.py --orders                 # 모의 주문 켬 (수요일부터)
   python3 ws_trader.py --start-at 084000 --until 154500 --move 0.5 --lookback 45
 
-구독: 국내 키 KA(A756B000) · 해외 키 FA·FB(MKUX26). 끊기면 다시 접속, pingpong 은 그대로 돌려보냄.
+구독: 국내 키 KA(A756B000) · 해외 키 FA·FB(MKUX26). pingpong 은 그대로 돌려보냄.
+재접속: 끊기면 10초→30초→1분→2분→5분 간격으로 다시 접속, 연속 6회 실패면 그 연결은 그날 중단 (NH 11/04 요청).
 신호: KRX 최근 lookback 초 움직임 ≥ move 원, 같은 구간 MKU 호가 중간값이 그 움직임의 rho_max 배도 안 따라왔고,
       호가 차이가 max_spread 틱 이하이면 즉시 MKU 시장가 1계약 (KRX 상승 = 원화 약세 = MKU 매도).
 청산: 익절·손절(청산 쪽 호가 기준 틱) · 보유 hold 초 · 15:40 전량. 그날 손절 max_stops 번이면 진입 중단.
@@ -38,6 +39,29 @@ TICK = 0.0001
 TICK_USD = 2.5
 FEE_TICKS = 2.0 / TICK_USD        # 수수료 편도 $2 (근거 문서 5절)
 SILENCE_S = 60                    # 이 시간 동안 아무 메시지(pingpong 포함)도 없으면 다시 접속
+FIRST_MSG_S = 40                  # 구독 뒤 첫 pingpong·시세가 이 안에 안 오면 비정상 (정상은 첫 pingpong 약 30초)
+# 재접속 대기 (NH 11/04 요청: 접속키 발급·재접속을 자주 반복하지 말 것). 실패할수록 길게, 연속 실패 상한이면 그 연결은 그날 중단.
+BACKOFF_S = (10, 30, 60, 120, 300)
+MAX_FAILS = 6                     # 10+30+60+120+300 초 ≈ 8분 동안 못 살리면 포기
+HEALTHY_S = 120                   # 메시지를 받으며 이만큼 버틴 연결이어야 실패 횟수를 0으로 (붙자마자 끊기는 반복 방지)
+
+
+class Backoff:
+    """연속 실패 횟수로 다음 대기 시간을 정한다. 실제 메시지(pingpong·시세)를 받아야 초기화한다 —
+    접속·RT_INIT 만으로는 초기화하지 않는다 (11/03: RT_INIT 뒤 아무것도 안 오는 접속이 반복됨)."""
+
+    def __init__(self, steps=BACKOFF_S, max_fails=MAX_FAILS):
+        self.steps, self.max_fails, self.fails = steps, max_fails, 0
+
+    def ok(self) -> None:
+        self.fails = 0
+
+    def fail(self) -> float | None:
+        """실패 1회를 세고 기다릴 초를 돌려준다. 상한에 닿으면 None (그만 접속)."""
+        self.fails += 1
+        if self.fails >= self.max_fails:
+            return None
+        return self.steps[min(self.fails - 1, len(self.steps) - 1)]
 
 
 @dataclass
@@ -226,9 +250,14 @@ class Trader:
 
     # ---- 접속 ----
     async def stream(self, name: str, client: NHClient, subs: list[tuple[str, str]], handler) -> None:
+        backoff = Backoff()
         while not self.stop.is_set():
+            got_any = False
             try:
-                key = await asyncio.to_thread(ws_key, client)
+                try:
+                    key = await asyncio.to_thread(ws_key, client)
+                except SystemExit as e:     # ws_probe.ws_key 는 실패 시 SystemExit — 여기선 재접속 대기로 넘김
+                    raise RuntimeError(str(e)) from None
                 url = f"{WS_URLS[client.env]}/trade/ws-stream?access_key={key}"
                 async with websockets.connect(url, ping_interval=None, max_queue=None) as ws:
                     await ws.send(json.dumps({"header": {"api_ver": "1", "action": "0"},
@@ -240,29 +269,48 @@ class Trader:
                         await ws.send(json.dumps({"header": {"api_ver": "1", "action": "A"},
                                                   "body": {"action_code": code, "action_sym": sym}}))
                     self.rec.event("접속", note=f"{name} {subs}")
-                    last_rx = time.monotonic()
+                    last_rx = opened = time.monotonic()
                     while not self.stop.is_set():
                         try:
                             raw = await asyncio.wait_for(ws.recv(), 1.0)
                         except asyncio.TimeoutError:
-                            # 인터넷이 끊기면 소켓이 닫히지 않고 조용해지기만 한다 → 무응답으로 끊김 판단
-                            if time.monotonic() - last_rx > SILENCE_S:
-                                raise ConnectionError(f"{SILENCE_S}초 무응답")
+                            # 인터넷이 끊기면 소켓이 닫히지 않고 조용해지기만 한다 → 무응답으로 끊김 판단.
+                            # 구독 직후엔 첫 pingpong(정상 약 30초)이 와야 하므로 더 짧게 본다.
+                            limit = SILENCE_S if got_any else FIRST_MSG_S
+                            if time.monotonic() - last_rx > limit:
+                                raise ConnectionError(f"{limit}초 무응답" + ("" if got_any else " (구독 뒤 첫 메시지 없음)"))
                             continue
                         last_rx = time.monotonic()
                         self.rec.message(name, raw)
                         msg = json.loads(raw)
                         if msg.get("code") == "pingpong":
                             await ws.send(raw)
-                        elif msg.get("header"):
-                            await handler(msg["header"].get("action_code"), msg.get("body") or {})
-                        elif msg.get("code") not in ("RT_INIT",):
-                            self.rec.event("응답", note=f"{name} {msg}")
-            except Exception as e:      # 끊김·키 오류 모두 다시 접속
+                        elif not msg.get("header"):
+                            if msg.get("code") != "RT_INIT":
+                                self.rec.event("응답", note=f"{name} {msg}")
+                            continue    # 구독 응답은 살아 있다는 증거로 치지 않음
+                        else:
+                            try:
+                                await handler(msg["header"].get("action_code"), msg.get("body") or {})
+                            except Exception as e:      # 우리 처리 코드 오류로 재접속하지 않음
+                                self.rec.event("처리오류", note=f"{name} {type(e).__name__}: {e}"[:300])
+                        got_any = True
+                        if backoff.fails and last_rx - opened >= HEALTHY_S:
+                            backoff.ok()                # 실제로 받으며 버틴 연결이어야 대기 초기화
+            except Exception as e:      # 끊김·키 오류 → 대기 시간을 늘려 가며 다시 접속
                 if self.stop.is_set():
                     break
-                self.rec.event("끊김", note=f"{name} {type(e).__name__}: {e}"[:300])
-                await asyncio.sleep(3)
+                wait = backoff.fail()
+                self.rec.event("끊김", note=f"{name} {type(e).__name__}: {e} · 연속 {backoff.fails}회"[:300])
+                if wait is None:
+                    self.rec.event("중단", note=f"{name} 연속 {backoff.fails}회 실패 — 오늘은 이 연결 다시 접속 안 함")
+                    if self.eng.pos:
+                        self.rec.event("경고", note=f"{name} 끊긴 채 포지션 보유 중 — 잔고를 직접 확인하세요")
+                    break
+                try:                    # 기다리는 동안 종료 시각이 되면 바로 빠져나옴
+                    await asyncio.wait_for(self.stop.wait(), wait)
+                except asyncio.TimeoutError:
+                    pass
 
     async def on_dom(self, code: str, b: dict) -> None:
         if code != "KA" or b.get("tick_div") != "1" or not float(b.get("exec_qty") or 0):
