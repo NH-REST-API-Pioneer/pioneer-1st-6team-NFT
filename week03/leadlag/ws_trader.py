@@ -44,6 +44,7 @@ FIRST_MSG_S = 40                  # 구독 뒤 첫 pingpong·시세가 이 안�
 BACKOFF_S = (10, 30, 60, 120, 300)
 MAX_FAILS = 6                     # 10+30+60+120+300 초 ≈ 8분 동안 못 살리면 포기
 HEALTHY_S = 120                   # 메시지를 받으며 이만큼 버틴 연결이어야 실패 횟수를 0으로 (붙자마자 끊기는 반복 방지)
+RESUB_S = (30, 60, 120, 300)    # 구독 RT_FAIL 시 같은 연결에서 다시 구독 (11/05: NH 일시 오류로 해외 구독이 하루 종일 빠짐)
 
 
 class Backoff:
@@ -270,7 +271,14 @@ class Trader:
                                                   "body": {"action_code": code, "action_sym": sym}}))
                     self.rec.event("접속", note=f"{name} {subs}")
                     last_rx = opened = time.monotonic()
+                    resub: dict[tuple[str, str], list] = {}     # (코드, 종목) → [다음 시도 시각, 실패 횟수]
                     while not self.stop.is_set():
+                        for (code, sym), r in list(resub.items()):
+                            if time.monotonic() >= r[0]:
+                                r[0] = float("inf")             # 응답이 올 때까지 다시 보내지 않음
+                                self.rec.event("재구독", note=f"{name} {code} {sym} · {r[1]}번째 실패 뒤")
+                                await ws.send(json.dumps({"header": {"api_ver": "1", "action": "A"},
+                                                          "body": {"action_code": code, "action_sym": sym}}))
                         try:
                             raw = await asyncio.wait_for(ws.recv(), 1.0)
                         except asyncio.TimeoutError:
@@ -286,6 +294,14 @@ class Trader:
                         if msg.get("code") == "pingpong":
                             await ws.send(raw)
                         elif not msg.get("header"):
+                            d = msg.get("data") or {}
+                            k = (d.get("action_code"), d.get("action_sym"))
+                            if msg.get("code") == "RT_FAIL" and d.get("action") == "A" and k in subs:
+                                n = resub.get(k, [0, 0])[1] + 1
+                                resub[k] = [time.monotonic() + RESUB_S[min(n - 1, len(RESUB_S) - 1)], n]
+                            elif msg.get("code") == "RT_INIT" and k in resub:
+                                del resub[k]
+                                self.rec.event("재구독", note=f"{name} {k[0]} {k[1]} 성공")
                             if msg.get("code") != "RT_INIT":
                                 self.rec.event("응답", note=f"{name} {msg}")
                             continue    # 구독 응답은 살아 있다는 증거로 치지 않음

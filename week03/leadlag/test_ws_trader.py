@@ -148,7 +148,7 @@ class FakeRec:
 
 
 class StreamTest(unittest.TestCase):
-    def run_stream(self, scripts, key_errors=0, max_fails=3, handler=None):
+    def run_stream(self, scripts, key_errors=0, max_fails=3, handler=None, ws_cls=FakeWS, silence=0.5):
         t = ws_trader.Trader.__new__(ws_trader.Trader)
         t.rec, t.eng, t.stop = FakeRec(), Engine(LiveParams()), None
         conns, keys = [], {"n": 0}
@@ -160,7 +160,7 @@ class StreamTest(unittest.TestCase):
             return "k"
 
         def fake_connect(url, **kw):
-            ws = FakeWS(scripts[min(len(conns), len(scripts) - 1)])
+            ws = ws_cls(scripts[min(len(conns), len(scripts) - 1)])
             conns.append(ws)
             return ws
 
@@ -176,7 +176,8 @@ class StreamTest(unittest.TestCase):
         with mock.patch.object(ws_trader, "ws_key", fake_key), \
              mock.patch.object(ws_trader.websockets, "connect", fake_connect), \
              mock.patch.object(ws_trader, "Backoff", lambda: Backoff(steps=(0.01, 0.02), max_fails=max_fails)), \
-             mock.patch.object(ws_trader, "FIRST_MSG_S", 0.3), mock.patch.object(ws_trader, "SILENCE_S", 0.5):
+             mock.patch.object(ws_trader, "FIRST_MSG_S", 0.3), mock.patch.object(ws_trader, "SILENCE_S", silence), \
+             mock.patch.object(ws_trader, "RESUB_S", (0.05,)):
             asyncio.run(go())
         return t.rec.events, conns, keys["n"]
 
@@ -213,6 +214,26 @@ class StreamTest(unittest.TestCase):
         self.assertEqual(kinds.count("처리오류"), 2)
         self.assertEqual(len(conns), 1)                                  # 처리 오류로는 다시 접속 안 함
 
+
+    def test_rt_fail_resubscribes_on_same_connection(self):
+        # 11/05 08:40 해외: 구독이 RT_FAIL(종목정보 없음)로 빠졌는데 pingpong 만 오면서 하루 종일 그대로였음
+        # → 같은 연결에서 구독만 다시 (새 키·재접속 없이)
+        fail = json.dumps({"code": "RT_FAIL", "data": {"action": "A", "action_code": "KA", "action_sym": "A756B000"},
+                           "msg": "해당 종목에 대한 종목정보를 찾을 수 없습니다."})
+
+        class ResubWS(FakeWS):
+            async def send(self, raw):
+                self.sent.append(raw)
+                subs = [x for x in self.sent if '"action": "A"' in x]
+                if '"action": "A"' in raw and len(subs) == 2:
+                    self.script += [RT_INIT, PING]
+
+        events, conns, nkeys = self.run_stream([[INIT, PING, fail]], max_fails=1, ws_cls=ResubWS, silence=2)
+        self.assertEqual(len(conns), 1)
+        self.assertEqual(nkeys, 1)
+        self.assertEqual(sum('"action": "A"' in x for x in conns[0].sent), 2)
+        notes = [n for k, n in events if k == "재구독"]
+        self.assertTrue(any("성공" in n for n in notes), events)
 
 if __name__ == "__main__":
     unittest.main()

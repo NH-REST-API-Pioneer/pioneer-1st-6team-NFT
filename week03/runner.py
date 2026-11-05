@@ -240,7 +240,17 @@ def live(sym: str, out: Path, until: str) -> dict:
                                                               req_qty=req_qty))]
         return sorted([m for m in got if m.date == today and m.time < now_min], key=lambda m: m.time)
 
-    hist = completed_minutes(300)
+    # 처음 분봉 받기도 NH 쪽 일시 오류(11/05 08:50 ETR029 "종목정보를 찾을 수 없습니다")에 죽지 않게 — 끝 시각까지 다시
+    while True:
+        try:
+            hist = completed_minutes(300)
+            break
+        except Exception as e:
+            if datetime.now().strftime("%H%M%S") >= until:
+                raise
+            j.write("event", text="시작 분봉 받기 실패 — 15초 뒤 다시",
+                    error=f"{type(e).__name__}: {str(e)[:200]}")
+            time.sleep(15)
     r.warmup(hist)
     r.live_date = today          # 준비 봉에서 난 신호로는 진입하지 않음 — 이 뒤로 닫히는 봉부터
     stops_today = count_stops(out / "journal.jsonl", today)

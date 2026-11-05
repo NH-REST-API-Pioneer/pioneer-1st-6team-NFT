@@ -7,6 +7,7 @@ import io
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import backtest
 import runner
@@ -84,6 +85,35 @@ class LivePriceTest(unittest.TestCase):
             r.live_date = "20261105"
             r.on_price("091203", 0.7452)
             self.assertIsNone(r.pos)
+
+
+class StartRetryTest(unittest.TestCase):
+    def test_first_chart_error_is_retried_not_fatal(self):
+        # 11/05 08:50 처음 차트(분) 조회가 ETR029로 한 번 실패해 실행기가 바로 죽었음 → 다시 시도해야 함
+        import nh_client
+
+        class FakeClient:
+            env = "demo"
+            calls = 0
+
+            def __init__(self, env): pass
+            def token(self): pass
+
+            def chart_minute(self, *a, **k):
+                FakeClient.calls += 1
+                if FakeClient.calls == 1:
+                    raise nh_client.NHError("/chart-minute", 400, "ETR029")
+                return {"output": []}
+
+            def price(self, *a, **k): return {"output": []}
+
+        with tempfile.TemporaryDirectory() as d, contextlib.redirect_stdout(io.StringIO()), \
+                mock.patch.object(nh_client, "NHClient", FakeClient), mock.patch.object(runner.time, "sleep", side_effect=[None, KeyboardInterrupt]):   # 재시도 대기 뒤 첫 루프에서 끝냄
+            res = runner.live("MKUX26", Path(d), until="235959")
+            log = (Path(d) / "journal.jsonl").read_text(encoding="utf-8")
+        self.assertEqual(FakeClient.calls, 2)
+        self.assertIn("시작 분봉 받기 실패", log)
+        self.assertEqual(res["trades"], [])
 
 
 if __name__ == "__main__":
