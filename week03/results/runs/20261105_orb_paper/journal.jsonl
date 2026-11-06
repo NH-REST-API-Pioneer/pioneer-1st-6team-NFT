@@ -1,0 +1,1 @@
+{"kind": "event", "at": "2026-11-05T08:50:01", "text": "서버 demo · 종목 MKUX26 · 종이 체결 · 값 {'windows': (('서울', '090000'),), 'range_min': 10, 'entry_min': 60, 'buffer_ticks': 0, 'min_range_ticks': 4, 'max_range_ticks': 30, 'max_stop_ticks': 40, 'target_r': 2.0, 'hold_min': 60, 'max_stops_per_day': 2, 'flatten_at': '235000'}"}

@@ -1,0 +1,10 @@
+ts,kind,side,price,bid,ask,krx,dk,rho,spread,reason,ord_no,gross_ticks,net_ticks,net_usd,held_s,note
+2026-11-05T08:40:01.807,시작,,,,,,,,,,,,,,,"주문 켬 · {'lookback_s': 45, 'move_won': 0.8, 'rho_max': 0.5, 'max_spread_ticks': 2, 'stale_s': 20, 'tp_ticks': None, 'sl_ticks': 5, 'hold_s': 300, 'cooldown_s': 60, 'max_stops_per_day': 3, 'entry_start': '090000', 'entry_end': '152000', 'flatten_at': '154000'}"
+2026-11-05T08:40:01.994,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-05T08:40:02.004,응답,,,,,,,,,,,,,,,"해외 {'code': 'RT_FAIL', 'data': {'action': 'A', 'action_code': 'FA', 'action_sym': 'MKUX26'}, 'msg': '해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: MKUX26]'}"
+2026-11-05T08:40:02.006,응답,,,,,,,,,,,,,,,"해외 {'code': 'RT_FAIL', 'data': {'action': 'A', 'action_code': 'FB', 'action_sym': 'MKUX26'}, 'msg': '해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: MKUX26]'}"
+2026-11-05T08:40:02.411,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-05T12:26:57.393,시작,,,,,,,,,,,,,,,"주문 켬 · {'lookback_s': 45, 'move_won': 0.8, 'rho_max': 0.5, 'max_spread_ticks': 2, 'stale_s': 20, 'tp_ticks': None, 'sl_ticks': 5, 'hold_s': 300, 'cooldown_s': 60, 'max_stops_per_day': 3, 'entry_start': '090000', 'entry_end': '152000', 'flatten_at': '154000'}"
+2026-11-05T12:26:57.466,접속,,,,,,,,,,,,,,,"해외 [('FA', 'MKUX26'), ('FB', 'MKUX26')]"
+2026-11-05T12:26:57.503,접속,,,,,,,,,,,,,,,"국내 [('KA', 'A756B000')]"
+2026-11-05T15:45:00.537,종료,,,,,,,,,,,,,,,"{""day"": ""20261105"", ""orders"": true, ""params"": {""lookback_s"": 45, ""move_won"": 0.8, ""rho_max"": 0.5, ""max_spread_ticks"": 2, ""stale_s"": 20, ""tp_ticks"": null, ""sl_ticks"": 5, ""hold_s"": 300, ""cooldown_s"": 60, ""max_stops_per_day"": 3, ""entry_start"": ""090000"", ""entry_end"": ""152000"", ""flatten_at"": ""154000""}, ""trades"": 0, ""net_usd"": 0, ""win"": 0, ""events"": {""시작"": 1, ""접속"": 2}}"

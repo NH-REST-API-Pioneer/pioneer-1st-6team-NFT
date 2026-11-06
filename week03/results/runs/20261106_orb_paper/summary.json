@@ -1,0 +1,36 @@
+{
+ "sym": "MKUX26",
+ "params": {
+  "windows": [
+   [
+    "서울",
+    "090000"
+   ]
+  ],
+  "range_min": 10,
+  "entry_min": 60,
+  "buffer_ticks": 0,
+  "min_range_ticks": 4,
+  "max_range_ticks": 30,
+  "max_stop_ticks": 40,
+  "target_r": 2.0,
+  "hold_min": 60,
+  "max_stops_per_day": 2,
+  "flatten_at": "235000"
+ },
+ "trades": [],
+ "summary": {
+  "trades": 0,
+  "wins": 0,
+  "win_rate": null,
+  "net_pnl": 0,
+  "profit_factor": null,
+  "avg_win": null,
+  "avg_loss": null,
+  "max_drawdown": 0.0,
+  "fee_total": 0,
+  "by_reason": {},
+  "by_block": {},
+  "by_day": {}
+ }
+}
