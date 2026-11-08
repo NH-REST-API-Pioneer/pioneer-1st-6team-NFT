@@ -24,3 +24,5 @@ __pycache__/
 .DS_Store
 Thumbs.db
 week03/leadlag/results/live/*/raw.jsonl
+# 4주차 실행기 상태 파일 (포지션 복구용, 로컬 전용)
+week04/results/live/state.json
