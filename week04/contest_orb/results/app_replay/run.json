@@ -1,0 +1,16 @@
+{
+ "id": "app_replay",
+ "file": "strategy_orb_hg.py",
+ "name": "orb_hg",
+ "title": "런던 개장 돌파 (구리 HGZ26)",
+ "sha256": "0db2cacc4adf4b2c1dd7829b53c341f2248039d708e4bfb7cb3c5b695c80d186",
+ "mode": "replay",
+ "sym": "HGZ26",
+ "state": "끝",
+ "started_at": "2026-11-09T02:02:19",
+ "ended_at": "2026-11-09T02:02:19",
+ "ended_reason": "리플레이",
+ "market": "overseas",
+ "currency": "USD",
+ "kind": "minute"
+}
