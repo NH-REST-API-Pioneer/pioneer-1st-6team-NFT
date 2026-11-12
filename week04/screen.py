@@ -1,4 +1,4 @@
-"""스크리닝 2단계 — 대회 시간(KST 15:00~18:00)의 거래량·변동성·비용을 품목별로 비교.
+"""스크리닝 2단계 — KST 15:00~18:00의 거래량·변동성·비용을 품목별로 비교.
 
 입력: results/data/bars/<sym>.csv (fetch_bars.py), results/data/products_all.csv (list_products.py)
 출력: results/screening.csv, results/hourly_volume.csv, 화면에 상위 표

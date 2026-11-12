@@ -1,0 +1,137 @@
+{
+ "id": "20261110_gc_si_rv_orders_3",
+ "mode": "orders",
+ "runner": {
+  "file": "spread_gc_si_rv.py",
+  "name": "gc_si_rv",
+  "title": "금·은 롤링 β 상대가치 (L72 · 3.5σ)",
+  "sha256": "aa6469396a147668e5f4a62e7b520b54ffd6d063d0977bbafbc175e252347c8d"
+ },
+ "legs": [
+  {
+   "name": "gc",
+   "sym": "GCZ26",
+   "product": "GC",
+   "market": "overseas",
+   "exchange": "FCME",
+   "currency": "USD",
+   "tick": 0.1,
+   "tick_value": 10.0,
+   "expiry": "202612",
+   "position": 0,
+   "avg_price": null,
+   "last": 4015.1
+  },
+  {
+   "name": "si",
+   "sym": "SIZ26",
+   "product": "SI",
+   "market": "overseas",
+   "exchange": "FCME",
+   "currency": "USD",
+   "tick": 0.005,
+   "tick_value": 25.0,
+   "expiry": "202612",
+   "position": 0,
+   "avg_price": null,
+   "last": 52.37
+  },
+  {
+   "name": "mgc",
+   "sym": "MGCZ26",
+   "product": "MGC",
+   "market": "overseas",
+   "exchange": "FCME",
+   "currency": "USD",
+   "tick": 0.1,
+   "tick_value": 1.0,
+   "expiry": "202612",
+   "position": 0,
+   "avg_price": null,
+   "last": 4014.7
+  },
+  {
+   "name": "msi",
+   "sym": "MSIZ26",
+   "product": "MSI",
+   "market": "overseas",
+   "exchange": "FCME",
+   "currency": "USD",
+   "tick": 0.005,
+   "tick_value": 5.0,
+   "expiry": "202612",
+   "position": 0,
+   "avg_price": null,
+   "last": 52.365
+  }
+ ],
+ "days": {
+  "20261110": {
+   "USD": {
+    "pnl": -60.0,
+    "fee": 20.0,
+    "net": -80.0,
+    "fills": 4
+   }
+  }
+ },
+ "total": {
+  "USD": {
+   "pnl": -60.0,
+   "fee": 20.0,
+   "net": -80.0,
+   "fills": 4
+  }
+ },
+ "ended_reason": "실행기가 끝냄 · 정리 안 함 — 확인 필요: mgc(MGCZ26) 결과를 모르는 주문 — 잔고 +0 (기대 +0) 가 그 주문으로 설명되지 않음",
+ "inherited_from": null,
+ "inherited": null,
+ "handed_to": null,
+ "max_qty": {
+  "gc": 10,
+  "si": 10,
+  "mgc": 10,
+  "msi": 10
+ },
+ "orders_per_min": 10,
+ "api": {
+  "calls": {
+   "overseas_product-detail": 5,
+   "overseas_deposit": 7,
+   "overseas_open-interest": 50,
+   "overseas_chart-minute": 7627,
+   "overseas_price": 5,
+   "overseas_order": 5,
+   "overseas_order-history": 34
+  },
+  "failures": {
+   "overseas_chart-minute": 17
+  },
+  "codes": {
+   "EGW023": 8
+  },
+  "ms_avg": {
+   "overseas_product-detail": 67.0,
+   "overseas_deposit": 81.1,
+   "overseas_open-interest": 256.4,
+   "overseas_chart-minute": 85.0,
+   "overseas_price": 26.6,
+   "overseas_order": 111.0,
+   "overseas_order-history": 75.3
+  },
+  "ms_max": {
+   "overseas_product-detail": 69,
+   "overseas_deposit": 135,
+   "overseas_open-interest": 2328,
+   "overseas_chart-minute": 2939,
+   "overseas_price": 33,
+   "overseas_order": 203,
+   "overseas_order-history": 130
+  },
+  "waited_ms_total": 272042,
+  "reissued": 16
+ },
+ "halted": "mgc(MGCZ26) 결과를 모르는 주문 — 잔고 +0 (기대 +0) 가 그 주문으로 설명되지 않음",
+ "holding_left": {},
+ "inheritable": true
+}

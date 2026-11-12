@@ -1,0 +1,111 @@
+{
+ "id": "20261110_gc_si_rv_orders",
+ "mode": "orders",
+ "runner": {
+  "file": "spread_gc_si_rv.py",
+  "name": "gc_si_rv",
+  "title": "금·은 롤링 β 상대가치 (L72 · 3.5σ)",
+  "sha256": "aa6469396a147668e5f4a62e7b520b54ffd6d063d0977bbafbc175e252347c8d"
+ },
+ "legs": [
+  {
+   "name": "gc",
+   "sym": "GCZ26",
+   "product": "GC",
+   "market": "overseas",
+   "exchange": "FCME",
+   "currency": "USD",
+   "tick": 0.1,
+   "tick_value": 10.0,
+   "expiry": "202612",
+   "position": 0,
+   "avg_price": null,
+   "last": 4132.6
+  },
+  {
+   "name": "si",
+   "sym": "SIZ26",
+   "product": "SI",
+   "market": "overseas",
+   "exchange": "FCME",
+   "currency": "USD",
+   "tick": 0.005,
+   "tick_value": 25.0,
+   "expiry": "202612",
+   "position": 0,
+   "avg_price": null,
+   "last": 53.25
+  },
+  {
+   "name": "mgc",
+   "sym": "MGCZ26",
+   "product": "MGC",
+   "market": "overseas",
+   "exchange": "FCME",
+   "currency": "USD",
+   "tick": 0.1,
+   "tick_value": 1.0,
+   "expiry": "202612",
+   "position": 0,
+   "avg_price": null,
+   "last": 4132.6
+  },
+  {
+   "name": "msi",
+   "sym": "MSIZ26",
+   "product": "MSI",
+   "market": "overseas",
+   "exchange": "FCME",
+   "currency": "USD",
+   "tick": 0.005,
+   "tick_value": 5.0,
+   "expiry": "202612",
+   "position": 0,
+   "avg_price": null,
+   "last": 53.245
+  }
+ ],
+ "days": {},
+ "total": {},
+ "ended_reason": "앱 종료",
+ "inherited_from": null,
+ "inherited": null,
+ "handed_to": null,
+ "max_qty": {
+  "gc": 1,
+  "si": 1,
+  "mgc": 3,
+  "msi": 5
+ },
+ "orders_per_min": 10,
+ "api": {
+  "calls": {
+   "overseas_product-detail": 5,
+   "overseas_deposit": 1,
+   "overseas_open-interest": 5,
+   "overseas_chart-minute": 2927
+  },
+  "failures": {
+   "overseas_chart-minute": 2
+  },
+  "codes": {
+   "EGW023": 2
+  },
+  "ms_avg": {
+   "overseas_product-detail": 121.4,
+   "overseas_deposit": 69.0,
+   "overseas_open-interest": 70.2,
+   "overseas_chart-minute": 50.3
+  },
+  "ms_max": {
+   "overseas_product-detail": 199,
+   "overseas_deposit": 69,
+   "overseas_open-interest": 74,
+   "overseas_chart-minute": 1605
+  },
+  "waited_ms_total": 122381,
+  "reissued": 118
+ },
+ "holding_left": {},
+ "inheritable": false
+}
