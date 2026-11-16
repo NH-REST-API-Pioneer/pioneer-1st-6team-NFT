@@ -1,0 +1,6 @@
+pandas==2.3.3
+numpy==2.2.6
+scipy==1.15.3
+lightgbm==4.7.0
+requests==2.34.2
+pytest==9.2.0
