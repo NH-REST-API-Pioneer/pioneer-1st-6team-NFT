@@ -222,7 +222,7 @@
 ## 11. 재현
 
 ```
-cd week05
+cd week05/vol_regime
 uv venv .venv --python 3.10 && uv pip install --python .venv -r requirements.txt
 .venv/bin/python refresh_bars.py                  # (선택) 5분봉 최신까지 이어 받기, 모의 서버 조회만
 .venv/bin/python train_model.py                   # LightGBM 학습 → models/vol_lgbm.txt, models/preds.csv
