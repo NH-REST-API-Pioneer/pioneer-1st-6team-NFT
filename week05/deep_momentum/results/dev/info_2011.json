@@ -1,0 +1,288 @@
+{
+  "gp": {
+    "betas": {
+      "g5": -0.012936452972880177,
+      "g63": 0.011079790911897461,
+      "g252": -0.0004949043741024945
+    },
+    "phis": {
+      "g5": 0.21169999970107936,
+      "g63": 0.01909667622000974,
+      "g252": 0.00667834861917499
+    },
+    "k": 100,
+    "val_sharpe": 0.6903581527588374
+  },
+  "dmn": {
+    "val_sharpe": 1.8211135864257812,
+    "hp": {
+      "dropout": 0.1,
+      "hidden": 80,
+      "batch": 128,
+      "lr": 0.01,
+      "max_grad_norm": 0.01
+    },
+    "epochs": 52,
+    "n_train_seq": 164,
+    "n_val_seq": 16,
+    "val_start": "2010-05-27",
+    "search": [
+      {
+        "hp": {
+          "dropout": 0.1,
+          "hidden": 80,
+          "batch": 128,
+          "lr": 0.01,
+          "max_grad_norm": 0.01
+        },
+        "val_sharpe": 1.8211135864257812
+      },
+      {
+        "hp": {
+          "dropout": 0.3,
+          "hidden": 20,
+          "batch": 64,
+          "lr": 0.001,
+          "max_grad_norm": 0.01
+        },
+        "val_sharpe": 1.5400984287261963
+      },
+      {
+        "hp": {
+          "dropout": 0.1,
+          "hidden": 5,
+          "batch": 128,
+          "lr": 0.0001,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 1.4511815309524536
+      },
+      {
+        "hp": {
+          "dropout": 0.1,
+          "hidden": 80,
+          "batch": 64,
+          "lr": 0.01,
+          "max_grad_norm": 10.0
+        },
+        "val_sharpe": 1.4281176328659058
+      },
+      {
+        "hp": {
+          "dropout": 0.1,
+          "hidden": 10,
+          "batch": 64,
+          "lr": 0.01,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 1.4028606414794922
+      },
+      {
+        "hp": {
+          "dropout": 0.2,
+          "hidden": 80,
+          "batch": 128,
+          "lr": 0.01,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 1.3423656225204468
+      },
+      {
+        "hp": {
+          "dropout": 0.2,
+          "hidden": 80,
+          "batch": 64,
+          "lr": 0.001,
+          "max_grad_norm": 10.0
+        },
+        "val_sharpe": 1.278303623199463
+      },
+      {
+        "hp": {
+          "dropout": 0.2,
+          "hidden": 10,
+          "batch": 128,
+          "lr": 0.0001,
+          "max_grad_norm": 10.0
+        },
+        "val_sharpe": 1.2430577278137207
+      },
+      {
+        "hp": {
+          "dropout": 0.5,
+          "hidden": 80,
+          "batch": 64,
+          "lr": 0.001,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 1.0617055892944336
+      },
+      {
+        "hp": {
+          "dropout": 0.4,
+          "hidden": 80,
+          "batch": 256,
+          "lr": 0.001,
+          "max_grad_norm": 1.0
+        },
+        "val_sharpe": 0.8467718362808228
+      },
+      {
+        "hp": {
+          "dropout": 0.2,
+          "hidden": 40,
+          "batch": 128,
+          "lr": 0.001,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 0.8025635480880737
+      },
+      {
+        "hp": {
+          "dropout": 0.5,
+          "hidden": 5,
+          "batch": 128,
+          "lr": 0.0001,
+          "max_grad_norm": 10.0
+        },
+        "val_sharpe": 0.7226702570915222
+      }
+    ]
+  },
+  "dmn_nocost": {
+    "val_sharpe": 2.0500450134277344,
+    "hp": {
+      "dropout": 0.1,
+      "hidden": 10,
+      "batch": 64,
+      "lr": 0.01,
+      "max_grad_norm": 0.1
+    },
+    "epochs": 59,
+    "n_train_seq": 164,
+    "n_val_seq": 16,
+    "val_start": "2010-05-27",
+    "search": [
+      {
+        "hp": {
+          "dropout": 0.1,
+          "hidden": 10,
+          "batch": 64,
+          "lr": 0.01,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 2.0500450134277344
+      },
+      {
+        "hp": {
+          "dropout": 0.2,
+          "hidden": 80,
+          "batch": 128,
+          "lr": 0.01,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 1.9359484910964966
+      },
+      {
+        "hp": {
+          "dropout": 0.3,
+          "hidden": 20,
+          "batch": 64,
+          "lr": 0.001,
+          "max_grad_norm": 0.01
+        },
+        "val_sharpe": 1.641859769821167
+      },
+      {
+        "hp": {
+          "dropout": 0.1,
+          "hidden": 80,
+          "batch": 64,
+          "lr": 0.01,
+          "max_grad_norm": 10.0
+        },
+        "val_sharpe": 1.5660350322723389
+      },
+      {
+        "hp": {
+          "dropout": 0.1,
+          "hidden": 5,
+          "batch": 128,
+          "lr": 0.0001,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 1.4864856004714966
+      },
+      {
+        "hp": {
+          "dropout": 0.2,
+          "hidden": 10,
+          "batch": 128,
+          "lr": 0.0001,
+          "max_grad_norm": 10.0
+        },
+        "val_sharpe": 1.260020136833191
+      },
+      {
+        "hp": {
+          "dropout": 0.2,
+          "hidden": 80,
+          "batch": 64,
+          "lr": 0.001,
+          "max_grad_norm": 10.0
+        },
+        "val_sharpe": 1.2326476573944092
+      },
+      {
+        "hp": {
+          "dropout": 0.1,
+          "hidden": 80,
+          "batch": 128,
+          "lr": 0.01,
+          "max_grad_norm": 0.01
+        },
+        "val_sharpe": 1.180375337600708
+      },
+      {
+        "hp": {
+          "dropout": 0.2,
+          "hidden": 40,
+          "batch": 128,
+          "lr": 0.001,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 1.1770681142807007
+      },
+      {
+        "hp": {
+          "dropout": 0.5,
+          "hidden": 80,
+          "batch": 64,
+          "lr": 0.001,
+          "max_grad_norm": 0.1
+        },
+        "val_sharpe": 0.8744827508926392
+      },
+      {
+        "hp": {
+          "dropout": 0.4,
+          "hidden": 80,
+          "batch": 256,
+          "lr": 0.001,
+          "max_grad_norm": 1.0
+        },
+        "val_sharpe": 0.8169097304344177
+      },
+      {
+        "hp": {
+          "dropout": 0.5,
+          "hidden": 5,
+          "batch": 128,
+          "lr": 0.0001,
+          "max_grad_norm": 10.0
+        },
+        "val_sharpe": 0.7243666648864746
+      }
+    ]
+  }
+}
