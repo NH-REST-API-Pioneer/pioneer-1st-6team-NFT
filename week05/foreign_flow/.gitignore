@@ -4,3 +4,6 @@ __pycache__/
 data/raw/
 data/recorder.lock
 data/recorder.out
+data/live.lock
+data/live.out
+results/live/replay_*

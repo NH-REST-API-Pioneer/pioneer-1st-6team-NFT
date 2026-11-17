@@ -62,12 +62,13 @@ def stale(p: pd.DataFrame, prd: str) -> pd.Series:
 def features(p: pd.DataFrame) -> pd.DataFrame:
     f = pd.DataFrame(index=p.index)
     bad = {prd: stale(p, prd) for prd in ("011", "051", "012", "013")}
-    g = lambda c: p[c].where(~bad[c[:3]]) if c in p else 0   # noqa: E731  — 늦은 스냅샷은 NaN → diff 도 NaN
+    zero = pd.Series(0.0, index=p.index)
+    g = lambda c: p[c].where(~bad[c[:3]]) if c in p else zero   # noqa: E731  — 늦은 스냅샷은 NaN → diff 도 NaN
     fut = g("011_frgn") + g("051_frgn") / 5
     opt = g("012_frgn") - g("013_frgn")
     ind = g("011_ind") + g("051_ind") / 5
     f["stale"] = bad["011"] | bad["051"]
-    aggr = p.get("K200_aggr", 0) + p.get("MINI_aggr", 0) / 5
+    aggr = p.get("K200_aggr", zero) + p.get("MINI_aggr", zero) / 5
     for k in KS:
         f[f"frgn_fut_{k}"] = fut.diff(k)
         f[f"frgn_opt_{k}"] = opt.diff(k)
@@ -149,6 +150,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--train", required=True)
     ap.add_argument("--test", default="")
+    ap.add_argument("--force", action="store_true", help="이미 있는 results/rules.json 을 덮어씀 (고정 뒤엔 쓰지 말 것)")
     a = ap.parse_args()
     tr_days = a.train.split(",")
     te_days = [d for d in a.test.split(",") if d]
@@ -163,8 +165,8 @@ def main() -> None:
         D = stack(Ftr, sig, h)
         if len(D) < 30 or D[sig].std() == 0:
             continue
-        sd[sig] = float(D[sig].std())
-        res = nw_ols(D[sig] / sd[sig], D[f"r_{h}"], h)
+        sd[(sig, h)] = float(D[sig].std())     # 보유 길이마다 표본이 달라서 (신호, h) 별로 따로 잼
+        res = nw_ols(D[sig] / sd[(sig, h)], D[f"r_{h}"], h)
         rows.append({"signal": sig, "h": h, **res})
     R = pd.DataFrame(rows).sort_values("t", key=np.abs, ascending=False)
     lines += ["## 학습일 회귀 (r_h bp = a + b·z, Newey-West t)", "", "| 신호 | h분 | b (bp/표준편차) | t | R² | n |",
@@ -176,19 +178,22 @@ def main() -> None:
     sign = float(np.sign(best.b))
     scores = []
     for th in THETAS:
-        tr = [x for f in Ftr.values() for x in simulate(f, best.signal, int(best.h), th, sign, sd[best.signal])]
+        tr = [x for f in Ftr.values() for x in simulate(f, best.signal, int(best.h), th, sign, sd[(best.signal, int(best.h))])]
         mean = np.mean([x["net_bp"] for x in tr]) if len(tr) >= MIN_TRADES else -np.inf
         scores.append((mean, th, len(tr)))
     m, theta, n = max(scores)
-    rule = {"signal": best.signal, "h": int(best.h), "theta": theta, "sign": sign, "sd": sd[best.signal],
+    rule = {"signal": best.signal, "h": int(best.h), "theta": theta, "sign": sign, "sd": sd[(best.signal, int(best.h))],
             "train_days": tr_days, "train_t": float(best.t), "train_net_bp_mean": float(m), "train_trades": n,
             "fee_krw": FEE_KRW, "chosen_at": pd.Timestamp.now().isoformat(timespec="seconds")}
     lines += ["", "## 규칙 (학습일에서 고름)", "", "| θ | 거래 수 | 비용 후 평균 bp |", "| --- | --- | --- |"]
     lines += [f"| {th} | {k} | {mm:+.2f} |" for mm, th, k in scores]
     lines += ["", f"→ {json.dumps(rule, ensure_ascii=False)}"]
     if not te_days:
-        (RESULTS / "rules.json").write_text(json.dumps(rule, indent=2, ensure_ascii=False))
-        lines += ["", "results/rules.json 에 고정. 시험일에는 이 파일을 바꾸지 않음."]
+        if (RESULTS / "rules.json").exists() and not a.force:
+            lines += ["", "results/rules.json 이 이미 있어 그대로 둠 (고정된 규칙). 덮어쓰려면 --force."]
+        else:
+            (RESULTS / "rules.json").write_text(json.dumps(rule, indent=2, ensure_ascii=False))
+            lines += ["", "results/rules.json 에 고정. 시험일에는 이 파일을 바꾸지 않음."]
 
     # 3) 시험일 판정 (규칙은 rules.json 그대로)
     if te_days:

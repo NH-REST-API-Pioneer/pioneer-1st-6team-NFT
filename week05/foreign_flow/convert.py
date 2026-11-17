@@ -118,6 +118,20 @@ def asof(idx: pd.DatetimeIndex, ts: pd.Series, values: pd.DataFrame) -> pd.DataF
     return out.drop(columns=["_t", "_ts"]).set_index(idx)
 
 
+def investor_cols(inv: pd.DataFrame, idx: pd.DatetimeIndex) -> dict[str, pd.Series]:
+    """투자자 스냅샷 → 1분 열 (as-of, 받은 시각 기준). 실행기(live.py)도 이 함수를 그대로 씀."""
+    cols = {}
+    if not len(inv):
+        return cols
+    for prd, g in inv.groupby("prd"):
+        g = g.drop_duplicates(["tm"], keep="first")
+        v = asof(idx, g.recv, g[["frgn", "ind", "inst", "tm"]])
+        for c in ("frgn", "ind", "inst"):
+            cols[f"{prd}_{c}"] = v[c].astype(float)
+        cols[f"{prd}_frgn_tm"] = v["tm"]
+    return cols
+
+
 def build_day(day: str) -> pd.DataFrame:
     dd = RAW_DIR / day
     idx = minute_index(day)
@@ -156,13 +170,7 @@ def build_day(day: str) -> pd.DataFrame:
         p = px[px.sym == sym] if len(px) else px
         if len(p):
             cols[f"{name}_rest_last"] = asof(idx, p.recv, p[["rest_last"]])["rest_last"]
-    if len(inv):
-        for prd, g in inv.groupby("prd"):
-            g = g.drop_duplicates(["tm"], keep="first")
-            v = asof(idx, g.recv, g[["frgn", "ind", "inst", "tm"]])
-            for c in ("frgn", "ind", "inst"):
-                cols[f"{prd}_{c}"] = v[c].astype(float)
-            cols[f"{prd}_frgn_tm"] = v["tm"]
+    cols.update(investor_cols(inv, idx))
     out = pd.DataFrame(cols, index=idx)
     out.index.name = "t"
     return out

@@ -1,6 +1,8 @@
 # 외국인 흐름 → 미니코스피200 (5주차, 상재)
 
-국내 코스피200 선물 시장에서 외국인 순매수 흐름이 다음 몇 분 선물 수익률을 예측하는지 보고, 그 신호로 미니코스피200을 모의매매한다. 진행 중이라 결과는 아직 없다.
+국내 코스피200 선물 시장에서 외국인 순매수 흐름이 다음 몇 분 선물 수익률을 예측하는지 보고, 그 신호로 미니코스피200을 모의매매한다. 근거·화요일 분석은 [week05-외국인흐름-전략-근거.md](week05-외국인흐름-전략-근거.md).
+
+**고정 규칙 (화요일 학습, `results/rules.json`)**: 직전 5분 개인 선물 순매수 z 가 ±1.5 를 넘으면 반대 방향 미니 1계약, 5분 보유. 투자자 스냅샷이 120초 넘게 늦은 분은 진입 안 함.
 
 ## 왜 이걸 하나
 
@@ -25,7 +27,7 @@
 | 날 | 할 일 |
 | --- | --- |
 | 화 11/17 | 수집만. 장 끝나고 `convert.py` → `analyze.py --train 20261117` 로 신호·규칙을 골라 `results/rules.json` 에 고정 |
-| 수\~금 | 규칙 그대로 미니코스피200 모의매매 (실행기는 화요일 밤에 만듦) + 계속 수집 |
+| 수\~금 | 규칙 그대로 미니코스피200 모의매매 (`live.py`) + 계속 수집 |
 | 금 | `analyze.py --train 20261117 --test 20261118,20261119,20261120` 로 표본 밖 판정 |
 
 ## 실행
@@ -37,6 +39,11 @@ uv venv .venv --python 3.10 && uv pip install --python .venv -r requirements.txt
 .venv/bin/python record.py --seconds 60    # 시험용 (장 시간 검사 안 함)
 ./run.sh                                   # cron 용. 이미 돌고 있으면 바로 끝남
 #   */5 8-15 * * 1-5 cd <경로>/week05/foreign_flow && ./run.sh
+.venv/bin/python live.py                   # 모의매매 (08:55~15:35, 수집기와 같은 서버에서)
+.venv/bin/python live.py --paper           # 주문 없이 호가로 종이 체결
+.venv/bin/python live.py --replay 20261117 # 저장된 표로 판단만 다시 돌려 analyze 와 같은지 확인
+./run_live.sh                              # cron 용
+#   */5 8-15 * * 1-5 cd <경로>/week05/foreign_flow && ./run_live.sh
 .venv/bin/python convert.py 20261117       # 원본 → data/panel/20261117.csv (1분 표)
 .venv/bin/python analyze.py --train 20261117
 .venv/bin/python fetch_daily.py            # 보조 자료
@@ -50,6 +57,7 @@ uv venv .venv --python 3.10 && uv pip install --python .venv -r requirements.txt
 | 파일 | 내용 |
 | --- | --- |
 | `record.py` | 수집기 (웹소켓 KA·KB + REST 투자자 동향·현재가) |
+| `live.py` | 모의매매 실행기. 수집기의 rest.jsonl 을 읽어 analyze 와 같은 코드로 신호 계산, 시장가 진입·5분 뒤 청산. 기록은 `results/live/` |
 | `convert.py` | 원본 → 1분 표. 투자자 값은 받은 시각 기준 as-of 라 미래 정보가 안 섞임 |
 | `analyze.py` | 신호(외국인 선물·옵션 흐름, 개인, 주문 흐름) × 보유 길이 회귀(Newey-West), 규칙 고르기·시험일 판정 |
 | `fetch_daily.py` | 보조 일별 자료 |
