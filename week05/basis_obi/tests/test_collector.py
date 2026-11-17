@@ -267,3 +267,64 @@ def test_trades_same_second_same_price_are_not_duplicates_unless_cum_volume_same
 def test_leg_lag_uses_trades_when_a_leg_has_no_quotes():
     df = ticks([line("2026-11-17T09:00:00.000", fb(), "ovs"), line("2026-11-17T09:00:02.000", ka())])
     assert build.quality(df, [], "20261117")["leg_lag_s"]["max"] == pytest.approx(2.0)
+
+
+# ---------- 웹소켓 접속키: 다른 프로세스가 토큰을 새로 받아 401 이 날 때 ----------
+
+class _Res:
+    def __init__(self, status, body):
+        self.status_code, self._body, self.text = status, body, json.dumps(body, ensure_ascii=False)
+
+    def json(self):
+        return self._body
+
+
+class _Session:
+    def __init__(self, replies):
+        self.replies, self.seen = list(replies), []
+
+    def get(self, url, timeout=None, headers=None):
+        self.seen.append(headers["Authorization"])
+        return self.replies.pop(0)
+
+
+def _client(tmp_path, monkeypatch, file_token, replies, issue="ISSUED"):
+    import nh_client
+    from collector import collect
+
+    monkeypatch.setattr(nh_client, "HOME_DIR", tmp_path)
+    c = nh_client.NHClient.__new__(nh_client.NHClient)
+    c.profile, c.env, c.base, c.timeout, c.scope = "overseas", "demo", "https://x", 5, None
+    c.app_key, c.app_secret = "key-abcd", "secret"
+    c.throttles = {"auth": type("T", (), {"wait": lambda self: None})()}
+    c._token, c._token_until = "OLD", 9e18
+    c.session = _Session(replies)
+    c.issued = []
+
+    def post(url, data=None, timeout=None):
+        c.issued.append(1)
+        return _Res(200, {"access_token": issue, "expires_in": 86400, "scopes": "S"})
+    c.session.post = post
+    if file_token:
+        c._token_file().write_text(json.dumps({"access_token": file_token, "until": 9e18,
+                                               "app_key_tail": "abcd", "scopes": "S"}))
+    return c, collect
+
+
+EXPIRED = _Res(401, {"errorMessage": "토큰 재발급이 필요합니다.", "errorCode": "EGW052"})
+OK = _Res(200, {"access_key": "WSKEY"})
+
+
+def test_ws_key_uses_newer_token_another_process_saved(tmp_path, monkeypatch):
+    c, collect = _client(tmp_path, monkeypatch, file_token="NEWER", replies=[EXPIRED, OK])
+    assert collect.ws_key(c) == "WSKEY"
+    assert c.session.seen == ["Bearer OLD", "Bearer NEWER"]
+    assert c.issued == []                                   # 새로 발급하지 않음 → 다른 프로세스 토큰을 죽이지 않음
+
+
+def test_ws_key_reissues_only_when_saved_token_is_the_failed_one(tmp_path, monkeypatch):
+    c, collect = _client(tmp_path, monkeypatch, file_token="OLD", replies=[EXPIRED, OK])
+    assert collect.ws_key(c) == "WSKEY"
+    assert c.session.seen == ["Bearer OLD", "Bearer ISSUED"]
+    assert c.issued == [1]
+    assert json.loads(c._token_file().read_text())["access_token"] == "ISSUED"

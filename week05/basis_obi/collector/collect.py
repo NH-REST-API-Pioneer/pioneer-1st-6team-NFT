@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import fcntl
+import json
 import signal
 import sys
 from datetime import datetime, timedelta
@@ -26,12 +27,36 @@ from collector import build, ws  # noqa: E402
 JSONL_DIR = ROOT / "data" / "jsonl"
 
 
-def ws_key(client) -> str:
-    """웹소켓 접근키 (GET, 접속 1회용)."""
-    client.throttles["auth"].wait()
-    res = client.session.get(f"{client.base}/permission/v1/web-socket-key", timeout=client.timeout,
-                             headers={"Authorization": f"Bearer {client.token()}",
-                                      "appkey": client.app_key, "appsecret": client.app_secret})
+def _expired(res) -> bool:
+    return res.status_code == 401 or "EGW018" in res.text or "EGW052" in res.text
+
+
+def _drop_token(client, failed: str) -> None:
+    """실패한 토큰을 버림. 토큰 파일에 다른 프로세스가 새로 받아 둔 토큰이 있으면 남겨서 그걸 쓰게 하고,
+    파일 토큰이 방금 실패한 것과 같을 때만 지워 새로 발급받게 함.
+    (NH 는 키당 마지막 발급 토큰만 유효 — 같은 키를 쓰는 프로세스끼리 서로 재발급하면 서로의 토큰을 죽임)"""
+    client._token, client._token_until = None, 0.0
+    f = client._token_file()
+    try:
+        saved = json.loads(f.read_text(encoding="utf-8")).get("access_token")
+    except (FileNotFoundError, ValueError):
+        return
+    if saved == failed:
+        f.unlink(missing_ok=True)
+
+
+def ws_key(client, tries: int = 3) -> str:
+    """웹소켓 접근키 (GET, 접속 1회용). 토큰 만료(401·EGW052)면 토큰 파일을 다시 보고 재시도."""
+    for attempt in range(tries):
+        client.throttles["auth"].wait()
+        token = client.token()
+        res = client.session.get(f"{client.base}/permission/v1/web-socket-key", timeout=client.timeout,
+                                 headers={"Authorization": f"Bearer {token}",
+                                          "appkey": client.app_key, "appsecret": client.app_secret})
+        if _expired(res) and attempt + 1 < tries:
+            _drop_token(client, token)
+            continue
+        break
     body = client._json(res, "/permission/v1/web-socket-key")
     if not body.get("access_key"):
         raise RuntimeError(f"웹소켓 키 발급 실패: { {k: v for k, v in body.items() if 'key' not in k} }")
