@@ -3,6 +3,14 @@
   .venv/bin/python analyze.py --train 20261117                              # 화요일 밤: 규칙 고르기 → results/rules.json
   .venv/bin/python analyze.py --train 20261117 --test 20261118,20261119,20261120   # 금요일: 표본 밖 판정
 
+두 번째 규칙 (화요일 결과를 보고 추가, 2026-11-17 밤 고정) — 조합, 매일 밤 갱신:
+  .venv/bin/python analyze.py --combo-train 20261117 --for 20261118                 # 수요일용
+  .venv/bin/python analyze.py --combo-train 20261117,20261118 --for 20261119        # 목요일용 (수요일 밤)
+  .venv/bin/python analyze.py --combo-train 20261117,20261118,20261119 --for 20261120
+  .venv/bin/python analyze.py --combo-test 20261118,20261119,20261120               # 금요일: 날마다 그날용 규칙으로 판정
+  신호 = 외국인 5분 z − 개인 5분 z (COMBO_PARTS, 고정), 보유 5분, 방향 +1 (고정).
+  밤마다 바뀌는 것: 두 흐름의 sd, 조합 sd, θ (학습 거래 MIN_TRADES 이상 중 비용 후 평균 1등). 그 밖엔 안 바꿈.
+
 신호 (모두 t 행까지 받은 값만, convert.py 의 시각 규칙):
   frgn_fut_k   직전 k 분 외국인 선물 순매수 변화 (코스피200 계약 + 미니/5 → 코스피200 계약 환산)
   frgn_opt_k   직전 k 분 외국인 (콜 순매수 − 풋 순매수) 변화
@@ -146,12 +154,116 @@ def simulate(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, sd: f
     return trades
 
 
+
+# ---------------------------------------------------------------- 두 번째 규칙: 조합 (매일 갱신)
+COMBO_PARTS = (("frgn_fut_5", 1.0), ("ind_fut_5", -1.0))   # 외국인 z − 개인 z. 고정
+COMBO_SIGNAL, COMBO_H, COMBO_SIGN = "combo_5", 5, 1.0
+COMBO_DIR = RESULTS / "rules_combo"
+COMBO_CURRENT = RESULTS / "rules_combo.json"            # 실행기가 주문에 쓰는 것 = 가장 최근 for_ 파일
+
+
+def add_signal(f: pd.DataFrame, rule: dict) -> pd.DataFrame:
+    """rule 에 parts 가 있으면 조합 신호 열(rule['signal'])을 만듦. 없으면 그대로."""
+    if "parts" in rule:
+        f[rule["signal"]] = sum(q["w"] * f[q["signal"]] / q["sd"] for q in rule["parts"])
+    return f
+
+
+def fit_combo(F: dict[str, pd.DataFrame]) -> tuple[dict, list, dict]:
+    parts = []
+    for sig, w in COMBO_PARTS:
+        D = stack(F, sig, COMBO_H)
+        parts.append({"signal": sig, "w": w, "sd": float(D[sig].std())})
+    rule = {"signal": COMBO_SIGNAL, "parts": parts, "h": COMBO_H, "sign": COMBO_SIGN}
+    for f in F.values():
+        add_signal(f, rule)
+    D = stack(F, COMBO_SIGNAL, COMBO_H)
+    rule["sd"] = float(D[COMBO_SIGNAL].std())
+    reg = nw_ols(D[COMBO_SIGNAL] / rule["sd"], D[f"r_{COMBO_H}"], COMBO_H)
+    scores = []
+    for th in THETAS:
+        tr = [x for f in F.values() for x in simulate(f, COMBO_SIGNAL, COMBO_H, th, COMBO_SIGN, rule["sd"])]
+        net = [x["net_bp"] for x in tr]
+        scores.append((float(np.mean(net)) if len(tr) >= MIN_TRADES else -np.inf, th, len(tr)))
+    m, theta, n = max(scores)
+    if not np.isfinite(m):
+        raise SystemExit(f"θ 후보 모두 학습 거래 {MIN_TRADES}건 미만")
+    rule.update(theta=theta, train_days=sorted(F), train_b=reg["b"], train_t=reg["t"], train_net_bp_mean=m,
+                train_trades=n, fee_krw=FEE_KRW)
+    return rule, scores, reg
+
+
+def combo_train(days: list[str], for_day: str, force: bool) -> None:
+    if for_day <= max(days):
+        raise SystemExit(f"--for {for_day} 는 학습일({max(days)}) 뒤여야 함")
+    out = COMBO_DIR / f"for_{for_day}.json"
+    if out.exists() and not force:
+        raise SystemExit(f"{out.name} 이 이미 있음 (그날 규칙은 한 번만 정함). 덮어쓰려면 --force")
+    F = {d: features(p) for d, p in load(days).items()}
+    rule, scores, reg = fit_combo(F)
+    rule.update(for_day=for_day, chosen_at=pd.Timestamp.now().isoformat(timespec="seconds"))
+    COMBO_DIR.mkdir(parents=True, exist_ok=True)
+    txt = json.dumps(rule, indent=2, ensure_ascii=False)
+    out.write_text(txt)
+    COMBO_CURRENT.write_text(txt)
+    lines = [f"# 조합 규칙 — 학습 {','.join(days)} → {for_day} 매매용", "",
+             f"조합 회귀 (5분): b {reg['b']:+.2f} bp/표준편차, t {reg['t']:+.2f}, R² {reg['r2']:.4f}, n {reg['n']}", "",
+             "| θ | 거래 수 | 비용 후 평균 bp |", "| --- | --- | --- |"]
+    lines += [f"| {th} | {k} | {mm:+.2f} |" for mm, th, k in scores]
+    lines += ["", f"→ {txt}"]
+    (RESULTS / f"analysis_combo_for_{for_day}.md").write_text("\n".join(lines) + "\n")
+    print("\n".join(lines))
+
+
+def combo_test(days: list[str]) -> None:
+    """각 시험일을 그날용(for_날짜) 규칙으로만 판정. 학습에 그날 이후 데이터는 안 들어감."""
+    zs, rs, trades, lines = [], [], [], [f"# 조합 규칙 표본 밖 판정 — {','.join(days)}", "",
+                                         "| 날 | 규칙 학습일 | θ | 거래 | 비용 후 평균 bp |", "| --- | --- | --- | --- | --- |"]
+    for d in days:
+        rule = json.loads((COMBO_DIR / f"for_{d}.json").read_text())
+        if max(rule["train_days"]) >= d:
+            raise SystemExit(f"{d} 규칙에 그날 이후 학습일이 섞임")
+        f = add_signal(features(load([d])[d]), rule)
+        D = stack({d: f}, rule["signal"], rule["h"])
+        zs.append(D[rule["signal"]] / rule["sd"])
+        rs.append(D[f"r_{rule['h']}"])
+        tr = [dict(x, day=d) for x in simulate(f, rule["signal"], rule["h"], rule["theta"], rule["sign"], rule["sd"])]
+        trades += tr
+        mean = np.mean([x["net_bp"] for x in tr]) if tr else float("nan")
+        lines.append(f"| {d} | {','.join(rule['train_days'])} | {rule['theta']} | {len(tr)} | {mean:+.2f} |")
+    res = nw_ols(pd.concat(zs), pd.concat(rs), COMBO_H)
+    net = np.array([x["net_bp"] for x in trades])
+    tstat = net.mean() / net.std(ddof=1) * np.sqrt(len(net)) if len(net) > 1 and net.std() > 0 else np.nan
+    lines += ["", f"회귀 (날마다 그날 규칙의 sd 로 z): b {res['b']:+.2f} bp, t {res['t']:+.2f}, n {res['n']} (기대 부호 +)",
+              f"규칙: 거래 {len(net)}건, 비용 전 평균 {np.mean([x['gross_bp'] for x in trades]) if trades else float('nan'):+.2f} bp, "
+              f"비용 후 평균 {net.mean() if len(net) else float('nan'):+.2f} bp, t {tstat:+.2f}, "
+              f"승률 {(net > 0).mean() * 100 if len(net) else float('nan'):.0f}%"]
+    pd.DataFrame(trades).to_csv(RESULTS / "test_trades_combo.csv", index=False)
+    (RESULTS / f"analysis_combo_test_{'_'.join(days)}.md").write_text("\n".join(lines) + "\n")
+    print("\n".join(lines))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--train", required=True)
+    ap.add_argument("--train", default="")
     ap.add_argument("--test", default="")
-    ap.add_argument("--force", action="store_true", help="이미 있는 results/rules.json 을 덮어씀 (고정 뒤엔 쓰지 말 것)")
+    ap.add_argument("--combo-train", default="", help="조합 규칙 학습일 (쉼표)")
+    ap.add_argument("--for", dest="for_day", default="", help="조합 규칙을 쓸 매매일")
+    ap.add_argument("--combo-test", default="", help="조합 규칙 시험일 (쉼표)")
+    ap.add_argument("--force", action="store_true", help="이미 있는 규칙 파일을 덮어씀 (고정 뒤엔 쓰지 말 것)")
     a = ap.parse_args()
+    if a.combo_train:
+        if not a.for_day:
+            raise SystemExit("--combo-train 에는 --for 매매일이 필요")
+        return combo_train(a.combo_train.split(","), a.for_day, a.force)
+    if a.combo_test:
+        return combo_test(a.combo_test.split(","))
+    if not a.train:
+        raise SystemExit("--train, --combo-train, --combo-test 중 하나")
+    return main_single(a)
+
+
+def main_single(a) -> None:
     tr_days = a.train.split(",")
     te_days = [d for d in a.test.split(",") if d]
     Ftr = {d: features(p) for d, p in load(tr_days).items()}

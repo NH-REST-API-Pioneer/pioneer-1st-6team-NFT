@@ -7,3 +7,4 @@ data/recorder.out
 data/live.lock
 data/live.out
 results/live/replay_*
+data/live/

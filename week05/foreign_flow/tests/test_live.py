@@ -150,6 +150,70 @@ def test_stale_snapshot_blocks_signal(tmp_path, monkeypatch):
     assert stale and live.decide(99.0, stale, RULE) == 0
 
 
-def test_rule_file_is_investor_signal():
-    r = live.load_rule()
-    assert r["signal"].startswith(live.INVESTOR_SIGS)
+
+
+# ---------- 조합 규칙 (매일 갱신) ----------
+
+def _panel_csv(dirp: Path, day: str, seed: int) -> None:
+    idx = convert.minute_index(day)
+    rng = np.random.default_rng(seed)
+    fr, ind = rng.normal(0, 100, len(idx)), rng.normal(0, 50, len(idx))
+    ret = rng.normal(0, 5, len(idx))
+    ret[5:] += (fr[:-5] / 100 - ind[:-5] / 50)          # 외국인 사면 오르고, 개인 사면 내림
+    p = pd.DataFrame({"011_frgn": np.cumsum(fr), "051_frgn": 0.0, "011_ind": np.cumsum(ind), "051_ind": 0.0,
+                      "MINI_mid": 780 * np.exp(np.cumsum(ret) / 1e4), "MINI_spread": 0.04}, index=idx)
+    p.index.name = "t"
+    p.to_csv(dirp / f"{day}.csv")
+
+
+@pytest.fixture
+def combo_env(tmp_path, monkeypatch):
+    monkeypatch.setattr(analyze, "PANEL_DIR", tmp_path)
+    monkeypatch.setattr(analyze, "RESULTS", tmp_path)
+    monkeypatch.setattr(analyze, "COMBO_DIR", tmp_path / "rules_combo")
+    monkeypatch.setattr(analyze, "COMBO_CURRENT", tmp_path / "rules_combo.json")
+    for i, d in enumerate(("20261117", "20261118", "20261119")):
+        _panel_csv(tmp_path, d, i)
+    return tmp_path
+
+
+def test_add_signal_is_weighted_z_sum():
+    f = pd.DataFrame({"frgn_fut_5": [10.0, -20.0], "ind_fut_5": [5.0, 5.0]})
+    rule = {"signal": "combo_5", "parts": [{"signal": "frgn_fut_5", "w": 1.0, "sd": 10.0},
+                                           {"signal": "ind_fut_5", "w": -1.0, "sd": 5.0}]}
+    analyze.add_signal(f, rule)
+    assert list(f["combo_5"]) == [0.0, -3.0]
+    g = pd.DataFrame({"x": [1.0]})
+    assert list(analyze.add_signal(g, {"signal": "x"}).columns) == ["x"]       # parts 없으면 그대로
+
+
+def test_combo_train_writes_day_rule_once_and_only_from_past(combo_env):
+    analyze.combo_train(["20261117"], "20261118", force=False)
+    r = json.loads((combo_env / "rules_combo" / "for_20261118.json").read_text())
+    assert r["train_days"] == ["20261117"] and r["for_day"] == "20261118" and r["train_trades"] >= analyze.MIN_TRADES
+    assert json.loads((combo_env / "rules_combo.json").read_text()) == r       # 실행기가 읽는 현재 규칙
+    assert [q["signal"] for q in r["parts"]] == ["frgn_fut_5", "ind_fut_5"] and r["h"] == 5 and r["sign"] == 1.0
+    with pytest.raises(SystemExit):
+        analyze.combo_train(["20261117"], "20261118", force=False)              # 그날 규칙은 한 번만
+    with pytest.raises(SystemExit):
+        analyze.combo_train(["20261117", "20261118"], "20261118", force=False)  # 매매일이 학습에 들어가면 안 됨
+
+
+def test_combo_test_uses_each_days_own_rule(combo_env):
+    analyze.combo_train(["20261117"], "20261118", force=False)
+    analyze.combo_train(["20261117", "20261118"], "20261119", force=False)
+    analyze.combo_test(["20261118", "20261119"])
+    tr = pd.read_csv(combo_env / "test_trades_combo.csv")
+    assert set(tr["day"].astype(str)) <= {"20261118", "20261119"} and len(tr)
+    # 수요일 규칙 파일을 미래 날짜로 오염시키면 판정이 거부
+    bad = json.loads((combo_env / "rules_combo" / "for_20261118.json").read_text())
+    bad["train_days"] = ["20261118"]
+    (combo_env / "rules_combo" / "for_20261118.json").write_text(json.dumps(bad))
+    with pytest.raises(SystemExit):
+        analyze.combo_test(["20261118"])
+
+
+def test_live_loads_both_rules():
+    order, shadow = live.load_rule(live.ORDER_RULE), live.load_rule(live.SHADOW_RULE)
+    assert order["signal"] == "combo_5" and "parts" in order
+    assert shadow["signal"] == "ind_fut_5"

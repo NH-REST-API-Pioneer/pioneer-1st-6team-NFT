@@ -1,4 +1,7 @@
-"""미니코스피200 모의매매 실행기 — results/rules.json 규칙 그대로 (수~금).
+"""미니코스피200 모의매매 실행기 (수~금).
+
+  주문 규칙 = results/rules_combo.json (조합: 외국인 z − 개인 z, 매일 밤 analyze.py --combo-train 으로 갱신)
+  기록만    = results/rules.json       (화요일 고정 개인 반대 규칙, 같은 시각에 호가로 종이 체결만 기록)
 
   .venv/bin/python live.py                     # 모의계좌 주문 (기본)
   .venv/bin/python live.py --paper             # 주문 없이 호가로 종이 체결
@@ -14,7 +17,8 @@
   - 08:55 전·15:35 뒤·주말엔 바로 끝남. 진입은 09:05~(15:35 − h), 15:35 에는 무조건 청산. 끝나거나 SIGTERM 이면 청산하고 끝냄.
   - 시작할 때 미니 잔고가 남아 있으면(전에 죽은 경우) 먼저 청산.
   - 체결가는 주문내역, 수수료는 예수금 fee 차이 (2주차 runner.py 의 MockAccountBroker 와 같은 방식).
-기록: results/live/YYYYMMDD.jsonl (사건), results/live/YYYYMMDD_trades.csv (거래). 계좌번호 등은 지움.
+기록: data/live/YYYYMMDD.jsonl·_trades.csv (주문 규칙), YYYYMMDD_shadow.jsonl·_shadow_trades.csv (기록만 하는 규칙).
+계좌번호 등은 지움.
 """
 from __future__ import annotations
 
@@ -34,7 +38,9 @@ import convert
 from record import CONTRACTS, HERE, RAW_DIR, now_kst, single_instance
 
 SYM = CONTRACTS["MINI"]
-LIVE_DIR = HERE / "results" / "live"
+LIVE_DIR = HERE / "data" / "live"     # 서버에서 쓰는 곳 (git 밖). 밤에 맥으로 복사해서 results/live/ 에 올림
+ORDER_RULE = analyze.COMBO_CURRENT
+SHADOW_RULE = analyze.RESULTS / "rules.json"
 LOCK = HERE / "data" / "live.lock"
 LAG_S = 3                     # 분 경계 뒤 이만큼 기다렸다 판단 (수집기의 :00 조회가 파일에 들어올 시간)
 PRIVATE_KEYS = {"ac_no", "ac_nm", "user_ip_addr", "ord_id"}
@@ -72,10 +78,11 @@ class Journal:
 
 
 # ---------------------------------------------------------------- 신호
-def load_rule(path: Path = analyze.RESULTS / "rules.json") -> dict:
+def load_rule(path: Path = ORDER_RULE) -> dict:
     rule = json.loads(path.read_text())
-    if not rule["signal"].startswith(INVESTOR_SIGS):
-        raise SystemExit(f"실행기는 투자자 동향 신호만 계산합니다: {rule['signal']}")
+    sigs = [q["signal"] for q in rule["parts"]] if "parts" in rule else [rule["signal"]]
+    if not all(x.startswith(INVESTOR_SIGS) for x in sigs):
+        raise SystemExit(f"실행기는 투자자 동향 신호만 계산합니다: {sigs}")
     return rule
 
 
@@ -313,19 +320,23 @@ def live(paper: bool) -> int:
         return 0
     now = now_kst()
     day = now.strftime("%Y%m%d")
-    close = analyze.LAST_EXIT
-    end = datetime.strptime(day + close.replace(":", ""), "%Y%m%d%H%M")
+    end = datetime.strptime(day + analyze.LAST_EXIT.replace(":", ""), "%Y%m%d%H%M")
     if now.weekday() >= 5 or now >= end or now.strftime("%H:%M") < "08:55":
         print("장 시간이 아님", flush=True)
         return 0
-    rule = load_rule()
+    rule, shadow_rule = load_rule(ORDER_RULE), load_rule(SHADOW_RULE)
     client = NHClient()
     if client.env != "demo":
         raise SystemExit("실행기는 모의 서버(demo)에서만 돌립니다.")
     j = Journal(LIVE_DIR / f"{day}.jsonl")
+    js = Journal(LIVE_DIR / f"{day}_shadow.jsonl")
     broker = PaperBroker(client, j) if paper else MockAccountBroker(client, j)
     tr = Trader(broker, rule, j, trades_csv=LIVE_DIR / f"{day}_trades.csv")
+    sh = Trader(PaperBroker(client, js), shadow_rule, js, trades_csv=LIVE_DIR / f"{day}_shadow_trades.csv")
     j.write("event", text=f"시작 ({broker.mode})", rule=rule)
+    js.write("event", text="시작 (기록만, 호가 종이 체결)", rule=shadow_rule)
+    if rule.get("for_day") != day:
+        j.write("event", text=f"주문 규칙이 오늘용이 아님 (for_day {rule.get('for_day')}) — 그대로 씀. 밤 갱신 확인할 것")
 
     stopping = {"v": False}
 
@@ -351,19 +362,27 @@ def live(paper: bool) -> int:
             break
         try:
             f = investor_features(read_investor(day), day, t)
-            z, stale = signal_at(f, t, rule)
         except Exception as e:  # noqa: BLE001 — 파일이 아직 없거나 깨진 줄: 이 분은 건너뜀
             j.write("event", text="신호 계산 실패", error=f"{type(e).__name__}: {str(e)[:200]}")
+            f = None
+        for trader, r in ((tr, rule), (sh, shadow_rule)):
             z, stale = np.nan, True
-        tr.step(t, z, stale)
+            if f is not None:
+                try:
+                    z, stale = signal_at(analyze.add_signal(f, r), t, r)
+                except Exception as e:  # noqa: BLE001
+                    trader.j.write("event", text="신호 계산 실패", error=f"{type(e).__name__}: {str(e)[:200]}")
+            trader.step(t, z, stale)
 
     # 끝: 무조건 청산 (실패하면 몇 번 더)
     for _ in range(5):
         if tr.exit(pd.Timestamp(now_kst()).floor("1min"), "장 마감/중단 청산"):
             break
         time.sleep(2)
-    net = sum(x["pnl_krw"] for x in tr.trades)
-    j.write("event", text=f"끝 · 거래 {len(tr.trades)}건 · {net:+,}원", side=tr.side)
+    sh.exit(pd.Timestamp(now_kst()).floor("1min"), "장 마감/중단 청산")
+    for trader in (tr, sh):
+        net = sum(x["pnl_krw"] for x in trader.trades)
+        trader.j.write("event", text=f"끝 · 거래 {len(trader.trades)}건 · {net:+,}원", side=trader.side)
     if isinstance(broker, MockAccountBroker):
         broker.account("끝")
     return 0
@@ -383,11 +402,10 @@ class ReplayBroker(PaperBroker):
         return {"bid": m, "ask": m, "last": m}
 
 
-def replay(day: str, out: Path | None = None) -> list[dict]:
-    rule = load_rule()
+def replay(day: str, rule: dict, out: Path) -> list[dict]:
     p = pd.read_csv(convert.PANEL_DIR / f"{day}.csv", index_col="t", parse_dates=True)
-    f = analyze.features(p)
-    j = Journal(out or (LIVE_DIR / f"replay_{day}.jsonl"))
+    f = analyze.add_signal(analyze.features(p), rule)
+    j = Journal(out)
     b = ReplayBroker(f["mid"], j)
     tr = Trader(b, rule, j)
     for t in f.index:
@@ -401,23 +419,27 @@ def replay(day: str, out: Path | None = None) -> list[dict]:
     return tr.trades
 
 
+def simulate_rule(day: str, rule: dict) -> list[dict]:
+    p = pd.read_csv(convert.PANEL_DIR / f"{day}.csv", index_col="t", parse_dates=True)
+    f = analyze.add_signal(analyze.features(p), rule)
+    return analyze.simulate(f, rule["signal"], int(rule["h"]), rule["theta"], rule["sign"], rule["sd"])
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--paper", action="store_true", help="주문 없이 호가로 종이 체결")
-    ap.add_argument("--replay", metavar="YYYYMMDD", help="저장된 1분 표로 판단만 다시 돌림")
+    ap.add_argument("--replay", metavar="YYYYMMDD", help="저장된 1분 표로 판단만 다시 돌림 (두 규칙 다)")
     a = ap.parse_args(argv)
     if a.replay:
-        trades = replay(a.replay)
-        sim = [x["t"] for x in analyze.simulate(analyze.features(pd.read_csv(
-            convert.PANEL_DIR / f"{a.replay}.csv", index_col="t", parse_dates=True)), *_rule_args())]
-        print(f"replay 진입 {len(trades)}건, analyze.simulate {len(sim)}건")
+        for name, path in (("주문(조합)", ORDER_RULE), ("기록(개인)", SHADOW_RULE)):
+            r = load_rule(path)
+            tr = replay(a.replay, r, LIVE_DIR / f"replay_{a.replay}.jsonl")
+            sim = simulate_rule(a.replay, r)
+            same = [x["entry_t"] for x in tr] == [x["t"] for x in sim]
+            print(f"{name}: replay 진입 {len(tr)}건, analyze.simulate {len(sim)}건, 시각 일치 {same}")
+        (LIVE_DIR / f"replay_{a.replay}.jsonl").unlink(missing_ok=True)
         return 0
     return live(a.paper)
-
-
-def _rule_args() -> tuple:
-    r = load_rule()
-    return r["signal"], int(r["h"]), r["theta"], r["sign"], r["sd"]
 
 
 if __name__ == "__main__":
