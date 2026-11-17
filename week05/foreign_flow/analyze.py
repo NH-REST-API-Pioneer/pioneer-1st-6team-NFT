@@ -13,7 +13,8 @@
 회귀: r_h = a + b·z, Newey-West 표준오차 (lag = h, numpy 로 직접 계산).
 규칙: 학습일에서 |t| 가 가장 큰 (신호, k, h) 하나 + 문턱 θ (학습일 비용 후 평균 1등). 방향 = 학습 β 부호.
        |z| > θ 이면 그 방향으로 1계약, h 분 보유, 보유 중 새 진입 없음.
-비용: 왕복 = 1틱(0.02pt) + 수수료 2 × FEE_KRW. 미니 1pt = 50,000원.
+비용: 왕복 = 진입 시점 스프레드(시장가로 사고팔 때 반씩 두 번) + 수수료 2 × FEE_KRW. 미니 1pt = 50,000원.
+늦은 스냅샷: 서버 시각(tm)이 행 시각보다 STALE_S 초 넘게 늦은 분은 회귀·규칙 모두에서 뺌 (실행기도 그런 분엔 진입 안 함).
 """
 from __future__ import annotations
 
@@ -32,6 +33,7 @@ RESULTS = HERE / "results"
 KS = (1, 5, 15)
 HS = (5, 15, 30)
 THETAS = (0.5, 1.0, 1.5, 2.0, 3.0)
+MIN_TRADES = 10          # θ 는 학습일 거래가 이만큼 이상인 것 중에서만 고름 (1건짜리 운 배제)
 TICK_PT, PT_KRW = 0.02, 50_000
 FEE_KRW = 1_500          # 미니 1계약 편도 수수료 가정 — 첫 모의 체결의 예수금 변화로 확인해서 고칠 것
 START, LAST_EXIT = "09:05", "15:35"
@@ -41,11 +43,30 @@ def load(days: list[str]) -> dict[str, pd.DataFrame]:
     return {d: pd.read_csv(PANEL_DIR / f"{d}.csv", index_col="t", parse_dates=True) for d in days}
 
 
+STALE_S = 120            # 투자자 스냅샷 서버 시각이 행 시각보다 이만큼 넘게 늦으면 그 분 흐름은 버림 (NH 504 등)
+
+
+def stale(p: pd.DataFrame, prd: str) -> pd.Series:
+    """{prd}_frgn_tm (HHMMSS) 이 t 보다 STALE_S 초 넘게 늦은 행. 열이 없으면 전부 False."""
+    c = f"{prd}_frgn_tm"
+    if c not in p:
+        return pd.Series(False, index=p.index)
+    s = pd.to_numeric(p[c], errors="coerce")
+    day = p.index.normalize()
+    hh, mm, ss = s // 10000, (s // 100) % 100, s % 100
+    tm = day + pd.to_timedelta((hh * 3600 + mm * 60 + ss).values, unit="s")
+    age = (p.index - tm).total_seconds()
+    return pd.Series(~np.isfinite(age) | (age > STALE_S), index=p.index)
+
+
 def features(p: pd.DataFrame) -> pd.DataFrame:
     f = pd.DataFrame(index=p.index)
-    fut = p.get("011_frgn", 0) + p.get("051_frgn", 0) / 5
-    opt = p.get("012_frgn", 0) - p.get("013_frgn", 0)
-    ind = p.get("011_ind", 0) + p.get("051_ind", 0) / 5
+    bad = {prd: stale(p, prd) for prd in ("011", "051", "012", "013")}
+    g = lambda c: p[c].where(~bad[c[:3]]) if c in p else 0   # noqa: E731  — 늦은 스냅샷은 NaN → diff 도 NaN
+    fut = g("011_frgn") + g("051_frgn") / 5
+    opt = g("012_frgn") - g("013_frgn")
+    ind = g("011_ind") + g("051_ind") / 5
+    f["stale"] = bad["011"] | bad["051"]
     aggr = p.get("K200_aggr", 0) + p.get("MINI_aggr", 0) / 5
     for k in KS:
         f[f"frgn_fut_{k}"] = fut.diff(k)
@@ -56,6 +77,7 @@ def features(p: pd.DataFrame) -> pd.DataFrame:
     for h in HS:
         f[f"r_{h}"] = (np.log(mid.shift(-h) / mid)) * 1e4
     f["mid"] = mid
+    f["spread"] = p["MINI_spread"].where(p["MINI_spread"] > 0)
     return f
 
 
@@ -65,10 +87,16 @@ def usable(idx: pd.DatetimeIndex, h: int) -> np.ndarray:
     return (hm >= START) & (hm <= last)
 
 
+def fresh(f: pd.DataFrame, h: int) -> np.ndarray:
+    """진입 가능 시각 중 투자자 스냅샷이 늦지 않은 분 (모든 신호를 같은 표본에서 비교)."""
+    m = usable(f.index, h)
+    return m & ~f["stale"].to_numpy(bool) if "stale" in f else m
+
+
 def stack(F: dict[str, pd.DataFrame], sig: str, h: int) -> pd.DataFrame:
     parts = []
     for d, f in F.items():
-        m = usable(f.index, h)
+        m = fresh(f, h)
         parts.append(f.loc[m, [sig, f"r_{h}"]].assign(day=d))
     return pd.concat(parts).dropna()
 
@@ -91,14 +119,17 @@ def nw_ols(x: pd.Series, y: pd.Series, lag: int) -> dict:
     return {"b": float(beta[1]), "t": float(beta[1] / np.sqrt(V[1, 1])), "r2": float(r2), "n": int(len(yv))}
 
 
-def cost_bp(mid: float) -> float:
-    rt_pt = TICK_PT + 2 * FEE_KRW / PT_KRW
+def cost_bp(mid: float, spread: float = TICK_PT) -> float:
+    """왕복 = 진입 반 스프레드 + 청산 반 스프레드(진입 때 스프레드로 근사) + 수수료 2번."""
+    if not np.isfinite(spread):
+        spread = TICK_PT
+    rt_pt = spread + 2 * FEE_KRW / PT_KRW
     return rt_pt / mid * 1e4
 
 
 def simulate(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, sd: float) -> list[dict]:
     """하루 안에서 규칙대로 진입·청산. 보유 중엔 새 진입 없음."""
-    m = usable(f.index, h)
+    m = fresh(f, h)
     z = f[sig] / sd
     trades, busy_until = [], None
     for t in f.index[m]:
@@ -109,7 +140,7 @@ def simulate(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, sd: f
             continue
         side = np.sign(zt) * sign
         trades.append({"t": t, "side": int(side), "z": float(zt), "gross_bp": float(side * r),
-                       "net_bp": float(side * r - cost_bp(mid))})
+                       "net_bp": float(side * r - cost_bp(mid, f.at[t, "spread"] if "spread" in f else TICK_PT))})
         busy_until = t + pd.Timedelta(minutes=h)
     return trades
 
@@ -122,7 +153,7 @@ def main() -> None:
     tr_days = a.train.split(",")
     te_days = [d for d in a.test.split(",") if d]
     Ftr = {d: features(p) for d, p in load(tr_days).items()}
-    sigs = [c for c in next(iter(Ftr.values())).columns if not c.startswith("r_") and c != "mid"]
+    sigs = [c for c in next(iter(Ftr.values())).columns if not c.startswith("r_") and c not in ("mid", "stale", "spread")]
     RESULTS.mkdir(exist_ok=True)
     lines = [f"# 외국인 흐름 분석 — 학습 {','.join(tr_days)}" + (f" · 시험 {','.join(te_days)}" if te_days else ""), ""]
 
@@ -146,7 +177,7 @@ def main() -> None:
     scores = []
     for th in THETAS:
         tr = [x for f in Ftr.values() for x in simulate(f, best.signal, int(best.h), th, sign, sd[best.signal])]
-        mean = np.mean([x["net_bp"] for x in tr]) if tr else -np.inf
+        mean = np.mean([x["net_bp"] for x in tr]) if len(tr) >= MIN_TRADES else -np.inf
         scores.append((mean, th, len(tr)))
     m, theta, n = max(scores)
     rule = {"signal": best.signal, "h": int(best.h), "theta": theta, "sign": sign, "sd": sd[best.signal],
