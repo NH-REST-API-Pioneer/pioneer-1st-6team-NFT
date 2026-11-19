@@ -1,0 +1,494 @@
+{"kind": "event", "at": "2026-11-19T08:55:02", "text": "시작 (기록만, 호가 종이 체결)", "rule": {"signal": "ind_fut_5", "h": 5, "theta": 1.5, "sign": -1.0, "sd": 47.80906639686187, "train_days": ["20261117"], "train_t": -3.9442449755788767, "train_net_bp_mean": 5.651879142108809, "train_trades": 13, "fee_krw": 1500, "chosen_at": "2026-11-17T16:37:29"}}
+{"kind": "minute", "at": "2026-11-19T08:56:03", "t": "2026-11-19 08:56:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T08:57:03", "t": "2026-11-19 08:57:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T08:58:03", "t": "2026-11-19 08:58:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T08:59:03", "t": "2026-11-19 08:59:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:00:03", "t": "2026-11-19 09:00:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:01:03", "t": "2026-11-19 09:01:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:02:03", "t": "2026-11-19 09:02:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:03:03", "t": "2026-11-19 09:03:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:04:03", "t": "2026-11-19 09:04:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:05:03", "t": "2026-11-19 09:05:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:06:03", "t": "2026-11-19 09:06:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:07:03", "t": "2026-11-19 09:07:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:08:03", "t": "2026-11-19 09:08:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:09:03", "t": "2026-11-19 09:09:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:10:03", "t": "2026-11-19 09:10:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:11:03", "t": "2026-11-19 09:11:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:12:03", "t": "2026-11-19 09:12:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:13:03", "t": "2026-11-19 09:13:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:14:03", "t": "2026-11-19 09:14:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:15:03", "t": "2026-11-19 09:15:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:16:03", "t": "2026-11-19 09:16:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:17:03", "t": "2026-11-19 09:17:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:18:03", "t": "2026-11-19 09:18:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:19:03", "t": "2026-11-19 09:19:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:20:03", "t": "2026-11-19 09:20:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:21:03", "t": "2026-11-19 09:21:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:22:03", "t": "2026-11-19 09:22:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:23:03", "t": "2026-11-19 09:23:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:24:03", "t": "2026-11-19 09:24:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:25:03", "t": "2026-11-19 09:25:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:26:03", "t": "2026-11-19 09:26:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:27:03", "t": "2026-11-19 09:27:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:28:03", "t": "2026-11-19 09:28:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:29:03", "t": "2026-11-19 09:29:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:30:03", "t": "2026-11-19 09:30:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:31:03", "t": "2026-11-19 09:31:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:32:03", "t": "2026-11-19 09:32:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:33:03", "t": "2026-11-19 09:33:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:34:03", "t": "2026-11-19 09:34:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:35:03", "t": "2026-11-19 09:35:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:36:03", "t": "2026-11-19 09:36:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:37:03", "t": "2026-11-19 09:37:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:38:03", "t": "2026-11-19 09:38:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:39:03", "t": "2026-11-19 09:39:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:40:03", "t": "2026-11-19 09:40:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:41:03", "t": "2026-11-19 09:41:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:42:03", "t": "2026-11-19 09:42:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:43:03", "t": "2026-11-19 09:43:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:44:03", "t": "2026-11-19 09:44:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:45:03", "t": "2026-11-19 09:45:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:46:03", "t": "2026-11-19 09:46:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:47:03", "t": "2026-11-19 09:47:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:48:03", "t": "2026-11-19 09:48:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:49:03", "t": "2026-11-19 09:49:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:50:03", "t": "2026-11-19 09:50:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:51:03", "t": "2026-11-19 09:51:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:52:03", "t": "2026-11-19 09:52:00", "z": 1.606, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T09:52:04", "side": -1, "price": 788.44, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.61"}
+{"kind": "minute", "at": "2026-11-19T09:53:03", "t": "2026-11-19 09:53:00", "z": 0.803, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:54:03", "t": "2026-11-19 09:54:00", "z": -0.054, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:55:03", "t": "2026-11-19 09:55:00", "z": 1.142, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:56:03", "t": "2026-11-19 09:56:00", "z": 1.058, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T09:57:03", "side": 1, "price": 791.68, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T09:57:03", "text": "거래 1 · -165,000원", "entry_t": "2026-11-19 09:52:00", "exit_t": "2026-11-19 09:57:00", "side": -1, "z": 1.606, "entry_px": 788.44, "exit_px": 791.68, "entry_bid": 788.44, "entry_ask": 788.72, "exit_bid": 791.48, "exit_ask": 791.68, "pnl_pt": -3.24, "fee_krw": 3000.0, "pnl_krw": -165000, "net_bp": -41.85, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T09:57:03", "t": "2026-11-19 09:57:00", "z": -0.665, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:58:03", "t": "2026-11-19 09:58:00", "z": -1.079, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T09:59:03", "t": "2026-11-19 09:59:00", "z": -1.577, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T09:59:03", "side": 1, "price": 790.66, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -1.58"}
+{"kind": "minute", "at": "2026-11-19T10:00:03", "t": "2026-11-19 10:00:00", "z": -2.15, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:01:03", "t": "2026-11-19 10:01:00", "z": -2.556, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:02:03", "t": "2026-11-19 10:02:00", "z": -1.025, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:03:03", "t": "2026-11-19 10:03:00", "z": 1.556, "stale": false, "side": 1, "want": -1}
+{"kind": "fill", "at": "2026-11-19T10:04:03", "side": -1, "price": 788.82, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T10:04:03", "text": "거래 2 · -95,000원", "entry_t": "2026-11-19 09:59:00", "exit_t": "2026-11-19 10:04:00", "side": 1, "z": -1.577, "entry_px": 790.66, "exit_px": 788.82, "entry_bid": 790.46, "entry_ask": 790.66, "exit_bid": 788.82, "exit_ask": 788.9, "pnl_pt": -1.84, "fee_krw": 3000.0, "pnl_krw": -95000, "net_bp": -24.03, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T10:04:03", "t": "2026-11-19 10:04:00", "z": 1.159, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:05:03", "t": "2026-11-19 10:05:00", "z": -1.527, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T10:05:03", "side": 1, "price": 788.76, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -1.53"}
+{"kind": "minute", "at": "2026-11-19T10:06:03", "t": "2026-11-19 10:06:00", "z": -1.849, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:07:03", "t": "2026-11-19 10:07:00", "z": -2.171, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:08:04", "t": "2026-11-19 10:08:00", "z": -4.468, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:09:03", "t": "2026-11-19 10:09:00", "z": -4.238, "stale": false, "side": 1, "want": 1}
+{"kind": "fill", "at": "2026-11-19T10:10:03", "side": -1, "price": 785.0, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T10:10:03", "text": "거래 3 · -191,000원", "entry_t": "2026-11-19 10:05:00", "exit_t": "2026-11-19 10:10:00", "side": 1, "z": -1.527, "entry_px": 788.76, "exit_px": 785.0, "entry_bid": 788.68, "entry_ask": 788.76, "exit_bid": 785.0, "exit_ask": 785.16, "pnl_pt": -3.76, "fee_krw": 3000.0, "pnl_krw": -191000, "net_bp": -48.43, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T10:10:03", "t": "2026-11-19 10:10:00", "z": -2.234, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T10:10:03", "side": 1, "price": 785.18, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -2.23"}
+{"kind": "minute", "at": "2026-11-19T10:11:03", "t": "2026-11-19 10:11:00", "z": 1.318, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:12:03", "t": "2026-11-19 10:12:00", "z": 0.079, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:13:04", "t": "2026-11-19 10:13:00", "z": 0.163, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:14:03", "t": "2026-11-19 10:14:00", "z": 0.485, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T10:15:03", "side": -1, "price": 786.34, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T10:15:03", "text": "거래 4 · +55,000원", "entry_t": "2026-11-19 10:10:00", "exit_t": "2026-11-19 10:15:00", "side": 1, "z": -2.234, "entry_px": 785.18, "exit_px": 786.34, "entry_bid": 785.1, "entry_ask": 785.18, "exit_bid": 786.34, "exit_ask": 786.36, "pnl_pt": 1.16, "fee_krw": 3000.0, "pnl_krw": 55000, "net_bp": 14.01, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T10:15:03", "t": "2026-11-19 10:15:00", "z": 0.745, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:16:04", "t": "2026-11-19 10:16:00", "z": -4.719, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T10:16:04", "side": 1, "price": 785.18, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -4.72"}
+{"kind": "minute", "at": "2026-11-19T10:17:03", "t": "2026-11-19 10:17:00", "z": -3.296, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:18:03", "t": "2026-11-19 10:18:00", "z": -2.313, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:19:03", "t": "2026-11-19 10:19:00", "z": -1.694, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:20:03", "t": "2026-11-19 10:20:00", "z": -1.314, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T10:21:04", "side": -1, "price": 776.94, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T10:21:04", "text": "거래 5 · -415,000원", "entry_t": "2026-11-19 10:16:00", "exit_t": "2026-11-19 10:21:00", "side": 1, "z": -4.719, "entry_px": 785.18, "exit_px": 776.94, "entry_bid": 785.1, "entry_ask": 785.18, "exit_bid": 776.94, "exit_ask": 777.02, "pnl_pt": -8.24, "fee_krw": 3000.0, "pnl_krw": -415000, "net_bp": -105.71, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T10:21:04", "t": "2026-11-19 10:21:00", "z": 1.109, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:22:03", "t": "2026-11-19 10:22:00", "z": 0.941, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:23:03", "t": "2026-11-19 10:23:00", "z": -0.029, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:24:03", "t": "2026-11-19 10:24:00", "z": 0.017, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:25:03", "t": "2026-11-19 10:25:00", "z": -0.443, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:26:03", "t": "2026-11-19 10:26:00", "z": 0.832, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:27:03", "t": "2026-11-19 10:27:00", "z": 1.263, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:28:03", "t": "2026-11-19 10:28:00", "z": 0.481, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:29:03", "t": "2026-11-19 10:29:00", "z": 0.201, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:30:03", "t": "2026-11-19 10:30:00", "z": 0.452, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:31:03", "t": "2026-11-19 10:31:00", "z": -0.669, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:32:03", "t": "2026-11-19 10:32:00", "z": -2.569, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T10:32:03", "side": 1, "price": 771.68, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -2.57"}
+{"kind": "minute", "at": "2026-11-19T10:33:03", "t": "2026-11-19 10:33:00", "z": -1.535, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:34:03", "t": "2026-11-19 10:34:00", "z": -2.154, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:35:03", "t": "2026-11-19 10:35:00", "z": -0.724, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:36:03", "t": "2026-11-19 10:36:00", "z": 0.954, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T10:37:04", "side": -1, "price": 772.92, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T10:37:04", "text": "거래 6 · +59,000원", "entry_t": "2026-11-19 10:32:00", "exit_t": "2026-11-19 10:37:00", "side": 1, "z": -2.569, "entry_px": 771.68, "exit_px": 772.92, "entry_bid": 771.64, "entry_ask": 771.68, "exit_bid": 772.92, "exit_ask": 772.96, "pnl_pt": 1.24, "fee_krw": 3000.0, "pnl_krw": 59000, "net_bp": 15.29, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T10:37:04", "t": "2026-11-19 10:37:00", "z": 3.154, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T10:37:04", "side": -1, "price": 772.92, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +3.15"}
+{"kind": "minute", "at": "2026-11-19T10:38:03", "t": "2026-11-19 10:38:00", "z": 4.338, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T10:39:03", "t": "2026-11-19 10:39:00", "z": 4.141, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T10:40:03", "t": "2026-11-19 10:40:00", "z": 1.569, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T10:41:03", "t": "2026-11-19 10:41:00", "z": 2.276, "stale": false, "side": -1, "want": -1}
+{"kind": "fill", "at": "2026-11-19T10:42:04", "side": 1, "price": 775.66, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T10:42:04", "text": "거래 7 · -140,000원", "entry_t": "2026-11-19 10:37:00", "exit_t": "2026-11-19 10:42:00", "side": -1, "z": 3.154, "entry_px": 772.92, "exit_px": 775.66, "entry_bid": 772.92, "entry_ask": 772.96, "exit_bid": 775.58, "exit_ask": 775.66, "pnl_pt": -2.74, "fee_krw": 3000.0, "pnl_krw": -140000, "net_bp": -36.23, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T10:42:04", "t": "2026-11-19 10:42:00", "z": 0.318, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:43:03", "t": "2026-11-19 10:43:00", "z": -1.042, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:44:03", "t": "2026-11-19 10:44:00", "z": -2.184, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T10:44:03", "side": 1, "price": 775.52, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -2.18"}
+{"kind": "minute", "at": "2026-11-19T10:45:03", "t": "2026-11-19 10:45:00", "z": -2.949, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:46:04", "t": "2026-11-19 10:46:00", "z": -5.493, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:47:03", "t": "2026-11-19 10:47:00", "z": -4.522, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T10:48:03", "t": "2026-11-19 10:48:00", "z": -4.664, "stale": false, "side": 1, "want": 1}
+{"kind": "fill", "at": "2026-11-19T10:49:03", "side": -1, "price": 774.9, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T10:49:03", "text": "거래 8 · -34,000원", "entry_t": "2026-11-19 10:44:00", "exit_t": "2026-11-19 10:49:00", "side": 1, "z": -2.184, "entry_px": 775.52, "exit_px": 774.9, "entry_bid": 775.4, "entry_ask": 775.52, "exit_bid": 774.9, "exit_ask": 775.0, "pnl_pt": -0.62, "fee_krw": 3000.0, "pnl_krw": -34000, "net_bp": -8.77, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T10:49:03", "t": "2026-11-19 10:49:00", "z": -3.083, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T10:49:03", "side": 1, "price": 775.06, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -3.08"}
+{"kind": "minute", "at": "2026-11-19T10:50:03", "t": "2026-11-19 10:50:00", "z": -1.435, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:51:04", "t": "2026-11-19 10:51:00", "z": -0.966, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:52:03", "t": "2026-11-19 10:52:00", "z": -0.745, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:53:03", "t": "2026-11-19 10:53:00", "z": -0.117, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T10:54:03", "side": -1, "price": 774.28, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T10:54:03", "text": "거래 9 · -42,000원", "entry_t": "2026-11-19 10:49:00", "exit_t": "2026-11-19 10:54:00", "side": 1, "z": -3.083, "entry_px": 775.06, "exit_px": 774.28, "entry_bid": 774.94, "entry_ask": 775.06, "exit_bid": 774.28, "exit_ask": 774.34, "pnl_pt": -0.78, "fee_krw": 3000.0, "pnl_krw": -42000, "net_bp": -10.84, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T10:54:03", "t": "2026-11-19 10:54:00", "z": -0.046, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:55:03", "t": "2026-11-19 10:55:00", "z": 2.502, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T10:55:03", "side": -1, "price": 775.36, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +2.50"}
+{"kind": "minute", "at": "2026-11-19T10:56:03", "t": "2026-11-19 10:56:00", "z": 2.23, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T10:57:03", "t": "2026-11-19 10:57:00", "z": 1.594, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T10:58:03", "t": "2026-11-19 10:58:00", "z": 0.778, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T10:59:03", "t": "2026-11-19 10:59:00", "z": 0.832, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T11:00:03", "side": 1, "price": 779.22, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T11:00:03", "text": "거래 10 · -196,000원", "entry_t": "2026-11-19 10:55:00", "exit_t": "2026-11-19 11:00:00", "side": -1, "z": 2.502, "entry_px": 775.36, "exit_px": 779.22, "entry_bid": 775.36, "entry_ask": 775.44, "exit_bid": 779.16, "exit_ask": 779.22, "pnl_pt": -3.86, "fee_krw": 3000.0, "pnl_krw": -196000, "net_bp": -50.55, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T11:00:03", "t": "2026-11-19 11:00:00", "z": -0.452, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:01:03", "t": "2026-11-19 11:01:00", "z": -0.619, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:02:03", "t": "2026-11-19 11:02:00", "z": 0.109, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:03:03", "t": "2026-11-19 11:03:00", "z": 1.05, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:04:03", "t": "2026-11-19 11:04:00", "z": 1.631, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T11:04:03", "side": -1, "price": 776.4, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.63"}
+{"kind": "minute", "at": "2026-11-19T11:05:03", "t": "2026-11-19 11:05:00", "z": 0.28, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:06:03", "t": "2026-11-19 11:06:00", "z": 0.18, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:07:03", "t": "2026-11-19 11:07:00", "z": -0.276, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:08:03", "t": "2026-11-19 11:08:00", "z": -0.724, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T11:09:03", "side": 1, "price": 777.16, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T11:09:03", "text": "거래 11 · -41,000원", "entry_t": "2026-11-19 11:04:00", "exit_t": "2026-11-19 11:09:00", "side": -1, "z": 1.631, "entry_px": 776.4, "exit_px": 777.16, "entry_bid": 776.4, "entry_ask": 776.48, "exit_bid": 777.06, "exit_ask": 777.16, "pnl_pt": -0.76, "fee_krw": 3000.0, "pnl_krw": -41000, "net_bp": -10.56, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T11:09:03", "t": "2026-11-19 11:09:00", "z": -0.95, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:10:03", "t": "2026-11-19 11:10:00", "z": -0.489, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:11:03", "t": "2026-11-19 11:11:00", "z": 0.155, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:12:03", "t": "2026-11-19 11:12:00", "z": 0.05, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:13:03", "t": "2026-11-19 11:13:00", "z": 0.105, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:14:03", "t": "2026-11-19 11:14:00", "z": -1.585, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T11:14:03", "side": 1, "price": 780.04, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -1.59"}
+{"kind": "minute", "at": "2026-11-19T11:15:04", "t": "2026-11-19 11:15:00", "z": -3.472, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T11:16:03", "t": "2026-11-19 11:16:00", "z": -3.175, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T11:17:03", "t": "2026-11-19 11:17:00", "z": -2.142, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T11:18:03", "t": "2026-11-19 11:18:00", "z": -1.217, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T11:19:03", "side": -1, "price": 777.74, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T11:19:03", "text": "거래 12 · -118,000원", "entry_t": "2026-11-19 11:14:00", "exit_t": "2026-11-19 11:19:00", "side": 1, "z": -1.585, "entry_px": 780.04, "exit_px": 777.74, "entry_bid": 780.0, "entry_ask": 780.04, "exit_bid": 777.74, "exit_ask": 777.84, "pnl_pt": -2.3, "fee_krw": 3000.0, "pnl_krw": -118000, "net_bp": -30.26, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T11:19:03", "t": "2026-11-19 11:19:00", "z": -0.063, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:20:04", "t": "2026-11-19 11:20:00", "z": 1.439, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:21:03", "t": "2026-11-19 11:21:00", "z": 1.406, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:22:03", "t": "2026-11-19 11:22:00", "z": 1.531, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T11:22:03", "side": -1, "price": 776.84, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.53"}
+{"kind": "minute", "at": "2026-11-19T11:23:03", "t": "2026-11-19 11:23:00", "z": 1.159, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:24:03", "t": "2026-11-19 11:24:00", "z": 1.251, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:25:03", "t": "2026-11-19 11:25:00", "z": 2.117, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T11:26:03", "t": "2026-11-19 11:26:00", "z": 2.263, "stale": false, "side": -1, "want": -1}
+{"kind": "fill", "at": "2026-11-19T11:27:03", "side": 1, "price": 777.22, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T11:27:03", "text": "거래 13 · -22,000원", "entry_t": "2026-11-19 11:22:00", "exit_t": "2026-11-19 11:27:00", "side": -1, "z": 1.531, "entry_px": 776.84, "exit_px": 777.22, "entry_bid": 776.84, "entry_ask": 776.92, "exit_bid": 777.1, "exit_ask": 777.22, "pnl_pt": -0.38, "fee_krw": 3000.0, "pnl_krw": -22000, "net_bp": -5.66, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T11:27:03", "t": "2026-11-19 11:27:00", "z": 1.535, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T11:27:03", "side": -1, "price": 777.1, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.54"}
+{"kind": "minute", "at": "2026-11-19T11:28:03", "t": "2026-11-19 11:28:00", "z": 1.364, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:29:03", "t": "2026-11-19 11:29:00", "z": 1.435, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:30:03", "t": "2026-11-19 11:30:00", "z": 0.615, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:31:03", "t": "2026-11-19 11:31:00", "z": 0.527, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T11:32:03", "side": 1, "price": 774.02, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T11:32:03", "text": "거래 14 · +151,000원", "entry_t": "2026-11-19 11:27:00", "exit_t": "2026-11-19 11:32:00", "side": -1, "z": 1.535, "entry_px": 777.1, "exit_px": 774.02, "entry_bid": 777.1, "entry_ask": 777.22, "exit_bid": 773.96, "exit_ask": 774.02, "pnl_pt": 3.08, "fee_krw": 3000.0, "pnl_krw": 151000, "net_bp": 38.86, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T11:32:03", "t": "2026-11-19 11:32:00", "z": 1.008, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:33:03", "t": "2026-11-19 11:33:00", "z": -0.23, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:34:03", "t": "2026-11-19 11:34:00", "z": -0.699, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:35:03", "t": "2026-11-19 11:35:00", "z": -0.669, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:36:03", "t": "2026-11-19 11:36:00", "z": -1.155, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:37:03", "t": "2026-11-19 11:37:00", "z": -1.247, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:38:03", "t": "2026-11-19 11:38:00", "z": -0.519, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:39:03", "t": "2026-11-19 11:39:00", "z": -0.791, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:40:03", "t": "2026-11-19 11:40:00", "z": 0.197, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:41:03", "t": "2026-11-19 11:41:00", "z": 0.619, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:42:03", "t": "2026-11-19 11:42:00", "z": 0.184, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:43:03", "t": "2026-11-19 11:43:00", "z": -0.544, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:44:03", "t": "2026-11-19 11:44:00", "z": 0.071, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:45:03", "t": "2026-11-19 11:45:00", "z": -0.678, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:46:03", "t": "2026-11-19 11:46:00", "z": -0.753, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:47:03", "t": "2026-11-19 11:47:00", "z": -1.079, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:48:03", "t": "2026-11-19 11:48:00", "z": -0.117, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:49:03", "t": "2026-11-19 11:49:00", "z": -0.485, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:50:03", "t": "2026-11-19 11:50:00", "z": 0.142, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:51:03", "t": "2026-11-19 11:51:00", "z": 0.272, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:52:03", "t": "2026-11-19 11:52:00", "z": 0.749, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:53:03", "t": "2026-11-19 11:53:00", "z": 0.276, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:54:03", "t": "2026-11-19 11:54:00", "z": 0.519, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:55:03", "t": "2026-11-19 11:55:00", "z": -0.469, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:56:03", "t": "2026-11-19 11:56:00", "z": -2.125, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T11:56:03", "side": 1, "price": 777.52, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -2.13"}
+{"kind": "minute", "at": "2026-11-19T11:57:03", "t": "2026-11-19 11:57:00", "z": -2.456, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T11:58:03", "t": "2026-11-19 11:58:00", "z": -1.431, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T11:59:03", "t": "2026-11-19 11:59:00", "z": -1.142, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:00:03", "t": "2026-11-19 12:00:00", "z": -0.862, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T12:01:03", "side": -1, "price": 774.32, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T12:01:03", "text": "거래 15 · -163,000원", "entry_t": "2026-11-19 11:56:00", "exit_t": "2026-11-19 12:01:00", "side": 1, "z": -2.125, "entry_px": 777.52, "exit_px": 774.32, "entry_bid": 777.42, "entry_ask": 777.52, "exit_bid": 774.32, "exit_ask": 774.4, "pnl_pt": -3.2, "fee_krw": 3000.0, "pnl_krw": -163000, "net_bp": -41.93, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T12:01:03", "t": "2026-11-19 12:01:00", "z": 0.452, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:02:03", "t": "2026-11-19 12:02:00", "z": 1.51, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T12:02:03", "side": -1, "price": 775.68, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.51"}
+{"kind": "minute", "at": "2026-11-19T12:03:03", "t": "2026-11-19 12:03:00", "z": 0.096, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:04:03", "t": "2026-11-19 12:04:00", "z": -0.552, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:05:03", "t": "2026-11-19 12:05:00", "z": -0.933, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:06:03", "t": "2026-11-19 12:06:00", "z": -0.498, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T12:07:03", "side": 1, "price": 774.2, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T12:07:03", "text": "거래 16 · +71,000원", "entry_t": "2026-11-19 12:02:00", "exit_t": "2026-11-19 12:07:00", "side": -1, "z": 1.51, "entry_px": 775.68, "exit_px": 774.2, "entry_bid": 775.68, "entry_ask": 775.76, "exit_bid": 774.12, "exit_ask": 774.2, "pnl_pt": 1.48, "fee_krw": 3000.0, "pnl_krw": 71000, "net_bp": 18.31, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T12:07:03", "t": "2026-11-19 12:07:00", "z": -0.54, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:08:03", "t": "2026-11-19 12:08:00", "z": 0.151, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:09:03", "t": "2026-11-19 12:09:00", "z": 0.636, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:10:03", "t": "2026-11-19 12:10:00", "z": 0.899, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:11:03", "t": "2026-11-19 12:11:00", "z": 1.176, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:12:03", "t": "2026-11-19 12:12:00", "z": 0.866, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:13:03", "t": "2026-11-19 12:13:00", "z": 0.121, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:14:03", "t": "2026-11-19 12:14:00", "z": -0.117, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:15:03", "t": "2026-11-19 12:15:00", "z": -0.351, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:16:03", "t": "2026-11-19 12:16:00", "z": -1.447, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:17:03", "t": "2026-11-19 12:17:00", "z": -1.786, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T12:17:03", "side": 1, "price": 772.74, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -1.79"}
+{"kind": "minute", "at": "2026-11-19T12:18:03", "t": "2026-11-19 12:18:00", "z": -0.774, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:19:03", "t": "2026-11-19 12:19:00", "z": -0.607, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:20:03", "t": "2026-11-19 12:20:00", "z": -0.791, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:21:03", "t": "2026-11-19 12:21:00", "z": 0.243, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T12:22:03", "side": -1, "price": 775.74, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T12:22:03", "text": "거래 17 · +147,000원", "entry_t": "2026-11-19 12:17:00", "exit_t": "2026-11-19 12:22:00", "side": 1, "z": -1.786, "entry_px": 772.74, "exit_px": 775.74, "entry_bid": 772.68, "entry_ask": 772.74, "exit_bid": 775.74, "exit_ask": 775.8, "pnl_pt": 3.0, "fee_krw": 3000.0, "pnl_krw": 147000, "net_bp": 38.05, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T12:22:03", "t": "2026-11-19 12:22:00", "z": -0.343, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:23:03", "t": "2026-11-19 12:23:00", "z": -1.263, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:24:04", "t": "2026-11-19 12:24:00", "z": -1.853, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T12:24:04", "side": 1, "price": 775.88, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -1.85"}
+{"kind": "minute", "at": "2026-11-19T12:25:03", "t": "2026-11-19 12:25:00", "z": -0.824, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:26:03", "t": "2026-11-19 12:26:00", "z": -0.812, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:27:03", "t": "2026-11-19 12:27:00", "z": -0.276, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:28:03", "t": "2026-11-19 12:28:00", "z": 0.213, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T12:29:04", "side": -1, "price": 776.98, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T12:29:04", "text": "거래 18 · +52,000원", "entry_t": "2026-11-19 12:24:00", "exit_t": "2026-11-19 12:29:00", "side": 1, "z": -1.853, "entry_px": 775.88, "exit_px": 776.98, "entry_bid": 775.8, "entry_ask": 775.88, "exit_bid": 776.98, "exit_ask": 777.04, "pnl_pt": 1.1, "fee_krw": 3000.0, "pnl_krw": 52000, "net_bp": 13.4, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T12:29:04", "t": "2026-11-19 12:29:00", "z": 0.728, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:30:03", "t": "2026-11-19 12:30:00", "z": -0.393, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:31:03", "t": "2026-11-19 12:31:00", "z": -0.581, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:32:03", "t": "2026-11-19 12:32:00", "z": -0.485, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:33:03", "t": "2026-11-19 12:33:00", "z": -0.172, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:34:04", "t": "2026-11-19 12:34:00", "z": -1.749, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T12:34:04", "side": 1, "price": 780.92, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -1.75"}
+{"kind": "minute", "at": "2026-11-19T12:35:03", "t": "2026-11-19 12:35:00", "z": -0.678, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:36:03", "t": "2026-11-19 12:36:00", "z": -1.351, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:37:03", "t": "2026-11-19 12:37:00", "z": -2.121, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T12:38:03", "t": "2026-11-19 12:38:00", "z": -1.485, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T12:39:04", "side": -1, "price": 782.98, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T12:39:04", "text": "거래 19 · +100,000원", "entry_t": "2026-11-19 12:34:00", "exit_t": "2026-11-19 12:39:00", "side": 1, "z": -1.749, "entry_px": 780.92, "exit_px": 782.98, "entry_bid": 780.86, "entry_ask": 780.92, "exit_bid": 782.98, "exit_ask": 783.08, "pnl_pt": 2.06, "fee_krw": 3000.0, "pnl_krw": 100000, "net_bp": 25.61, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T12:39:04", "t": "2026-11-19 12:39:00", "z": 1.012, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:40:03", "t": "2026-11-19 12:40:00", "z": 0.623, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:41:03", "t": "2026-11-19 12:41:00", "z": 0.657, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:42:03", "t": "2026-11-19 12:42:00", "z": 0.824, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:43:03", "t": "2026-11-19 12:43:00", "z": 0.799, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:44:03", "t": "2026-11-19 12:44:00", "z": -0.238, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:45:03", "t": "2026-11-19 12:45:00", "z": -0.284, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:46:03", "t": "2026-11-19 12:46:00", "z": 0.904, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:47:03", "t": "2026-11-19 12:47:00", "z": 1.715, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T12:47:03", "side": -1, "price": 784.94, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.72"}
+{"kind": "minute", "at": "2026-11-19T12:48:03", "t": "2026-11-19 12:48:00", "z": 0.23, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:49:03", "t": "2026-11-19 12:49:00", "z": 2.431, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T12:50:03", "t": "2026-11-19 12:50:00", "z": 2.255, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T12:51:03", "t": "2026-11-19 12:51:00", "z": 1.263, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T12:52:03", "side": 1, "price": 785.98, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T12:52:03", "text": "거래 20 · -55,000원", "entry_t": "2026-11-19 12:47:00", "exit_t": "2026-11-19 12:52:00", "side": -1, "z": 1.715, "entry_px": 784.94, "exit_px": 785.98, "entry_bid": 784.94, "entry_ask": 785.02, "exit_bid": 785.92, "exit_ask": 785.98, "pnl_pt": -1.04, "fee_krw": 3000.0, "pnl_krw": -55000, "net_bp": -14.01, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T12:52:03", "t": "2026-11-19 12:52:00", "z": 0.92, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:53:03", "t": "2026-11-19 12:53:00", "z": 1.753, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T12:53:03", "side": -1, "price": 785.16, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.75"}
+{"kind": "minute", "at": "2026-11-19T12:54:03", "t": "2026-11-19 12:54:00", "z": -0.372, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:55:03", "t": "2026-11-19 12:55:00", "z": -0.397, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:56:03", "t": "2026-11-19 12:56:00", "z": -0.494, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:57:03", "t": "2026-11-19 12:57:00", "z": -0.749, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T12:58:03", "side": 1, "price": 787.4, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T12:58:03", "text": "거래 21 · -115,000원", "entry_t": "2026-11-19 12:53:00", "exit_t": "2026-11-19 12:58:00", "side": -1, "z": 1.753, "entry_px": 785.16, "exit_px": 787.4, "entry_bid": 785.16, "entry_ask": 785.26, "exit_bid": 787.34, "exit_ask": 787.4, "pnl_pt": -2.24, "fee_krw": 3000.0, "pnl_krw": -115000, "net_bp": -29.29, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T12:58:03", "t": "2026-11-19 12:58:00", "z": -1.401, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T12:59:03", "t": "2026-11-19 12:59:00", "z": 0.841, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:00:03", "t": "2026-11-19 13:00:00", "z": 1.548, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T13:00:03", "side": -1, "price": 786.26, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.55"}
+{"kind": "minute", "at": "2026-11-19T13:01:03", "t": "2026-11-19 13:01:00", "z": 1.958, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T13:02:03", "t": "2026-11-19 13:02:00", "z": 1.15, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:03:03", "t": "2026-11-19 13:03:00", "z": 1.849, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T13:04:03", "t": "2026-11-19 13:04:00", "z": -0.251, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T13:05:03", "side": 1, "price": 790.8, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T13:05:03", "text": "거래 22 · -230,000원", "entry_t": "2026-11-19 13:00:00", "exit_t": "2026-11-19 13:05:00", "side": -1, "z": 1.548, "entry_px": 786.26, "exit_px": 790.8, "entry_bid": 786.26, "entry_ask": 786.32, "exit_bid": 790.74, "exit_ask": 790.8, "pnl_pt": -4.54, "fee_krw": 3000.0, "pnl_krw": -230000, "net_bp": -58.5, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T13:05:03", "t": "2026-11-19 13:05:00", "z": -1.196, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:06:03", "t": "2026-11-19 13:06:00", "z": -1.314, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:07:03", "t": "2026-11-19 13:07:00", "z": 0.515, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:08:03", "t": "2026-11-19 13:08:00", "z": 0.632, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:09:03", "t": "2026-11-19 13:09:00", "z": 0.544, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:10:03", "t": "2026-11-19 13:10:00", "z": 0.506, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:11:03", "t": "2026-11-19 13:11:00", "z": 0.506, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:12:03", "t": "2026-11-19 13:12:00", "z": -0.293, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:13:03", "t": "2026-11-19 13:13:00", "z": -1.749, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T13:13:03", "side": 1, "price": 790.96, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -1.75"}
+{"kind": "minute", "at": "2026-11-19T13:14:03", "t": "2026-11-19 13:14:00", "z": -1.908, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T13:15:03", "t": "2026-11-19 13:15:00", "z": -1.92, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T13:16:03", "t": "2026-11-19 13:16:00", "z": -2.18, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T13:17:03", "t": "2026-11-19 13:17:00", "z": -1.841, "stale": false, "side": 1, "want": 1}
+{"kind": "fill", "at": "2026-11-19T13:18:03", "side": -1, "price": 788.02, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T13:18:03", "text": "거래 23 · -150,000원", "entry_t": "2026-11-19 13:13:00", "exit_t": "2026-11-19 13:18:00", "side": 1, "z": -1.749, "entry_px": 790.96, "exit_px": 788.02, "entry_bid": 790.9, "entry_ask": 790.96, "exit_bid": 788.02, "exit_ask": 788.08, "pnl_pt": -2.94, "fee_krw": 3000.0, "pnl_krw": -150000, "net_bp": -37.93, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T13:18:03", "t": "2026-11-19 13:18:00", "z": -0.602, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:19:03", "t": "2026-11-19 13:19:00", "z": -0.301, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:20:03", "t": "2026-11-19 13:20:00", "z": 0.423, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:21:03", "t": "2026-11-19 13:21:00", "z": 0.623, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:22:03", "t": "2026-11-19 13:22:00", "z": 0.013, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:23:03", "t": "2026-11-19 13:23:00", "z": -0.201, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:24:03", "t": "2026-11-19 13:24:00", "z": 1.351, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:25:03", "t": "2026-11-19 13:25:00", "z": 0.657, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:26:03", "t": "2026-11-19 13:26:00", "z": 1.263, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:27:03", "t": "2026-11-19 13:27:00", "z": 1.87, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T13:27:03", "side": -1, "price": 788.56, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.87"}
+{"kind": "minute", "at": "2026-11-19T13:28:03", "t": "2026-11-19 13:28:00", "z": 1.456, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:29:03", "t": "2026-11-19 13:29:00", "z": -0.456, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:30:03", "t": "2026-11-19 13:30:00", "z": -0.489, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:31:03", "t": "2026-11-19 13:31:00", "z": -0.54, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T13:32:03", "side": 1, "price": 789.2, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T13:32:03", "text": "거래 24 · -35,000원", "entry_t": "2026-11-19 13:27:00", "exit_t": "2026-11-19 13:32:00", "side": -1, "z": 1.87, "entry_px": 788.56, "exit_px": 789.2, "entry_bid": 788.56, "entry_ask": 788.64, "exit_bid": 789.14, "exit_ask": 789.2, "pnl_pt": -0.64, "fee_krw": 3000.0, "pnl_krw": -35000, "net_bp": -8.88, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T13:32:03", "t": "2026-11-19 13:32:00", "z": -0.979, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:33:03", "t": "2026-11-19 13:33:00", "z": -0.092, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:34:03", "t": "2026-11-19 13:34:00", "z": 0.636, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:35:03", "t": "2026-11-19 13:35:00", "z": 0.113, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:36:03", "t": "2026-11-19 13:36:00", "z": -0.929, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:37:03", "t": "2026-11-19 13:37:00", "z": -0.803, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:38:03", "t": "2026-11-19 13:38:00", "z": -0.92, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:39:03", "t": "2026-11-19 13:39:00", "z": -1.217, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:40:03", "t": "2026-11-19 13:40:00", "z": 0.707, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:41:03", "t": "2026-11-19 13:41:00", "z": 1.104, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:42:03", "t": "2026-11-19 13:42:00", "z": 1.477, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:43:03", "t": "2026-11-19 13:43:00", "z": 1.506, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T13:43:03", "side": -1, "price": 785.54, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.51"}
+{"kind": "minute", "at": "2026-11-19T13:44:03", "t": "2026-11-19 13:44:00", "z": 1.393, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:45:03", "t": "2026-11-19 13:45:00", "z": 0.297, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:46:03", "t": "2026-11-19 13:46:00", "z": 0.615, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:47:03", "t": "2026-11-19 13:47:00", "z": 0.439, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T13:48:03", "side": 1, "price": 785.02, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T13:48:03", "text": "거래 25 · +23,000원", "entry_t": "2026-11-19 13:43:00", "exit_t": "2026-11-19 13:48:00", "side": -1, "z": 1.506, "entry_px": 785.54, "exit_px": 785.02, "entry_bid": 785.54, "entry_ask": 785.66, "exit_bid": 784.92, "exit_ask": 785.02, "pnl_pt": 0.52, "fee_krw": 3000.0, "pnl_krw": 23000, "net_bp": 5.86, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T13:48:03", "t": "2026-11-19 13:48:00", "z": 0.289, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:49:03", "t": "2026-11-19 13:49:00", "z": 0.561, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:50:03", "t": "2026-11-19 13:50:00", "z": 1.171, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:51:03", "t": "2026-11-19 13:51:00", "z": 1.079, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:52:03", "t": "2026-11-19 13:52:00", "z": 1.146, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:53:03", "t": "2026-11-19 13:53:00", "z": 1.146, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:54:03", "t": "2026-11-19 13:54:00", "z": 0.0, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:55:03", "t": "2026-11-19 13:55:00", "z": -1.209, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:56:03", "t": "2026-11-19 13:56:00", "z": -0.109, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:57:03", "t": "2026-11-19 13:57:00", "z": -0.569, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:58:03", "t": "2026-11-19 13:58:00", "z": 0.218, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T13:59:03", "t": "2026-11-19 13:59:00", "z": 0.92, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:00:03", "t": "2026-11-19 14:00:00", "z": 1.598, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T14:00:03", "side": -1, "price": 784.62, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.60"}
+{"kind": "minute", "at": "2026-11-19T14:01:03", "t": "2026-11-19 14:01:00", "z": -0.029, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:02:03", "t": "2026-11-19 14:02:00", "z": 0.519, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:03:03", "t": "2026-11-19 14:03:00", "z": -0.218, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:04:03", "t": "2026-11-19 14:04:00", "z": 0.054, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T14:05:03", "side": 1, "price": 783.88, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T14:05:03", "text": "거래 26 · +34,000원", "entry_t": "2026-11-19 14:00:00", "exit_t": "2026-11-19 14:05:00", "side": -1, "z": 1.598, "entry_px": 784.62, "exit_px": 783.88, "entry_bid": 784.62, "entry_ask": 784.7, "exit_bid": 783.82, "exit_ask": 783.88, "pnl_pt": 0.74, "fee_krw": 3000.0, "pnl_krw": 34000, "net_bp": 8.67, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T14:05:03", "t": "2026-11-19 14:05:00", "z": 0.456, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:06:03", "t": "2026-11-19 14:06:00", "z": 0.552, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:07:03", "t": "2026-11-19 14:07:00", "z": 1.514, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T14:07:03", "side": -1, "price": 784.32, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.51"}
+{"kind": "minute", "at": "2026-11-19T14:08:03", "t": "2026-11-19 14:08:00", "z": 1.075, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:09:03", "t": "2026-11-19 14:09:00", "z": 1.849, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T14:10:03", "t": "2026-11-19 14:10:00", "z": 1.334, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:11:03", "t": "2026-11-19 14:11:00", "z": 1.652, "stale": false, "side": -1, "want": -1}
+{"kind": "fill", "at": "2026-11-19T14:12:03", "side": 1, "price": 784.44, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T14:12:03", "text": "거래 27 · -9,000원", "entry_t": "2026-11-19 14:07:00", "exit_t": "2026-11-19 14:12:00", "side": -1, "z": 1.514, "entry_px": 784.32, "exit_px": 784.44, "entry_bid": 784.32, "entry_ask": 784.4, "exit_bid": 784.36, "exit_ask": 784.44, "pnl_pt": -0.12, "fee_krw": 3000.0, "pnl_krw": -9000, "net_bp": -2.29, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T14:12:03", "t": "2026-11-19 14:12:00", "z": 0.607, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:13:03", "t": "2026-11-19 14:13:00", "z": 0.987, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:14:03", "t": "2026-11-19 14:14:00", "z": 0.456, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:15:03", "t": "2026-11-19 14:15:00", "z": 1.134, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:16:03", "t": "2026-11-19 14:16:00", "z": 1.314, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:17:03", "t": "2026-11-19 14:17:00", "z": 0.736, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:18:03", "t": "2026-11-19 14:18:00", "z": 0.694, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:19:03", "t": "2026-11-19 14:19:00", "z": 0.64, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:20:03", "t": "2026-11-19 14:20:00", "z": 0.577, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:21:03", "t": "2026-11-19 14:21:00", "z": 0.59, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:22:03", "t": "2026-11-19 14:22:00", "z": 0.732, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:23:03", "t": "2026-11-19 14:23:00", "z": 0.477, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:24:03", "t": "2026-11-19 14:24:00", "z": 0.402, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:25:03", "t": "2026-11-19 14:25:00", "z": -0.151, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:26:03", "t": "2026-11-19 14:26:00", "z": -0.13, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:27:03", "t": "2026-11-19 14:27:00", "z": 0.213, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:28:03", "t": "2026-11-19 14:28:00", "z": 1.397, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:29:03", "t": "2026-11-19 14:29:00", "z": 2.062, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T14:29:03", "side": -1, "price": 785.94, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +2.06"}
+{"kind": "minute", "at": "2026-11-19T14:30:03", "t": "2026-11-19 14:30:00", "z": 2.364, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T14:31:03", "t": "2026-11-19 14:31:00", "z": 2.401, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T14:32:03", "t": "2026-11-19 14:32:00", "z": 1.987, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T14:33:03", "t": "2026-11-19 14:33:00", "z": 1.56, "stale": false, "side": -1, "want": -1}
+{"kind": "fill", "at": "2026-11-19T14:34:03", "side": 1, "price": 784.68, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T14:34:03", "text": "거래 28 · +60,000원", "entry_t": "2026-11-19 14:29:00", "exit_t": "2026-11-19 14:34:00", "side": -1, "z": 2.062, "entry_px": 785.94, "exit_px": 784.68, "entry_bid": 785.94, "entry_ask": 786.02, "exit_bid": 784.6, "exit_ask": 784.68, "pnl_pt": 1.26, "fee_krw": 3000.0, "pnl_krw": 60000, "net_bp": 15.27, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T14:34:03", "t": "2026-11-19 14:34:00", "z": 1.163, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:35:03", "t": "2026-11-19 14:35:00", "z": 1.581, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T14:35:03", "side": -1, "price": 784.94, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +1.58"}
+{"kind": "minute", "at": "2026-11-19T14:36:03", "t": "2026-11-19 14:36:00", "z": 0.611, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:37:03", "t": "2026-11-19 14:37:00", "z": 0.749, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:38:03", "t": "2026-11-19 14:38:00", "z": -0.234, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:39:03", "t": "2026-11-19 14:39:00", "z": -0.343, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T14:40:03", "side": 1, "price": 786.54, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T14:40:03", "text": "거래 29 · -83,000원", "entry_t": "2026-11-19 14:35:00", "exit_t": "2026-11-19 14:40:00", "side": -1, "z": 1.581, "entry_px": 784.94, "exit_px": 786.54, "entry_bid": 784.94, "entry_ask": 785.0, "exit_bid": 786.46, "exit_ask": 786.54, "pnl_pt": -1.6, "fee_krw": 3000.0, "pnl_krw": -83000, "net_bp": -21.15, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T14:40:03", "t": "2026-11-19 14:40:00", "z": -1.1, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:41:03", "t": "2026-11-19 14:41:00", "z": -0.874, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:42:03", "t": "2026-11-19 14:42:00", "z": -1.021, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:43:03", "t": "2026-11-19 14:43:00", "z": -0.971, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:44:03", "t": "2026-11-19 14:44:00", "z": -1.284, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:45:03", "t": "2026-11-19 14:45:00", "z": -0.803, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:46:03", "t": "2026-11-19 14:46:00", "z": 0.121, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:47:03", "t": "2026-11-19 14:47:00", "z": 0.393, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:48:03", "t": "2026-11-19 14:48:00", "z": 1.012, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:49:03", "t": "2026-11-19 14:49:00", "z": 1.075, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:50:03", "t": "2026-11-19 14:50:00", "z": 0.644, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:51:03", "t": "2026-11-19 14:51:00", "z": 1.067, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:52:03", "t": "2026-11-19 14:52:00", "z": 1.489, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:53:03", "t": "2026-11-19 14:53:00", "z": 0.82, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:54:03", "t": "2026-11-19 14:54:00", "z": 0.452, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:55:03", "t": "2026-11-19 14:55:00", "z": -0.251, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:56:03", "t": "2026-11-19 14:56:00", "z": -0.519, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:57:03", "t": "2026-11-19 14:57:00", "z": -1.046, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:58:03", "t": "2026-11-19 14:58:00", "z": -1.083, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T14:59:03", "t": "2026-11-19 14:59:00", "z": -1.347, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:00:03", "t": "2026-11-19 15:00:00", "z": -0.469, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:01:03", "t": "2026-11-19 15:01:00", "z": -0.611, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:02:03", "t": "2026-11-19 15:02:00", "z": -0.443, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:03:03", "t": "2026-11-19 15:03:00", "z": 0.527, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:04:03", "t": "2026-11-19 15:04:00", "z": 2.058, "stale": false, "side": 0, "want": -1}
+{"kind": "fill", "at": "2026-11-19T15:04:03", "side": -1, "price": 792.12, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z +2.06"}
+{"kind": "minute", "at": "2026-11-19T15:05:03", "t": "2026-11-19 15:05:00", "z": 1.678, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-19T15:06:03", "t": "2026-11-19 15:06:00", "z": 1.422, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:07:03", "t": "2026-11-19 15:07:00", "z": 1.406, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:08:03", "t": "2026-11-19 15:08:00", "z": 0.699, "stale": false, "side": -1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T15:09:03", "side": 1, "price": 790.06, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T15:09:03", "text": "거래 30 · +100,000원", "entry_t": "2026-11-19 15:04:00", "exit_t": "2026-11-19 15:09:00", "side": -1, "z": 2.058, "entry_px": 792.12, "exit_px": 790.06, "entry_bid": 792.12, "entry_ask": 792.18, "exit_bid": 789.98, "exit_ask": 790.06, "pnl_pt": 2.06, "fee_krw": 3000.0, "pnl_krw": 100000, "net_bp": 25.25, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T15:09:03", "t": "2026-11-19 15:09:00", "z": -0.017, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:10:03", "t": "2026-11-19 15:10:00", "z": 0.23, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:11:03", "t": "2026-11-19 15:11:00", "z": 0.038, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:12:03", "t": "2026-11-19 15:12:00", "z": 0.694, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:13:03", "t": "2026-11-19 15:13:00", "z": 0.732, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:14:03", "t": "2026-11-19 15:14:00", "z": -0.28, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:15:03", "t": "2026-11-19 15:15:00", "z": -0.64, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:16:03", "t": "2026-11-19 15:16:00", "z": 0.142, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:17:03", "t": "2026-11-19 15:17:00", "z": -0.544, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:18:03", "t": "2026-11-19 15:18:00", "z": -0.251, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:19:03", "t": "2026-11-19 15:19:00", "z": 1.004, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:20:03", "t": "2026-11-19 15:20:00", "z": 0.707, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:21:03", "t": "2026-11-19 15:21:00", "z": -1.159, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:22:03", "t": "2026-11-19 15:22:00", "z": -1.037, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:23:03", "t": "2026-11-19 15:23:00", "z": -1.548, "stale": false, "side": 0, "want": 1}
+{"kind": "fill", "at": "2026-11-19T15:23:03", "side": 1, "price": 790.52, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 진입 z -1.55"}
+{"kind": "minute", "at": "2026-11-19T15:24:03", "t": "2026-11-19 15:24:00", "z": -1.602, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-19T15:25:03", "t": "2026-11-19 15:25:00", "z": -0.853, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:26:03", "t": "2026-11-19 15:26:00", "z": 0.272, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:27:03", "t": "2026-11-19 15:27:00", "z": 0.301, "stale": false, "side": 1, "want": 0}
+{"kind": "fill", "at": "2026-11-19T15:28:03", "side": -1, "price": 789.58, "source": "paper", "fee": 1500.0, "text": "종이 체결 · 5분 보유 끝"}
+{"kind": "trade", "at": "2026-11-19T15:28:03", "text": "거래 31 · -50,000원", "entry_t": "2026-11-19 15:23:00", "exit_t": "2026-11-19 15:28:00", "side": 1, "z": -1.548, "entry_px": 790.52, "exit_px": 789.58, "entry_bid": 790.46, "entry_ask": 790.52, "exit_bid": 789.58, "exit_ask": 789.66, "pnl_pt": -0.94, "fee_krw": 3000.0, "pnl_krw": -50000, "net_bp": -12.65, "why": "5분 보유 끝"}
+{"kind": "minute", "at": "2026-11-19T15:28:03", "t": "2026-11-19 15:28:00", "z": 0.234, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:29:03", "t": "2026-11-19 15:29:00", "z": 0.063, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:30:03", "t": "2026-11-19 15:30:00", "z": 0.079, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:31:03", "t": "2026-11-19 15:31:00", "z": 0.431, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:32:03", "t": "2026-11-19 15:32:00", "z": -0.372, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:33:03", "t": "2026-11-19 15:33:00", "z": 0.469, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-19T15:34:03", "t": "2026-11-19 15:34:00", "z": -0.351, "stale": false, "side": 0, "want": 0}
+{"kind": "event", "at": "2026-11-19T15:35:03", "text": "끝 · 거래 31건 · -1,497,000원", "side": 0}

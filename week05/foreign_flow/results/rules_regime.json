@@ -1,0 +1,37 @@
+{
+  "signal": "combo_5",
+  "parts": [
+    {
+      "signal": "frgn_fut_5",
+      "w": 1.0,
+      "sd": 132.2602858442878
+    },
+    {
+      "signal": "ind_fut_5",
+      "w": -1.0,
+      "sd": 62.89472935943253
+    }
+  ],
+  "h": 5,
+  "sign": 1.0,
+  "sd": 1.7542134248027954,
+  "theta": 0.5,
+  "filter": {
+    "signal": "frgn_fut_5",
+    "lag": 5,
+    "window": 60,
+    "min_periods": 50,
+    "rho_min": 0.0
+  },
+  "train_days": [
+    "20261117",
+    "20261118",
+    "20261119"
+  ],
+  "for_day": "20261120",
+  "fee_krw": 1500,
+  "chosen_at": "2026-11-19T19:39:55",
+  "note": "학습일 17~19 안에서 W·ρmin·θ 30여 조합 중 1등 (80건 +3.70bp, 무작위 원형 이동 대비 p≈0.10). 시험: for_day 하루",
+  "train_trades": 80,
+  "train_net_bp_mean": 3.704574840076018
+}

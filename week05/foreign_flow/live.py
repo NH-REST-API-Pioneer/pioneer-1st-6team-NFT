@@ -1,6 +1,7 @@
 """미니코스피200 모의매매 실행기 (수~금).
 
-  주문 규칙 = results/rules_combo.json (조합: 외국인 z − 개인 z, 매일 밤 analyze.py --combo-train 으로 갱신)
+  주문 규칙 = results/rules_regime.json (11/20~: 조합 신호 + 외국인 흐름 지속성 국면 필터, 11/19 밤 고정)
+             (11/18~19 는 results/rules_combo.json — 조합 규칙은 지금도 밤마다 갱신하고 판정은 analyze.py 로 데이터 위에서)
   기록만    = results/rules.json       (화요일 고정 개인 반대 규칙, 같은 시각에 호가로 종이 체결만 기록)
 
   .venv/bin/python live.py                     # 모의계좌 주문 (기본)
@@ -39,7 +40,7 @@ from record import CONTRACTS, HERE, RAW_DIR, now_kst, single_instance
 
 SYM = CONTRACTS["MINI"]
 LIVE_DIR = HERE / "data" / "live"     # 서버에서 쓰는 곳 (git 밖). 밤에 맥으로 복사해서 results/live/ 에 올림
-ORDER_RULE = analyze.COMBO_CURRENT
+ORDER_RULE = analyze.REGIME_FILE
 SHADOW_RULE = analyze.RESULTS / "rules.json"
 LOCK = HERE / "data" / "live.lock"
 LAG_S = 3                     # 분 경계 뒤 이만큼 기다렸다 판단 (수집기의 :00 조회가 파일에 들어올 시간)
@@ -431,7 +432,7 @@ def main(argv=None) -> int:
     ap.add_argument("--replay", metavar="YYYYMMDD", help="저장된 1분 표로 판단만 다시 돌림 (두 규칙 다)")
     a = ap.parse_args(argv)
     if a.replay:
-        for name, path in (("주문(조합)", ORDER_RULE), ("기록(개인)", SHADOW_RULE)):
+        for name, path in (("주문(국면 필터)", ORDER_RULE), ("기록(개인)", SHADOW_RULE)):
             r = load_rule(path)
             tr = replay(a.replay, r, LIVE_DIR / f"replay_{a.replay}.jsonl")
             sim = simulate_rule(a.replay, r)

@@ -163,10 +163,69 @@ COMBO_CURRENT = RESULTS / "rules_combo.json"            # 실행기가 주문에
 
 
 def add_signal(f: pd.DataFrame, rule: dict) -> pd.DataFrame:
-    """rule 에 parts 가 있으면 조합 신호 열(rule['signal'])을 만듦. 없으면 그대로."""
+    """rule 에 parts 가 있으면 조합 신호 열(rule['signal'])을 만듦. filter 가 있으면 국면이 아닌 분의 신호를 NaN 으로."""
     if "parts" in rule:
         f[rule["signal"]] = sum(q["w"] * f[q["signal"]] / q["sd"] for q in rule["parts"])
+    if "filter" in rule:
+        ok = regime_ok(f, rule["filter"])
+        f[rule["signal"]] = f[rule["signal"]].where(ok)
     return f
+
+
+# ---------------------------------------------------------------- 세 번째 규칙: 국면 필터 (11/19 밤 고정, 금요일 시험)
+REGIME_FILE = RESULTS / "rules_regime.json"
+REGIME_FILTER = {"signal": "frgn_fut_5", "lag": 5, "window": 60, "min_periods": 50, "rho_min": 0.0}
+REGIME_THETA = 0.5
+
+
+def flow_rho(f: pd.DataFrame, flt: dict) -> pd.Series:
+    """직전 window 분 안에서 (5분 흐름, lag 분 전 5분 흐름) 상관. t 행은 t 까지 값만 씀."""
+    x = f[flt["signal"]]
+    return x.rolling(flt["window"], min_periods=flt["min_periods"]).corr(x.shift(flt["lag"]))
+
+
+def regime_ok(f: pd.DataFrame, flt: dict) -> pd.Series:
+    return (flow_rho(f, flt) > flt["rho_min"]).fillna(False)
+
+
+def regime_freeze(days: list[str], for_day: str) -> None:
+    """조합 sd 는 학습일로, 필터·θ 는 위 상수 (diag/regime_search.py 에서 학습일 보고 고른 것). 한 번만 씀."""
+    if REGIME_FILE.exists():
+        raise SystemExit(f"{REGIME_FILE.name} 이 이미 있음 (고정된 규칙)")
+    F = {d: features(p) for d, p in load(days).items()}
+    rule, _, _ = fit_combo(F)
+    rule = {k: rule[k] for k in ("signal", "parts", "h", "sign", "sd")}
+    rule.update(theta=REGIME_THETA, filter=REGIME_FILTER, train_days=sorted(days), for_day=for_day, fee_krw=FEE_KRW,
+                chosen_at=pd.Timestamp.now().isoformat(timespec="seconds"),
+                note="학습일 17~19 안에서 W·ρmin·θ 30여 조합 중 1등 (80건 +3.70bp, 무작위 원형 이동 대비 p≈0.10). 시험: for_day 하루")
+    tr = [x for d in days for x in simulate(add_signal(F[d], rule), rule["signal"], rule["h"], rule["theta"], rule["sign"], rule["sd"])]
+    rule.update(train_trades=len(tr), train_net_bp_mean=float(np.mean([x["net_bp"] for x in tr])))
+    REGIME_FILE.write_text(json.dumps(rule, indent=2, ensure_ascii=False))
+    print(json.dumps(rule, indent=2, ensure_ascii=False))
+
+
+def regime_test(days: list[str]) -> None:
+    """국면 규칙을 시험일에 — 같은 sd·θ 로 필터 없는 것과 나란히."""
+    rule = json.loads(REGIME_FILE.read_text())
+    if max(rule["train_days"]) >= min(days):
+        raise SystemExit("시험일이 학습일보다 뒤여야 함")
+    bare = {k: v for k, v in rule.items() if k != "filter"}
+    lines = [f"# 국면 필터 규칙 표본 밖 판정 — {','.join(days)}", "",
+             "| 규칙 | 거래 | 비용 전 bp | 비용 후 bp | t | 승률 |", "| --- | --- | --- | --- | --- | --- |"]
+    out = {}
+    for name, r in (("필터 (주문)", rule), ("필터 없음 (같은 sd·θ)", bare)):
+        tr = [dict(x, day=d) for d in days
+              for x in simulate(add_signal(features(load([d])[d]), r), r["signal"], r["h"], r["theta"], r["sign"], r["sd"])]
+        net = np.array([x["net_bp"] for x in tr])
+        t = net.mean() / net.std(ddof=1) * np.sqrt(len(net)) if len(net) > 1 and net.std() > 0 else np.nan
+        g = np.mean([x["gross_bp"] for x in tr]) if tr else np.nan
+        lines.append(f"| {name} | {len(net)} | {g:+.2f} | {net.mean() if len(net) else np.nan:+.2f} | {t:+.2f} | "
+                     f"{(net > 0).mean() * 100 if len(net) else np.nan:.0f}% |")
+        out[name] = tr
+    pd.DataFrame(out["필터 (주문)"]).to_csv(RESULTS / "test_trades_regime.csv", index=False)
+    lines += ["", "판정 기준 (11/19 밤 미리 정함): 필터 규칙 비용 후 평균 > 0 AND 필터 없는 것보다 큼. 하루라 강한 근거는 못 됨."]
+    (RESULTS / f"analysis_regime_test_{'_'.join(days)}.md").write_text("\n".join(lines) + "\n")
+    print("\n".join(lines))
 
 
 def fit_combo(F: dict[str, pd.DataFrame]) -> tuple[dict, list, dict]:
@@ -251,7 +310,15 @@ def main() -> None:
     ap.add_argument("--for", dest="for_day", default="", help="조합 규칙을 쓸 매매일")
     ap.add_argument("--combo-test", default="", help="조합 규칙 시험일 (쉼표)")
     ap.add_argument("--force", action="store_true", help="이미 있는 규칙 파일을 덮어씀 (고정 뒤엔 쓰지 말 것)")
+    ap.add_argument("--regime-freeze", default="", help="국면 필터 규칙 고정: 학습일 (쉼표), --for 매매일")
+    ap.add_argument("--regime-test", default="", help="국면 필터 규칙 시험일 (쉼표)")
     a = ap.parse_args()
+    if a.regime_freeze:
+        if not a.for_day:
+            raise SystemExit("--regime-freeze 에는 --for 매매일이 필요")
+        return regime_freeze(a.regime_freeze.split(","), a.for_day)
+    if a.regime_test:
+        return regime_test(a.regime_test.split(","))
     if a.combo_train:
         if not a.for_day:
             raise SystemExit("--combo-train 에는 --for 매매일이 필요")

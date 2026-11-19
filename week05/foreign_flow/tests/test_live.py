@@ -217,3 +217,15 @@ def test_live_loads_both_rules():
     order, shadow = live.load_rule(live.ORDER_RULE), live.load_rule(live.SHADOW_RULE)
     assert order["signal"] == "combo_5" and "parts" in order
     assert shadow["signal"] == "ind_fut_5"
+
+
+def test_regime_filter_uses_only_past():
+    """국면 필터를 t 까지 자른 표로 계산해도 전체 표로 계산한 t 값과 같아야 함 (실행기는 t 까지만 봄)."""
+    rule = json.loads(analyze.REGIME_FILE.read_text())
+    p = pd.read_csv(convert.PANEL_DIR / "20261118.csv", index_col="t", parse_dates=True)
+    full = analyze.add_signal(analyze.features(p.copy()), rule)[rule["signal"]]
+    for hm in ("10:30", "12:00", "14:45"):
+        t = pd.Timestamp(f"2026-11-18 {hm}")
+        cut = analyze.add_signal(analyze.features(p.loc[:t].copy()), rule)[rule["signal"]]
+        a, b = full.get(t), cut.get(t)
+        assert (np.isnan(a) and np.isnan(b)) or a == pytest.approx(b)
