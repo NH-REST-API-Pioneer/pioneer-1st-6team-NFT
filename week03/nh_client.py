@@ -182,8 +182,8 @@ class NHClient:
             if res.status_code == 429 or "EGW020" in text or "EGW036" in text:
                 time.sleep(1.0 * (attempt + 1))
                 continue
-            if res.status_code == 401 or "EGW018" in text or "EGW052" in text:
-                self._token, self._token_until = None, 0.0  # 만료 → 다시 발급
+            if res.status_code == 401 or "EGW018" in text or "EGW052" in text or "EG049" in text:
+                self._token, self._token_until = None, 0.0  # 만료·폐기(EG049 는 403) → 다시 발급
                 self._token_file().unlink(missing_ok=True)
                 continue
             return self._json(res, path)

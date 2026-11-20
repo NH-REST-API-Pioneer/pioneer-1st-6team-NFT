@@ -187,8 +187,8 @@ class NHClient:
                 time.sleep(1.0 * (attempt + 1))
                 continue
             # 4주차: 시세 받다가 「유효하지 않은 토큰입니다」(코드 없이 400) 가 와서 같이 처리 (2026-11-08)
-            if res.status_code == 401 or "EGW018" in text or "EGW052" in text or "유효하지 않은 토큰" in text:
-                self._token, self._token_until = None, 0.0  # 만료 → 다시 발급
+            if res.status_code == 401 or "EGW018" in text or "EGW052" in text or "유효하지 않은 토큰" in text or "EG049" in text:
+                self._token, self._token_until = None, 0.0  # 만료·폐기(EG049 는 403) → 다시 발급
                 self._token_file().unlink(missing_ok=True)
                 continue
             return self._json(res, path)
