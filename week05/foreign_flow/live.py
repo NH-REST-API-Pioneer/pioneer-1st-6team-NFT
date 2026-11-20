@@ -122,7 +122,7 @@ class PaperBroker:
     def __init__(self, client, journal: Journal):
         self.c, self.j = client, journal
         self.pos = 0
-        self.last_fill_fee = float(analyze.FEE_KRW)
+        self.last_fill_fee = float(analyze.LIVE_FEE_KRW)   # 종이 체결 수수료 = 실측 편도
 
     def quote(self) -> dict:
         try:
@@ -236,9 +236,12 @@ class MockAccountBroker(PaperBroker):
 
 # ---------------------------------------------------------------- 실행기
 class Trader:
-    def __init__(self, broker, rule: dict, journal: Journal, trades_csv: Path | None = None):
+    def __init__(self, broker, rule: dict, journal: Journal, trades_csv: Path | None = None,
+                 stop_pt: float = analyze.STOP_PT, daily_loss_krw: float = analyze.DAILY_LOSS_KRW):
         self.b, self.rule, self.j, self.trades_csv = broker, rule, journal, trades_csv
         self.h = int(rule["h"])
+        self.stop_pt, self.daily_loss_krw = stop_pt, daily_loss_krw
+        self.loss_halted = False          # 하루 손실 한도에 걸림 (그날은 새 진입 없음)
         self.side = 0                     # 지금 들고 있는 방향 (실행기 기준)
         self.exit_at: pd.Timestamp | None = None
         self.entry: dict | None = None
@@ -259,7 +262,8 @@ class Trader:
             self._check_pos("진입 실패 뒤")
             return
         self.side, self.exit_at = side, t + pd.Timedelta(minutes=self.h)
-        self.entry = {"t": t, "side": side, "z": z, "px": px, "quote": q, "fee": self.b.last_fill_fee}
+        self.entry = {"t": t, "side": side, "z": z, "px": px, "quote": q, "fee": self.b.last_fill_fee,
+                      "mid": mid_of(q, px)}
         self._check_pos("진입 뒤")
 
     def exit(self, t: pd.Timestamp, why: str) -> bool:
@@ -291,15 +295,30 @@ class Trader:
         self._check_pos("청산 뒤")
         return self.side == 0
 
+    def day_pnl(self) -> float:
+        return float(sum(x["pnl_krw"] for x in self.trades))
+
     def step(self, t: pd.Timestamp, z: float, stale: bool) -> None:
-        """분 경계 t 에서: 청산할 때면 청산 → 진입 판단 (analyze.simulate 와 같은 순서)."""
+        """분 경계 t 에서: 시간 청산 → 손절 → 하루 한도 → 진입 판단 (analyze.simulate_risk 와 같은 순서)."""
         if self.side and self.exit_at is not None and t >= self.exit_at:
             self.exit(t, f"{self.h}분 보유 끝")
+        if self.side and self.stop_pt and self.entry and np.isfinite(self.entry.get("mid", np.nan)):
+            m = mid_of(self.b.quote())
+            if np.isfinite(m) and self.side * (m - self.entry["mid"]) <= -self.stop_pt:
+                self.exit(t, f"손절 {self.stop_pt:g}pt (중간가 {m:.2f}, 진입 {self.entry['mid']:.2f})")
+        if not self.loss_halted and self.daily_loss_krw and self.day_pnl() <= -self.daily_loss_krw:
+            self.loss_halted = True
+            self.j.write("event", text=f"하루 손실 한도 {self.daily_loss_krw:,.0f}원 — 오늘은 새 진입 없음", pnl=self.day_pnl())
         want = decide(z, stale, self.rule)
         self.j.write("minute", t=t, z=None if not np.isfinite(z) else round(z, 3), stale=stale,
                      side=self.side, want=want)
-        if self.side == 0 and not self.halted and want and entry_window(t, self.h):
+        if self.side == 0 and not self.halted and not self.loss_halted and want and entry_window(t, self.h):
             self.enter(t, want, z)
+
+
+def mid_of(q: dict, fallback: float = np.nan) -> float:
+    bid, ask = q.get("bid"), q.get("ask")
+    return (bid + ask) / 2 if bid and ask else float(fallback)
 
 
 def read_investor(day: str) -> pd.DataFrame:
@@ -394,20 +413,22 @@ class ReplayBroker(PaperBroker):
     """저장된 1분 표의 중간가로 체결 (판단 순서·시각이 analyze.simulate 와 같은지 보는 용도)."""
     mode = "replay"
 
-    def __init__(self, mids: pd.Series, journal: Journal):
+    def __init__(self, mids: pd.Series, journal: Journal, spreads: pd.Series | None = None):
         super().__init__(None, journal)
-        self.mids, self.now = mids, None
+        self.mids, self.spreads, self.now = mids, spreads, None
 
     def quote(self) -> dict:
         m = float(self.mids.get(self.now, np.nan))
-        return {"bid": m, "ask": m, "last": m}
+        sp = float(self.spreads.get(self.now, np.nan)) if self.spreads is not None else 0.0
+        sp = sp if np.isfinite(sp) else analyze.TICK_PT
+        return {"bid": m - sp / 2, "ask": m + sp / 2, "last": m}
 
 
 def replay(day: str, rule: dict, out: Path) -> list[dict]:
     p = pd.read_csv(convert.PANEL_DIR / f"{day}.csv", index_col="t", parse_dates=True)
     f = analyze.add_signal(analyze.features(p), rule)
     j = Journal(out)
-    b = ReplayBroker(f["mid"], j)
+    b = ReplayBroker(f["mid"], j, f["spread"])
     tr = Trader(b, rule, j)
     for t in f.index:
         if t.strftime("%H:%M") >= analyze.LAST_EXIT:
@@ -423,7 +444,7 @@ def replay(day: str, rule: dict, out: Path) -> list[dict]:
 def simulate_rule(day: str, rule: dict) -> list[dict]:
     p = pd.read_csv(convert.PANEL_DIR / f"{day}.csv", index_col="t", parse_dates=True)
     f = analyze.add_signal(analyze.features(p), rule)
-    return analyze.simulate(f, rule["signal"], int(rule["h"]), rule["theta"], rule["sign"], rule["sd"])
+    return analyze.simulate_risk(f, rule["signal"], int(rule["h"]), rule["theta"], rule["sign"], rule["sd"])
 
 
 def main(argv=None) -> int:
@@ -436,8 +457,9 @@ def main(argv=None) -> int:
             r = load_rule(path)
             tr = replay(a.replay, r, LIVE_DIR / f"replay_{a.replay}.jsonl")
             sim = simulate_rule(a.replay, r)
-            same = [x["entry_t"] for x in tr] == [x["t"] for x in sim]
-            print(f"{name}: replay 진입 {len(tr)}건, analyze.simulate {len(sim)}건, 시각 일치 {same}")
+            same = [(x["entry_t"], x["exit_t"]) for x in tr] == [(x["t"], x["exit_t"]) for x in sim]
+            print(f"{name}: replay {len(tr)}건 {sum(x['pnl_krw'] for x in tr):+,.0f}원, "
+                  f"analyze.simulate_risk {len(sim)}건, 진입·청산 시각 일치 {same}")
         (LIVE_DIR / f"replay_{a.replay}.jsonl").unlink(missing_ok=True)
         return 0
     return live(a.paper)

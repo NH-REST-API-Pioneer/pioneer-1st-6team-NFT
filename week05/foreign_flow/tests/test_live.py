@@ -102,7 +102,7 @@ def test_trade_pnl_uses_fill_prices_and_fees(trader):
     tr.step(T("10:05"), 0.0, False)                     # 매도 100.00
     x = tr.trades[0]
     assert x["pnl_pt"] == pytest.approx(-0.02)
-    assert x["pnl_krw"] == round(-0.02 * analyze.PT_KRW - 2 * analyze.FEE_KRW)
+    assert x["pnl_krw"] == round(-0.02 * analyze.PT_KRW - 2 * analyze.LIVE_FEE_KRW)   # 종이 체결은 실측 수수료
 
 
 def _rest_line(recv, prd, tm, ind, frgn=0):
@@ -229,3 +229,52 @@ def test_regime_filter_uses_only_past():
         cut = analyze.add_signal(analyze.features(p.loc[:t].copy()), rule)[rule["signal"]]
         a, b = full.get(t), cut.get(t)
         assert (np.isnan(a) and np.isnan(b)) or a == pytest.approx(b)
+
+
+class MovingBroker(FakeBroker):
+    """호가를 테스트에서 바꿀 수 있는 가짜."""
+
+    def __init__(self, journal):
+        super().__init__(journal)
+        self.m = 100.0
+
+    def quote(self):
+        return {"bid": self.m - 0.01, "ask": self.m + 0.01, "last": self.m}
+
+
+def test_stop_loss_exits_early_and_can_reenter(tmp_path):
+    j = live.Journal(tmp_path / "j.jsonl")
+    b = MovingBroker(j)
+    tr = live.Trader(b, RULE, j, stop_pt=1.0, daily_loss_krw=0)
+    tr.step(T("10:00"), -2.0, False)                 # 개인 매도 많음 → 매수
+    assert tr.side == 1
+    b.m = 99.5
+    tr.step(T("10:01"), np.nan, False)               # −0.5pt: 그대로
+    assert tr.side == 1
+    b.m = 98.99
+    tr.step(T("10:02"), -2.0, False)                 # −1.01pt: 손절, 같은 분에 다시 진입
+    assert tr.trades[-1]["why"].startswith("손절") and tr.side == 1
+
+
+def test_daily_loss_limit_blocks_new_entries(tmp_path):
+    j = live.Journal(tmp_path / "j.jsonl")
+    b = MovingBroker(j)
+    tr = live.Trader(b, RULE, j, stop_pt=0, daily_loss_krw=100_000)
+    tr.step(T("10:00"), -2.0, False)
+    b.m = 97.0                                       # −3pt = −15만 원
+    tr.step(T("10:05"), -2.0, False)                 # 시간 청산 → 한도 → 진입 안 함
+    assert tr.loss_halted and tr.side == 0 and len(tr.trades) == 1
+    tr.step(T("10:06"), -2.0, False)
+    assert tr.side == 0
+
+
+def test_replay_matches_simulate_risk():
+    for day in ("20261118", "20261120"):
+        for path in (live.ORDER_RULE, live.SHADOW_RULE):
+            r = live.load_rule(path)
+            out = Path("/tmp") / f"ff_replay_test_{day}.jsonl"
+            tr = live.replay(day, r, out)
+            out.unlink(missing_ok=True)
+            sim = live.simulate_rule(day, r)
+            assert [(x["entry_t"], x["exit_t"]) for x in tr] == [(x["t"], x["exit_t"]) for x in sim]
+            assert sum(x["pnl_krw"] for x in tr) == pytest.approx(sum(x["krw"] for x in sim), abs=len(sim) * 2)

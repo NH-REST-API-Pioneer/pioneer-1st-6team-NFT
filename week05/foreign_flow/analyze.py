@@ -154,6 +154,42 @@ def simulate(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, sd: f
     return trades
 
 
+# ---------------------------------------------------------------- 실행기 위험 관리 (11/20 장 후 정함, 판정에는 안 씀)
+STOP_PT = 1.0              # 보유 중 분 경계 중간가가 진입 중간가보다 이만큼 불리하면 청산
+DAILY_LOSS_KRW = 200_000   # 그날 거래 손익(수수료 포함) 합이 이만큼 손실이면 새 진입 멈춤
+LIVE_FEE_KRW = 560         # 실측 편도 수수료 (18~20일 예수금 fee ÷ 체결 수)
+
+
+def simulate_risk(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, sd: float,
+                  stop_pt: float = STOP_PT, daily_loss_krw: float = DAILY_LOSS_KRW, fee_krw: float = LIVE_FEE_KRW) -> list[dict]:
+    """simulate 에 손절·하루 한도를 더한 것 (실행기와 같은 순서: 청산 → 손절 → 한도 → 진입). 원 단위 손익."""
+    m = fresh(f, h)
+    z, mid, idx = f[sig] / sd, f["mid"], f.index
+    pos = {t: i for i, t in enumerate(idx)}
+    trades, busy_until, cum = [], None, 0.0
+    for t in idx[m]:
+        if busy_until is not None and t < busy_until:
+            continue
+        if daily_loss_krw and cum <= -daily_loss_krw:
+            break
+        zt = z.get(t)
+        if not np.isfinite(zt) or abs(zt) <= theta or not np.isfinite(f.at[t, f"r_{h}"]):
+            continue
+        side, i, m0 = int(np.sign(zt) * sign), pos[t], mid.iloc[pos[t]]
+        spr = lambda tt: f.at[tt, "spread"] if np.isfinite(f.at[tt, "spread"]) else TICK_PT  # noqa: E731
+        k, why = h, "time"
+        for j in range(1, h):
+            mj = mid.iloc[i + j]
+            if stop_pt and np.isfinite(mj) and side * (mj - m0) <= -stop_pt:
+                k, why = j, "stop"
+                break
+        krw = side * (mid.iloc[i + k] - m0) * PT_KRW - (spr(t) + spr(idx[i + k])) / 2 * PT_KRW - 2 * fee_krw  # 시장가: 진입·청산 반 스프레드씩
+        cum += krw
+        trades.append({"t": t, "side": side, "z": float(zt), "exit_t": idx[i + k], "why": why, "krw": float(krw)})
+        busy_until = idx[i + k]
+    return trades
+
+
 
 # ---------------------------------------------------------------- 두 번째 규칙: 조합 (매일 갱신)
 COMBO_PARTS = (("frgn_fut_5", 1.0), ("ind_fut_5", -1.0))   # 외국인 z − 개인 z. 고정
