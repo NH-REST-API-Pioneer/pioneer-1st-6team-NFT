@@ -8,8 +8,8 @@
 - 웹 ↔ 최신 엑셀 대조: 필드 표는 전부 같음. 다른 곳은 실시간 요청 제한 표기와 투자자동향 필드 1줄뿐 (`spec/compare_1120.tsv`)
 - 10/23 엑셀 이후 바뀐 곳 7개 확인 (차트 `req_qty` 상한 4곳, 시장가 FAS, 평균체결가 삭제, 새 API 국내_미결제약정)
 - 조회 호출 검증 (`check_sector0.py` → `logs/sector0_20261120_231413.json`)
-  - 배열 응답: 국내 7 + 해외 9개 모두 `Occurs1` 객체 배열, 0건이면 키 없음
-  - Content-Type: 명세가 빈칸인 API 도 없으면 HTTP 415 `ERC000`
+  - 배열 응답: 국내 7 + 해외 8개(15개) 모두 `Occurs1` 객체 배열, 0건인 계좌 API 8개는 `Occurs1` 키 없음
+  - Content-Type: 공통 개요(`response-overview`)에는 `application/json`이 명시돼 있으나, 개별 명세 8개만 헤더 샘플·요청 샘플이 빈칸 (실제 호출 시 없으면 HTTP 415 `ERC000`)
   - 투자자동향: 응답에 `Occurs1` 없음
   - 해외 현재가 `Iccurs1`: 배열·단일 객체 둘 다 받아들여짐
 
