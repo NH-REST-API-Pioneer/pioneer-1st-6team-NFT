@@ -1,14 +1,14 @@
 # 1 · 인증
 
-11/20 조회·발급 검증 끝. 토큰 폐기와 웹소켓 키 재사용(실제 접속)은 확인받고 진행.
+11/20 점검 끝 (발급·폐기·웹소켓 키 재사용 모두).
 
 ## 범위
 
 | API | 문서명 | 경로 | 확인 |
 | --- | --- | --- | --- |
 | [접근토큰 발급](https://apidev.futures.co.kr/#/api?g=10&a=8&v=1) | `token` | POST /auth-service/v1/token | 끝 |
-| [접근토큰 폐기](https://apidev.futures.co.kr/#/api?g=10&a=79&v=1) | `revoke` | POST /auth-service/v1/revoke | 보류 (확인받고) |
-| [웹소켓 키 발급](https://apidev.futures.co.kr/#/api?g=10&a=80&v=1) | `web-socket-key` | GET /permission/v1/web-socket-key | 발급 끝, 재사용 보류 |
+| [접근토큰 폐기](https://apidev.futures.co.kr/#/api?g=10&a=79&v=1) | `revoke` | POST /auth-service/v1/revoke | 끝 |
+| [웹소켓 키 발급](https://apidev.futures.co.kr/#/api?g=10&a=80&v=1) | `web-socket-key` | GET /permission/v1/web-socket-key | 끝 |
 
 ## 확인한 것 (11/20, `check_auth.py` → `logs/auth_20261120_233527.json`)
 
@@ -23,13 +23,18 @@
 | 웹소켓 키 | 부를 때마다 새 UUID 36자 | 명세 길이 36 같음 |
 | 웹소켓 키 잘못된 인증 | 헤더 없음 `EGW023`, 깨진 토큰 `EG047`, Bearer 없이 `EGW000`(문서에 없음) | **→ R09** |
 | 웹소켓 키를 POST 로 | 405, 다른 형식·내부 경로 | **→ R08** |
-
-## 확인받고 할 것
-
-- **토큰 폐기**: 어떤 토큰이 폐기되는지, 폐기한 토큰으로 호출하면 어떤 오류인지, 폐기 후 새로 받으면 다른 토큰인지. 같은 APP Key 를 쓰는 다른 프로그램(서버 실행기 등)의 토큰도 같이 끊길 수 있어 그 시간에 돌고 있는 게 없을 때.
-- **웹소켓 키 재사용**: 한 번 쓴 키로 다시 접속되는지 (명세 「1회 사용」). 접속 2번.
+| 웹소켓 키 재사용 (`check_ws_key_reuse.py`) | 같은 키로 두 번째 접속 → 403 `EST01`, 새 키는 정상 | 명세 「1회 사용」과 같음 |
+| 토큰 폐기 (`check_revoke.py`) | Authorization 토큰 + appkey·appsecret 둘 다 필요. 성공 `{"status":200,"message":"토큰 폐기 성공"}` | 어떤 토큰인지 명세에 없음 → 설명서에 적음 |
+| 폐기한 토큰으로 호출 | 403 `EG049` 「현재 토큰은 폐기 되었습니다」 | **문서에 없는 코드 → R10** |
+| 폐기 뒤 재발급 | 새 토큰 | |
+| 폐기 헤더 없음 / secret 틀림 | `EGW023` / 400 `EAU011` (내부 경로 `revokeP`) | **EAU011 문서에 없음 → R10, 경로 → R09** |
 
 ## 제보
 
 - [R08](R08-토큰발급-GET-200.md) 토큰 발급을 GET 으로 부르면 200 + 빈 본문 (PUT 404, 웹소켓 키 POST 405 도 다른 형식)
-- [R09](R09-인증-오류응답-형식.md) 토큰 발급 오류 응답 형식 혼재, 문서에 없는 EGW000, 원인과 다른 EAU030 메시지
+- [R09](R09-인증-오류응답-형식.md) 토큰 발급 오류 응답 형식 혼재(errorStatus 문자열/숫자, 내부 경로), JSON 으로 보내면 원인과 다른 「appkey 누락」
+- [R10](R10-문서에없는-인증오류코드.md) 문서에 없는 인증 오류 코드 EG049(폐기된 토큰, 403)·EAU011·EGW000 — 「오류 코드 정의서」 파일 확인 후 올림
+
+## 우리 코드에 고칠 것
+
+- `week02/nh_client.py`(와 week03·04 클라이언트)는 401·EGW018·EGW052 에서만 토큰을 다시 받음 → 폐기된 토큰의 403 `EG049` 도 재발급 조건에 넣기

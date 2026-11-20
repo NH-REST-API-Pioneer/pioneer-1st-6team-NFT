@@ -1,0 +1,201 @@
+{
+ "server": "https://apidemo.futures.co.kr",
+ "log": [
+  {
+   "case": "R0 토큰 발급",
+   "status": 200,
+   "body": {
+    "access_token": "T0",
+    "token_type": "Bearer",
+    "scopes": "S",
+    "expires_in": "86400",
+    "expires_at": "2026-11-21 08:50:03"
+   },
+   "token": "T0"
+  },
+  {
+   "case": "R1 폐기 전 T0 으로 시세",
+   "status": 200,
+   "body": {
+    "spt_chg": "",
+    "lo": "",
+    "up_act_pric": "",
+    "delta": "",
+    "mltplr": "",
+    "theta": "",
+    "rem_dy": "",
+    "lo_act_pric": "",
+    "trd_qty": "",
+    "dev": "",
+    "spt_chg_sign": "",
+    "up": "",
+    "chg": "",
+    "spt_sym": "",
+    "trd_amt": "",
+    "pd_trd_qty": "",
+    "high_pric": "",
+    "bid_pric": "",
+    "sym_nm": "",
+    "fact_bas": "",
+    "sym_exch": "",
+    "opint_chg": "",
+    "theo_pric": "",
+    "pl_rt": "",
+    "pd_opint": "",
+    "opint": "",
+    "theo_bas": "",
+    "rt": "",
+    "low_pric_dt": "",
+    "pd_sett_pric": "",
+    "dev_rt": "",
+    "ref_pric": "",
+    "life_high_pric": "",
+    "spt_rt": "",
+    "open_pric": "",
+    "theo_pric_chg": "",
+    "last_pric": "",
+    "lst_trd_dt": "",
+    "ask_pric": "",
+    "spt_pric": "",
+    "pd_theo_pric": "",
+    "chg_sign": "",
+    "high_pric_dt": "",
+    "opint_chg_sign": "",
+    "spt_cd": "",
+    "low_pric": "",
+    "rho": "",
+    "ivol": "",
+    "life_low_pric": "",
+    "gamma": "",
+    "vega": ""
+   }
+  },
+  {
+   "case": "R2 폐기 (Authorization T0 + 본문)",
+   "status": 200,
+   "body": {
+    "timestamp": "2026-11-20 23:39:10",
+    "status": 200,
+    "message": "토큰 폐기 성공"
+   }
+  },
+  {
+   "case": "R3 폐기 뒤 T0 으로 시세",
+   "status": 403,
+   "body": {
+    "errorMessage": "현재 토큰은 폐기 되었습니다. 토큰을 다시 발급해주세요.",
+    "errorPath": "/trade/v1/domestic/price",
+    "errorTime": "2026-11-20 23:39:10",
+    "errorStatus": 403,
+    "errorCode": "EG049"
+   }
+  },
+  {
+   "case": "R4 재발급",
+   "status": 200,
+   "body": {
+    "access_token": "T1",
+    "token_type": "Bearer",
+    "scopes": "S",
+    "expires_in": "86400",
+    "expires_at": "2026-11-21 23:39:11"
+   },
+   "token": "T1",
+   "same_as_T0": false
+  },
+  {
+   "case": "R4b T1 으로 시세",
+   "status": 200,
+   "body": {
+    "spt_chg": "",
+    "lo": "",
+    "up_act_pric": "",
+    "delta": "",
+    "mltplr": "",
+    "theta": "",
+    "rem_dy": "",
+    "lo_act_pric": "",
+    "trd_qty": "",
+    "dev": "",
+    "spt_chg_sign": "",
+    "up": "",
+    "chg": "",
+    "spt_sym": "",
+    "trd_amt": "",
+    "pd_trd_qty": "",
+    "high_pric": "",
+    "bid_pric": "",
+    "sym_nm": "",
+    "fact_bas": "",
+    "sym_exch": "",
+    "opint_chg": "",
+    "theo_pric": "",
+    "pl_rt": "",
+    "pd_opint": "",
+    "opint": "",
+    "theo_bas": "",
+    "rt": "",
+    "low_pric_dt": "",
+    "pd_sett_pric": "",
+    "dev_rt": "",
+    "ref_pric": "",
+    "life_high_pric": "",
+    "spt_rt": "",
+    "open_pric": "",
+    "theo_pric_chg": "",
+    "last_pric": "",
+    "lst_trd_dt": "",
+    "ask_pric": "",
+    "spt_pric": "",
+    "pd_theo_pric": "",
+    "chg_sign": "",
+    "high_pric_dt": "",
+    "opint_chg_sign": "",
+    "spt_cd": "",
+    "low_pric": "",
+    "rho": "",
+    "ivol": "",
+    "life_low_pric": "",
+    "gamma": "",
+    "vega": ""
+   }
+  },
+  {
+   "case": "R5 폐기 (Authorization 없이 본문만)",
+   "status": 401,
+   "body": {
+    "errorMessage": "접근토큰이 누락되었습니다: Authorization.",
+    "errorPath": "/auth-service/v1/revoke",
+    "errorTime": "2026-11-20 23:39:12",
+    "errorStatus": 401,
+    "errorCode": "EGW023"
+   },
+   "T1_alive_after": true
+  },
+  {
+   "case": "R5b 재발급",
+   "status": 200,
+   "body": {
+    "access_token": "T1",
+    "token_type": "Bearer",
+    "scopes": "S",
+    "expires_in": "86400",
+    "expires_at": "2026-11-21 23:39:11"
+   },
+   "token": "T1",
+   "same_as_T1": true
+  },
+  {
+   "case": "R6 폐기 (appsecret 틀림, Authorization T2)",
+   "status": 400,
+   "body": {
+    "errorTime": "2026-11-20 23:39:14",
+    "errorMessage": "토큰 폐기 실패. 잘못된 appkey 또는 appsecret",
+    "errorStatus": 400,
+    "errorCode": "EAU011",
+    "errorPath": "/v1/oauth2/token/revokeP"
+   },
+   "T2_alive_after": true
+  }
+ ]
+}

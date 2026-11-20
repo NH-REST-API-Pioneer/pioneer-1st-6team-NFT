@@ -1,0 +1,24 @@
+{
+ "server": "https://apidemo.futures.co.kr",
+ "log": [
+  {
+   "case": "1) 키 A 첫 접속",
+   "t": "2026-11-20T23:38:34",
+   "connected": true,
+   "init_reply": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "case": "2) 같은 키 A 로 다시 접속",
+   "t": "2026-11-20T23:38:36",
+   "connected": false,
+   "status": 403,
+   "body": "{\"errorMessage\":\"400 BAD_REQUEST \\\"토큰을 찾을 수 없습니다. 소켓 접근에 거부되었습니다. (access_key: <UUID>)\\\"\",\"errorPath\":\"/trade/ws-stream\",\"errorTime\":\"2026-11-20 23:38:36\",\"errorStatus\":403,\"errorCode\":\"EST01\"}"
+  },
+  {
+   "case": "3) 대조군: 새 키 B 로 접속",
+   "t": "2026-11-20T23:38:38",
+   "connected": true,
+   "init_reply": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  }
+ ]
+}
