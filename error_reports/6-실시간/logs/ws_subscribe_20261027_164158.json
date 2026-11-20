@@ -1,0 +1,48 @@
+{
+ "server": "https://apidemo.futures.co.kr",
+ "sym": "A756B000",
+ "log": [
+  {
+   "t": "2026-10-27T16:41:44",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T16:41:45",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T16:41:47",
+   "dir": "보냄",
+   "case": "엑셀 예시 그대로",
+   "msg": "{\"api_ver\": \"1\", \"action_code\": \"KA\", \"action_sym\": \"A756B000\", \"header\": null, \"action\": null, \"body\": null}"
+  },
+  {
+   "t": "2026-10-27T16:41:51",
+   "dir": "보냄",
+   "case": "header/body 구조",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T16:41:51",
+   "dir": "받음",
+   "case": "header/body 구조",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T16:41:55",
+   "dir": "보냄",
+   "case": "해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T16:41:55",
+   "dir": "받음",
+   "case": "해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"D\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  }
+ ]
+}

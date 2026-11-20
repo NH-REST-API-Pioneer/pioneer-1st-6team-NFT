@@ -1,0 +1,438 @@
+{
+ "server": "https://apidemo.futures.co.kr",
+ "sym": "A756B000",
+ "log": [
+  {
+   "t": "2026-10-27T17:06:12",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:12",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:15",
+   "dir": "보냄",
+   "case": "내용 오류: 없는 종목코드",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A999X999\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:15",
+   "dir": "받음",
+   "case": "내용 오류: 없는 종목코드",
+   "msg": "{\"code\" :\"RT_FAIL\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A999X999\"}, \"msg\": \"해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: A999X999]\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:20",
+   "dir": "보냄",
+   "case": "내용 오류: 없는 종목코드 → 이어서 정상 구독",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:20",
+   "dir": "받음",
+   "case": "내용 오류: 없는 종목코드 → 이어서 정상 구독",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:23",
+   "dir": "보냄",
+   "case": "내용 오류: 없는 종목코드 → 해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:23",
+   "dir": "받음",
+   "case": "내용 오류: 없는 종목코드 → 해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"D\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:25",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:25",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:28",
+   "dir": "보냄",
+   "case": "내용 오류: 없는 실시간 코드",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"ZZ\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:28",
+   "dir": "받음",
+   "case": "내용 오류: 없는 실시간 코드",
+   "msg": "{\"code\" :\"RT_FAIL\",\"data\": {\"action\" : \"A\",\"action_code\" : \"ZZ\",\"action_sym\" : \"A756B000\"}, \"msg\": \"예외 발생 허용된 action_code가 아닙니다.\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:33",
+   "dir": "보냄",
+   "case": "내용 오류: 없는 실시간 코드 → 이어서 정상 구독",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:33",
+   "dir": "받음",
+   "case": "내용 오류: 없는 실시간 코드 → 이어서 정상 구독",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:36",
+   "dir": "보냄",
+   "case": "내용 오류: 없는 실시간 코드 → 해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:36",
+   "dir": "받음",
+   "case": "내용 오류: 없는 실시간 코드 → 해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"D\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:39",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:39",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:42",
+   "dir": "보냄",
+   "case": "내용 오류: action 값 X",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"X\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:42",
+   "dir": "받음",
+   "case": "내용 오류: action 값 X",
+   "msg": "{\"code\" :\"RT_FAIL\",\"data\": {\"action\" : \"X\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"예외 발생 잘못된 action 입니다. A: 구독, D: 해지만 사용 가능합니다.\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:47",
+   "dir": "보냄",
+   "case": "내용 오류: action 값 X → 이어서 정상 구독",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:47",
+   "dir": "받음",
+   "case": "내용 오류: action 값 X → 이어서 정상 구독",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:50",
+   "dir": "보냄",
+   "case": "내용 오류: action 값 X → 해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:50",
+   "dir": "받음",
+   "case": "내용 오류: action 값 X → 해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"D\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:53",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:53",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:56",
+   "dir": "보냄",
+   "case": "형식 오류: body 없음",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:56",
+   "dir": "받음",
+   "case": "형식 오류: body 없음",
+   "msg": "{\"message\":\"body가 누락되었습니다.\",\"type\":\"VALIDATION_ERROR\"}"
+  },
+  {
+   "t": "2026-10-27T17:06:56",
+   "dir": "받음",
+   "case": "형식 오류: body 없음",
+   "msg": ""
+  },
+  {
+   "dir": "오류",
+   "case": "형식 오류: body 없음",
+   "msg": "WebSocketConnectionClosedException('Connection to remote host was lost.')"
+  },
+  {
+   "dir": "오류",
+   "case": "형식 오류: body 없음",
+   "msg": "이어서 보내기 실패 WebSocketConnectionClosedException('socket is already closed.')"
+  },
+  {
+   "t": "2026-10-27T17:06:56",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:06:56",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:06:59",
+   "dir": "보냄",
+   "case": "형식 오류: header 없음",
+   "msg": "{\"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:00",
+   "dir": "받음",
+   "case": "형식 오류: header 없음",
+   "msg": ""
+  },
+  {
+   "dir": "오류",
+   "case": "형식 오류: header 없음",
+   "msg": "WebSocketConnectionClosedException('Connection to remote host was lost.')"
+  },
+  {
+   "dir": "오류",
+   "case": "형식 오류: header 없음",
+   "msg": "이어서 보내기 실패 WebSocketConnectionClosedException('socket is already closed.')"
+  },
+  {
+   "t": "2026-10-27T17:07:01",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:01",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:04",
+   "dir": "보냄",
+   "case": "형식 오류: header·body 가 null",
+   "msg": "{\"header\": null, \"body\": null}"
+  },
+  {
+   "t": "2026-10-27T17:07:04",
+   "dir": "받음",
+   "case": "형식 오류: header·body 가 null",
+   "msg": ""
+  },
+  {
+   "dir": "오류",
+   "case": "형식 오류: header·body 가 null",
+   "msg": "WebSocketConnectionClosedException('Connection to remote host was lost.')"
+  },
+  {
+   "dir": "오류",
+   "case": "형식 오류: header·body 가 null",
+   "msg": "이어서 보내기 실패 WebSocketConnectionClosedException('socket is already closed.')"
+  },
+  {
+   "t": "2026-10-27T17:07:04",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:04",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:07",
+   "dir": "보냄",
+   "case": "형식 오류: 엑셀 예시(납작)",
+   "msg": "{\"api_ver\": \"1\", \"action_code\": \"KA\", \"action_sym\": \"A756B000\", \"header\": null, \"action\": null, \"body\": null}"
+  },
+  {
+   "t": "2026-10-27T17:07:12",
+   "dir": "받음",
+   "case": "형식 오류: 엑셀 예시(납작)",
+   "msg": "(5초 동안 응답 없음)"
+  },
+  {
+   "t": "2026-10-27T17:07:12",
+   "dir": "보냄",
+   "case": "형식 오류: 엑셀 예시(납작) → 이어서 정상 구독",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:12",
+   "dir": "받음",
+   "case": "형식 오류: 엑셀 예시(납작) → 이어서 정상 구독",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:15",
+   "dir": "보냄",
+   "case": "형식 오류: 엑셀 예시(납작) → 해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:15",
+   "dir": "받음",
+   "case": "형식 오류: 엑셀 예시(납작) → 해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"D\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:18",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:18",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:21",
+   "dir": "보냄",
+   "case": "형식 오류: 납작(null 키 없이)",
+   "msg": "{\"api_ver\": \"1\", \"action\": \"A\", \"action_code\": \"KA\", \"action_sym\": \"A756B000\"}"
+  },
+  {
+   "t": "2026-10-27T17:07:26",
+   "dir": "받음",
+   "case": "형식 오류: 납작(null 키 없이)",
+   "msg": "(5초 동안 응답 없음)"
+  },
+  {
+   "t": "2026-10-27T17:07:26",
+   "dir": "보냄",
+   "case": "형식 오류: 납작(null 키 없이) → 이어서 정상 구독",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:26",
+   "dir": "받음",
+   "case": "형식 오류: 납작(null 키 없이) → 이어서 정상 구독",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:29",
+   "dir": "보냄",
+   "case": "형식 오류: 납작(null 키 없이) → 해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:29",
+   "dir": "받음",
+   "case": "형식 오류: 납작(null 키 없이) → 해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"D\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:32",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:32",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:35",
+   "dir": "보냄",
+   "case": "형식 오류: JSON 아님",
+   "msg": "hello"
+  },
+  {
+   "t": "2026-10-27T17:07:40",
+   "dir": "받음",
+   "case": "형식 오류: JSON 아님",
+   "msg": "(5초 동안 응답 없음)"
+  },
+  {
+   "t": "2026-10-27T17:07:40",
+   "dir": "보냄",
+   "case": "형식 오류: JSON 아님 → 이어서 정상 구독",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:40",
+   "dir": "받음",
+   "case": "형식 오류: JSON 아님 → 이어서 정상 구독",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:43",
+   "dir": "보냄",
+   "case": "형식 오류: JSON 아님 → 해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:43",
+   "dir": "받음",
+   "case": "형식 오류: JSON 아님 → 해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"D\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:45",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:45",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:48",
+   "dir": "보냄",
+   "case": "대조군: 정상 구독 후 해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:48",
+   "dir": "받음",
+   "case": "대조군: 정상 구독 후 해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:07:51",
+   "dir": "보냄",
+   "case": "대조군: 정상 구독 후 해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:07:51",
+   "dir": "받음",
+   "case": "대조군: 정상 구독 후 해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"D\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  }
+ ]
+}

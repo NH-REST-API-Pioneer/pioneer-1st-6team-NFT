@@ -1,0 +1,89 @@
+{
+ "server": "https://apidemo.futures.co.kr",
+ "sym": "A756B000",
+ "log": [
+  {
+   "t": "2026-10-27T17:05:34",
+   "dir": "보냄",
+   "case": "session_init",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}"
+  },
+  {
+   "t": "2026-10-27T17:05:34",
+   "dir": "받음",
+   "case": "session_init",
+   "msg": "{\"code\" :\"INIT\", \"msg\": \"INIT_SUCCESS\" }"
+  },
+  {
+   "t": "2026-10-27T17:05:37",
+   "dir": "보냄",
+   "case": "내용 오류: 없는 종목코드",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A999X999\"}}"
+  },
+  {
+   "t": "2026-10-27T17:05:37",
+   "dir": "받음",
+   "case": "내용 오류: 없는 종목코드",
+   "msg": "{\"code\" :\"RT_FAIL\",\"data\": {\"action\" : \"A\",\"action_code\" : \"KA\",\"action_sym\" : \"A999X999\"}, \"msg\": \"해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: A999X999]\" }"
+  },
+  {
+   "t": "2026-10-27T17:05:41",
+   "dir": "보냄",
+   "case": "내용 오류: 없는 실시간 코드",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"ZZ\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:05:41",
+   "dir": "받음",
+   "case": "내용 오류: 없는 실시간 코드",
+   "msg": "{\"code\" :\"RT_FAIL\",\"data\": {\"action\" : \"A\",\"action_code\" : \"ZZ\",\"action_sym\" : \"A756B000\"}, \"msg\": \"예외 발생 허용된 action_code가 아닙니다.\" }"
+  },
+  {
+   "t": "2026-10-27T17:05:45",
+   "dir": "보냄",
+   "case": "내용 오류: action 값 X",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"X\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:05:45",
+   "dir": "받음",
+   "case": "내용 오류: action 값 X",
+   "msg": "{\"code\" :\"RT_FAIL\",\"data\": {\"action\" : \"X\",\"action_code\" : \"KA\",\"action_sym\" : \"A756B000\"}, \"msg\": \"예외 발생 잘못된 action 입니다. A: 구독, D: 해지만 사용 가능합니다.\" }"
+  },
+  {
+   "t": "2026-10-27T17:05:49",
+   "dir": "보냄",
+   "case": "내용 오류: 구독 안 한 종목 해제",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KB\", \"action_sym\": \"A756B000\"}}"
+  },
+  {
+   "t": "2026-10-27T17:05:49",
+   "dir": "받음",
+   "case": "내용 오류: 구독 안 한 종목 해제",
+   "msg": "{\"code\" :\"RT_INIT\",\"data\": {\"action\" : \"D\",\"action_code\" : \"KB\",\"action_sym\" : \"A756B000\"}, \"msg\": \"\" }"
+  },
+  {
+   "t": "2026-10-27T17:05:53",
+   "dir": "보냄",
+   "case": "형식 오류: body 없음",
+   "msg": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}}"
+  },
+  {
+   "t": "2026-10-27T17:05:53",
+   "dir": "받음",
+   "case": "형식 오류: body 없음",
+   "msg": "{\"type\":\"VALIDATION_ERROR\",\"message\":\"body가 누락되었습니다.\"}"
+  },
+  {
+   "t": "2026-10-27T17:05:53",
+   "dir": "받음",
+   "case": "형식 오류: body 없음",
+   "msg": ""
+  },
+  {
+   "dir": "오류",
+   "case": "형식 오류: body 없음",
+   "msg": "WebSocketConnectionClosedException('Connection to remote host was lost.')"
+  }
+ ]
+}

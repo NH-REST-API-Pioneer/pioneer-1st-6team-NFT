@@ -1,0 +1,1598 @@
+{
+ "run_at": "2026-11-20T23:14:05",
+ "server": "https://apidemo.futures.co.kr",
+ "A": [
+  {
+   "api": "domestic_price-bid",
+   "request": {
+    "exch_cd": "KSP",
+    "sym": "A756C000"
+   },
+   "top_keys": [
+    "Occurs1",
+    "ask_cnt",
+    "ask_qty",
+    "bid_cnt",
+    "bid_qty",
+    "cum_trd_amt",
+    "cum_trd_qty",
+    "diff_rt",
+    "est_exec_pric",
+    "high_pric",
+    "last_pric",
+    "lo",
+    "lo_act_pric",
+    "lo_pric_1",
+    "lo_pric_2",
+    "lo_pric_3",
+    "low_pric",
+    "net_bid_ask",
+    "nrec",
+    "open_pric",
+    "pd_close_pric",
+    "pre_ask_qty",
+    "pre_bid_qty",
+    "qt_tm",
+    "real",
+    "rt",
+    "sym",
+    "up",
+    "up_act_pric",
+    "up_pric_1",
+    "up_pric_2",
+    "up_pric_3"
+   ],
+   "occurs": {
+    "Occurs1": "list[10]"
+   },
+   "shape": {
+    "rt": "str",
+    "lo": "str",
+    "up_act_pric": "str",
+    "sym": "str",
+    "pre_ask_qty": "str",
+    "bid_qty": "str",
+    "lo_pric_3": "str",
+    "lo_pric_2": "str",
+    "Occurs1": [
+     {
+      "occurs1_ask_cnt": "str",
+      "occurs1_bid_rt": "str",
+      "occurs1_bid_best_pric": "str",
+      "occurs1_pre_ask_qty": "str",
+      "occurs1_ask_qty": "str",
+      "occurs1_ask_rt": "str",
+      "occurs1_bid_cnt": "str",
+      "occurs1_ask_best_pric": "str",
+      "occurs1_pre_bid_qty": "str",
+      "occurs1_bid_qty": "str"
+     },
+     "총 10개"
+    ],
+    "lo_pric_1": "str",
+    "lo_act_pric": "str",
+    "nrec": "str",
+    "diff_rt": "str",
+    "cum_trd_amt": "str",
+    "pre_bid_qty": "str",
+    "net_bid_ask": "str",
+    "open_pric": "str",
+    "bid_cnt": "str",
+    "last_pric": "str",
+    "up": "str",
+    "pd_close_pric": "str",
+    "up_pric_1": "str",
+    "up_pric_2": "str",
+    "up_pric_3": "str",
+    "cum_trd_qty": "str",
+    "high_pric": "str",
+    "ask_cnt": "str",
+    "real": "str",
+    "est_exec_pric": "str",
+    "low_pric": "str",
+    "ask_qty": "str",
+    "qt_tm": "str"
+   },
+   "sample": {
+    "rt": "0.50",
+    "lo": "1269.20",
+    "up_act_pric": "1388.80",
+    "sym": "A756C000",
+    "pre_ask_qty": "9718",
+    "bid_qty": "5247",
+    "lo_pric_3": "0.00",
+    "lo_pric_2": "0.00",
+    "Occurs1": [
+     {
+      "occurs1_ask_cnt": "2",
+      "occurs1_bid_rt": "0.49",
+      "occurs1_bid_best_pric": "1335.50",
+      "occurs1_pre_ask_qty": "0",
+      "occurs1_ask_qty": "1925",
+      "occurs1_ask_rt": "0.50",
+      "occurs1_bid_cnt": "2",
+      "occurs1_ask_best_pric": "1335.60",
+      "occurs1_pre_bid_qty": "0",
+      "occurs1_bid_qty": "11"
+     }
+    ],
+    "lo_pric_1": "1269.20",
+    "lo_act_pric": "1269.20",
+    "nrec": "10",
+    "diff_rt": "6.60",
+    "cum_trd_amt": "9426307.1",
+    "pre_bid_qty": "5247",
+    "net_bid_ask": "-4471",
+    "open_pric": "1333.40",
+    "bid_cnt": "752",
+    "last_pric": "1335.60",
+    "up": "1388.80",
+    "pd_close_pric": "1329.00",
+    "up_pric_1": "1388.80",
+    "up_pric_2": "0.00",
+    "up_pric_3": "0.00",
+    "cum_trd_qty": "705291",
+    "high_pric": "1339.50",
+    "ask_cnt": "932",
+    "real": "A756C000",
+    "est_exec_pric": "0.00",
+    "low_pric": "1333.30",
+    "ask_qty": "9718",
+    "qt_tm": "154500"
+   }
+  },
+  {
+   "api": "domestic_chart-daily",
+   "request": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "3"
+   },
+   "top_keys": [
+    "Occurs1",
+    "nght_tp",
+    "nrec",
+    "nxt_key",
+    "sym"
+   ],
+   "occurs": {
+    "Occurs1": "list[3]"
+   },
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "str",
+      "occurs1_open_pric": "str",
+      "occurs1_high_pric": "str",
+      "occurs1_low_pric": "str",
+      "occurs1_close_pric": "str",
+      "occurs1_opint": "str",
+      "occurs1_diff_rt": "str",
+      "occurs1_cum_trd_qty": "str"
+     },
+     "총 3개"
+    ],
+    "sym": "str",
+    "nght_tp": "str"
+   },
+   "sample": {
+    "nxt_key": "20261118",
+    "nrec": "3",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1333.40",
+      "occurs1_high_pric": "1339.50",
+      "occurs1_low_pric": "1333.30",
+      "occurs1_close_pric": "1335.60",
+      "occurs1_opint": "1280778",
+      "occurs1_diff_rt": "6.60",
+      "occurs1_cum_trd_qty": "705291"
+     }
+    ],
+    "sym": "A756C000",
+    "nght_tp": "1"
+   }
+  },
+  {
+   "api": "domestic_chart-minute",
+   "request": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "3",
+    "dcnt": "1"
+   },
+   "top_keys": [
+    "Occurs1",
+    "nrec",
+    "nxt_key",
+    "sym"
+   ],
+   "occurs": {
+    "Occurs1": "list[3]"
+   },
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "str",
+      "occurs1_open_pric": "str",
+      "occurs1_high_pric": "str",
+      "occurs1_low_pric": "str",
+      "occurs1_close_pric": "str",
+      "occurs1_rt": "str",
+      "occurs1_exch_tm": "str",
+      "occurs1_opint": "str",
+      "occurs1_diff_rt": "str",
+      "occurs1_cum_trd_amt": "str",
+      "occurs1_cum_trd_qty": "str"
+     },
+     "총 3개"
+    ],
+    "sym": "str"
+   },
+   "sample": {
+    "nxt_key": "20261120153300",
+    "nrec": "3",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1335.60",
+      "occurs1_high_pric": "1335.60",
+      "occurs1_low_pric": "1335.60",
+      "occurs1_close_pric": "1335.60",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "154500",
+      "occurs1_opint": "1282204",
+      "occurs1_diff_rt": "6.60",
+      "occurs1_cum_trd_amt": "47200",
+      "occurs1_cum_trd_qty": "3534"
+     }
+    ],
+    "sym": "A756C000"
+   }
+  },
+  {
+   "api": "domestic_price-all-futures",
+   "request": {
+    "prd": "75"
+   },
+   "top_keys": [
+    "Occurs1",
+    "nrec"
+   ],
+   "occurs": {
+    "Occurs1": "list[222]"
+   },
+   "shape": {
+    "Occurs1": [
+     {
+      "occurs1_exp_mon": "str",
+      "occurs1_high_pric": "str",
+      "occurs1_last_pric": "str",
+      "occurs1_high_pric_dt": "str",
+      "occurs1_rt": "str",
+      "occurs1_lo": "str",
+      "occurs1_sym_exch": "str",
+      "occurs1_chg_sign": "str",
+      "occurs1_spt_cd": "str",
+      "occurs1_spt_sym": "str",
+      "occurs1_opint": "str",
+      "occurs1_low_pric_dt": "str",
+      "occurs1_pd_close_pric": "str",
+      "occurs1_up": "str",
+      "occurs1_open_pric": "str",
+      "occurs1_low_pric": "str",
+      "occurs1_trd_qty": "str",
+      "occurs1_ask_pric": "str",
+      "occurs1_fact_bas": "str",
+      "occurs1_lst_trd_dt": "str",
+      "occurs1_sym_nm": "str",
+      "occurs1_pd_trd_qty": "str",
+      "occurs1_bid_pric": "str",
+      "occurs1_dev": "str",
+      "occurs1_dev_rt": "str",
+      "occurs1_theo_bas": "str",
+      "occurs1_theo_pric": "str",
+      "occurs1_ask_qty": "str",
+      "occurs1_spt_pric": "str",
+      "occurs1_prd": "str",
+      "occurs1_chg": "str",
+      "occurs1_bid_qty": "str"
+     },
+     "총 222개"
+    ],
+    "nrec": "str"
+   },
+   "sample": {
+    "Occurs1": [
+     {
+      "occurs1_exp_mon": "26/12",
+      "occurs1_high_pric": "1339.50",
+      "occurs1_last_pric": "1335.60",
+      "occurs1_high_pric_dt": "20260605",
+      "occurs1_rt": "0.50",
+      "occurs1_lo": "1318.60",
+      "occurs1_sym_exch": "A756C000",
+      "occurs1_chg_sign": "+",
+      "occurs1_spt_cd": "75",
+      "occurs1_spt_sym": "USD",
+      "occurs1_opint": "1280778",
+      "occurs1_low_pric_dt": "20261026",
+      "occurs1_pd_close_pric": "1329.00",
+      "occurs1_up": "1530.00",
+      "occurs1_open_pric": "1333.40",
+      "occurs1_low_pric": "1333.30",
+      "occurs1_trd_qty": "705291",
+      "occurs1_ask_pric": "1335.60",
+      "occurs1_fact_bas": "-3.50",
+      "occurs1_lst_trd_dt": "20261221",
+      "occurs1_sym_nm": "미국달러 F 202612",
+      "occurs1_pd_trd_qty": "465375",
+      "occurs1_bid_pric": "1335.50",
+      "occurs1_dev": "-3.50",
+      "occurs1_dev_rt": "-0.26",
+      "occurs1_theo_bas": "0.00",
+      "occurs1_theo_pric": "1339.10",
+      "occurs1_ask_qty": "1925",
+      "occurs1_spt_pric": "1339.10",
+      "occurs1_prd": "75",
+      "occurs1_chg": "6.60",
+      "occurs1_bid_qty": "11"
+     }
+    ],
+    "nrec": "222"
+   }
+  },
+  {
+   "api": "domestic_price-all-option",
+   "request": {
+    "prd": "01",
+    "exp_mon": "261210"
+   },
+   "top_keys": [
+    "Occurs1",
+    "chg",
+    "chg_sign",
+    "fut_chg",
+    "fut_last_pric",
+    "fut_rem_dy",
+    "fut_rt",
+    "fut_sign",
+    "fut_sym",
+    "nrec",
+    "nxt_stkr_pric",
+    "rt",
+    "spt_cd",
+    "spt_pric",
+    "spt_sym",
+    "und_nm"
+   ],
+   "occurs": {
+    "Occurs1": "list[261]"
+   },
+   "shape": {
+    "rt": "str",
+    "chg": "str",
+    "fut_sign": "str",
+    "spt_sym": "str",
+    "spt_pric": "str",
+    "fut_rt": "str",
+    "chg_sign": "str",
+    "Occurs1": [
+     {
+      "occurs1_c_sym_nm": "str",
+      "occurs1_p_chg_sign": "str",
+      "occurs1_p_pd_close_pric": "str",
+      "occurs1_p_ask_pric": "str",
+      "occurs1_c_theo_pric_chg": "str",
+      "occurs1_p_low_pric": "str",
+      "occurs1_p_gamma": "str",
+      "occurs1_c_vega": "str",
+      "occurs1_p_vega": "str",
+      "occurs1_c_chg_rt": "str",
+      "occurs1_p_chg_rt": "str",
+      "occurs1_p_dev_rt": "str",
+      "occurs1_p_sym_exch": "str",
+      "occurs1_p_rho": "str",
+      "occurs1_p_opint_chg": "str",
+      "occurs1_c_pd_close_pric": "str",
+      "occurs1_c_chg": "str",
+      "occurs1_p_vol": "str",
+      "occurs1_p_trd_qty": "str",
+      "occurs1_p_last_pric": "str",
+      "occurs1_strk_pric": "str",
+      "occurs1_p_high_pric": "str",
+      "occurs1_p_theo_pric": "str",
+      "occurs1_p_theo_pric_chg": "str",
+      "occurs1_c_dev": "str",
+      "occurs1_c_open_pric": "str",
+      "occurs1_c_last_pric": "str",
+      "occurs1_p_delta": "str",
+      "occurs1_c_delta": "str",
+      "occurs1_p_bid_pric": "str",
+      "occurs1_p_opint": "str",
+      "occurs1_c_trd_qty": "str",
+      "occurs1_c_sym_exch": "str",
+      "occurs1_c_opint_chg": "str",
+      "occurs1_c_chg_sign": "str",
+      "occurs1_c_theo_pric": "str",
+      "occurs1_c_gamma": "str",
+      "occurs1_c_rho": "str",
+      "occurs1_p_open_pric": "str",
+      "occurs1_c_ask_pric": "str",
+      "occurs1_p_sym_nm": "str",
+      "occurs1_c_opint": "str",
+      "occurs1_c_dev_rt": "str",
+      "occurs1_c_low_pric": "str",
+      "occurs1_c_high_pric": "str",
+      "occurs1_c_bid_pric": "str",
+      "occurs1_c_vol": "str",
+      "occurs1_c_theta": "str",
+      "occurs1_p_theta": "str",
+      "occurs1_p_chg": "str",
+      "occurs1_p_dev": "str"
+     },
+     "총 261개"
+    ],
+    "fut_last_pric": "str",
+    "nrec": "str",
+    "nxt_stkr_pric": "str",
+    "spt_cd": "str",
+    "und_nm": "str",
+    "fut_rem_dy": "str",
+    "fut_chg": "str",
+    "fut_sym": "str"
+   },
+   "sample": {
+    "rt": "-5.53",
+    "chg": "-44.23",
+    "fut_sign": "-",
+    "spt_sym": "KRD020020016",
+    "spt_pric": "755.34",
+    "fut_rt": "-5.43",
+    "chg_sign": "-",
+    "Occurs1": [
+     {
+      "occurs1_c_sym_nm": "코스피200 C 202612 1,595.0",
+      "occurs1_p_chg_sign": "+",
+      "occurs1_p_pd_close_pric": "793.00",
+      "occurs1_p_ask_pric": "841.00",
+      "occurs1_c_theo_pric_chg": "-11.33",
+      "occurs1_p_low_pric": "825.50",
+      "occurs1_p_gamma": "0.00020",
+      "occurs1_c_vega": "0.07585",
+      "occurs1_p_vega": "7.34890",
+      "occurs1_c_chg_rt": "0.00",
+      "occurs1_p_chg_rt": "4.98",
+      "occurs1_p_dev_rt": "4.98",
+      "occurs1_p_sym_exch": "C016CC41",
+      "occurs1_p_rho": "-90.76541",
+      "occurs1_p_opint_chg": "-1",
+      "occurs1_c_pd_close_pric": "0.01",
+      "occurs1_c_chg": "0.00",
+      "occurs1_p_vol": "112.00",
+      "occurs1_p_trd_qty": "3",
+      "occurs1_p_last_pric": "832.50",
+      "occurs1_strk_pric": "1595.00",
+      "occurs1_p_high_pric": "832.50",
+      "occurs1_p_theo_pric": "793.01",
+      "occurs1_p_theo_pric_chg": "",
+      "occurs1_c_dev": "0.00",
+      "occurs1_c_open_pric": "0.01",
+      "occurs1_c_last_pric": "0.01",
+      "occurs1_p_delta": "-0.97830",
+      "occurs1_c_delta": "0.00016",
+      "occurs1_p_bid_pric": "831.30",
+      "occurs1_p_opint": "376",
+      "occurs1_c_trd_qty": "1",
+      "occurs1_c_sym_exch": "B016CC41",
+      "occurs1_c_opint_chg": "1",
+      "occurs1_c_chg_sign": "",
+      "occurs1_c_theo_pric": "0.01",
+      "occurs1_c_gamma": "0.00000",
+      "occurs1_c_rho": "0.00670",
+      "occurs1_p_open_pric": "827.50",
+      "occurs1_c_ask_pric": "0.01",
+      "occurs1_p_sym_nm": "코스피200 P 202612 1,595.0",
+      "occurs1_c_opint": "8405",
+      "occurs1_c_dev_rt": "0.00",
+      "occurs1_c_low_pric": "0.01",
+      "occurs1_c_high_pric": "0.01",
+      "occurs1_c_bid_pric": "0.00",
+      "occurs1_c_vol": "80.30",
+      "occurs1_c_theta": "-0.84532",
+      "occurs1_p_theta": "-67.95134",
+      "occurs1_p_chg": "39.50",
+      "occurs1_p_dev": "39.49"
+     }
+    ],
+    "fut_last_pric": "752.75",
+    "nrec": "261",
+    "nxt_stkr_pric": "945.00",
+    "spt_cd": "01",
+    "und_nm": "코스피 200",
+    "fut_rem_dy": "21",
+    "fut_chg": "-43.25",
+    "fut_sym": "A016C000"
+   }
+  },
+  {
+   "api": "domestic_price-expect-fill",
+   "request": {
+    "sym": "A756C000"
+   },
+   "top_keys": [
+    "Occurs1",
+    "nrec",
+    "ref_pric",
+    "sym_exch",
+    "sym_nm"
+   ],
+   "occurs": {
+    "Occurs1": "list[100]"
+   },
+   "shape": {
+    "ref_pric": "str",
+    "nrec": "str",
+    "sym_exch": "str",
+    "Occurs1": [
+     {
+      "occurs1_chg_sign": "str",
+      "occurs1_est_exec_qty": "str",
+      "occurs1_chg": "str",
+      "occurs1_tm": "str",
+      "occurs1_est_exec_pric": "str"
+     },
+     "총 100개"
+    ],
+    "sym_nm": "str"
+   },
+   "sample": {
+    "ref_pric": "1329.00",
+    "nrec": "100",
+    "sym_exch": "A756C000",
+    "Occurs1": [
+     {
+      "occurs1_chg_sign": "+",
+      "occurs1_est_exec_qty": "3534",
+      "occurs1_chg": "6.60",
+      "occurs1_tm": "154459",
+      "occurs1_est_exec_pric": "1335.60"
+     }
+    ],
+    "sym_nm": "미국달러 F 202612"
+   }
+  },
+  {
+   "api": "domestic_product-detail",
+   "request": {},
+   "top_keys": [
+    "Occurs1",
+    "nrec"
+   ],
+   "occurs": {
+    "Occurs1": "list[28]"
+   },
+   "shape": {
+    "Occurs1": [
+     {
+      "occurs1_mltplr": "str",
+      "occurs1_cd_val_inf_5": "str",
+      "occurs1_dtl_cd_ko_nm": "str",
+      "occurs1_init_mrgn": "str",
+      "occurs1_exp_dt": "str",
+      "occurs1_sett_nm": "str",
+      "occurs1_tick_val": "str",
+      "occurs1_cd_val_inf_1": "str",
+      "occurs1_cd_val_inf_2": "str",
+      "occurs1_cd_val_inf_3": "str",
+      "occurs1_cd_val_inf_4": "str",
+      "occurs1_mtn_mrgn": "str",
+      "occurs1_ctr_init_mrgn": "str"
+     },
+     "총 28개"
+    ],
+    "nrec": "str"
+   },
+   "sample": {
+    "Occurs1": [
+     {
+      "occurs1_mltplr": "00000000000.0000000000",
+      "occurs1_cd_val_inf_5": "08:45~15:20",
+      "occurs1_dtl_cd_ko_nm": "코스피200선물",
+      "occurs1_init_mrgn": "",
+      "occurs1_exp_dt": "",
+      "occurs1_sett_nm": "현금결제",
+      "occurs1_tick_val": "0000000000000.00000000",
+      "occurs1_cd_val_inf_1": "0.05",
+      "occurs1_cd_val_inf_2": "08:30~08:45",
+      "occurs1_cd_val_inf_3": "15:35~15:45",
+      "occurs1_cd_val_inf_4": "08:45~15:45",
+      "occurs1_mtn_mrgn": "",
+      "occurs1_ctr_init_mrgn": ""
+     }
+    ],
+    "nrec": "0028"
+   }
+  },
+  {
+   "api": "domestic_open-interest",
+   "request": {
+    "nxt_key": ""
+   },
+   "top_keys": [
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {},
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str"
+   }
+  },
+  {
+   "api": "domestic_order-error",
+   "request": {
+    "inq_dt": "20261120",
+    "trd_div_cd": "0",
+    "nxt_key": ""
+   },
+   "top_keys": [
+    "data_tot_cnt",
+    "nrec",
+    "nxt_data_yn",
+    "nxt_key"
+   ],
+   "occurs": {},
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str",
+    "data_tot_cnt": "str",
+    "nxt_data_yn": "str"
+   }
+  },
+  {
+   "api": "domestic_order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "top_keys": [
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {},
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str"
+   }
+  },
+  {
+   "api": "domestic_open-position",
+   "request": {
+    "trd_dt": "20261120",
+    "nxt_key": ""
+   },
+   "top_keys": [
+    "fts_evl_pnl_amt",
+    "nrec",
+    "nxt_key",
+    "opt_pl_amt",
+    "pl_amt"
+   ],
+   "occurs": {},
+   "shape": {
+    "nxt_key": "str",
+    "pl_amt": "str",
+    "nrec": "str",
+    "fts_evl_pnl_amt": "str",
+    "opt_pl_amt": "str"
+   }
+  },
+  {
+   "api": "overseas_price",
+   "request": {
+    "Iccurs1": [
+     {
+      "iccurs1_exch_cd": "FCME",
+      "iccurs1_sym": "6AZ26"
+     }
+    ]
+   },
+   "top_keys": [
+    "Occurs1",
+    "nrec"
+   ],
+   "occurs": {
+    "Occurs1": "list[1]"
+   },
+   "shape": {
+    "Occurs1": [
+     {
+      "occurs1_sym": "str",
+      "occurs1_high_pric": "str",
+      "occurs1_last_pric": "str",
+      "occurs1_rt": "str",
+      "occurs1_life_high_dt": "str",
+      "occurs1_sett_pric": "str",
+      "occurs1_life_low_dt": "str",
+      "occurs1_ris_trd_qty": "str",
+      "occurs1_fal_trd_qty": "str",
+      "occurs1_life_high_pric": "str",
+      "occurs1_pre_close_pric": "str",
+      "occurs1_biz_dt": "str",
+      "occurs1_cum_trd_qty": "str",
+      "occurs1_open_pric": "str",
+      "occurs1_low_pric": "str",
+      "occurs1_ask_pric": "str",
+      "occurs1_diff_rt": "str",
+      "occurs1_sym_nm": "str",
+      "occurs1_life_low_pric": "str",
+      "occurs1_exch_cd": "str",
+      "occurs1_bid_pric": "str",
+      "occurs1_trd_tm": "str",
+      "occurs1_real_sym": "str",
+      "occurs1_ask_qty": "str",
+      "occurs1_bid_qty": "str",
+      "occurs1_pre_sett_dy": "str"
+     },
+     "총 1개"
+    ],
+    "nrec": "str"
+   },
+   "sample": {
+    "Occurs1": [
+     {
+      "occurs1_sym": "6AZ26",
+      "occurs1_high_pric": "0.66785",
+      "occurs1_last_pric": "0.66650",
+      "occurs1_rt": "0.08",
+      "occurs1_life_high_dt": "20260506",
+      "occurs1_sett_pric": "0.66595",
+      "occurs1_life_low_dt": "20251121",
+      "occurs1_ris_trd_qty": "31353",
+      "occurs1_fal_trd_qty": "30768",
+      "occurs1_life_high_pric": "0.72285",
+      "occurs1_pre_close_pric": "0.66595",
+      "occurs1_biz_dt": "20261120",
+      "occurs1_cum_trd_qty": "62116",
+      "occurs1_open_pric": "0.66570",
+      "occurs1_low_pric": "0.66425",
+      "occurs1_ask_pric": "0.66650",
+      "occurs1_diff_rt": "0.00055",
+      "occurs1_sym_nm": "Australian Dollar",
+      "occurs1_life_low_pric": "0.64280",
+      "occurs1_exch_cd": "CME",
+      "occurs1_bid_pric": "0.66645",
+      "occurs1_trd_tm": "231402",
+      "occurs1_real_sym": "6AZ26",
+      "occurs1_ask_qty": "000000000057",
+      "occurs1_bid_qty": "000000000006",
+      "occurs1_pre_sett_dy": "20261119"
+     }
+    ],
+    "nrec": "1"
+   }
+  },
+  {
+   "api": "overseas_chart-daily",
+   "request": {
+    "exch_cd": "FCME",
+    "sym": "6AZ26",
+    "req_qty": "3"
+   },
+   "top_keys": [
+    "Occurs1",
+    "exch_cd",
+    "nrec",
+    "nxt_key",
+    "sym"
+   ],
+   "occurs": {
+    "Occurs1": "list[3]"
+   },
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "str",
+      "occurs1_open_pric": "str",
+      "occurs1_high_pric": "str",
+      "occurs1_low_pric": "str",
+      "occurs1_close_pric": "str",
+      "occurs1_rt": "str",
+      "occurs1_diff_rt": "str",
+      "occurs1_cum_trd_qty": "str"
+     },
+     "총 3개"
+    ],
+    "sym": "str",
+    "exch_cd": "str"
+   },
+   "sample": {
+    "nxt_key": "20261117000000999999999999999999",
+    "nrec": "0003",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "0.66570",
+      "occurs1_high_pric": "0.66785",
+      "occurs1_low_pric": "0.66425",
+      "occurs1_close_pric": "0.66650",
+      "occurs1_rt": "0.08",
+      "occurs1_diff_rt": "0.00055",
+      "occurs1_cum_trd_qty": "62116"
+     }
+    ],
+    "sym": "",
+    "exch_cd": "FCME"
+   }
+  },
+  {
+   "api": "overseas_chart-minute",
+   "request": {
+    "exch_cd": "FCME",
+    "sym": "6AZ26",
+    "req_qty": "3"
+   },
+   "top_keys": [
+    "Occurs1",
+    "exch_cd",
+    "nrec",
+    "nxt_key",
+    "sym"
+   ],
+   "occurs": {
+    "Occurs1": "list[3]"
+   },
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "str",
+      "occurs1_open_pric": "str",
+      "occurs1_high_pric": "str",
+      "occurs1_low_pric": "str",
+      "occurs1_close_pric": "str",
+      "occurs1_rt": "str",
+      "occurs1_glb_biz_dt": "str",
+      "occurs1_exch_tm": "str",
+      "occurs1_diff_rt": "str",
+      "occurs1_cum_trd_amt": "str",
+      "occurs1_cum_trd_qty": "str"
+     },
+     "총 3개"
+    ],
+    "sym": "str",
+    "exch_cd": "str"
+   },
+   "sample": {
+    "nxt_key": "20261120225900999999999999999999",
+    "nrec": "0003",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "0.66655",
+      "occurs1_high_pric": "0.66655",
+      "occurs1_low_pric": "0.66645",
+      "occurs1_close_pric": "0.66650",
+      "occurs1_rt": "-0.01",
+      "occurs1_glb_biz_dt": "20261120",
+      "occurs1_exch_tm": "231000",
+      "occurs1_diff_rt": "-0.00005",
+      "occurs1_cum_trd_amt": "206632",
+      "occurs1_cum_trd_qty": "338"
+     }
+    ],
+    "sym": "",
+    "exch_cd": "FCME"
+   }
+  },
+  {
+   "api": "overseas_price-all-option",
+   "request": {
+    "exch_cd": "OCME",
+    "sym": "O_ESZ26"
+   },
+   "top_keys": [
+    "Occurs1",
+    "nrec",
+    "rem_dy"
+   ],
+   "occurs": {
+    "Occurs1": "list[323]"
+   },
+   "shape": {
+    "rem_dy": "str",
+    "Occurs1": [
+     {
+      "occurs1_c_ask_pric": "str",
+      "occurs1_p_rt": "str",
+      "occurs1_p_bid_qty": "str",
+      "occurs1_p_atm_flag": "str",
+      "occurs1_c_sym": "str",
+      "occurs1_p_exec_cd": "str",
+      "occurs1_p_trd_qty": "str",
+      "occurs1_c_trd_qty": "str",
+      "occurs1_p_sym": "str",
+      "occurs1_p_last_pric": "str",
+      "occurs1_p_ask_pric": "str",
+      "occurs1_strk_pric": "str",
+      "occurs1_c_exec_cd": "str",
+      "occurs1_c_rt": "str",
+      "occurs1_c_bid_pric": "str",
+      "occurs1_pric_ind": "str",
+      "occurs1_p_ask_qty": "str",
+      "occurs1_c_diff": "str",
+      "occurs1_c_last_pric": "str",
+      "occurs1_c_ask_qty": "str",
+      "occurs1_c_bid_qty": "str",
+      "occurs1_p_diff": "str",
+      "occurs1_c_atm_flag": "str",
+      "occurs1_p_bid_pric": "str"
+     },
+     "총 323개"
+    ],
+    "nrec": "str"
+   },
+   "sample": {
+    "rem_dy": "29",
+    "Occurs1": [
+     {
+      "occurs1_c_ask_pric": "0.10",
+      "occurs1_p_rt": "0.00",
+      "occurs1_p_bid_qty": "000000000000",
+      "occurs1_p_atm_flag": "0",
+      "occurs1_c_sym": "O_ESZ26-C12000.0",
+      "occurs1_p_exec_cd": "CME",
+      "occurs1_p_trd_qty": "0",
+      "occurs1_c_trd_qty": "0",
+      "occurs1_p_sym": "O_ESZ26-P12000.0",
+      "occurs1_p_last_pric": "4659.50",
+      "occurs1_p_ask_pric": "0.00",
+      "occurs1_strk_pric": "12000.0",
+      "occurs1_c_exec_cd": "CME",
+      "occurs1_c_rt": "0.00",
+      "occurs1_c_bid_pric": "0.00",
+      "occurs1_pric_ind": "3",
+      "occurs1_p_ask_qty": "000000000000",
+      "occurs1_c_diff": "0.00",
+      "occurs1_c_last_pric": "0.05",
+      "occurs1_c_ask_qty": "000000000044",
+      "occurs1_c_bid_qty": "000000000000",
+      "occurs1_p_diff": "0.00",
+      "occurs1_c_atm_flag": "0",
+      "occurs1_p_bid_pric": "0.00"
+     }
+    ],
+    "nrec": "0323"
+   }
+  },
+  {
+   "api": "overseas_product-detail",
+   "request": {
+    "nxt_key": ""
+   },
+   "top_keys": [
+    "Occurs1",
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {
+    "Occurs1": "list[100]"
+   },
+   "shape": {
+    "nxt_key": "str",
+    "Occurs1": [
+     {
+      "occurs1_exch_cd": "str",
+      "occurs1_dlv_div": "str",
+      "occurs1_prd_grp_nm": "str",
+      "occurs1_cur_cd": "str",
+      "occurs1_ko_prd_nm": "str",
+      "occurs1_tick_val": "str",
+      "occurs1_ctr_unt": "str",
+      "occurs1_apl_dt": "str",
+      "occurs1_fut_opt_div_cd": "str",
+      "occurs1_prd_cd": "str",
+      "occurs1_tick_unt": "str"
+     },
+     "총 100개"
+    ],
+    "nrec": "str"
+   },
+   "sample": {
+    "nxt_key": "O_SI",
+    "Occurs1": [
+     {
+      "occurs1_exch_cd": "CME",
+      "occurs1_dlv_div": "2",
+      "occurs1_prd_grp_nm": "통화",
+      "occurs1_cur_cd": "USD",
+      "occurs1_ko_prd_nm": "호주달러",
+      "occurs1_tick_val": "00000000000000005.00000000",
+      "occurs1_ctr_unt": "00000000000100000.00000000",
+      "occurs1_apl_dt": "20260713",
+      "occurs1_fut_opt_div_cd": "F",
+      "occurs1_prd_cd": "6A",
+      "occurs1_tick_unt": "00000000000000000000.000050000"
+     }
+    ],
+    "nrec": "00100"
+   }
+  },
+  {
+   "api": "overseas_market-operations",
+   "request": {
+    "nxt_key": ""
+   },
+   "top_keys": [
+    "Occurs1",
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {
+    "Occurs1": "list[100]"
+   },
+   "shape": {
+    "nxt_key": "str",
+    "Occurs1": [
+     {
+      "occurs1_sett_pric_tm_inf": "str",
+      "occurs1_prd_cd": "str",
+      "occurs1_prd_nm": "str",
+      "occurs1_trd_tm_inf": "str",
+      "occurs1_prd_grp_cd": "str",
+      "occurs1_exch_cd": "str",
+      "occurs1_prd_grp_nm": "str",
+      "occurs1_trd_tm_inf_2": "str",
+      "occurs1_cur_cd": "str",
+      "occurs1_ko_prd_nm": "str",
+      "occurs1_nxd_trd_tm_inf": "str",
+      "occurs1_fut_opt_div_cd": "str",
+      "occurs1_fut_opt_div_nm": "str"
+     },
+     "총 100개"
+    ],
+    "nrec": "str"
+   },
+   "sample": {
+    "nxt_key": "QG",
+    "Occurs1": [
+     {
+      "occurs1_sett_pric_tm_inf": "04:59:00 ~ 05:00:00",
+      "occurs1_prd_cd": "6A",
+      "occurs1_prd_nm": "Australian Dollar",
+      "occurs1_trd_tm_inf": "08:00 ~ 07:00",
+      "occurs1_prd_grp_cd": "FG2",
+      "occurs1_exch_cd": "CME",
+      "occurs1_prd_grp_nm": "통화",
+      "occurs1_trd_tm_inf_2": "00:00 ~ 00:00",
+      "occurs1_cur_cd": "USD",
+      "occurs1_ko_prd_nm": "호주달러",
+      "occurs1_nxd_trd_tm_inf": "00:00 ~ 00:00",
+      "occurs1_fut_opt_div_cd": "F",
+      "occurs1_fut_opt_div_nm": "선물"
+     }
+    ],
+    "nrec": "0100"
+   }
+  },
+  {
+   "api": "overseas_order-error",
+   "request": {
+    "nxt_key": "",
+    "inq_dt": "20261120"
+   },
+   "top_keys": [
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {},
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str"
+   }
+  },
+  {
+   "api": "overseas_order-history",
+   "request": {
+    "nxt_key": "",
+    "inq_div": "0",
+    "trd_div_cd": "0"
+   },
+   "top_keys": [
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {},
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str"
+   }
+  },
+  {
+   "api": "overseas_open-interest",
+   "request": {
+    "nxt_key": ""
+   },
+   "top_keys": [
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {},
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str"
+   }
+  },
+  {
+   "api": "overseas_product-expiry",
+   "request": {
+    "nxt_key": "",
+    "rem_dy": "30",
+    "sym": "6AZ26"
+   },
+   "top_keys": [
+    "Occurs1",
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {
+    "Occurs1": "list[1]"
+   },
+   "shape": {
+    "nxt_key": "str",
+    "Occurs1": [
+     {
+      "occurs1_sym": "str",
+      "occurs1_lst_sett_dt": "str",
+      "occurs1_exch_cd": "str",
+      "occurs1_exp_dt": "str",
+      "occurs1_sett_nm": "str",
+      "occurs1_rem_dy": "str",
+      "occurs1_fst_ntf_dt": "str",
+      "occurs1_prd_cd": "str",
+      "occurs1_sym_nm": "str"
+     },
+     "총 1개"
+    ],
+    "nrec": "str"
+   },
+   "sample": {
+    "nxt_key": "",
+    "Occurs1": [
+     {
+      "occurs1_sym": "6AZ26",
+      "occurs1_lst_sett_dt": "20261214",
+      "occurs1_exch_cd": "CME",
+      "occurs1_exp_dt": "20261214",
+      "occurs1_sett_nm": "인수도",
+      "occurs1_rem_dy": "000024",
+      "occurs1_fst_ntf_dt": "20261214",
+      "occurs1_prd_cd": "6A",
+      "occurs1_sym_nm": "호주달러"
+     }
+    ],
+    "nrec": "0001"
+   }
+  },
+  {
+   "api": "overseas_open-interest-expiry",
+   "request": {
+    "nxt_key": "",
+    "inq_dy_cnt": "2000"
+   },
+   "top_keys": [
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {},
+   "shape": {
+    "nxt_key": "str",
+    "nrec": "str"
+   }
+  },
+  {
+   "api": "overseas_cumulative-pl",
+   "request": {
+    "inq_strt_dt": "20261101",
+    "inq_ed_dt": "20261120",
+    "cvs_cur_cd": "USD"
+   },
+   "top_keys": [
+    "Occurs1",
+    "nrec",
+    "nxt_key"
+   ],
+   "occurs": {
+    "Occurs1": "list[2]"
+   },
+   "shape": {
+    "nxt_key": "str",
+    "Occurs1": [
+     {
+      "occurs1_fee": "str",
+      "occurs1_cls_pl_amt": "str",
+      "occurs1_cur_cd": "str",
+      "occurs1_net_pl_amt": "str",
+      "occurs1_prd_cd": "str",
+      "occurs1_pl_amt": "str",
+      "occurs1_prd_nm": "str"
+     },
+     "총 2개"
+    ],
+    "nrec": "str"
+   }
+  }
+ ],
+ "B": {
+  "request": {
+   "opt_prd": "011",
+   "ref_dt": "20261120",
+   "inq_tp": "1"
+  },
+  "error": null,
+  "keys": [
+   "bank_buy",
+   "bank_buy_rt",
+   "bank_net_buy",
+   "bank_pre_buy",
+   "bank_pre_sel",
+   "bank_sel",
+   "bank_sel_rt",
+   "cntry_buy",
+   "cntry_buy_rt",
+   "cntry_net_buy",
+   "cntry_pre_buy",
+   "cntry_pre_sel",
+   "cntry_sel",
+   "cntry_sel_rt",
+   "etc_buy",
+   "etc_buy_rt",
+   "etc_net_buy",
+   "etc_pre_buy",
+   "etc_pre_sel",
+   "etc_sel",
+   "etc_sel_rt",
+   "frgn_buy",
+   "frgn_buy_rt",
+   "frgn_net_buy",
+   "frgn_pre_buy",
+   "frgn_pre_sel",
+   "frgn_sel",
+   "frgn_sel_rt",
+   "grs_buy",
+   "grs_buy_rt",
+   "grs_net_buy",
+   "grs_pre_buy",
+   "grs_pre_sel",
+   "grs_sel",
+   "grs_sel_rt",
+   "ind_buy",
+   "ind_buy_rt",
+   "ind_net_buy",
+   "ind_pre_buy",
+   "ind_pre_sel",
+   "ind_sel",
+   "ind_sel_rt",
+   "ins_buy",
+   "ins_buy_net",
+   "ins_buy_rt",
+   "ins_pre_buy",
+   "ins_pre_sel",
+   "ins_sel",
+   "ins_sel_rt",
+   "inst_cd",
+   "invt_buy",
+   "invt_buy_rt",
+   "invt_net_buy",
+   "invt_pre_buy",
+   "invt_pre_sel",
+   "invt_sel",
+   "invt_sel_rt",
+   "mb_buy",
+   "mb_buy_rt",
+   "mb_net_buy",
+   "mb_pre_buy",
+   "mb_pre_sel",
+   "mb_sel",
+   "mb_sel_rt",
+   "penfnd_buy",
+   "penfnd_buy_rt",
+   "penfnd_net_buy",
+   "penfnd_pre_buy",
+   "penfnd_pre_sel",
+   "penfnd_sel",
+   "penfnd_sel_rt",
+   "scrt_buy",
+   "scrt_buy_rt",
+   "scrt_net_buy",
+   "scrt_pre_buy",
+   "scrt_pre_sel",
+   "scrt_sel",
+   "scrt_sel_rt",
+   "tm"
+  ],
+  "has_Occurs1": false,
+  "has_occurs1_ins_buy_net": false,
+  "has_ins_buy_net": true,
+  "sample": {
+   "cntry_net_buy": "0",
+   "grs_buy": "171107",
+   "scrt_sel_rt": "6.63",
+   "bank_pre_buy": "0",
+   "penfnd_pre_buy": "0",
+   "invt_sel": "5733",
+   "ins_buy_rt": "0.27",
+   "scrt_buy_rt": "8.97",
+   "ins_buy": "458",
+   "mb_pre_sel": "0",
+   "scrt_pre_sel": "1744",
+   "frgn_pre_sel": "34345",
+   "etc_pre_sel": "286",
+   "grs_pre_buy": "42695",
+   "scrt_buy": "15347",
+   "penfnd_sel_rt": "0.44",
+   "frgn_net_buy": "-314",
+   "mb_sel": "3",
+   "ins_sel_rt": "0.15",
+   "cntry_pre_buy": "0",
+   "grs_sel": "171107",
+   "ind_buy_rt": "12.68",
+   "ind_sel": "21263",
+   "invt_net_buy": "-4284",
+   "penfnd_buy": "561",
+   "ins_sel": "259",
+   "etc_sel_rt": "0.85",
+   "invt_pre_sel": "69",
+   "ind_pre_buy": "7044",
+   "mb_buy_rt": "0.00",
+   "cntry_buy_rt": "0.00",
+   "bank_buy": "29",
+   "etc_pre_buy": "463",
+   "etc_buy": "1607",
+   "invt_sel_rt": "3.35",
+   "scrt_pre_buy": "1621",
+   "ins_pre_buy": "0",
+   "invt_pre_buy": "40",
+   "etc_buy_rt": "0.94",
+   "ins_pre_sel": "0",
+   "mb_pre_buy": "0",
+   "frgn_buy": "129960",
+   "bank_buy_rt": "0.02",
+   "etc_sel": "1448",
+   "ind_sel_rt": "12.43",
+   "mb_buy": "2",
+   "grs_net_buy": "0",
+   "cntry_pre_sel": "0",
+   "grs_buy_rt": "100.00",
+   "inst_cd": "KRDRVFUK2I",
+   "penfnd_buy_rt": "0.33",
+   "penfnd_net_buy": "-192",
+   "frgn_buy_rt": "75.95",
+   "bank_net_buy": "5",
+   "ins_buy_net": "199",
+   "bank_pre_sel": "0",
+   "invt_buy": "1449",
+   "cntry_buy": "0",
+   "frgn_sel_rt": "76.14",
+   "bank_sel": "24",
+   "cntry_sel": "0",
+   "grs_sel_rt": "100.00",
+   "cntry_sel_rt": "0.00",
+   "grs_pre_sel": "42695",
+   "penfnd_pre_sel": "0",
+   "scrt_sel": "11350",
+   "mb_net_buy": "-1",
+   "etc_net_buy": "159",
+   "scrt_net_buy": "3997",
+   "frgn_sel": "130274",
+   "invt_buy_rt": "0.85",
+   "mb_sel_rt": "0.00",
+   "ind_buy": "21694",
+   "tm": "160630",
+   "ind_net_buy": "431",
+   "ind_pre_sel": "6251",
+   "bank_sel_rt": "0.01",
+   "frgn_pre_buy": "33527",
+   "penfnd_sel": "753"
+  }
+ },
+ "C": [
+  {
+   "case": "배열 [ {…} ]",
+   "request": {
+    "Iccurs1": [
+     {
+      "iccurs1_exch_cd": "FCME",
+      "iccurs1_sym": "6AZ26"
+     }
+    ]
+   },
+   "result": "nrec='1' 현재가=0.66650",
+   "response": {
+    "Occurs1": [
+     {
+      "occurs1_sym": "6AZ26",
+      "occurs1_high_pric": "0.66785",
+      "occurs1_last_pric": "0.66650",
+      "occurs1_rt": "0.08",
+      "occurs1_life_high_dt": "20260506",
+      "occurs1_sett_pric": "0.66595",
+      "occurs1_life_low_dt": "20251121",
+      "occurs1_ris_trd_qty": "31353",
+      "occurs1_fal_trd_qty": "30768",
+      "occurs1_life_high_pric": "0.72285",
+      "occurs1_pre_close_pric": "0.66595",
+      "occurs1_biz_dt": "20261120",
+      "occurs1_cum_trd_qty": "62116",
+      "occurs1_open_pric": "0.66570",
+      "occurs1_low_pric": "0.66425",
+      "occurs1_ask_pric": "0.66650",
+      "occurs1_diff_rt": "0.00055",
+      "occurs1_sym_nm": "Australian Dollar",
+      "occurs1_life_low_pric": "0.64280",
+      "occurs1_exch_cd": "CME",
+      "occurs1_bid_pric": "0.66645",
+      "occurs1_trd_tm": "231402",
+      "occurs1_real_sym": "6AZ26",
+      "occurs1_ask_qty": "000000000056",
+      "occurs1_bid_qty": "000000000002",
+      "occurs1_pre_sett_dy": "20261119"
+     }
+    ],
+    "nrec": "1"
+   }
+  },
+  {
+   "case": "단일 객체 {…}",
+   "request": {
+    "Iccurs1": {
+     "iccurs1_exch_cd": "FCME",
+     "iccurs1_sym": "6AZ26"
+    }
+   },
+   "result": "nrec='1' 현재가=0.66650",
+   "response": {
+    "Occurs1": [
+     {
+      "occurs1_sym": "6AZ26",
+      "occurs1_high_pric": "0.66785",
+      "occurs1_last_pric": "0.66650",
+      "occurs1_rt": "0.08",
+      "occurs1_life_high_dt": "20260506",
+      "occurs1_sett_pric": "0.66595",
+      "occurs1_life_low_dt": "20251121",
+      "occurs1_ris_trd_qty": "31353",
+      "occurs1_fal_trd_qty": "30768",
+      "occurs1_life_high_pric": "0.72285",
+      "occurs1_pre_close_pric": "0.66595",
+      "occurs1_biz_dt": "20261120",
+      "occurs1_cum_trd_qty": "62116",
+      "occurs1_open_pric": "0.66570",
+      "occurs1_low_pric": "0.66425",
+      "occurs1_ask_pric": "0.66650",
+      "occurs1_diff_rt": "0.00055",
+      "occurs1_sym_nm": "Australian Dollar",
+      "occurs1_life_low_pric": "0.64280",
+      "occurs1_exch_cd": "CME",
+      "occurs1_bid_pric": "0.66645",
+      "occurs1_trd_tm": "231402",
+      "occurs1_real_sym": "6AZ26",
+      "occurs1_ask_qty": "000000000056",
+      "occurs1_bid_qty": "000000000002",
+      "occurs1_pre_sett_dy": "20261119"
+     }
+    ],
+    "nrec": "1"
+   }
+  }
+ ],
+ "D": [
+  {
+   "api": "domestic_price-bid",
+   "content_type": "application/json",
+   "status": 200,
+   "brief": {
+    "키": [
+     "Occurs1",
+     "ask_cnt",
+     "ask_qty",
+     "bid_cnt",
+     "bid_qty",
+     "cum_trd_amt"
+    ]
+   }
+  },
+  {
+   "api": "domestic_price-bid",
+   "content_type": "(없음)",
+   "status": 415,
+   "brief": {
+    "errorMessage": "지원하지 않는 Content-Type입니다. 현재 요청: application/octet-stream, 지원 형식: application/json",
+    "errorCode": "ERC000"
+   }
+  },
+  {
+   "api": "domestic_price-bid",
+   "content_type": "text/plain",
+   "status": 415,
+   "brief": {
+    "errorMessage": "지원하지 않는 Content-Type입니다. 현재 요청: text/plain;charset=UTF-8, 지원 형식: application/json",
+    "errorCode": "ERC000"
+   }
+  },
+  {
+   "api": "domestic_order-history",
+   "content_type": "application/json",
+   "status": 200,
+   "brief": {
+    "키": [
+     "nrec",
+     "nxt_key"
+    ]
+   }
+  },
+  {
+   "api": "domestic_order-history",
+   "content_type": "(없음)",
+   "status": 415,
+   "brief": {
+    "errorMessage": "지원하지 않는 Content-Type입니다. 현재 요청: application/octet-stream, 지원 형식: application/json",
+    "errorCode": "ERC000"
+   }
+  },
+  {
+   "api": "domestic_order-history",
+   "content_type": "text/plain",
+   "status": 415,
+   "brief": {
+    "errorMessage": "지원하지 않는 Content-Type입니다. 현재 요청: text/plain;charset=UTF-8, 지원 형식: application/json",
+    "errorCode": "ERC000"
+   }
+  },
+  {
+   "api": "domestic_price (대조군, 명세에 application/json)",
+   "content_type": "application/json",
+   "status": 200,
+   "brief": {
+    "키": [
+     "ask_pric",
+     "bid_pric",
+     "chg",
+     "chg_sign",
+     "delta",
+     "dev"
+    ]
+   }
+  },
+  {
+   "api": "domestic_price (대조군, 명세에 application/json)",
+   "content_type": "(없음)",
+   "status": 415,
+   "brief": {
+    "errorMessage": "지원하지 않는 Content-Type입니다. 현재 요청: application/octet-stream, 지원 형식: application/json",
+    "errorCode": "ERC000"
+   }
+  },
+  {
+   "api": "domestic_price (대조군, 명세에 application/json)",
+   "content_type": "text/plain",
+   "status": 415,
+   "brief": {
+    "errorMessage": "지원하지 않는 Content-Type입니다. 현재 요청: text/plain;charset=UTF-8, 지원 형식: application/json",
+    "errorCode": "ERC000"
+   }
+  }
+ ]
+}

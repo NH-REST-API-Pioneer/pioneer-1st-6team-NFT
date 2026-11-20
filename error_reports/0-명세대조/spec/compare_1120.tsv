@@ -1,0 +1,54 @@
+웹내부	국내_시세체결	경로	웹 apiFullUrl '/trade/v1/KA' (요청 샘플 첫 줄에 쓰임) / 엑셀 '/trade/ws-stream?access_key={{WEBSOCKET_KEY}}'
+웹↔엑셀	국내_시세체결	요청 제한	웹 'API 디폴트' / 엑셀 '전체 실시간 구독 제한은 20개입니다.' (실시간인데 웹은 REST 등급 표기)
+웹내부	국내_시세체결(야간)	경로	웹 apiFullUrl '/trade/v1/KC' (요청 샘플 첫 줄에 쓰임) / 엑셀 '/trade/ws-stream?access_key={{WEBSOCKET_KEY}}'
+웹↔엑셀	국내_시세체결(야간)	요청 제한	웹 'API 디폴트' / 엑셀 '전체 실시간 구독 제한은 20개입니다.' (실시간인데 웹은 REST 등급 표기)
+웹내부	국내_시세호가	경로	웹 apiFullUrl '/trade/v1/KB' (요청 샘플 첫 줄에 쓰임) / 엑셀 '/trade/ws-stream?access_key={{WEBSOCKET_KEY}}'
+웹↔엑셀	국내_시세호가	요청 제한	웹 'API 디폴트' / 엑셀 '전체 실시간 구독 제한은 20개입니다.' (실시간인데 웹은 REST 등급 표기)
+웹내부	국내_시세호가(야간)	경로	웹 apiFullUrl '/trade/v1/KD' (요청 샘플 첫 줄에 쓰임) / 엑셀 '/trade/ws-stream?access_key={{WEBSOCKET_KEY}}'
+웹↔엑셀	국내_시세호가(야간)	요청 제한	웹 'API 디폴트' / 엑셀 '전체 실시간 구독 제한은 20개입니다.' (실시간인데 웹은 REST 등급 표기)
+웹누락	국내_신규주문	Content-Type	웹 요청 헤더에 Content-Type 없음
+웹내부	국내_잔고내역	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	국내_잔고내역	nxt_key	응답 설명이 '기본' 로 잘림
+웹누락	국내_정정주문	Content-Type	웹 요청 헤더에 Content-Type 없음
+웹내부	국내_주문/체결	경로	웹 apiFullUrl '/trade/v1/O1_K' (요청 샘플 첫 줄에 쓰임) / 엑셀 '/trade/ws-stream?access_key={{WEBSOCKET_KEY}}'
+웹↔엑셀	국내_주문/체결	요청 제한	웹 'API 디폴트' / 엑셀 '전체 실시간 구독 제한은 20개입니다.' (실시간인데 웹은 REST 등급 표기)
+웹누락	국내_주문가능수량	Content-Type	웹 요청 헤더에 Content-Type 없음
+웹누락	국내_주문내역	Content-Type	웹 요청 헤더에 Content-Type 없음
+웹내부	국내_주문내역	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	국내_주문내역	nxt_key	응답 설명이 '기본' 로 잘림
+웹내부	국내_주문오류내역	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	국내_주문오류내역	nxt_key	응답 설명이 '기본' 로 잘림
+웹누락	국내_취소주문	Content-Type	웹 요청 헤더에 Content-Type 없음
+웹누락	국내_취소주문(야간)	Content-Type	웹 요청 헤더에 Content-Type 없음
+웹내부	국내_투자자직전매매동향	Occurs1.occurs1_ins_buy_net	응답 상위 객체 'Occurs1' 정의 없음
+웹↔엑셀	국내_투자자직전매매동향	Occurs1.occurs1_ins_buy_net	응답: 웹에만 있는 필드
+웹누락	국내_호가	Content-Type	웹 요청 헤더에 Content-Type 없음
+웹내부	해외_누적손익현황	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	해외_누적손익현황	nxt_key	응답 설명이 '기본' 로 잘림
+웹누락	해외_만기일조회	Content-Type	웹 요청 헤더에 Content-Type 없음
+웹내부	해외_만기일조회	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	해외_만기일조회	nxt_key	응답 설명이 '기본' 로 잘림
+웹내부	해외_보유포지션만기조회	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	해외_보유포지션만기조회	nxt_key	응답 설명이 '기본' 로 잘림
+웹내부	해외_시세체결	경로	웹 apiFullUrl '/trade/v1/FA' (요청 샘플 첫 줄에 쓰임) / 엑셀 '/trade/ws-stream?access_key={{WEBSOCKET_KEY}}'
+웹↔엑셀	해외_시세체결	요청 제한	웹 'API 디폴트' / 엑셀 '전체 실시간 구독 제한은 20개입니다.' (실시간인데 웹은 REST 등급 표기)
+웹내부	해외_시세호가	경로	웹 apiFullUrl '/trade/v1/FB' (요청 샘플 첫 줄에 쓰임) / 엑셀 '/trade/ws-stream?access_key={{WEBSOCKET_KEY}}'
+웹↔엑셀	해외_시세호가	요청 제한	웹 'API 디폴트' / 엑셀 '전체 실시간 구독 제한은 20개입니다.' (실시간인데 웹은 REST 등급 표기)
+웹내부	해외_잔고내역	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	해외_잔고내역	nxt_key	응답 설명이 '기본' 로 잘림
+웹내부	해외_장운영정보	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	해외_장운영정보	nxt_key	응답 설명이 '기본' 로 잘림
+웹내부	해외_주문	sym	설명엔 '필수'인데 필수 칸 N: '필수입력'
+웹내부	해외_주문	ord_qty	조건부 필수인데 필수 칸 Y: '신규, 정정 필수입력'
+웹내부	해외_주문	org_ord_no	조건부 필수인데 필수 칸 Y: '정정, 취소 필수입력'
+엑셀내부	해외_주문	sym	설명엔 '필수'인데 필수 칸 N: '필수입력'
+엑셀내부	해외_주문	ord_qty	조건부 필수인데 필수 칸 Y: '신규, 정정 필수입력'
+엑셀내부	해외_주문	org_ord_no	조건부 필수인데 필수 칸 Y: '정정, 취소 필수입력'
+웹내부	해외_주문/체결	경로	웹 apiFullUrl '/trade/v1/O1' (요청 샘플 첫 줄에 쓰임) / 엑셀 '/trade/ws-stream?access_key={{WEBSOCKET_KEY}}'
+웹↔엑셀	해외_주문/체결	요청 제한	웹 'API 디폴트' / 엑셀 '전체 실시간 구독 제한은 20개입니다.' (실시간인데 웹은 REST 등급 표기)
+웹내부	해외_주문내역	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	해외_주문내역	nxt_key	응답 설명이 '기본' 로 잘림
+웹내부	해외_주문오류내역	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	해외_주문오류내역	nxt_key	응답 설명이 '기본' 로 잘림
+웹내부	해외_품목별세부정보	nxt_key	응답 설명이 '기본' 로 잘림
+엑셀내부	해외_품목별세부정보	nxt_key	응답 설명이 '기본' 로 잘림
