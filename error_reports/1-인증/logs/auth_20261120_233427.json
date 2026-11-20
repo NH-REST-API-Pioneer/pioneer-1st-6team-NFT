@@ -1,0 +1,205 @@
+{
+ "server": "https://apidemo.futures.co.kr",
+ "results": [
+  {
+   "case": "T1 정상 (form-urlencoded)",
+   "method": "POST",
+   "path": "/auth-service/v1/token",
+   "status": 200,
+   "content_type": "application/json",
+   "body": {
+    "access_token": "str(JWT, 883자)",
+    "token_type": "str 'Bearer'",
+    "scopes": "str 'S'",
+    "expires_in": "str '86400'",
+    "expires_at": "str '2026-11-21 08:50:03'"
+   },
+   "expires_at_format_ok": true
+  },
+  {
+   "case": "T1b 바로 다시 발급",
+   "method": "POST",
+   "path": "/auth-service/v1/token",
+   "status": 200,
+   "content_type": "application/json",
+   "body": {
+    "access_token": "str(JWT, 883자)",
+    "token_type": "str 'Bearer'",
+    "scopes": "str 'S'",
+    "expires_in": "str '86400'",
+    "expires_at": "str '2026-11-21 08:50:03'"
+   },
+   "same_token_as_T1": true
+  },
+  {
+   "case": "T2 JSON 본문으로 (명세는 form)",
+   "method": "POST",
+   "path": "/auth-service/v1/token",
+   "status": 400,
+   "content_type": "application/json;charset=UTF-8",
+   "body": {
+    "errorTime": "str '2026-11-20 23:34:21'",
+    "errorMessage": "str '필수 파라미터 누락: appkey'",
+    "errorStatus": "str 'BAD_REQUEST'",
+    "errorCode": "str 'EAU030'",
+    "errorPath": "str '/v1/oauth2/token'"
+   }
+  },
+  {
+   "case": "T3 grant_type 없음",
+   "method": "POST",
+   "path": "/auth-service/v1/token",
+   "status": 400,
+   "content_type": "application/json;charset=UTF-8",
+   "body": {
+    "errorTime": "str '2026-11-20 23:34:22'",
+    "errorMessage": "str '필수 파라미터 누락: grant_type'",
+    "errorStatus": "str 'BAD_REQUEST'",
+    "errorCode": "str 'EAU030'",
+    "errorPath": "str '/v1/oauth2/token'"
+   }
+  },
+  {
+   "case": "T4 grant_type 틀림 (password)",
+   "method": "POST",
+   "path": "/auth-service/v1/token",
+   "status": 400,
+   "content_type": "application/json;charset=utf-8",
+   "body": {
+    "errorTime": "str '2026-11-20 23:34:22'",
+    "errorPath": "str '/v1/oauth2/token'",
+    "errorStatus": "int 400",
+    "errorCode": "str 'EAU023'",
+    "errorMessage": "str '잘못된 파라미터: grant_type'"
+   }
+  },
+  {
+   "case": "T5 appsecret 틀림",
+   "method": "POST",
+   "path": "/auth-service/v1/token",
+   "status": 400,
+   "content_type": "application/json;charset=utf-8",
+   "body": {
+    "errorTime": "str '2026-11-20 23:34:23'",
+    "errorPath": "str '/v1/oauth2/token'",
+    "errorStatus": "int 400",
+    "errorCode": "str 'EAU025'",
+    "errorMessage": "str '잘못된 appkey 또는 appsecret'"
+   }
+  },
+  {
+   "case": "T6 appkey 없음",
+   "method": "POST",
+   "path": "/auth-service/v1/token",
+   "status": 400,
+   "content_type": "application/json;charset=UTF-8",
+   "body": {
+    "errorTime": "str '2026-11-20 23:34:23'",
+    "errorMessage": "str '필수 파라미터 누락: appkey'",
+    "errorStatus": "str 'BAD_REQUEST'",
+    "errorCode": "str 'EAU030'",
+    "errorPath": "str '/v1/oauth2/token'"
+   }
+  },
+  {
+   "case": "T7 GET 으로 (명세 POST)",
+   "method": "GET",
+   "path": "/auth-service/v1/token",
+   "status": 200,
+   "content_type": "",
+   "body": {
+    "_text": "str ''"
+   }
+  },
+  {
+   "case": "W1 정상 GET",
+   "method": "GET",
+   "path": "/permission/v1/web-socket-key",
+   "status": 200,
+   "content_type": "application/json",
+   "body": {
+    "access_key": "str(UUID 36자)"
+   }
+  },
+  {
+   "case": "W1b 바로 다시 발급",
+   "method": "GET",
+   "path": "/permission/v1/web-socket-key",
+   "status": 200,
+   "content_type": "application/json",
+   "body": {
+    "access_key": "str(UUID 36자)"
+   },
+   "same_key_as_W1": false
+  },
+  {
+   "case": "W2 POST 로 (명세 GET)",
+   "method": "POST",
+   "path": "/permission/v1/web-socket-key",
+   "status": 405,
+   "content_type": "application/json",
+   "body": {
+    "timestamp": "str '2026-11-20T14:34:25.761+00:00'",
+    "status": "int 405",
+    "error": "str 'Method Not Allowed'",
+    "path": "str '/v1/oauth2/token/web-socket-key'"
+   }
+  },
+  {
+   "case": "W3 Authorization 없음",
+   "method": "GET",
+   "path": "/permission/v1/web-socket-key",
+   "status": 401,
+   "content_type": "application/json",
+   "body": {
+    "errorMessage": "str '접근토큰이 누락되었습니다: Authorization.'",
+    "errorPath": "str '/permission/v1/web-socket-key'",
+    "errorTime": "str '2026-11-20 23:34:26'",
+    "errorStatus": "int 401",
+    "errorCode": "str 'EGW023'"
+   }
+  },
+  {
+   "case": "W4 Authorization 깨진 토큰",
+   "method": "GET",
+   "path": "/permission/v1/web-socket-key",
+   "status": 401,
+   "content_type": "application/json",
+   "body": {
+    "errorMessage": "str '잘못된 JWT 형식입니다.'",
+    "errorPath": "str '/permission/v1/web-socket-key'",
+    "errorTime": "str '2026-11-20 23:34:26'",
+    "errorStatus": "int 401",
+    "errorCode": "str 'EG047'"
+   }
+  },
+  {
+   "case": "W5 Bearer 없이 토큰만",
+   "method": "GET",
+   "path": "/permission/v1/web-socket-key",
+   "status": 401,
+   "content_type": "application/json",
+   "body": {
+    "errorMessage": "str '인증 오류가 발생했습니다. 관리자에게 문의해 주세요.'",
+    "errorPath": "str '/permission/v1/web-socket-key'",
+    "errorTime": "str '2026-11-20 23:34:27'",
+    "errorStatus": "int 401",
+    "errorCode": "str 'EGW000'"
+   }
+  },
+  {
+   "case": "X1 시세 API 를 Authorization 없이",
+   "method": "POST",
+   "path": "/trade/v1/domestic/price",
+   "status": 401,
+   "content_type": "application/json",
+   "body": {
+    "errorMessage": "str '접근토큰이 누락되었습니다: Authorization.'",
+    "errorPath": "str '/trade/v1/domestic/price'",
+    "errorTime": "str '2026-11-20 23:34:27'",
+    "errorStatus": "int 401",
+    "errorCode": "str 'EGW023'"
+   }
+  }
+ ]
+}
