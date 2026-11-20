@@ -102,7 +102,7 @@ def test_trade_pnl_uses_fill_prices_and_fees(trader):
     tr.step(T("10:05"), 0.0, False)                     # 매도 100.00
     x = tr.trades[0]
     assert x["pnl_pt"] == pytest.approx(-0.02)
-    assert x["pnl_krw"] == round(-0.02 * analyze.PT_KRW - 2 * analyze.LIVE_FEE_KRW)   # 종이 체결은 실측 수수료
+    assert x["pnl_krw"] == round(-0.02 * analyze.PT_KRW - round(analyze.fee_krw(100.02), 2) - round(analyze.fee_krw(100.0), 2))   # 종이 체결은 수수료율
 
 
 def _rest_line(recv, prd, tm, ind, frgn=0):

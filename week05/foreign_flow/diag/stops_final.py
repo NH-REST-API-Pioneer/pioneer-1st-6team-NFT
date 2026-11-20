@@ -1,5 +1,5 @@
 """손절·하루 한도 최종 (11/20 장 후). 그날 실제로 주문한 규칙(18·19 규칙 2, 20 규칙 3)과 규칙 1 종이 기록에, 1분 중간가로 손절·한도를 걸어 본다.
-수수료는 실측 편도 약 560원. 17일(신호가 맞던 날, 학습 표본)은 해가 되는지만 본다."""
+수수료는 거래대금의 0.00145% (analyze.fee_krw). 17일(신호가 맞던 날, 학습 표본)은 해가 되는지만 본다."""
 import sys, json, numpy as np, pandas as pd
 sys.path.insert(0, "."); sys.path.insert(0, "diag")
 import analyze as A
@@ -17,7 +17,7 @@ def total(rules, stop, lim):
     out = {}
     for d, r in rules.items():
         f = A.add_signal(A.features(P[d].copy()), r)
-        tr = A.simulate_risk(f, r["signal"], r["h"], r["theta"], r["sign"], r["sd"], stop, lim, 560)
+        tr = A.simulate_risk(f, r["signal"], r["h"], r["theta"], r["sign"], r["sd"], stop, lim)
         out[d] = int(sum(x["krw"] for x in tr))
     return out
 for name, rules in (("주문한 규칙 (18·19 규칙2, 20 규칙3)", order), ("규칙 1 (18~20)", {d: r1 for d in order})):

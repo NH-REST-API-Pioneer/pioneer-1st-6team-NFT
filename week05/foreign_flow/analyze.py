@@ -21,7 +21,7 @@
 회귀: r_h = a + b·z, Newey-West 표준오차 (lag = h, numpy 로 직접 계산).
 규칙: 학습일에서 |t| 가 가장 큰 (신호, k, h) 하나 + 문턱 θ (학습일 비용 후 평균 1등). 방향 = 학습 β 부호.
        |z| > θ 이면 그 방향으로 1계약, h 분 보유, 보유 중 새 진입 없음.
-비용: 왕복 = 진입 시점 스프레드(시장가로 사고팔 때 반씩 두 번) + 수수료 2 × FEE_KRW. 미니 1pt = 50,000원.
+비용: 왕복 = 진입 시점 스프레드(시장가로 사고팔 때 반씩 두 번) + 수수료 2번 (거래대금 × FEE_RATE). 미니 1pt = 50,000원.
 늦은 스냅샷: 서버 시각(tm)이 행 시각보다 STALE_S 초 넘게 늦은 분은 회귀·규칙 모두에서 뺌 (실행기도 그런 분엔 진입 안 함).
 """
 from __future__ import annotations
@@ -43,7 +43,9 @@ HS = (5, 15, 30)
 THETAS = (0.5, 1.0, 1.5, 2.0, 3.0)
 MIN_TRADES = 10          # θ 는 학습일 거래가 이만큼 이상인 것 중에서만 고름 (1건짜리 운 배제)
 TICK_PT, PT_KRW = 0.02, 50_000
-FEE_KRW = 1_500          # 미니 1계약 편도 수수료 가정 — 첫 모의 체결의 예수금 변화로 확인해서 고칠 것
+FEE_KRW = 1_500          # 규칙을 고를 때(11/17~19) 쓴 편도 수수료 가정. 규칙 파일 fee_krw 기록용으로만 남김
+FEE_RATE = 0.0000145     # 실제 편도 수수료율: NH 미니코스피200선물 HTS·API 0.00145% (거래대금 기준, 18~20일 예수금 fee 와 일치).
+                         # 11/20 밤 판정부터 이 값. 근거 문서 12절 "수수료가 틀리면 비용만 고쳐 판정" 대로이고 규칙은 안 바꿈
 START, LAST_EXIT = "09:05", "15:35"
 
 
@@ -132,7 +134,7 @@ def cost_bp(mid: float, spread: float = TICK_PT) -> float:
     """왕복 = 진입 반 스프레드 + 청산 반 스프레드(진입 때 스프레드로 근사) + 수수료 2번."""
     if not np.isfinite(spread):
         spread = TICK_PT
-    rt_pt = spread + 2 * FEE_KRW / PT_KRW
+    rt_pt = spread + 2 * mid * FEE_RATE          # 수수료(pt) = 가격 × 수수료율
     return rt_pt / mid * 1e4
 
 
@@ -157,11 +159,15 @@ def simulate(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, sd: f
 # ---------------------------------------------------------------- 실행기 위험 관리 (11/20 장 후 정함, 판정에는 안 씀)
 STOP_PT = 1.0              # 보유 중 분 경계 중간가가 진입 중간가보다 이만큼 불리하면 청산
 DAILY_LOSS_KRW = 200_000   # 그날 거래 손익(수수료 포함) 합이 이만큼 손실이면 새 진입 멈춤
-LIVE_FEE_KRW = 560         # 실측 편도 수수료 (18~20일 예수금 fee ÷ 체결 수)
+
+
+def fee_krw(px: float) -> float:
+    """미니 1계약 편도 수수료(원) = 체결가 × 50,000 × 0.00145%."""
+    return float(px) * PT_KRW * FEE_RATE
 
 
 def simulate_risk(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, sd: float,
-                  stop_pt: float = STOP_PT, daily_loss_krw: float = DAILY_LOSS_KRW, fee_krw: float = LIVE_FEE_KRW) -> list[dict]:
+                  stop_pt: float = STOP_PT, daily_loss_krw: float = DAILY_LOSS_KRW) -> list[dict]:
     """simulate 에 손절·하루 한도를 더한 것 (실행기와 같은 순서: 청산 → 손절 → 한도 → 진입). 원 단위 손익."""
     m = fresh(f, h)
     z, mid, idx = f[sig] / sd, f["mid"], f.index
@@ -183,7 +189,8 @@ def simulate_risk(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, 
             if stop_pt and np.isfinite(mj) and side * (mj - m0) <= -stop_pt:
                 k, why = j, "stop"
                 break
-        krw = side * (mid.iloc[i + k] - m0) * PT_KRW - (spr(t) + spr(idx[i + k])) / 2 * PT_KRW - 2 * fee_krw  # 시장가: 진입·청산 반 스프레드씩
+        krw = side * (mid.iloc[i + k] - m0) * PT_KRW - (spr(t) + spr(idx[i + k])) / 2 * PT_KRW \
+            - fee_krw(m0) - fee_krw(mid.iloc[i + k])  # 시장가: 진입·청산 반 스프레드씩
         cum += krw
         trades.append({"t": t, "side": side, "z": float(zt), "exit_t": idx[i + k], "why": why, "krw": float(krw)})
         busy_until = idx[i + k]
@@ -231,7 +238,7 @@ def regime_freeze(days: list[str], for_day: str) -> None:
     F = {d: features(p) for d, p in load(days).items()}
     rule, _, _ = fit_combo(F)
     rule = {k: rule[k] for k in ("signal", "parts", "h", "sign", "sd")}
-    rule.update(theta=REGIME_THETA, filter=REGIME_FILTER, train_days=sorted(days), for_day=for_day, fee_krw=FEE_KRW,
+    rule.update(theta=REGIME_THETA, filter=REGIME_FILTER, train_days=sorted(days), for_day=for_day, fee_rate=FEE_RATE,
                 chosen_at=pd.Timestamp.now().isoformat(timespec="seconds"),
                 note="학습일 17~19 안에서 W·ρmin·θ 30여 조합 중 1등 (80건 +3.70bp, 무작위 원형 이동 대비 p≈0.10). 시험: for_day 하루")
     tr = [x for d in days for x in simulate(add_signal(F[d], rule), rule["signal"], rule["h"], rule["theta"], rule["sign"], rule["sd"])]
@@ -284,7 +291,7 @@ def fit_combo(F: dict[str, pd.DataFrame]) -> tuple[dict, list, dict]:
     if not np.isfinite(m):
         raise SystemExit(f"θ 후보 모두 학습 거래 {MIN_TRADES}건 미만")
     rule.update(theta=theta, train_days=sorted(F), train_b=reg["b"], train_t=reg["t"], train_net_bp_mean=m,
-                train_trades=n, fee_krw=FEE_KRW)
+                train_trades=n, fee_rate=FEE_RATE)
     return rule, scores, reg
 
 
@@ -399,7 +406,7 @@ def main_single(a) -> None:
     m, theta, n = max(scores)
     rule = {"signal": best.signal, "h": int(best.h), "theta": theta, "sign": sign, "sd": sd[(best.signal, int(best.h))],
             "train_days": tr_days, "train_t": float(best.t), "train_net_bp_mean": float(m), "train_trades": n,
-            "fee_krw": FEE_KRW, "chosen_at": pd.Timestamp.now().isoformat(timespec="seconds")}
+            "fee_rate": FEE_RATE, "chosen_at": pd.Timestamp.now().isoformat(timespec="seconds")}
     lines += ["", "## 규칙 (학습일에서 고름)", "", "| θ | 거래 수 | 비용 후 평균 bp |", "| --- | --- | --- |"]
     lines += [f"| {th} | {k} | {mm:+.2f} |" for mm, th, k in scores]
     lines += ["", f"→ {json.dumps(rule, ensure_ascii=False)}"]

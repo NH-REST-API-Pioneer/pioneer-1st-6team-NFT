@@ -122,7 +122,7 @@ class PaperBroker:
     def __init__(self, client, journal: Journal):
         self.c, self.j = client, journal
         self.pos = 0
-        self.last_fill_fee = float(analyze.LIVE_FEE_KRW)   # 종이 체결 수수료 = 실측 편도
+        self.last_fill_fee: float | None = None   # 종이 체결 수수료는 체결가 × 0.00145% (analyze.fee_krw)
 
     def quote(self) -> dict:
         try:
@@ -136,6 +136,7 @@ class PaperBroker:
         if not px:
             return None
         self.pos += side
+        self.last_fill_fee = round(analyze.fee_krw(px), 2)
         self.j.write("fill", side=side, price=px, source="paper", fee=self.last_fill_fee, text=f"종이 체결 · {why}")
         return px
 
@@ -278,13 +279,14 @@ class Trader:
         if e:
             pnl_pt = self.side * (px - e["px"])
             fees = [x for x in (e.get("fee"), self.b.last_fill_fee) if x is not None]
+            fee_est = analyze.fee_krw(e["px"]) + analyze.fee_krw(px)     # 수수료를 못 잡았을 때 (수수료율로 계산)
             mid_in = ((e["quote"].get("bid") or 0) + (e["quote"].get("ask") or 0)) / 2 or e["px"]
             tr = {"entry_t": e["t"], "exit_t": t, "side": self.side, "z": round(e["z"], 3),
                   "entry_px": e["px"], "exit_px": px, "entry_bid": e["quote"].get("bid"),
                   "entry_ask": e["quote"].get("ask"), "exit_bid": q.get("bid"), "exit_ask": q.get("ask"),
                   "pnl_pt": round(pnl_pt, 4), "fee_krw": sum(fees) if len(fees) == 2 else None,
-                  "pnl_krw": round(pnl_pt * analyze.PT_KRW - (sum(fees) if len(fees) == 2 else 2 * analyze.FEE_KRW)),
-                  "net_bp": round(pnl_pt / mid_in * 1e4 - (sum(fees) if len(fees) == 2 else 2 * analyze.FEE_KRW)
+                  "pnl_krw": round(pnl_pt * analyze.PT_KRW - (sum(fees) if len(fees) == 2 else fee_est)),
+                  "net_bp": round(pnl_pt / mid_in * 1e4 - (sum(fees) if len(fees) == 2 else fee_est)
                                   / analyze.PT_KRW / mid_in * 1e4, 2), "why": why}
             self.trades.append(tr)
             if self.trades_csv is not None:      # 거래마다 덧붙임 — 중간에 죽고 다시 떠도 앞 거래가 남음
