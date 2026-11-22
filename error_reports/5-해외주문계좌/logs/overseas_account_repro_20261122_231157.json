@@ -1,0 +1,213 @@
+{
+ "run_at": "2026-11-22T23:11:57",
+ "server": "https://apidemo.futures.co.kr",
+ "cases": {
+  "cumulative-pl cvs_cur_cd=USD": {
+   "request": {
+    "inq_strt_dt": "20261101",
+    "inq_ed_dt": "20261120",
+    "cvs_cur_cd": "USD"
+   },
+   "status": 200,
+   "response": {
+    "정상": true,
+    "키": [
+     "Occurs1",
+     "nrec",
+     "nxt_key"
+    ],
+    "행": 2,
+    "마지막 행 품목명": "USD의 USD환산합계",
+    "마지막 행 금액이 모두 0": false
+   }
+  },
+  "cumulative-pl cvs_cur_cd=EUR": {
+   "request": {
+    "inq_strt_dt": "20261101",
+    "inq_ed_dt": "20261120",
+    "cvs_cur_cd": "EUR"
+   },
+   "status": 200,
+   "response": {
+    "정상": true,
+    "키": [
+     "Occurs1",
+     "nrec",
+     "nxt_key"
+    ],
+    "행": 2,
+    "마지막 행 품목명": "USD의 EUR환산합계",
+    "마지막 행 금액이 모두 0": false
+   }
+  },
+  "cumulative-pl cvs_cur_cd=XXX": {
+   "request": {
+    "inq_strt_dt": "20261101",
+    "inq_ed_dt": "20261120",
+    "cvs_cur_cd": "XXX"
+   },
+   "status": 200,
+   "response": {
+    "정상": true,
+    "키": [
+     "Occurs1",
+     "nrec",
+     "nxt_key"
+    ],
+    "행": 2,
+    "마지막 행 품목명": "USD의 XXX환산합계",
+    "마지막 행 금액이 모두 0": true
+   }
+  },
+  "deposit cur_cd=XXX": {
+   "request": {
+    "cur_cd": "XXX",
+    "cvs_div": "1"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:11:54",
+    "errorMessage": "[XXX]통화의 환율정보가 없습니다.",
+    "errorStatus": 400,
+    "errorCode": "7332",
+    "errorPath": "/trade/v1/overseas/deposit"
+   }
+  },
+  "deposit cvs_div=9": {
+   "request": {
+    "cur_cd": "USD",
+    "cvs_div": "9"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:11:55",
+    "errorMessage": "[환산구분] 필수항목 입력하세요.",
+    "errorStatus": 400,
+    "errorCode": "5009",
+    "errorPath": "/trade/v1/overseas/deposit"
+   }
+  },
+  "order-history inq_div=9": {
+   "request": {
+    "nxt_key": "",
+    "inq_div": "9",
+    "trd_div_cd": "0"
+   },
+   "status": 200,
+   "response": {
+    "정상": true,
+    "키": [
+     "nrec",
+     "nxt_key"
+    ],
+    "행": 0
+   }
+  },
+  "order-history trd_div_cd=9": {
+   "request": {
+    "nxt_key": "",
+    "inq_div": "0",
+    "trd_div_cd": "9"
+   },
+   "status": 200,
+   "response": {
+    "정상": true,
+    "키": [
+     "nrec",
+     "nxt_key"
+    ],
+    "행": 0
+   }
+  },
+  "orderable-quantity STOP-L, stop_pric 없음": {
+   "request": {
+    "sym": "6AZ26",
+    "glb_ord_tp_cd": "4",
+    "ord_pric": "0.66000"
+   },
+   "status": 200,
+   "response": {
+    "정상": true,
+    "키": [
+     "buy_cls_psb_qty",
+     "buy_ord_psb_qty",
+     "cur_cd",
+     "new_buy_ord_psb_qty",
+     "new_sel_ord_psb_qty",
+     "ord_psb_amt",
+     "prd_cd",
+     "sel_cls_psb_qty",
+     "sel_ord_psb_qty"
+    ],
+    "행": 0
+   }
+  },
+  "orderable-quantity glb_ord_tp_cd=9": {
+   "request": {
+    "sym": "6AZ26",
+    "glb_ord_tp_cd": "9",
+    "ord_pric": "0.66000"
+   },
+   "status": 200,
+   "response": {
+    "정상": true,
+    "키": [
+     "buy_cls_psb_qty",
+     "buy_ord_psb_qty",
+     "cur_cd",
+     "new_buy_ord_psb_qty",
+     "new_sel_ord_psb_qty",
+     "ord_psb_amt",
+     "prd_cd",
+     "sel_cls_psb_qty",
+     "sel_ord_psb_qty"
+    ],
+    "행": 0
+   }
+  },
+  "orderable-quantity ord_pric=abc": {
+   "request": {
+    "sym": "6AZ26",
+    "glb_ord_tp_cd": "2",
+    "ord_pric": "abc"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:11:57",
+    "errorMessage": "ERC008",
+    "errorStatus": 400,
+    "errorCode": "오류가 발생 하였습니다.\n ErrorCode: ETR045, Message: 응답 데이터 처리중 에러가 발생했습니다. 변환할 데이터 길이가 부족합니다. [key=prd_cd](필요한 데이터 길이=10, 남은 데이터 길이=0)",
+    "errorPath": "/trade/v1/overseas/orderable-quantity"
+   }
+  },
+  "product-expiry rem_dy=abc": {
+   "request": {
+    "nxt_key": "",
+    "rem_dy": "abc",
+    "sym": "6AZ26"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:11:57",
+    "errorMessage": "ERC008",
+    "errorStatus": 400,
+    "errorCode": "오류가 발생 하였습니다.\n ErrorCode: ETR045, Message: 응답 데이터 처리중 에러가 발생했습니다. 변환할 데이터 길이가 부족합니다. [key=nxt_key](필요한 데이터 길이=100, 남은 데이터 길이=0)",
+    "errorPath": "/trade/v1/overseas/product-expiry"
+   }
+  },
+  "open-interest-expiry inq_dy_cnt=abc": {
+   "request": {
+    "nxt_key": "",
+    "inq_dy_cnt": "abc"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:11:57",
+    "errorMessage": "ERC008",
+    "errorStatus": 400,
+    "errorCode": "오류가 발생 하였습니다.\n ErrorCode: ETR045, Message: 응답 데이터 처리중 에러가 발생했습니다. 변환할 데이터 길이가 부족합니다. [key=nxt_key](필요한 데이터 길이=100, 남은 데이터 길이=0)",
+    "errorPath": "/trade/v1/overseas/open-interest-expiry"
+   }
+  }
+ }
+}

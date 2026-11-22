@@ -1,0 +1,222 @@
+{
+ "run_at": "2026-11-22T23:10:47",
+ "server": "https://apidemo.futures.co.kr",
+ "apis": {
+  "해외_주문가능수량": {
+   "path": "/trade/v1/overseas/orderable-quantity",
+   "base": {
+    "sym": "6AZ26",
+    "glb_ord_tp_cd": "2",
+    "ord_pric": "0.66000"
+   },
+   "A": "HTTP 200 정상 nrec=None Occurs1=없음 키9개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": [],
+    "Occurs1 행 수": 0
+   },
+   "B": {
+    "sym 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+    "sym 빈값": "HTTP 400 ETR029 해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: ]",
+    "glb_ord_tp_cd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: glb_ord_tp_cd",
+    "glb_ord_tp_cd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: glb_ord_tp_cd",
+    "ord_pric 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: ord_pric",
+    "ord_pric 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: ord_pric"
+   },
+   "C": {
+    "glb_ord_tp_cd=9": "HTTP 200 정상 nrec=None Occurs1=없음 키9개 (기준과 같음)",
+    "glb_ord_tp_cd=3": "HTTP 200 정상 nrec=None Occurs1=없음 키9개 (기준과 같음)",
+    "ord_pric=abc": "HTTP 400 오류가 발생 하였습니다.\n ErrorCode: ETR045, Message: 응답 데이터 처리중 에러가 발생했습니다. 변환할 데이터 길이가 부족합니다. [key=prd_cd](필요한 데이터 길이=10, 남은 데이터 길이=0) ERC008",
+    "ord_pric=0": "HTTP 200 정상 nrec=None Occurs1=없음 키9개 (기준과 같음)",
+    "sym=6AZ99": "HTTP 400 ETR029 해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: 6AZ99]"
+   }
+  },
+  "해외_주문오류내역": {
+   "path": "/trade/v1/overseas/order-error",
+   "base": {
+    "nxt_key": "",
+    "inq_dt": "20261120"
+   },
+   "A": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": [],
+    "Occurs1 행 수": 0
+   },
+   "B": {
+    "inq_dt 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: inq_dt",
+    "inq_dt 빈값": "HTTP 400 ETR018 필드 [inq_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['inq_dt'::]"
+   },
+   "C": {
+    "inq_dt=2026112": "HTTP 400 ETR018 필드 [inq_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['inq_dt'::2026112]",
+    "inq_dt=20261122": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 같음)"
+   }
+  },
+  "해외_주문내역": {
+   "path": "/trade/v1/overseas/order-history",
+   "base": {
+    "nxt_key": "",
+    "inq_div": "0",
+    "trd_div_cd": "0"
+   },
+   "A": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": [],
+    "Occurs1 행 수": 0
+   },
+   "B": {
+    "inq_div 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: inq_div",
+    "inq_div 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: inq_div",
+    "trd_div_cd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_div_cd",
+    "trd_div_cd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_div_cd"
+   },
+   "C": {
+    "inq_div=9": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 같음)",
+    "trd_div_cd=9": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 같음)",
+    "prd_cd=XXX": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 같음)"
+   }
+  },
+  "해외_잔고내역": {
+   "path": "/trade/v1/overseas/open-interest",
+   "base": {
+    "nxt_key": ""
+   },
+   "A": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": [],
+    "Occurs1 행 수": 0
+   },
+   "B": {},
+   "C": {}
+  },
+  "해외_예수금조회": {
+   "path": "/trade/v1/overseas/deposit",
+   "base": {
+    "cur_cd": "USD",
+    "cvs_div": "1"
+   },
+   "A": "HTTP 200 정상 nrec=None Occurs1=없음 키58개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": [],
+    "Occurs1 행 수": 0
+   },
+   "B": {
+    "cur_cd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: cur_cd",
+    "cur_cd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: cur_cd",
+    "cvs_div 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: cvs_div",
+    "cvs_div 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: cvs_div"
+   },
+   "C": {
+    "cvs_div=2": "HTTP 200 정상 nrec=None Occurs1=없음 키58개 (기준과 다름)",
+    "cvs_div=9": "HTTP 400 5009 [환산구분] 필수항목 입력하세요.",
+    "cur_cd=KRW": "HTTP 200 정상 nrec=None Occurs1=없음 키58개 (기준과 다름)",
+    "cur_cd=XXX": "HTTP 400 7332 [XXX]통화의 환율정보가 없습니다.",
+    "biz_dt=20261120": "HTTP 200 정상 nrec=None Occurs1=없음 키58개 (기준과 다름)",
+    "biz_dt=20261122": "HTTP 200 정상 nrec=None Occurs1=없음 키58개 (기준과 다름)",
+    "biz_dt=2026112": "HTTP 400 ETR018 필드 [biz_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['biz_dt'::2026112]"
+   }
+  },
+  "해외_만기일조회": {
+   "path": "/trade/v1/overseas/product-expiry",
+   "base": {
+    "nxt_key": "",
+    "rem_dy": "30",
+    "sym": "6AZ26"
+   },
+   "A": "HTTP 200 정상 nrec='0001' Occurs1=1 키3개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": [],
+    "문자열 아닌 값": [],
+    "Occurs1 행 수": 1
+   },
+   "B": {
+    "sym 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+    "sym 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym"
+   },
+   "C": {
+    "fut_opt_div_cd=X": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 다름)",
+    "rem_dy=0": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 다름)",
+    "rem_dy=abc": "HTTP 400 오류가 발생 하였습니다.\n ErrorCode: ETR045, Message: 응답 데이터 처리중 에러가 발생했습니다. 변환할 데이터 길이가 부족합니다. [key=nxt_key](필요한 데이터 길이=100, 남은 데이터 길이=0) ERC008",
+    "rem_dy=999": "HTTP 200 정상 nrec='0001' Occurs1=1 키3개 (기준과 같음)",
+    "sym=6AZ99": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 다름)"
+   }
+  },
+  "해외_보유포지션만기조회": {
+   "path": "/trade/v1/overseas/open-interest-expiry",
+   "base": {
+    "nxt_key": "",
+    "inq_dy_cnt": "2000"
+   },
+   "A": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": [],
+    "Occurs1 행 수": 0
+   },
+   "B": {},
+   "C": {
+    "nxt_key=000": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 같음)",
+    "inq_dy_cnt=abc": "HTTP 400 오류가 발생 하였습니다.\n ErrorCode: ETR045, Message: 응답 데이터 처리중 에러가 발생했습니다. 변환할 데이터 길이가 부족합니다. [key=nxt_key](필요한 데이터 길이=100, 남은 데이터 길이=0) ERC008",
+    "inq_dy_cnt=0": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 같음)",
+    "und_sym=6A": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 같음)",
+    "und_sym=XX": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 같음)"
+   }
+  },
+  "해외_누적손익현황": {
+   "path": "/trade/v1/overseas/cumulative-pl",
+   "base": {
+    "inq_strt_dt": "20261101",
+    "inq_ed_dt": "20261120",
+    "cvs_cur_cd": "USD"
+   },
+   "A": "HTTP 200 정상 nrec='0002' Occurs1=2 키3개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": [],
+    "문자열 아닌 값": [],
+    "Occurs1 행 수": 2
+   },
+   "B": {
+    "inq_strt_dt 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: inq_strt_dt",
+    "inq_strt_dt 빈값": "HTTP 400 ETR018 필드 [inq_strt_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['inq_strt_dt'::]",
+    "inq_ed_dt 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: inq_ed_dt",
+    "inq_ed_dt 빈값": "HTTP 400 ETR018 필드 [inq_ed_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['inq_ed_dt'::]"
+   },
+   "C": {
+    "cvs_cur_cd=KRW": "HTTP 200 정상 nrec='0002' Occurs1=2 키3개 (기준과 다름)",
+    "cvs_cur_cd=EUR": "HTTP 200 정상 nrec='0002' Occurs1=2 키3개 (기준과 다름)",
+    "cur_cd=XXX": "HTTP 200 정상 nrec='0002' Occurs1=2 키3개 (기준과 같음)",
+    "inq_strt_dt=20261130": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개 (기준과 다름)",
+    "inq_strt_dt=2026110": "HTTP 400 ETR018 필드 [inq_strt_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['inq_strt_dt'::2026110]"
+   }
+  }
+ },
+ "D": {
+  "만기일조회 sym 빼기 (명세 필수)": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+  "주문가능수량 STOP-L 인데 stop_pric 없음 (명세: STOP 일 때 필수)": "HTTP 200 정상 nrec=None Occurs1=없음 키9개",
+  "주문가능수량 시장가 ord_pric 0": "HTTP 200 정상 nrec=None Occurs1=없음 키9개",
+  "누적손익 시작일 > 종료일": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+  "예수금 cvs_div 빼기 (명세 필수)": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: cvs_div",
+  "보유포지션만기 nxt_key=''": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+  "보유포지션만기 nxt_key='000'": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+  "보유포지션만기 inq_dy_cnt 생략 (명세 「공백: 2000일」)": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개"
+ }
+}
