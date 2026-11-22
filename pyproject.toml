@@ -7,7 +7,9 @@ authors = [
     { name = "eunseokYoon", email = "dmstjrwltjr@naver.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "fastmcp>=4.2.4,<5",
+]
 
 [build-system]
 requires = ["hatchling"]
