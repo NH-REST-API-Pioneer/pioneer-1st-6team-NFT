@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+data/raw/
+data/recorder.lock
+data/recorder.out
+data/live.lock
+data/live.out
+results/live/replay_*
+data/live/
+.venv
