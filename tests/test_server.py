@@ -5,7 +5,6 @@ from datetime import UTC, datetime
 
 from fastmcp import Client
 
-from nh_mcp.config import DEMO_BASE_URL, Settings
 from nh_mcp.server import build_server
 
 NOW = datetime(2026, 12, 1, 1, 15, 3, tzinfo=UTC)
@@ -16,7 +15,7 @@ def test_ping_over_http() -> None:
 
 
 async def _ping_over_http() -> None:
-    server = build_server(Settings(nh_base_url=DEMO_BASE_URL), clock=lambda: NOW)
+    server = build_server(clock=lambda: NOW)
     # 미리 열어 둔 소켓을 넘겨 포트 경합 없이 띄운다.
     # listen 중이라 서버가 뜨기 전에 들어온 연결도 대기열에서 기다린다.
     sock = socket.socket()

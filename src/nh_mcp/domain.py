@@ -2,5 +2,5 @@
 
 from typing import Literal
 
-# 모의 서버인지 아닌지만 가른다. 모의가 아니면 주문 도구를 등록하지 않는다.
-type Env = Literal["demo", "not_demo"]
+# NH는 모의 서버만 쓴다. 다른 환경 값은 두지 않는다.
+type Env = Literal["demo"]
