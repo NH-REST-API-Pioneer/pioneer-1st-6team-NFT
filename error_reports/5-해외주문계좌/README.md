@@ -6,15 +6,15 @@
 
 | API | 문서명 | 경로 | 확인 |
 | --- | --- | --- | --- |
-| [해외_주문](https://apidev.futures.co.kr/#/api?g=125&a=270&v=1) | `overseas_order` | POST /trade/v1/overseas/order || 보류 (주문 — 평일 장중에 확인받고) |
-| [해외_주문가능수량](https://apidev.futures.co.kr/#/api?g=125&a=271&v=1) | `overseas_orderable-quantity` | POST /trade/v1/overseas/orderable-quantity || 끝 |
-| [해외_주문오류내역](https://apidev.futures.co.kr/#/api?g=125&a=272&v=1) | `overseas_order-error` | POST /trade/v1/overseas/order-error || 끝 |
-| [해외_주문내역](https://apidev.futures.co.kr/#/api?g=125&a=263&v=1) | `overseas_order-history` | POST /trade/v1/overseas/order-history || 끝 |
-| [해외_잔고내역](https://apidev.futures.co.kr/#/api?g=125&a=267&v=1) | `overseas_open-interest` | POST /trade/v1/overseas/open-interest || 끝 |
-| [해외_예수금조회](https://apidev.futures.co.kr/#/api?g=125&a=265&v=1) | `overseas_deposit` | POST /trade/v1/overseas/deposit || 끝 |
-| [해외_만기일조회](https://apidev.futures.co.kr/#/api?g=125&a=262&v=1) | `overseas_product-expiry` | POST /trade/v1/overseas/product-expiry || 끝 |
-| [해외_보유포지션만기조회](https://apidev.futures.co.kr/#/api?g=125&a=264&v=1) | `overseas_open-interest-expiry` | POST /trade/v1/overseas/open-interest-expiry || 끝 |
-| [해외_누적손익현황](https://apidev.futures.co.kr/#/api?g=125&a=261&v=1) | `overseas_cumulative-pl` | POST /trade/v1/overseas/cumulative-pl || 끝 |
+| [해외_주문](https://apidev.futures.co.kr/#/api?g=125&a=270&v=1) | `overseas_order` | POST /trade/v1/overseas/order | 보류 (주문 — 평일 장중에 확인받고) |
+| [해외_주문가능수량](https://apidev.futures.co.kr/#/api?g=125&a=271&v=1) | `overseas_orderable-quantity` | POST /trade/v1/overseas/orderable-quantity | 끝 |
+| [해외_주문오류내역](https://apidev.futures.co.kr/#/api?g=125&a=272&v=1) | `overseas_order-error` | POST /trade/v1/overseas/order-error | 끝 |
+| [해외_주문내역](https://apidev.futures.co.kr/#/api?g=125&a=263&v=1) | `overseas_order-history` | POST /trade/v1/overseas/order-history | 끝 |
+| [해외_잔고내역](https://apidev.futures.co.kr/#/api?g=125&a=267&v=1) | `overseas_open-interest` | POST /trade/v1/overseas/open-interest | 끝 |
+| [해외_예수금조회](https://apidev.futures.co.kr/#/api?g=125&a=265&v=1) | `overseas_deposit` | POST /trade/v1/overseas/deposit | 끝 |
+| [해외_만기일조회](https://apidev.futures.co.kr/#/api?g=125&a=262&v=1) | `overseas_product-expiry` | POST /trade/v1/overseas/product-expiry | 끝 |
+| [해외_보유포지션만기조회](https://apidev.futures.co.kr/#/api?g=125&a=264&v=1) | `overseas_open-interest-expiry` | POST /trade/v1/overseas/open-interest-expiry | 끝 |
+| [해외_누적손익현황](https://apidev.futures.co.kr/#/api?g=125&a=261&v=1) | `overseas_cumulative-pl` | POST /trade/v1/overseas/cumulative-pl | 끝 |
 
 ## 확인한 것
 
@@ -23,9 +23,9 @@
 | 확인 | 결과 | 명세와 |
 | --- | --- | --- |
 | 응답 키 | 8개 모두 명세와 같음. 잔고·주문 0건이라 일부 `Occurs1` 안쪽은 비교 못 함 (만기일조회·누적손익은 비교함) | 같음 |
-| 필수 필드 빼기 | `ETR023` (빈 sym 은 `ETR029`, 날짜 빈 값은 `ETR018`) | 같음 |
+| 필수 필드 빼기 | `ETR023` (주문가능수량 빈 `sym` 은 `ETR029`, 만기일조회 빈 `sym` 은 `ETR023`, 날짜 빈 값은 `ETR018`) | 같음 |
 | 숫자 필드에 문자 | 주문가능수량·만기일조회·보유포지션만기 모두 뒤바뀐 `ETR045` | **→ R14 (5개 API 로 넓힘)** |
-| 누적손익 환산통화 | USD·KRW 외 EUR·JPY 동작, 없는 XXX 는 「USD의 XXX환산합계」 모두 0 | **→ R18** |
+| 누적손익 환산통화 | USD·KRW 외 EUR 동작, 없는 XXX 는 「USD의 XXX환산합계」 모두 0 | **→ R18** |
 | 예수금 잘못된 통화·환산구분 | `7332`, `5009`(「필수항목 입력하세요」) — 정의서에 없음 | **→ R18** |
 | 주문내역 범위 밖 `inq_div`·`trd_div_cd` | 오류 없음 (국내는 5011) | **→ R18** |
 | 주문가능수량 STOP 인데 `stop_pric` 없음 | 정상 응답 | **명세 「필수」와 다름 → R18** |
