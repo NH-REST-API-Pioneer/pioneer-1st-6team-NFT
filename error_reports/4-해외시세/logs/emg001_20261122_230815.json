@@ -1,0 +1,145 @@
+{
+ "run_at": "2026-11-22T23:08:15",
+ "cases": {
+  "국내_선물전체시세 prd=99": {
+   "request": {
+    "prd": "99"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:11",
+    "errorMessage": "'99' MarketCode error [SDIF7023Q01@dom]",
+    "errorStatus": 400,
+    "errorCode": "EMG_001",
+    "errorPath": "/trade/v1/domestic/price-all-futures"
+   }
+  },
+  "국내_옵션전체시세 prd=99": {
+   "request": {
+    "prd": "99",
+    "exp_mon": "261210"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:12",
+    "errorMessage": "'99' 마켓 검색 실패 [SDIF7057Q03@dom]",
+    "errorStatus": 400,
+    "errorCode": "EMG_001",
+    "errorPath": "/trade/v1/domestic/price-all-option"
+   }
+  },
+  "국내_투자자동향 opt_prd=999": {
+   "request": {
+    "opt_prd": "999",
+    "ref_dt": "20261120",
+    "inq_tp": "1"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:12",
+    "errorMessage": "'999' get_section error [SDIF7172Q01@dom]",
+    "errorStatus": 400,
+    "errorCode": "EMG_001",
+    "errorPath": "/trade/v1/domestic/trend-investor"
+   }
+  },
+  "해외_호가 exch_cd=FCMEX (종목 6AZ26)": {
+   "request": {
+    "exch_cd": "FCMEX",
+    "sym": "6AZ26"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:12",
+    "errorMessage": "[]종목을 찾을 수 없습니다. [PIBO7012@fts]",
+    "errorStatus": 400,
+    "errorCode": "EMG_001",
+    "errorPath": "/trade/v1/overseas/bid-price"
+   }
+  },
+  "해외_차트(일) req_qty=0": {
+   "request": {
+    "exch_cd": "FCME",
+    "sym": "6AZ26",
+    "req_qty": "0"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:13",
+    "errorMessage": "검색 조건이 잘 못 돼었습니다. [PIBO7503@fts]",
+    "errorStatus": 400,
+    "errorCode": "EMG_001",
+    "errorPath": "/trade/v1/overseas/chart-daily"
+   }
+  },
+  "해외_옵션전체시세 exch_cd=FCME": {
+   "request": {
+    "exch_cd": "FCME",
+    "sym": "O_ESZ26"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:13",
+    "errorMessage": "[FCME]옵션 시세거래소명이 아닙니다. [PIBO7051@fts]",
+    "errorStatus": 400,
+    "errorCode": "EMG_001",
+    "errorPath": "/trade/v1/overseas/price-all-option"
+   }
+  },
+  "해외_옵션전체시세 exch_cd=OXXX": {
+   "request": {
+    "exch_cd": "OXXX",
+    "sym": "O_ESZ26"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:13",
+    "errorMessage": "[OXXX]거래소를 찾을수 없습니다. [PIBO7051@fts]",
+    "errorStatus": 400,
+    "errorCode": "EMG_001",
+    "errorPath": "/trade/v1/overseas/price-all-option"
+   }
+  },
+  "해외_옵션전체시세 sym=O_ESZ99": {
+   "request": {
+    "exch_cd": "OCME",
+    "sym": "O_ESZ99"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:14",
+    "errorMessage": "[O_ESZ99]종목을 찾을수 없습니다. [PIBO7051@fts]",
+    "errorStatus": 400,
+    "errorCode": "EMG_001",
+    "errorPath": "/trade/v1/overseas/price-all-option"
+   }
+  },
+  "해외_호가 sym 빈값": {
+   "request": {
+    "exch_cd": "FCME",
+    "sym": ""
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:14",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: ]",
+    "errorStatus": 400,
+    "errorCode": "ETR029",
+    "errorPath": "/trade/v1/overseas/bid-price"
+   }
+  },
+  "국내_현재가 sym 빈값 (대조)": {
+   "request": {
+    "sym": ""
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:08:15",
+    "errorMessage": "필수 필드 값이 비어져있습니다.: sym",
+    "errorStatus": 400,
+    "errorCode": "ETR023",
+    "errorPath": "/trade/v1/domestic/price"
+   }
+  }
+ }
+}
