@@ -1,0 +1,63 @@
+[project]
+name = "nh-futures-mcp"
+version = "0.1.0"
+description = "NH선물 Open API(모의 서버)를 AI 클라이언트가 쓸 수 있게 하는 원격 MCP 서버"
+readme = "README.md"
+authors = [
+    { name = "eunseokYoon", email = "dmstjrwltjr@naver.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nh_mcp"]
+
+[dependency-groups]
+dev = [
+    "import-linter>=2.17",
+    "pre-commit>=4.7.0",
+    "pyright>=1.1.414",
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "PL", "RUF", "ANN"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR2004"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+include = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+# 의존 방향: tools · runner → services → markets → nh. guard는 계층 밖(services만 부른다).
+# 괄호는 아직 없는 계층(선택 계층). 계층이 생기면 괄호를 벗긴다.
+# tools | runner: 서로 import 금지.
+# TODO(M1): 금지 계약(tools·runner ↛ guard·markets·nh).
+# TODO(M2): guard 순수성 계약(guard는 domain만 import).
+#   forbidden·protected 계약은 없는 모듈을 오류로 보므로 대상 패키지가 생길 때 넣는다.
+# TODO(M0): 계층이 생긴 뒤 exhaustive = true를 켜고 config·server 등의 계층을 정한다.
+[tool.importlinter]
+root_package = "nh_mcp"
+
+[[tool.importlinter.contracts]]
+name = "계층 의존 방향"
+type = "layers"
+containers = ["nh_mcp"]
+layers = [
+    "(tools) | (runner)",
+    "(services)",
+    "(markets)",
+    "(nh)",
+]

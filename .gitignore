@@ -1,0 +1,15 @@
+# 비밀값
+.env
+
+# 환경·캐시
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# 로컬 데이터
+*.db
+data/
+
+# macOS
+.DS_Store
