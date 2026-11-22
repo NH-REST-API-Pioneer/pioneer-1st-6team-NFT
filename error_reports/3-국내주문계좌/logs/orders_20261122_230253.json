@@ -1,0 +1,190 @@
+{
+ "server": "https://apidemo.futures.co.kr",
+ "result": {
+  "sym": "A756C000",
+  "limit_price": "1320.6",
+  "O1_keys": [
+   "errorCode",
+   "errorMessage",
+   "errorPath",
+   "errorStatus",
+   "errorTime"
+  ],
+  "E1_rows": 0,
+  "E1_keys": "행 없음",
+  "E1_msgs": [],
+  "남은 미체결": []
+ },
+ "log": [
+  {
+   "t": "2026-11-22T23:02:46",
+   "case": "주문내역 (시작 전)",
+   "path": "/trade/v1/domestic/order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0000"
+   }
+  },
+  {
+   "t": "2026-11-22T23:02:47",
+   "case": "O1 신규 지정가 매수 1",
+   "path": "/trade/v1/domestic/order",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "ord_pric": "1320.6",
+    "exec_cnd_cd": "1"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:02:47",
+    "errorMessage": "처리불가 [거래소 개장전입니다. ]",
+    "errorStatus": 400,
+    "errorCode": "5039",
+    "errorPath": "/trade/v1/domestic/order"
+   }
+  },
+  {
+   "t": "2026-11-22T23:02:47",
+   "case": "R1 신규 지정가인데 가격 생략 (명세 N)",
+   "path": "/trade/v1/domestic/order",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "exec_cnd_cd": "1"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:02:47",
+    "errorMessage": "처리불가 [주문가격(0)이 하한가(1275.5)보다 작음.정상호가 범위 위반 ]",
+    "errorStatus": 400,
+    "errorCode": "5039",
+    "errorPath": "/trade/v1/domestic/order"
+   }
+  },
+  {
+   "t": "2026-11-22T23:02:48",
+   "case": "R2 신규 체결조건 9",
+   "path": "/trade/v1/domestic/order",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "ord_pric": "1320.6",
+    "exec_cnd_cd": "9"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:02:48",
+    "errorMessage": "처리불가 [잘못된  체결조건코드 ]",
+    "errorStatus": 400,
+    "errorCode": "5039",
+    "errorPath": "/trade/v1/domestic/order"
+   }
+  },
+  {
+   "t": "2026-11-22T23:02:48",
+   "case": "R3 없는 원주문 취소",
+   "path": "/trade/v1/domestic/cancel",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_qty": "1",
+    "org_ord_no": "9999999"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 23:02:48",
+    "errorMessage": "처리불가 [주문내역조회 에러 ]",
+    "errorStatus": 400,
+    "errorCode": "5039",
+    "errorPath": "/trade/v1/domestic/cancel"
+   }
+  },
+  {
+   "t": "2026-11-22T23:02:49",
+   "case": "R4 야간 신규주문 (「모의 미지원」)",
+   "path": "/trade/v1/domestic/order-night",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "ord_pric": "1320.6",
+    "exec_cnd_cd": "1"
+   },
+   "status": 400,
+   "response": {
+    "errorMessage": "해당 API는 모의투자 에서 호출 할수 없습니다.",
+    "errorPath": "/trade/v1/domestic/order-night",
+    "errorTime": "2026-11-22 23:02:49",
+    "errorStatus": 400,
+    "errorCode": "EGW053"
+   }
+  },
+  {
+   "t": "2026-11-22T23:02:49",
+   "case": "E1 주문오류내역 (오늘)",
+   "path": "/trade/v1/domestic/order-error",
+   "request": {
+    "inq_dt": "20261122",
+    "trd_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0000",
+    "data_tot_cnt": "00000000000",
+    "nxt_data_yn": ""
+   }
+  },
+  {
+   "t": "2026-11-22T23:02:51",
+   "case": "정리 전 주문내역",
+   "path": "/trade/v1/domestic/order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0000"
+   }
+  },
+  {
+   "t": "2026-11-22T23:02:53",
+   "case": "정리 뒤 주문내역",
+   "path": "/trade/v1/domestic/order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0000"
+   }
+  }
+ ]
+}

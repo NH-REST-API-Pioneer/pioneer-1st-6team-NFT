@@ -1,0 +1,275 @@
+{
+ "run_at": "2026-11-22T22:59:27",
+ "server": "https://apidemo.futures.co.kr",
+ "sym": "A756C000",
+ "apis": {
+  "국내_주문가능수량": {
+   "path": "/trade/v1/domestic/orderable-quantity",
+   "base_fields": [
+    "ord_pric",
+    "ord_sts",
+    "sym",
+    "trd_div"
+   ],
+   "A": "HTTP 200 정상 nrec=None Occurs1=없음 키4개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": []
+   },
+   "A_shape": {
+    "top": {
+     "cls_psb_qty": "str",
+     "ord_psb_qty": "str",
+     "ord_psb_amt": "str",
+     "tot_psb_qty": "str"
+    },
+    "occurs1_rows": null,
+    "occurs1_keys": []
+   },
+   "B": {
+    "ord_sts 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: ord_sts",
+    "ord_sts 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: ord_sts",
+    "sym 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+    "sym 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+    "trd_div 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_div",
+    "trd_div 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_div",
+    "ord_pric 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: ord_pric",
+    "ord_pric 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: ord_pric"
+   },
+   "C": {
+    "ord_sts=3": "HTTP 200 정상 nrec=None Occurs1=없음 키4개",
+    "ord_sts=9": "HTTP 200 정상 nrec=None Occurs1=없음 키4개",
+    "trd_div=9": "HTTP 200 정상 nrec=None Occurs1=없음 키4개",
+    "ord_pric=0": "HTTP 200 정상 nrec=None Occurs1=없음 키4개",
+    "ord_pric=abc": "HTTP 400 오류가 발생 하였습니다.\n ErrorCode: ETR045, Message: 응답 데이터 처리중 에러가 발생했습니다. 변환할 데이터 길이가 부족합니다. [key=ord_psb_qty](필요한 데이터 길이=24, 남은 데이터 길이=0) ERC008"
+   }
+  },
+  "국내_잔고내역": {
+   "path": "/trade/v1/domestic/open-interest",
+   "base_fields": [
+    "nxt_key"
+   ],
+   "A": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": []
+   },
+   "A_shape": {
+    "top": {
+     "nxt_key": "str",
+     "nrec": "str"
+    },
+    "occurs1_rows": null,
+    "occurs1_keys": []
+   },
+   "B": {},
+   "C": {}
+  },
+  "국내_주문오류내역": {
+   "path": "/trade/v1/domestic/order-error",
+   "base_fields": [
+    "inq_dt",
+    "nxt_key",
+    "trd_div_cd"
+   ],
+   "A": "HTTP 200 정상 nrec='0000' Occurs1=없음 키4개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": []
+   },
+   "A_shape": {
+    "top": {
+     "nxt_key": "str",
+     "nrec": "str",
+     "data_tot_cnt": "str",
+     "nxt_data_yn": "str"
+    },
+    "occurs1_rows": null,
+    "occurs1_keys": []
+   },
+   "B": {
+    "inq_dt 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: inq_dt",
+    "inq_dt 빈값": "HTTP 400 ETR018 필드 [inq_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['inq_dt'::]",
+    "trd_div_cd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_div_cd",
+    "trd_div_cd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_div_cd"
+   },
+   "C": {
+    "trd_div_cd=9": "HTTP 400 5011 [매수매도 구분코드] 코드 오류입니다.",
+    "inq_dt=2026112": "HTTP 400 ETR018 필드 [inq_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['inq_dt'::2026112]",
+    "inq_dt=20261122": "HTTP 200 정상 nrec='0000' Occurs1=없음 키4개"
+   }
+  },
+  "국내_주문내역": {
+   "path": "/trade/v1/domestic/order-history",
+   "base_fields": [
+    "exec_div",
+    "nxt_key",
+    "ord_div_cd",
+    "trd_div",
+    "trd_tm_div_cd"
+   ],
+   "A": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": []
+   },
+   "A_shape": {
+    "top": {
+     "nxt_key": "str",
+     "nrec": "str"
+    },
+    "occurs1_rows": null,
+    "occurs1_keys": []
+   },
+   "B": {
+    "trd_div 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_div",
+    "trd_div 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_div",
+    "exec_div 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: exec_div",
+    "exec_div 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: exec_div",
+    "trd_tm_div_cd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_tm_div_cd",
+    "trd_tm_div_cd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_tm_div_cd",
+    "ord_div_cd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: ord_div_cd",
+    "ord_div_cd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: ord_div_cd"
+   },
+   "C": {
+    "trd_div=9": "HTTP 400 5011 [매수매도구분코드] 코드 오류입니다.",
+    "exec_div=9": "HTTP 400 5011 [체결구분] 코드 오류입니다.",
+    "trd_tm_div_cd=2": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개",
+    "trd_tm_div_cd=9": "HTTP 400 5011 [거래시간구분] 코드 오류입니다.",
+    "ord_div_cd=9": "HTTP 200 정상 nrec='0000' Occurs1=없음 키2개"
+   }
+  },
+  "국내_예수금조회": {
+   "path": "/trade/v1/domestic/deposit",
+   "base_fields": [
+    "biz_dt"
+   ],
+   "A": "HTTP 200 정상 nrec=None Occurs1=없음 키64개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": []
+   },
+   "A_shape": {
+    "top": {
+     "mtn_mrgn_sbst_amt": "str",
+     "fut_cls_pl_amt": "str",
+     "wdw_psb_sbst_amt": "str",
+     "fee": "str",
+     "pl_tot_pric": "str",
+     "strt_dps_sbst_amt": "str",
+     "dy_dps_aset_amt": "str",
+     "nght_sett_amt": "str",
+     "sbst_sell_sett_pla_amt": "str",
+     "urv_ovd_amt": "str",
+     "opt_sel_amt": "str",
+     "ord_psb_tot_amt": "str",
+     "adt_mrgn_csh_amt": "str",
+     "opt_rez_pl_amt": "str",
+     "phd_dps_amt": "str",
+     "nght_tot_amt": "str",
+     "nght_fee": "str",
+     "mtn_mrgn_fcur_amt": "str",
+     "ftr_dlr_pla_amt": "str",
+     "fut_sett_amt": "str",
+     "wdw_amt": "str",
+     "opt_alloc_amt": "str",
+     "mtn_mrgn_tam_amt": "str",
+     "mtn_mrgn_csh_amt": "str",
+     "pv_typ_amt": "str",
+     "opt_strk_amt": "str",
+     "strt_dps_tot_amt": "str",
+     "urv_tot_amt": "str",
+     "dps_sbst_amt": "str",
+     "strt_dps_csh_amt": "str",
+     "etc_out_amt": "str",
+     "dps_aset_tot_amt": "str",
+     "ord_psb_fcur_amt": "str",
+     "init_mrgn_sbst_amt": "str",
+     "dps_fcur_amt": "str",
+     "ord_psb_sbst_amt": "str",
+     "ftr_dlr_sbst_amt": "str",
+     "phd_sett_pla_amt": "str",
+     "strt_dps_fcur_blc_amt": "str",
+     "dps_csh_amt": "str",
+     "opt_sett_amt": "str",
+     "adt_mrgn_tot_amt": "str",
+     "fut_rez_pl_amt": "str",
+     "adt_mrgn_ocu_div_nm": "str",
+     "init_mrgn_fcur_amt": "str",
+     "ftr_drw_pla_amt": "str",
+     "ord_psb_csh_amt": "str",
+     "adt_mrgn_fcur_amt": "str",
+     "wdw_psb_tot_amt": "str",
+     "cls_amt": "str",
+     "paid_subs_amt": "str",
+     "opt_pl_amt": "str",
+     "urv_amt": "str",
+     "ck_amt": "str",
+     "wdw_psb_fcur_amt": "str",
+     "emrg_init_mrgn": "str",
+     "adt_mrgn_sbst_amt": "str",
+     "wdw_psb_csh_amt": "str",
+     "etc_ck_amt": "str",
+     "nxd_stl_tot_amt": "str",
+     "init_mrgn_tot_amt": "str",
+     "init_mrgn_csh_amt": "str",
+     "opt_buy_amt": "str",
+     "dps_amt": "str"
+    },
+    "occurs1_rows": null,
+    "occurs1_keys": []
+   },
+   "B": {
+    "biz_dt 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: biz_dt",
+    "biz_dt 빈값": "HTTP 400 ETR018 필드 [biz_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['biz_dt'::]"
+   },
+   "C": {
+    "biz_dt=2026112": "HTTP 400 ETR018 필드 [biz_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['biz_dt'::2026112]",
+    "biz_dt=20991231": "HTTP 200 정상 nrec=None Occurs1=없음 키64개"
+   }
+  },
+  "국내_미결제약정(영업일 기준)": {
+   "path": "/trade/v1/domestic/open-position",
+   "base_fields": [
+    "nxt_key",
+    "trd_dt"
+   ],
+   "A": "HTTP 200 정상 nrec='0000' Occurs1=없음 키5개",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만(최상위)": [],
+    "명세에만(Occurs1)": "행 없음 (비교 못 함)",
+    "문자열 아닌 값": []
+   },
+   "A_shape": {
+    "top": {
+     "nxt_key": "str",
+     "pl_amt": "str",
+     "nrec": "str",
+     "fts_evl_pnl_amt": "str",
+     "opt_pl_amt": "str"
+    },
+    "occurs1_rows": null,
+    "occurs1_keys": []
+   },
+   "B": {
+    "trd_dt 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_dt",
+    "trd_dt 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: trd_dt"
+   },
+   "C": {
+    "trd_dt=2026112": "HTTP 400 5040 [일자별 영업일 정보조회] 자료가 존재하지 않습니다.",
+    "trd_dt=20261122": "HTTP 200 정상 nrec='0000' Occurs1=없음 키5개"
+   }
+  }
+ }
+}
