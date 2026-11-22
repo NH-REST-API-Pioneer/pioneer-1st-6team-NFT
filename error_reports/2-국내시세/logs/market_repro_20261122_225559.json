@@ -1,0 +1,549 @@
+{
+ "run_at": "2026-11-22T22:55:53",
+ "server": "https://apidemo.futures.co.kr",
+ "sym": "A756C000",
+ "cases": {
+  "chart-minute nght_tp=1": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "3",
+    "dcnt": "1"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "20261120153300",
+    "nrec": "3",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1335.60",
+      "occurs1_high_pric": "1335.60",
+      "occurs1_low_pric": "1335.60",
+      "occurs1_close_pric": "1335.60",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "154500",
+      "occurs1_opint": "1282204",
+      "occurs1_diff_rt": "6.60",
+      "occurs1_cum_trd_amt": "47200",
+      "occurs1_cum_trd_qty": "3534"
+     },
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1335.40",
+      "occurs1_high_pric": "1335.60",
+      "occurs1_low_pric": "1335.40",
+      "occurs1_close_pric": "1335.60",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "153400",
+      "occurs1_opint": "1291720",
+      "occurs1_diff_rt": "6.60",
+      "occurs1_cum_trd_amt": "20740",
+      "occurs1_cum_trd_qty": "1553"
+     },
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1335.40",
+      "occurs1_high_pric": "1335.50",
+      "occurs1_low_pric": "1335.30",
+      "occurs1_close_pric": "1335.50",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "153300",
+      "occurs1_opint": "1291325",
+      "occurs1_diff_rt": "6.50",
+      "occurs1_cum_trd_amt": "17574",
+      "occurs1_cum_trd_qty": "1316"
+     }
+    ],
+    "sym": "A756C000"
+   }
+  },
+  "chart-minute nght_tp=2": {
+   "request": {
+    "nght_tp": "2",
+    "sym": "A756C000",
+    "req_qty": "3",
+    "dcnt": "1"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "20261121054800",
+    "nrec": "3",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261121",
+      "occurs1_open_pric": "1345.30",
+      "occurs1_high_pric": "1345.30",
+      "occurs1_low_pric": "1345.30",
+      "occurs1_close_pric": "1345.30",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "060000",
+      "occurs1_opint": "1285128",
+      "occurs1_diff_rt": "9.70",
+      "occurs1_cum_trd_amt": "982",
+      "occurs1_cum_trd_qty": "73"
+     },
+     {
+      "occurs1_ref_dt": "20261121",
+      "occurs1_open_pric": "1346.00",
+      "occurs1_high_pric": "1346.00",
+      "occurs1_low_pric": "1345.50",
+      "occurs1_close_pric": "1345.50",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "054900",
+      "occurs1_opint": "1285127",
+      "occurs1_diff_rt": "9.90",
+      "occurs1_cum_trd_amt": "229",
+      "occurs1_cum_trd_qty": "17"
+     },
+     {
+      "occurs1_ref_dt": "20261121",
+      "occurs1_open_pric": "1345.90",
+      "occurs1_high_pric": "1345.90",
+      "occurs1_low_pric": "1345.50",
+      "occurs1_close_pric": "1345.50",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "054800",
+      "occurs1_opint": "1285116",
+      "occurs1_diff_rt": "9.90",
+      "occurs1_cum_trd_amt": "1036",
+      "occurs1_cum_trd_qty": "77"
+     }
+    ],
+    "sym": "A756C000"
+   }
+  },
+  "chart-minute nght_tp=9": {
+   "request": {
+    "nght_tp": "9",
+    "sym": "A756C000",
+    "req_qty": "3",
+    "dcnt": "1"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "20261121054800",
+    "nrec": "3",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261121",
+      "occurs1_open_pric": "1345.30",
+      "occurs1_high_pric": "1345.30",
+      "occurs1_low_pric": "1345.30",
+      "occurs1_close_pric": "1345.30",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "060000",
+      "occurs1_opint": "1285128",
+      "occurs1_diff_rt": "9.70",
+      "occurs1_cum_trd_amt": "982",
+      "occurs1_cum_trd_qty": "73"
+     },
+     {
+      "occurs1_ref_dt": "20261121",
+      "occurs1_open_pric": "1346.00",
+      "occurs1_high_pric": "1346.00",
+      "occurs1_low_pric": "1345.50",
+      "occurs1_close_pric": "1345.50",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "054900",
+      "occurs1_opint": "1285127",
+      "occurs1_diff_rt": "9.90",
+      "occurs1_cum_trd_amt": "229",
+      "occurs1_cum_trd_qty": "17"
+     },
+     {
+      "occurs1_ref_dt": "20261121",
+      "occurs1_open_pric": "1345.90",
+      "occurs1_high_pric": "1345.90",
+      "occurs1_low_pric": "1345.50",
+      "occurs1_close_pric": "1345.50",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "054800",
+      "occurs1_opint": "1285116",
+      "occurs1_diff_rt": "9.90",
+      "occurs1_cum_trd_amt": "1036",
+      "occurs1_cum_trd_qty": "77"
+     }
+    ],
+    "sym": "A756C000"
+   }
+  },
+  "chart-daily nght_tp=1": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "3"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "20261118",
+    "nrec": "3",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1333.40",
+      "occurs1_high_pric": "1339.50",
+      "occurs1_low_pric": "1333.30",
+      "occurs1_close_pric": "1335.60",
+      "occurs1_opint": "1280778",
+      "occurs1_diff_rt": "6.60",
+      "occurs1_cum_trd_qty": "705291"
+     },
+     {
+      "occurs1_ref_dt": "20261119",
+      "occurs1_open_pric": "1328.40",
+      "occurs1_high_pric": "1331.60",
+      "occurs1_low_pric": "1327.90",
+      "occurs1_close_pric": "1329.00",
+      "occurs1_opint": "1300579",
+      "occurs1_diff_rt": "-3.20",
+      "occurs1_cum_trd_qty": "465375"
+     },
+     {
+      "occurs1_ref_dt": "20261118",
+      "occurs1_open_pric": "1334.30",
+      "occurs1_high_pric": "1334.30",
+      "occurs1_low_pric": "1327.20",
+      "occurs1_close_pric": "1332.20",
+      "occurs1_opint": "1299170",
+      "occurs1_diff_rt": "-4.00",
+      "occurs1_cum_trd_qty": "691605"
+     }
+    ],
+    "sym": "A756C000",
+    "nght_tp": "1"
+   }
+  },
+  "chart-daily nght_tp=2": {
+   "request": {
+    "nght_tp": "2",
+    "sym": "A756C000",
+    "req_qty": "3"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "20261118",
+    "nrec": "3",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1334.80",
+      "occurs1_high_pric": "1346.00",
+      "occurs1_low_pric": "1334.70",
+      "occurs1_close_pric": "1345.30",
+      "occurs1_opint": "1285070",
+      "occurs1_diff_rt": "9.70",
+      "occurs1_cum_trd_qty": "31841"
+     },
+     {
+      "occurs1_ref_dt": "20261119",
+      "occurs1_open_pric": "1329.10",
+      "occurs1_high_pric": "1335.00",
+      "occurs1_low_pric": "1326.40",
+      "occurs1_close_pric": "1332.60",
+      "occurs1_opint": "1304168",
+      "occurs1_diff_rt": "3.60",
+      "occurs1_cum_trd_qty": "20620"
+     },
+     {
+      "occurs1_ref_dt": "20261118",
+      "occurs1_open_pric": "1330.60",
+      "occurs1_high_pric": "1332.90",
+      "occurs1_low_pric": "1330.00",
+      "occurs1_close_pric": "1332.30",
+      "occurs1_opint": "1297794",
+      "occurs1_diff_rt": "0.10",
+      "occurs1_cum_trd_qty": "8342"
+     }
+    ],
+    "sym": "A756C000",
+    "nght_tp": "2"
+   }
+  },
+  "chart-daily nght_tp=A": {
+   "request": {
+    "nght_tp": "A",
+    "sym": "A756C000",
+    "req_qty": "3"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "20261118",
+    "nrec": "3",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1334.80",
+      "occurs1_high_pric": "1346.00",
+      "occurs1_low_pric": "1334.70",
+      "occurs1_close_pric": "1345.30",
+      "occurs1_opint": "1285070",
+      "occurs1_diff_rt": "9.70",
+      "occurs1_cum_trd_qty": "31841"
+     },
+     {
+      "occurs1_ref_dt": "20261119",
+      "occurs1_open_pric": "1329.10",
+      "occurs1_high_pric": "1335.00",
+      "occurs1_low_pric": "1326.40",
+      "occurs1_close_pric": "1332.60",
+      "occurs1_opint": "1304168",
+      "occurs1_diff_rt": "3.60",
+      "occurs1_cum_trd_qty": "20620"
+     },
+     {
+      "occurs1_ref_dt": "20261118",
+      "occurs1_open_pric": "1330.60",
+      "occurs1_high_pric": "1332.90",
+      "occurs1_low_pric": "1330.00",
+      "occurs1_close_pric": "1332.30",
+      "occurs1_opint": "1297794",
+      "occurs1_diff_rt": "0.10",
+      "occurs1_cum_trd_qty": "8342"
+     }
+    ],
+    "sym": "A756C000",
+    "nght_tp": "0"
+   }
+  },
+  "price-bid exch_cd=KSP": {
+   "request": {
+    "exch_cd": "KSP",
+    "sym": "A756C000"
+   },
+   "status": 200,
+   "response": {
+    "qt_tm": "154500",
+    "last_pric": "1335.60",
+    "cum_trd_qty": "705291",
+    "bid_qty": "5247",
+    "ask_qty": "9718"
+   }
+  },
+  "price-bid exch_cd=NDV": {
+   "request": {
+    "exch_cd": "NDV",
+    "sym": "A756C000"
+   },
+   "status": 200,
+   "response": {
+    "qt_tm": "060000",
+    "last_pric": "1345.30",
+    "cum_trd_qty": "31841",
+    "bid_qty": "4622",
+    "ask_qty": "946"
+   }
+  },
+  "price-bid exch_cd=XXX": {
+   "request": {
+    "exch_cd": "XXX",
+    "sym": "A756C000"
+   },
+   "status": 200,
+   "response": {
+    "qt_tm": "154500",
+    "last_pric": "1335.60",
+    "cum_trd_qty": "705291",
+    "bid_qty": "5247",
+    "ask_qty": "9718"
+   }
+  },
+  "chart-minute dcnt=1": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "4",
+    "dcnt": "1"
+   },
+   "status": 200,
+   "response": {
+    "bars": [
+     [
+      "20261120",
+      "154500"
+     ],
+     [
+      "20261120",
+      "153400"
+     ],
+     [
+      "20261120",
+      "153300"
+     ],
+     [
+      "20261120",
+      "153200"
+     ]
+    ]
+   }
+  },
+  "chart-minute dcnt=5": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "4",
+    "dcnt": "5"
+   },
+   "status": 200,
+   "response": {
+    "bars": [
+     [
+      "20261120",
+      "154500"
+     ],
+     [
+      "20261120",
+      "153000"
+     ],
+     [
+      "20261120",
+      "152500"
+     ],
+     [
+      "20261120",
+      "152000"
+     ]
+    ]
+   }
+  },
+  "chart-minute dcnt=0": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "4",
+    "dcnt": "0"
+   },
+   "status": 200,
+   "response": {
+    "bars": [
+     [
+      "20261120",
+      "154500"
+     ],
+     [
+      "20261120",
+      "153430"
+     ],
+     [
+      "20261120",
+      "153400"
+     ],
+     [
+      "20261120",
+      "153330"
+     ]
+    ]
+   }
+  },
+  "chart-minute dcnt=abc": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "4",
+    "dcnt": "abc"
+   },
+   "status": 200,
+   "response": {
+    "bars": [
+     [
+      "20261120",
+      "154500"
+     ],
+     [
+      "20261120",
+      "153430"
+     ],
+     [
+      "20261120",
+      "153400"
+     ],
+     [
+      "20261120",
+      "153330"
+     ]
+    ]
+   }
+  },
+  "trend-investor inq_tp=1": {
+   "request": {
+    "opt_prd": "011",
+    "ref_dt": "20261120",
+    "inq_tp": "1"
+   },
+   "status": 200,
+   "response": {
+    "tm": "160630",
+    "frgn_buy": "129960",
+    "frgn_net_buy": "-314"
+   }
+  },
+  "trend-investor inq_tp=2": {
+   "request": {
+    "opt_prd": "011",
+    "ref_dt": "20261120",
+    "inq_tp": "2"
+   },
+   "status": 200,
+   "response": {
+    "tm": "160630",
+    "frgn_buy": "24844584925000",
+    "frgn_net_buy": "-64916550000"
+   }
+  },
+  "trend-investor inq_tp=9": {
+   "request": {
+    "opt_prd": "011",
+    "ref_dt": "20261120",
+    "inq_tp": "9"
+   },
+   "status": 200,
+   "response": {
+    "tm": "160630",
+    "frgn_buy": "24844584925000",
+    "frgn_net_buy": "-64916550000"
+   }
+  },
+  "trend-investor ref_dt=20200101": {
+   "request": {
+    "opt_prd": "011",
+    "ref_dt": "20200101",
+    "inq_tp": "1"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 22:55:58",
+    "errorMessage": "ERC008",
+    "errorStatus": 400,
+    "errorCode": "오류가 발생 하였습니다.\n ErrorCode: ETR045, Message: 응답 데이터 처리중 에러가 발생했습니다. 변환할 데이터 길이가 부족합니다. [key=occurs1_tm](필요한 데이터 길이=6, 남은 데이터 길이=0)",
+    "errorPath": "/trade/v1/domestic/trend-investor"
+   }
+  },
+  "trend-investor ref_dt=20250102": {
+   "request": {
+    "opt_prd": "011",
+    "ref_dt": "20250102",
+    "inq_tp": "1"
+   },
+   "status": 200,
+   "response": {
+    "tm": "161600",
+    "grs_buy": "210421"
+   }
+  },
+  "chart-daily req_qty=abc": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "abc"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-22 22:55:59",
+    "errorMessage": "필드 [req_qty] 값은 숫자 형식이어야합니다. 숫자로 입력해주세요.",
+    "errorStatus": 400,
+    "errorCode": "ETR019",
+    "errorPath": "/trade/v1/domestic/chart-daily"
+   }
+  }
+ }
+}

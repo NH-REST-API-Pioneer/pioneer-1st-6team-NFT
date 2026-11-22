@@ -1,0 +1,771 @@
+{
+ "run_at": "2026-11-22T22:53:18",
+ "server": "https://apidemo.futures.co.kr",
+ "sym": "A756C000",
+ "apis": {
+  "국내_현재가": {
+   "path": "/trade/v1/domestic/price",
+   "base": {
+    "sym": "A756C000"
+   },
+   "A": "HTTP 200 정상 nrec=None Occurs1=없음",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만": [],
+    "문자열 아닌 값": []
+   },
+   "A_sample": {
+    "spt_chg": "11.00",
+    "lo": "1269.20",
+    "up_act_pric": "1388.80",
+    "delta": "0.00000",
+    "mltplr": "10000",
+    "theta": "0.00000",
+    "rem_dy": "32",
+    "lo_act_pric": "1269.20",
+    "trd_qty": "705291",
+    "dev": "-10.40",
+    "spt_chg_sign": "+",
+    "up": "1388.80",
+    "chg": "6.60",
+    "spt_sym": "USD",
+    "trd_amt": "9426307",
+    "pd_trd_qty": "465375",
+    "high_pric": "1339.50",
+    "bid_pric": "1335.50",
+    "sym_nm": "미국달러 F 202612",
+    "fact_bas": "-10.40",
+    "sym_exch": "A756C000",
+    "opint_chg": "-19801",
+    "theo_pric": "1346.00",
+    "pl_rt": "3.380000",
+    "pd_opint": "1300579",
+    "opint": "1280778",
+    "theo_bas": "0.00",
+    "rt": "0.50",
+    "low_pric_dt": "20261026",
+    "pd_sett_pric": "1329.00",
+    "dev_rt": "-0.77",
+    "ref_pric": "1329.00",
+    "life_high_pric": "1530.00",
+    "spt_rt": "0.82",
+    "open_pric": "1333.40",
+    "theo_pric_chg": "11.90",
+    "last_pric": "1335.60",
+    "lst_trd_dt": "20261221",
+    "ask_pric": "1335.60",
+    "spt_pric": "1346.00",
+    "pd_theo_pric": "1334.10",
+    "chg_sign": "+",
+    "high_pric_dt": "20260605",
+    "opint_chg_sign": "-",
+    "spt_cd": "75",
+    "low_pric": "1333.30",
+    "rho": "0.00000",
+    "ivol": "0.00",
+    "life_low_pric": "1318.60",
+    "gamma": "0.00000",
+    "vega": "0.00000"
+   },
+   "B": {
+    "sym 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+    "sym 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym"
+   },
+   "C": {}
+  },
+  "국내_호가": {
+   "path": "/trade/v1/domestic/price-bid",
+   "base": {
+    "exch_cd": "KSP",
+    "sym": "A756C000"
+   },
+   "A": "HTTP 200 정상 nrec='10' Occurs1=10",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만": [],
+    "문자열 아닌 값": [],
+    "모든 행이 빈 값": []
+   },
+   "A_sample": {
+    "rt": "0.50",
+    "lo": "1269.20",
+    "up_act_pric": "1388.80",
+    "sym": "A756C000",
+    "pre_ask_qty": "9718",
+    "bid_qty": "5247",
+    "lo_pric_3": "0.00",
+    "lo_pric_2": "0.00",
+    "Occurs1": [
+     {
+      "occurs1_ask_cnt": "2",
+      "occurs1_bid_rt": "0.49",
+      "occurs1_bid_best_pric": "1335.50",
+      "occurs1_pre_ask_qty": "0",
+      "occurs1_ask_qty": "1925",
+      "occurs1_ask_rt": "0.50",
+      "occurs1_bid_cnt": "2",
+      "occurs1_ask_best_pric": "1335.60",
+      "occurs1_pre_bid_qty": "0",
+      "occurs1_bid_qty": "11"
+     },
+     {
+      "occurs1_ask_cnt": "9",
+      "occurs1_bid_rt": "0.47",
+      "occurs1_bid_best_pric": "1335.20",
+      "occurs1_pre_ask_qty": "0",
+      "occurs1_ask_qty": "361",
+      "occurs1_ask_rt": "0.50",
+      "occurs1_bid_cnt": "1",
+      "occurs1_ask_best_pric": "1335.70",
+      "occurs1_pre_bid_qty": "0",
+      "occurs1_bid_qty": "160"
+     }
+    ],
+    "lo_pric_1": "1269.20",
+    "lo_act_pric": "1269.20",
+    "nrec": "10",
+    "diff_rt": "6.60",
+    "cum_trd_amt": "9426307.1",
+    "pre_bid_qty": "5247",
+    "net_bid_ask": "-4471",
+    "open_pric": "1333.40",
+    "bid_cnt": "752",
+    "last_pric": "1335.60",
+    "up": "1388.80",
+    "pd_close_pric": "1329.00",
+    "up_pric_1": "1388.80",
+    "up_pric_2": "0.00",
+    "up_pric_3": "0.00",
+    "cum_trd_qty": "705291",
+    "high_pric": "1339.50",
+    "ask_cnt": "932",
+    "real": "A756C000",
+    "est_exec_pric": "0.00",
+    "low_pric": "1333.30",
+    "ask_qty": "9718",
+    "qt_tm": "154500"
+   },
+   "B": {
+    "exch_cd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: exch_cd",
+    "exch_cd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: exch_cd",
+    "sym 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+    "sym 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym"
+   },
+   "C": {
+    "exch_cd=NDV": "HTTP 200 정상 nrec='10' Occurs1=10",
+    "exch_cd=XXX": "HTTP 200 정상 nrec='10' Occurs1=10"
+   }
+  },
+  "국내_차트(일)": {
+   "path": "/trade/v1/domestic/chart-daily",
+   "base": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "5"
+   },
+   "A": "HTTP 200 정상 nrec='5' Occurs1=5",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만": [],
+    "문자열 아닌 값": [],
+    "모든 행이 빈 값": []
+   },
+   "A_sample": {
+    "nxt_key": "20261116",
+    "nrec": "5",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1333.40",
+      "occurs1_high_pric": "1339.50",
+      "occurs1_low_pric": "1333.30",
+      "occurs1_close_pric": "1335.60",
+      "occurs1_opint": "1280778",
+      "occurs1_diff_rt": "6.60",
+      "occurs1_cum_trd_qty": "705291"
+     },
+     {
+      "occurs1_ref_dt": "20261119",
+      "occurs1_open_pric": "1328.40",
+      "occurs1_high_pric": "1331.60",
+      "occurs1_low_pric": "1327.90",
+      "occurs1_close_pric": "1329.00",
+      "occurs1_opint": "1300579",
+      "occurs1_diff_rt": "-3.20",
+      "occurs1_cum_trd_qty": "465375"
+     }
+    ],
+    "sym": "A756C000",
+    "nght_tp": "1"
+   },
+   "B": {
+    "nght_tp 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: nght_tp",
+    "nght_tp 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: nght_tp",
+    "sym 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+    "sym 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym"
+   },
+   "C": {
+    "nght_tp=2": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "nght_tp=9": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "cidx_yn=9": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "fut_cidx_exp_mod=9": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "req_qty=0": "HTTP 200 정상 nrec='1' Occurs1=1",
+    "req_qty=abc": "HTTP 400 ETR019 필드 [req_qty] 값은 숫자 형식이어야합니다. 숫자로 입력해주세요."
+   },
+   "D": {
+    "생략 vs 기본값 명시": "같음",
+    "생략": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "명시": "HTTP 200 정상 nrec='5' Occurs1=5"
+   }
+  },
+  "국내_차트(분)": {
+   "path": "/trade/v1/domestic/chart-minute",
+   "base": {
+    "nght_tp": "1",
+    "sym": "A756C000",
+    "req_qty": "5",
+    "dcnt": "1"
+   },
+   "A": "HTTP 200 정상 nrec='5' Occurs1=5",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만": [],
+    "문자열 아닌 값": [],
+    "모든 행이 빈 값": [
+     "occurs1_rt"
+    ]
+   },
+   "A_sample": {
+    "nxt_key": "20261120153100",
+    "nrec": "5",
+    "Occurs1": [
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1335.60",
+      "occurs1_high_pric": "1335.60",
+      "occurs1_low_pric": "1335.60",
+      "occurs1_close_pric": "1335.60",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "154500",
+      "occurs1_opint": "1282204",
+      "occurs1_diff_rt": "6.60",
+      "occurs1_cum_trd_amt": "47200",
+      "occurs1_cum_trd_qty": "3534"
+     },
+     {
+      "occurs1_ref_dt": "20261120",
+      "occurs1_open_pric": "1335.40",
+      "occurs1_high_pric": "1335.60",
+      "occurs1_low_pric": "1335.40",
+      "occurs1_close_pric": "1335.60",
+      "occurs1_rt": "",
+      "occurs1_exch_tm": "153400",
+      "occurs1_opint": "1291720",
+      "occurs1_diff_rt": "6.60",
+      "occurs1_cum_trd_amt": "20740",
+      "occurs1_cum_trd_qty": "1553"
+     }
+    ],
+    "sym": "A756C000"
+   },
+   "B": {
+    "nght_tp 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: nght_tp",
+    "nght_tp 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: nght_tp",
+    "sym 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+    "sym 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym"
+   },
+   "C": {
+    "nght_tp=2": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "nght_tp=9": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "dcnt=0": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "dcnt=abc": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "cidx_yn=9": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "req_qty=0": "HTTP 200 정상 nrec='0' Occurs1=없음"
+   },
+   "D": {
+    "생략 vs 기본값 명시": "같음",
+    "생략": "HTTP 200 정상 nrec='5' Occurs1=5",
+    "명시": "HTTP 200 정상 nrec='5' Occurs1=5"
+   }
+  },
+  "국내_선물전체시세": {
+   "path": "/trade/v1/domestic/price-all-futures",
+   "base": {
+    "prd": "75"
+   },
+   "A": "HTTP 200 정상 nrec='222' Occurs1=222",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만": [],
+    "문자열 아닌 값": [],
+    "모든 행이 빈 값": []
+   },
+   "A_sample": {
+    "Occurs1": [
+     {
+      "occurs1_exp_mon": "26/12",
+      "occurs1_high_pric": "1339.50",
+      "occurs1_last_pric": "1335.60",
+      "occurs1_high_pric_dt": "20260605",
+      "occurs1_rt": "0.50",
+      "occurs1_lo": "1318.60",
+      "occurs1_sym_exch": "A756C000",
+      "occurs1_chg_sign": "+",
+      "occurs1_spt_cd": "75",
+      "occurs1_spt_sym": "USD",
+      "occurs1_opint": "1280778",
+      "occurs1_low_pric_dt": "20261026",
+      "occurs1_pd_close_pric": "1329.00",
+      "occurs1_up": "1530.00",
+      "occurs1_open_pric": "1333.40",
+      "occurs1_low_pric": "1333.30",
+      "occurs1_trd_qty": "705291",
+      "occurs1_ask_pric": "1335.60",
+      "occurs1_fact_bas": "-10.40",
+      "occurs1_lst_trd_dt": "20261221",
+      "occurs1_sym_nm": "미국달러 F 202612",
+      "occurs1_pd_trd_qty": "465375",
+      "occurs1_bid_pric": "1335.50",
+      "occurs1_dev": "-10.40",
+      "occurs1_dev_rt": "-0.77",
+      "occurs1_theo_bas": "0.00",
+      "occurs1_theo_pric": "1346.00",
+      "occurs1_ask_qty": "1925",
+      "occurs1_spt_pric": "1346.00",
+      "occurs1_prd": "75",
+      "occurs1_chg": "6.60",
+      "occurs1_bid_qty": "11"
+     },
+     {
+      "occurs1_exp_mon": "27/01",
+      "occurs1_high_pric": "1338.30",
+      "occurs1_last_pric": "1334.40",
+      "occurs1_high_pric_dt": "20260731",
+      "occurs1_rt": "0.47",
+      "occurs1_lo": "1324.20",
+      "occurs1_sym_exch": "A7571000",
+      "occurs1_chg_sign": "+",
+      "occurs1_spt_cd": "75",
+      "occurs1_spt_sym": "USD",
+      "occurs1_opint": "11765",
+      "occurs1_low_pric_dt": "20261020",
+      "occurs1_pd_close_pric": "1328.10",
+      "occurs1_up": "1430.80",
+      "occurs1_open_pric": "1333.00",
+      "occurs1_low_pric": "1332.30",
+      "occurs1_trd_qty": "18683",
+      "occurs1_ask_pric": "1335.00",
+      "occurs1_fact_bas": "-11.60",
+      "occurs1_lst_trd_dt": "20270118",
+      "occurs1_sym_nm": "미국달러 F 202701",
+      "occurs1_pd_trd_qty": "11244",
+      "occurs1_bid_pric": "1334.70",
+      "occurs1_dev": "-11.60",
+      "occurs1_dev_rt": "-0.86",
+      "occurs1_theo_bas": "0.00",
+      "occurs1_theo_pric": "1346.00",
+      "occurs1_ask_qty": "2000",
+      "occurs1_spt_pric": "1346.00",
+      "occurs1_prd": "75",
+      "occurs1_chg": "6.30",
+      "occurs1_bid_qty": "10"
+     }
+    ],
+    "nrec": "222"
+   },
+   "B": {
+    "prd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: prd",
+    "prd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: prd"
+   },
+   "C": {
+    "prd=99": "HTTP 400 EMG_001 '99' MarketCode error [SDIF7023Q01@dom]",
+    "prd=XX": "HTTP 400 EMG_001 'XX' MarketCode error [SDIF7023Q01@dom]"
+   }
+  },
+  "국내_옵션전체시세": {
+   "path": "/trade/v1/domestic/price-all-option",
+   "base": {
+    "prd": "01",
+    "exp_mon": "261210"
+   },
+   "A": "HTTP 200 정상 nrec='261' Occurs1=261",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만": [],
+    "문자열 아닌 값": [],
+    "모든 행이 빈 값": [
+     "occurs1_p_theo_pric_chg"
+    ]
+   },
+   "A_sample": {
+    "rt": "-5.53",
+    "chg": "-44.23",
+    "fut_sign": "-",
+    "spt_sym": "KRD020020016",
+    "spt_pric": "755.34",
+    "fut_rt": "-5.43",
+    "chg_sign": "-",
+    "Occurs1": [
+     {
+      "occurs1_c_sym_nm": "코스피200 C 202612 1,595.0",
+      "occurs1_p_chg_sign": "+",
+      "occurs1_p_pd_close_pric": "793.00",
+      "occurs1_p_ask_pric": "841.00",
+      "occurs1_c_theo_pric_chg": "-11.33",
+      "occurs1_p_low_pric": "825.50",
+      "occurs1_p_gamma": "0.00020",
+      "occurs1_c_vega": "0.07585",
+      "occurs1_p_vega": "7.34890",
+      "occurs1_c_chg_rt": "0.00",
+      "occurs1_p_chg_rt": "4.98",
+      "occurs1_p_dev_rt": "4.98",
+      "occurs1_p_sym_exch": "C016CC41",
+      "occurs1_p_rho": "-90.76541",
+      "occurs1_p_opint_chg": "-1",
+      "occurs1_c_pd_close_pric": "0.01",
+      "occurs1_c_chg": "0.00",
+      "occurs1_p_vol": "112.00",
+      "occurs1_p_trd_qty": "3",
+      "occurs1_p_last_pric": "832.50",
+      "occurs1_strk_pric": "1595.00",
+      "occurs1_p_high_pric": "832.50",
+      "occurs1_p_theo_pric": "793.01",
+      "occurs1_p_theo_pric_chg": "",
+      "occurs1_c_dev": "0.00",
+      "occurs1_c_open_pric": "0.01",
+      "occurs1_c_last_pric": "0.01",
+      "occurs1_p_delta": "-0.97830",
+      "occurs1_c_delta": "0.00016",
+      "occurs1_p_bid_pric": "831.30",
+      "occurs1_p_opint": "376",
+      "occurs1_c_trd_qty": "1",
+      "occurs1_c_sym_exch": "B016CC41",
+      "occurs1_c_opint_chg": "1",
+      "occurs1_c_chg_sign": "",
+      "occurs1_c_theo_pric": "0.01",
+      "occurs1_c_gamma": "0.00000",
+      "occurs1_c_rho": "0.00670",
+      "occurs1_p_open_pric": "827.50",
+      "occurs1_c_ask_pric": "0.01",
+      "occurs1_p_sym_nm": "코스피200 P 202612 1,595.0",
+      "occurs1_c_opint": "8405",
+      "occurs1_c_dev_rt": "0.00",
+      "occurs1_c_low_pric": "0.01",
+      "occurs1_c_high_pric": "0.01",
+      "occurs1_c_bid_pric": "0.00",
+      "occurs1_c_vol": "80.30",
+      "occurs1_c_theta": "-0.84532",
+      "occurs1_p_theta": "-67.95134",
+      "occurs1_p_chg": "39.50",
+      "occurs1_p_dev": "39.49"
+     },
+     {
+      "occurs1_c_sym_nm": "코스피200 C 202612 1,592.5",
+      "occurs1_p_chg_sign": "",
+      "occurs1_p_pd_close_pric": "790.55",
+      "occurs1_p_ask_pric": "845.15",
+      "occurs1_c_theo_pric_chg": "-11.32",
+      "occurs1_p_low_pric": "0.00",
+      "occurs1_p_gamma": "0.00022",
+      "occurs1_c_vega": "0.07580",
+      "occurs1_p_vega": "13.80103",
+      "occurs1_c_chg_rt": "0.00",
+      "occurs1_p_chg_rt": "0.00",
+      "occurs1_p_dev_rt": "-3.50",
+      "occurs1_p_sym_exch": "C016CC40",
+      "occurs1_p_rho": "-90.46210",
+      "occurs1_p_opint_chg": "0",
+      "occurs1_c_pd_close_pric": "0.01",
+      "occurs1_c_chg": "0.00",
+      "occurs1_p_vol": "112.00",
+      "occurs1_p_trd_qty": "0",
+      "occurs1_p_last_pric": "790.55",
+      "occurs1_strk_pric": "1592.50",
+      "occurs1_p_high_pric": "0.00",
+      "occurs1_p_theo_pric": "790.53",
+      "occurs1_p_theo_pric_chg": "",
+      "occurs1_c_dev": "0.00",
+      "occurs1_c_open_pric": "0.00",
+      "occurs1_c_last_pric": "0.01",
+      "occurs1_p_delta": "-0.97396",
+      "occurs1_c_delta": "0.00016",
+      "occurs1_p_bid_pric": "830.95",
+      "occurs1_p_opint": "4",
+      "occurs1_c_trd_qty": "0",
+      "occurs1_c_sym_exch": "B016CC40",
+      "occurs1_c_opint_chg": "0",
+      "occurs1_c_chg_sign": "",
+      "occurs1_c_theo_pric": "0.01",
+      "occurs1_c_gamma": "0.00000",
+      "occurs1_c_rho": "0.00671",
+      "occurs1_p_open_pric": "0.00",
+      "occurs1_c_ask_pric": "0.01",
+      "occurs1_p_sym_nm": "코스피200 P 202612 1,592.5",
+      "occurs1_c_opint": "310",
+      "occurs1_c_dev_rt": "0.00",
+      "occurs1_c_low_pric": "0.00",
+      "occurs1_c_high_pric": "0.00",
+      "occurs1_c_bid_pric": "0.00",
+      "occurs1_c_vol": "80.41",
+      "occurs1_c_theta": "-0.84516",
+      "occurs1_p_theta": "-90.83097",
+      "occurs1_p_chg": "0.00",
+      "occurs1_p_dev": "0.02"
+     }
+    ],
+    "fut_last_pric": "752.75",
+    "nrec": "261",
+    "nxt_stkr_pric": "945.00",
+    "spt_cd": "01",
+    "und_nm": "코스피 200",
+    "fut_rem_dy": "21",
+    "fut_chg": "-43.25",
+    "fut_sym": "A016C000"
+   },
+   "B": {
+    "prd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: prd",
+    "prd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: prd",
+    "exp_mon 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: exp_mon",
+    "exp_mon 빈값": "HTTP 400 ETR018 필드 [exp_mon] 입력값이 허용된 형식과 일치하지 않습니다. ['exp_mon'::]"
+   },
+   "C": {
+    "prd=99": "HTTP 400 EMG_001 '99' 마켓 검색 실패 [SDIF7057Q03@dom]",
+    "exp_mon=991231": "HTTP 200 정상 nrec='0' Occurs1=없음",
+    "exp_mon=2612": "HTTP 400 ETR018 필드 [exp_mon] 입력값이 허용된 형식과 일치하지 않습니다. ['exp_mon'::2612]"
+   },
+   "D": {
+    "생략 vs 기본값 명시": "같음",
+    "생략": "HTTP 200 정상 nrec='261' Occurs1=261",
+    "명시": "HTTP 200 정상 nrec='261' Occurs1=261"
+   }
+  },
+  "국내_투자자직전매매동향": {
+   "path": "/trade/v1/domestic/trend-investor",
+   "base": {
+    "opt_prd": "011",
+    "ref_dt": "20261120",
+    "inq_tp": "1"
+   },
+   "A": "HTTP 200 정상 nrec=None Occurs1=없음",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만": [],
+    "문자열 아닌 값": []
+   },
+   "A_sample": {
+    "cntry_net_buy": "0",
+    "grs_buy": "171107",
+    "scrt_sel_rt": "6.63",
+    "bank_pre_buy": "0",
+    "penfnd_pre_buy": "0",
+    "invt_sel": "5733",
+    "ins_buy_rt": "0.27",
+    "scrt_buy_rt": "8.97",
+    "ins_buy": "458",
+    "mb_pre_sel": "0",
+    "scrt_pre_sel": "1744",
+    "frgn_pre_sel": "34345",
+    "etc_pre_sel": "286",
+    "grs_pre_buy": "42695",
+    "scrt_buy": "15347",
+    "penfnd_sel_rt": "0.44",
+    "frgn_net_buy": "-314",
+    "mb_sel": "3",
+    "ins_sel_rt": "0.15",
+    "cntry_pre_buy": "0",
+    "grs_sel": "171107",
+    "ind_buy_rt": "12.68",
+    "ind_sel": "21263",
+    "invt_net_buy": "-4284",
+    "penfnd_buy": "561",
+    "ins_sel": "259",
+    "etc_sel_rt": "0.85",
+    "invt_pre_sel": "69",
+    "ind_pre_buy": "7044",
+    "mb_buy_rt": "0.00",
+    "cntry_buy_rt": "0.00",
+    "bank_buy": "29",
+    "etc_pre_buy": "463",
+    "etc_buy": "1607",
+    "invt_sel_rt": "3.35",
+    "scrt_pre_buy": "1621",
+    "ins_pre_buy": "0",
+    "invt_pre_buy": "40",
+    "etc_buy_rt": "0.94",
+    "ins_pre_sel": "0",
+    "mb_pre_buy": "0",
+    "frgn_buy": "129960",
+    "bank_buy_rt": "0.02",
+    "etc_sel": "1448",
+    "ind_sel_rt": "12.43",
+    "mb_buy": "2",
+    "grs_net_buy": "0",
+    "cntry_pre_sel": "0",
+    "grs_buy_rt": "100.00",
+    "inst_cd": "KRDRVFUK2I",
+    "penfnd_buy_rt": "0.33",
+    "penfnd_net_buy": "-192",
+    "frgn_buy_rt": "75.95",
+    "bank_net_buy": "5",
+    "ins_buy_net": "199",
+    "bank_pre_sel": "0",
+    "invt_buy": "1449",
+    "cntry_buy": "0",
+    "frgn_sel_rt": "76.14",
+    "bank_sel": "24",
+    "cntry_sel": "0",
+    "grs_sel_rt": "100.00",
+    "cntry_sel_rt": "0.00",
+    "grs_pre_sel": "42695",
+    "penfnd_pre_sel": "0",
+    "scrt_sel": "11350",
+    "mb_net_buy": "-1",
+    "etc_net_buy": "159",
+    "scrt_net_buy": "3997",
+    "frgn_sel": "130274",
+    "invt_buy_rt": "0.85",
+    "mb_sel_rt": "0.00",
+    "ind_buy": "21694",
+    "tm": "160630",
+    "ind_net_buy": "431",
+    "ind_pre_sel": "6251",
+    "bank_sel_rt": "0.01",
+    "frgn_pre_buy": "33527",
+    "penfnd_sel": "753"
+   },
+   "B": {
+    "opt_prd 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: opt_prd",
+    "opt_prd 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: opt_prd",
+    "ref_dt 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: ref_dt",
+    "ref_dt 빈값": "HTTP 400 ETR018 필드 [ref_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['ref_dt'::]"
+   },
+   "C": {
+    "opt_prd=019": "HTTP 200 정상 nrec=None Occurs1=없음",
+    "opt_prd=999": "HTTP 400 EMG_001 '999' get_section error [SDIF7172Q01@dom]",
+    "inq_tp=9": "HTTP 200 정상 nrec=None Occurs1=없음",
+    "ref_dt=20261122": "HTTP 200 정상 nrec=None Occurs1=없음",
+    "ref_dt=2026112": "HTTP 400 ETR018 필드 [ref_dt] 입력값이 허용된 형식과 일치하지 않습니다. ['ref_dt'::2026112]"
+   },
+   "D": {
+    "생략 vs 기본값 명시": "같음",
+    "생략": "HTTP 200 정상 nrec=None Occurs1=없음",
+    "명시": "HTTP 200 정상 nrec=None Occurs1=없음"
+   }
+  },
+  "국내_종목예상체결가": {
+   "path": "/trade/v1/domestic/price-expect-fill",
+   "base": {
+    "sym": "A756C000"
+   },
+   "A": "HTTP 200 정상 nrec='100' Occurs1=100",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만": [],
+    "문자열 아닌 값": [],
+    "모든 행이 빈 값": []
+   },
+   "A_sample": {
+    "ref_pric": "1329.00",
+    "nrec": "100",
+    "sym_exch": "A756C000",
+    "Occurs1": [
+     {
+      "occurs1_chg_sign": "+",
+      "occurs1_est_exec_qty": "3534",
+      "occurs1_chg": "6.60",
+      "occurs1_tm": "154459",
+      "occurs1_est_exec_pric": "1335.60"
+     },
+     {
+      "occurs1_chg_sign": "+",
+      "occurs1_est_exec_qty": "3534",
+      "occurs1_chg": "6.60",
+      "occurs1_tm": "154459",
+      "occurs1_est_exec_pric": "1335.60"
+     }
+    ],
+    "sym_nm": "미국달러 F 202612"
+   },
+   "B": {
+    "sym 없음": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym",
+    "sym 빈값": "HTTP 400 ETR023 필수 필드 값이 비어져있습니다.: sym"
+   },
+   "C": {}
+  },
+  "국내_품목별세부정보": {
+   "path": "/trade/v1/domestic/product-detail",
+   "base": {},
+   "A": "HTTP 200 정상 nrec='0028' Occurs1=28",
+   "A_keys": {
+    "응답에만": [],
+    "명세에만": [],
+    "문자열 아닌 값": [],
+    "모든 행이 빈 값": []
+   },
+   "A_sample": {
+    "Occurs1": [
+     {
+      "occurs1_mltplr": "00000250000.0000000000",
+      "occurs1_cd_val_inf_5": "08:45~15:20",
+      "occurs1_dtl_cd_ko_nm": "코스피200선물",
+      "occurs1_init_mrgn": "21.00%",
+      "occurs1_exp_dt": "20261210",
+      "occurs1_sett_nm": "현금결제",
+      "occurs1_tick_val": "0000000012500.00000000",
+      "occurs1_cd_val_inf_1": "0.05",
+      "occurs1_cd_val_inf_2": "08:30~08:45",
+      "occurs1_cd_val_inf_3": "15:35~15:45",
+      "occurs1_cd_val_inf_4": "08:45~15:45",
+      "occurs1_mtn_mrgn": "14.00%",
+      "occurs1_ctr_init_mrgn": "39655350"
+     },
+     {
+      "occurs1_mltplr": "00000250000.0000000000",
+      "occurs1_cd_val_inf_5": "08:45~15:20",
+      "occurs1_dtl_cd_ko_nm": "코스피200옵션",
+      "occurs1_init_mrgn": "",
+      "occurs1_exp_dt": "20261210",
+      "occurs1_sett_nm": "현금결제",
+      "occurs1_tick_val": "0000000002500.00000000",
+      "occurs1_cd_val_inf_1": "0.01",
+      "occurs1_cd_val_inf_2": "08:30~08:45",
+      "occurs1_cd_val_inf_3": "15:35~15:45",
+      "occurs1_cd_val_inf_4": "08:45~15:45",
+      "occurs1_mtn_mrgn": "",
+      "occurs1_ctr_init_mrgn": ""
+     }
+    ],
+    "nrec": "0028"
+   },
+   "B": {},
+   "C": {}
+  },
+  "국내_현재가(야간)": {
+   "path": "/trade/v1/domestic/price-night",
+   "base": {
+    "sym": "A756C000"
+   },
+   "A": "HTTP 400 EGW053 해당 API는 모의투자 에서 호출 할수 없습니다.",
+   "B": {
+    "sym 없음": "HTTP 400 EGW053 해당 API는 모의투자 에서 호출 할수 없습니다.",
+    "sym 빈값": "HTTP 400 EGW053 해당 API는 모의투자 에서 호출 할수 없습니다."
+   },
+   "C": {}
+  },
+  "국내_옵션전체시세(야간)": {
+   "path": "/trade/v1/domestic/price-all-option-night",
+   "base": {
+    "prd": "01",
+    "exp_mon": "261210"
+   },
+   "A": "HTTP 400 EGW053 해당 API는 모의투자 에서 호출 할수 없습니다.",
+   "B": {
+    "prd 없음": "HTTP 400 EGW053 해당 API는 모의투자 에서 호출 할수 없습니다.",
+    "prd 빈값": "HTTP 400 EGW053 해당 API는 모의투자 에서 호출 할수 없습니다.",
+    "exp_mon 없음": "HTTP 400 EGW053 해당 API는 모의투자 에서 호출 할수 없습니다.",
+    "exp_mon 빈값": "HTTP 400 EGW053 해당 API는 모의투자 에서 호출 할수 없습니다."
+   },
+   "C": {}
+  }
+ }
+}
