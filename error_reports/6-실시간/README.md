@@ -6,14 +6,14 @@
 
 | API | 문서명 | 경로 | 확인 |
 | --- | --- | --- | --- |
-| [국내_시세체결](https://apidev.futures.co.kr/#/api?g=123&a=191&v=1) | `KA` | WebSocket || 구독·해제 끝 (데이터는 평일) |
-| [국내_시세호가](https://apidev.futures.co.kr/#/api?g=123&a=192&v=1) | `KB` | WebSocket || 끝 (action_sym·action_code 누락 시험) |
-| [국내_시세체결(야간)](https://apidev.futures.co.kr/#/api?g=123&a=193&v=1) | `KC` | WebSocket || 모의 미지원 (RT_FAIL) |
-| [국내_시세호가(야간)](https://apidev.futures.co.kr/#/api?g=123&a=194&v=1) | `KD` | WebSocket || 모의 미지원 (RT_FAIL) |
-| [국내_주문/체결](https://apidev.futures.co.kr/#/api?g=123&a=207&v=1) | `O1_K` | WebSocket || action_code "O1" 로 구독 끝 |
-| [해외_시세체결](https://apidev.futures.co.kr/#/api?g=126&a=180&v=1) | `FA` | WebSocket || 구독·해제 끝 |
-| [해외_시세호가](https://apidev.futures.co.kr/#/api?g=126&a=189&v=1) | `FB` | WebSocket || 구독·해제 끝 |
-| [해외_주문/체결](https://apidev.futures.co.kr/#/api?g=126&a=190&v=1) | `O1` | WebSocket || 구독·해제 끝 |
+| [국내_시세체결](https://apidev.futures.co.kr/#/api?g=123&a=191&v=1) | `KA` | WebSocket | 구독·해제 끝 (데이터는 평일) |
+| [국내_시세호가](https://apidev.futures.co.kr/#/api?g=123&a=192&v=1) | `KB` | WebSocket | 끝 (action_sym·action_code 누락 시험) |
+| [국내_시세체결(야간)](https://apidev.futures.co.kr/#/api?g=123&a=193&v=1) | `KC` | WebSocket | `KC` 구독 시 RT_FAIL (라이브 안내는 KA 로 전송, 샘플·소켓 안내는 KC 모순 → R05) |
+| [국내_시세호가(야간)](https://apidev.futures.co.kr/#/api?g=123&a=194&v=1) | `KD` | WebSocket | `KD` 구독 시 RT_FAIL (라이브 안내는 KB 로 전송, 샘플·소켓 안내는 KD 모순 → R05) |
+| [국내_주문/체결](https://apidev.futures.co.kr/#/api?g=123&a=207&v=1) | `O1_K` | WebSocket | action_code "O1" 로 구독 끝 |
+| [해외_시세체결](https://apidev.futures.co.kr/#/api?g=126&a=180&v=1) | `FA` | WebSocket | 구독·해제 끝 |
+| [해외_시세호가](https://apidev.futures.co.kr/#/api?g=126&a=189&v=1) | `FB` | WebSocket | 구독·해제 끝 |
+| [해외_주문/체결](https://apidev.futures.co.kr/#/api?g=126&a=190&v=1) | `O1` | WebSocket | 구독·해제 끝 |
 
 ## 확인한 것
 
@@ -22,7 +22,8 @@
 | 확인 | 결과 | 명세와 |
 | --- | --- | --- |
 | 구독 응답 키 | `code`(RT_INIT/RT_FAIL)·`data`·`msg` | **명세 샘플 코드는 `rt_cd`** (team-08 제보됨) |
-| KC·KD (야간) | RT_FAIL 「허용된 action_code가 아닙니다」 | 설명 「모의 미지원」과 같음 |
+| KC·KD (야간) | `KC`·`KD` 전송 시 RT_FAIL 「허용된 action_code가 아닙니다」 | 라이브 안내는 `KA`·`KB`로 전송, 샘플·소켓 안내·엑셀은 `KC`·`KD` 모순 **→ R05** |
+| 소켓 통신 안내(`socket-overview`) | Step 03 예시가 `wss://apidev.futures.co.kr/...`, Step 3-2 필수 칸 `N` | **도메인·필수 표기 오류 → R05** |
 | O1_K / O1 | 둘 다 `action_code` "O1", 「O1_K」는 RT_FAIL. 응답 `data.action_acnt` 에 그 키의 계좌번호 → 키로 구분 | 설명서에 적음 (명세에 action_acnt 없음) |
 | `action_sym` 누락 | RT_FAIL 「종목 없음 [종목: (사용자 ID)]」 | **→ R19**, R05 근거 |
 | `action_code` 누락 | VALIDATION_ERROR 뒤 연결 끊김 | **→ R04 에 추가**, R05 근거 |

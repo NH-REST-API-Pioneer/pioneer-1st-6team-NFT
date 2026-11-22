@@ -22,11 +22,11 @@
 실제 결과:
   2 → {"code":"RT_FAIL","data":{"action":"A","action_code":"KB","action_sym":"<사용자 ID>"},"msg":"해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: <사용자 ID>]"}
   3 → {"code":"RT_FAIL","data":{"action":"A","action_code":"O1_K","action_sym":"<사용자 ID>"},"msg":"예외 발생 허용된 action_code가 아닙니다."}
-  → 보내지 않은 action_sym 자리에 APP Key 사용자의 로그인 ID(로 보이는 값)가 채워져 응답·오류 메시지에 나옴 (국내 키·해외 키 각각 그 키의 ID)
+  → 보내지 않은 action_sym 자리에 APP Key 사용자의 로그인 ID(로 보이는 값)가 채워져 응답·오류 메시지에 나옴 (국내 키는 KB·O1_K, 해외 키는 O1_K 에서 각각 그 키의 ID 확인)
   → 오류 메시지도 「종목 없음」으로 나와 원인(action_sym 누락)을 알 수 없음
-  참고: action_code 를 빼면 {"type":"VALIDATION_ERROR","message":"action_code는 필수입니다."} 뒤 서버가 연결을 끊음 (명세는 action_code 도 필수 N)
+  참고: action_code 를 빼면 {"type":"VALIDATION_ERROR","message":"action_code는 필수입니다."} 뒤 서버가 연결을 끊음 (명세는 action_code 도 KA 만 Y, 나머지 7개는 N)
 
-로그·캡처: (저장소) error_reports/6-실시간/logs/realtime_20261122_231702.json (사용자 ID·계좌번호는 <가림> 처리), 재현 스크립트 error_reports/6-실시간/check_realtime.py
+로그·캡처: (저장소) error_reports/6-실시간/logs/realtime_20261122_231702.json (사용자 ID·계좌번호는 `<사용자ID?>`·`<계좌번호>`로 가림 처리; 필요 시 실제 노출 형식은 운영진 DM 으로 전달 가능), 재현 스크립트 error_reports/6-실시간/check_realtime.py
 영향:
   - 오류 메시지·로그에 사용자 ID 가 남아, 로그를 공유하거나 화면에 띄우면 ID 가 노출됨
   - action_sym 누락을 「종목 없음」으로 오해해 종목코드를 고치게 됨
