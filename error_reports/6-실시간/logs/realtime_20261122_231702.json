@@ -1,0 +1,365 @@
+{
+ "run_at": "2026-11-22T23:17:02",
+ "log": [
+  {
+   "conn": "국내",
+   "case": "session_init",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}",
+   "replies": [
+    {
+     "code": "INIT",
+     "msg": "INIT_SUCCESS"
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "1 KA 구독",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756C000\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "A",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "1 KA 해제",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756C000\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "D",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "2 KC 구독",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KC\", \"action_sym\": \"A756C000\"}}",
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "A",
+      "action_code": "KC",
+      "action_sym": "A756C000"
+     },
+     "msg": "예외 발생 허용된 action_code가 아닙니다."
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "2 KC 해제",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KC\", \"action_sym\": \"A756C000\"}}",
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "D",
+      "action_code": "KC",
+      "action_sym": "A756C000"
+     },
+     "msg": "예외 발생 허용된 action_code가 아닙니다."
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "2 KD 구독",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KD\", \"action_sym\": \"A756C000\"}}",
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "A",
+      "action_code": "KD",
+      "action_sym": "A756C000"
+     },
+     "msg": "예외 발생 허용된 action_code가 아닙니다."
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "2 KD 해제",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KD\", \"action_sym\": \"A756C000\"}}",
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "D",
+      "action_code": "KD",
+      "action_sym": "A756C000"
+     },
+     "msg": "예외 발생 허용된 action_code가 아닙니다."
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "3 O1 구독 (sym 없이)",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"O1\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "A",
+      "action_code": "O1",
+      "action_acnt": "<계좌번호>"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "3 O1 해제",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"O1\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "D",
+      "action_code": "O1",
+      "action_acnt": "<계좌번호>"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "3 O1_K 구독 (문서명 그대로)",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"O1_K\"}}",
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "A",
+      "action_code": "O1_K",
+      "action_sym": "<사용자ID?>"
+     },
+     "msg": "예외 발생 허용된 action_code가 아닙니다."
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "4 KB action_sym 없이",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KB\"}}",
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "A",
+      "action_code": "KB",
+      "action_sym": "<사용자ID?>"
+     },
+     "msg": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: <사용자ID?>]"
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "국내",
+   "case": "5 KB action_code 없이",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_sym\": \"A756C000\"}}",
+   "replies": [
+    {
+     "type": "VALIDATION_ERROR",
+     "message": "action_code는 필수입니다."
+    },
+    "연결 오류 WebSocketConnectionClosedException"
+   ],
+   "alive_after": false
+  },
+  {
+   "conn": "해외",
+   "case": "session_init",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}",
+   "replies": [
+    {
+     "code": "INIT",
+     "msg": "INIT_SUCCESS"
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "해외",
+   "case": "1 FA 구독 6AZ26",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"FA\", \"action_sym\": \"6AZ26\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "A",
+      "action_code": "FA",
+      "action_sym": "6AZ26"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "해외",
+   "case": "1 FA 해제",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"FA\", \"action_sym\": \"6AZ26\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "D",
+      "action_code": "FA",
+      "action_sym": "6AZ26"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "해외",
+   "case": "1 FB 구독 6AZ26",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"FB\", \"action_sym\": \"6AZ26\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "A",
+      "action_code": "FB",
+      "action_sym": "6AZ26"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "해외",
+   "case": "1 FB 해제",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"FB\", \"action_sym\": \"6AZ26\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "D",
+      "action_code": "FB",
+      "action_sym": "6AZ26"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "해외",
+   "case": "2 O1 구독 (sym 없이)",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"O1\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "A",
+      "action_code": "O1",
+      "action_acnt": "<계좌번호>"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "해외",
+   "case": "2 O1 해제",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"O1\"}}",
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "D",
+      "action_code": "O1",
+      "action_acnt": "<계좌번호>"
+     },
+     "msg": ""
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "해외",
+   "case": "2 O1_K 구독",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"O1_K\"}}",
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "A",
+      "action_code": "O1_K",
+      "action_sym": "<사용자ID?>"
+     },
+     "msg": "예외 발생 허용된 action_code가 아닙니다."
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "해외",
+   "case": "3 FA 에 국내 종목",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"FA\", \"action_sym\": \"A756C000\"}}",
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "A",
+      "action_code": "FA",
+      "action_sym": "A756C000"
+     },
+     "msg": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: A756C000]"
+    }
+   ],
+   "alive_after": true
+  },
+  {
+   "conn": "해외",
+   "case": "4 KA (국내 코드) 해외 키로",
+   "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756C000\"}}",
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "A",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": "해당 계좌는 해외 종목에서만 사용 가능 합니다."
+    }
+   ],
+   "alive_after": true
+  }
+ ]
+}
