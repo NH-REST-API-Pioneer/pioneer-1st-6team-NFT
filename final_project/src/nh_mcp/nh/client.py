@@ -4,7 +4,8 @@
 1. 접근토큰을 붙이고, 만료 전에 다시 받는다.
 2. HTTP 200이어도 본문의 errorCode로 실패를 판정한다.
 3. 응답을 받지 못한 요청은 다시 보내지 않는다. 처리됐는지 알 수 없기 때문이다.
-   토큰이 거절된 경우(문 앞에서 막힌 요청)만 토큰을 다시 받아 한 번 더 보낸다.
+   문 앞에서 막힌 요청만 다시 보낸다: 토큰이 거절되면 토큰을 다시 받아 한 번,
+   호출 제한에 걸리면 잠깐 기다렸다가 두 번까지.
 4. APP Key, Secret, 접근토큰은 예외 메시지와 repr에 넣지 않는다.
 """
 
@@ -18,15 +19,21 @@ import httpx2
 
 from nh_mcp.config import NH_BASE_URL
 from nh_mcp.domain import JsonValue
+from nh_mcp.nh.limits import RateLimiter, grade_of
 
 TOKEN_PATH = "/auth-service/v1/token"
 TIMEOUT_SECONDS = 10.0
 # 만료 직전에 보낸 요청이 거절되지 않게 미리 다시 받는다.
 TOKEN_MARGIN = timedelta(minutes=5)
 HTTP_UNAUTHORIZED = 401
+HTTP_TOO_MANY_REQUESTS = 429
 HTTP_ERROR_FROM = 400
 # 토큰을 다시 받으라는 errorCode.
 REISSUE_CODES = frozenset({"EGW018", "EGW052"})
+# 호출 제한에 걸렸다는 errorCode. 게이트웨이에서 막혀 처리되지 않은 요청이다.
+RATE_CODES = frozenset({"EGW020", "EGW036", "EGW037"})
+RATE_RETRIES = 2
+RATE_BACKOFF_SECONDS = 1.0
 # 정상 처리인데 errorCode가 실려 오는 값. 팀 앱이 실제 응답에서 본 것이고 명세 근거는 없다.
 OK_CODES = frozenset({"EGW002", "EGW013", "0"})
 HIDDEN = "***"
@@ -80,8 +87,10 @@ class NHClient:
         credentials: Credentials,
         clock: Clock,
         transport: httpx2.AsyncBaseTransport | None = None,
+        limiter: RateLimiter | None = None,
     ) -> None:
         self._credentials = credentials
+        self._limiter = limiter or RateLimiter()
         self._clock = clock
         self._http = httpx2.AsyncClient(
             base_url=NH_BASE_URL, transport=transport, timeout=TIMEOUT_SECONDS
@@ -96,11 +105,23 @@ class NHClient:
         await self._http.aclose()
 
     async def post(self, path: str, payload: Mapping[str, JsonValue]) -> JsonObject:
-        status, body = await self._send(path, dict(payload), await self._ensure_token())
-        if status == HTTP_UNAUTHORIZED or _error_code(body) in REISSUE_CODES:
-            self._token = None
-            status, body = await self._send(path, dict(payload), await self._ensure_token())
-        return self._accept(status, body)
+        grade = grade_of(path)
+        reissued, rate_retries = False, 0
+        while True:
+            token = await self._ensure_token()
+            await self._limiter.acquire(grade)
+            status, body = await self._send(path, dict(payload), token)
+            code = _error_code(body)
+            if (status == HTTP_UNAUTHORIZED or code in REISSUE_CODES) and not reissued:
+                reissued = True
+                self._token = None
+                continue
+            limited = status == HTTP_TOO_MANY_REQUESTS or code in RATE_CODES
+            if limited and rate_retries < RATE_RETRIES:
+                rate_retries += 1
+                await self._limiter.sleep(RATE_BACKOFF_SECONDS)
+                continue
+            return self._accept(status, body)
 
     async def _ensure_token(self) -> str:
         now = self._clock()
@@ -111,6 +132,7 @@ class NHClient:
             "appkey": self._credentials.app_key,
             "appsecret": self._credentials.app_secret,
         }
+        await self._limiter.acquire(grade_of(TOKEN_PATH))
         status, body = await self._request(TOKEN_PATH, form=form)
         issued = self._accept(status, body)
         token, expires_in = issued.get("access_token"), issued.get("expires_in")

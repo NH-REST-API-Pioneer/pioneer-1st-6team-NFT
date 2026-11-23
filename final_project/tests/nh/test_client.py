@@ -17,6 +17,7 @@ from nh_mcp.nh.client import (
     NoResponse,
     Rejected,
 )
+from nh_mcp.nh.limits import RateLimiter, UnknownApi
 
 # 실제 키가 아니다. 이 값이 메시지·repr·로그에 나오면 안 된다.
 CANARY_KEY = "fake-app-key-0000"
@@ -275,3 +276,75 @@ def test_secrets_never_appear_in_errors_reprs_or_logs(caplog: pytest.LogCaptureF
     )
     for secret in (CANARY_KEY, CANARY_SECRET, CANARY_TOKEN):
         assert secret not in shown
+
+
+class FakeTime:
+    def __init__(self) -> None:
+        self.now = 0.0
+        self.slept: list[float] = []
+
+    def monotonic(self) -> float:
+        return self.now
+
+    async def sleep(self, seconds: float) -> None:
+        self.slept.append(seconds)
+        self.now += seconds
+
+
+def make_limited(fake: FakeNH, time: FakeTime) -> NHClient:
+    return NHClient(
+        Credentials(CANARY_KEY, CANARY_SECRET),
+        Clock(),
+        transport=httpx2.MockTransport(fake),
+        limiter=RateLimiter(monotonic=time.monotonic, sleep=time.sleep),
+    )
+
+
+@pytest.mark.parametrize(
+    "limited", [(200, {"errorCode": "EGW036"}), (429, {"errorMessage": "too many"})]
+)
+def test_rate_limited_call_waits_and_retries(limited: Reply) -> None:
+    fake = FakeNH([limited, (200, {"ok": "yes"})])
+    time = FakeTime()
+
+    async def scenario() -> dict[str, JsonValue]:
+        client = make_limited(fake, time)
+        body = await client.post(PRICE_PATH, {})
+        await client.aclose()
+        return body
+
+    assert asyncio.run(scenario()) == {"ok": "yes"}
+    assert time.slept == [1.0]
+    assert fake.paths() == [TOKEN_PATH, PRICE_PATH, PRICE_PATH]
+
+
+def test_rate_limit_retries_are_bounded() -> None:
+    fake = FakeNH([(200, {"errorCode": "EGW020"})] * 3)
+    time = FakeTime()
+
+    async def scenario() -> None:
+        client = make_limited(fake, time)
+        try:
+            await client.post(PRICE_PATH, {})
+        finally:
+            await client.aclose()
+
+    with pytest.raises(Rejected) as caught:
+        asyncio.run(scenario())
+    assert caught.value.code == "EGW020"
+    assert fake.paths().count(PRICE_PATH) == 3
+
+
+def test_unknown_api_is_not_called() -> None:
+    fake = FakeNH([])
+
+    async def scenario() -> None:
+        client = make(fake, Clock())
+        try:
+            await client.post("/trade/v1/domestic/not-in-spec", {})
+        finally:
+            await client.aclose()
+
+    with pytest.raises(UnknownApi):
+        asyncio.run(scenario())
+    assert fake.requests == []
