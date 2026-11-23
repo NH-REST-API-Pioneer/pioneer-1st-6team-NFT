@@ -1,3 +1,5 @@
+import base64
+
 import pytest
 
 from nh_mcp.config import ENV, NH_BASE_URL, NH_STREAM_URL, ConfigError, load_settings
@@ -9,6 +11,7 @@ GOOD = {
     "GOOGLE_CLIENT_SECRET": FAKE_SECRET,
     "ADMIN_EMAILS": " Admin@Example.com , ops@example.com ",
     "DB_PATH": "data/nh.db",
+    "KEY_ENCRYPTION_KEY": base64.b64encode(bytes(32)).decode(),
 }
 
 
@@ -30,7 +33,14 @@ def test_secret_is_not_in_repr() -> None:
 
 
 @pytest.mark.parametrize(
-    "name", ["PUBLIC_BASE_URL", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "DB_PATH"]
+    "name",
+    [
+        "PUBLIC_BASE_URL",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "DB_PATH",
+        "KEY_ENCRYPTION_KEY",
+    ],
 )
 def test_missing_required_value_fails_fast(name: str) -> None:
     with pytest.raises(ConfigError):
@@ -52,3 +62,16 @@ def test_closed_signup_needs_admin_emails() -> None:
 def test_open_signup_must_be_true_or_false() -> None:
     with pytest.raises(ConfigError):
         load_settings({**GOOD, "OPEN_SIGNUP": "yes"})
+
+
+@pytest.mark.parametrize("raw", ["not-base64!", base64.b64encode(bytes(16)).decode()])
+def test_encryption_key_must_be_32_bytes_of_base64(raw: str) -> None:
+    with pytest.raises(ConfigError):
+        load_settings({**GOOD, "KEY_ENCRYPTION_KEY": raw})
+
+
+def test_encryption_key_is_not_in_repr() -> None:
+    key = bytes(range(32))
+    settings = load_settings({**GOOD, "KEY_ENCRYPTION_KEY": base64.b64encode(key).decode()})
+    assert settings.key_encryption_key == key
+    assert repr(key) not in repr(settings)

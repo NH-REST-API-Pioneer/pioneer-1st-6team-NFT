@@ -10,9 +10,9 @@ from typing import Literal
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
+from nh_mcp.config import KEY_BYTES
 from nh_mcp.domain import Market, UserId
 
-KEY_BYTES = 32
 NONCE_BYTES = 12
 
 type Field = Literal["app_key", "app_secret"]

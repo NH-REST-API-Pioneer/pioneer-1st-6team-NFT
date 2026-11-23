@@ -103,6 +103,10 @@ class NHClient:
     async def aclose(self) -> None:
         await self._http.aclose()
 
+    async def check_credentials(self) -> None:
+        """이 키로 모의 서버에서 접근토큰이 발급되는지 시험한다. 안 되면 Rejected."""
+        await self._ensure_token()
+
     async def post(self, path: str, payload: Mapping[str, JsonValue]) -> JsonObject:
         grade = grade_of(path)
         reissued, rate_retries = False, 0

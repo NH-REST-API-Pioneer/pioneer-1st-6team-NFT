@@ -1,5 +1,6 @@
 """로그인을 건너뛰는 길이 운영 코드에 없게 막는다(안전 불변식 10)."""
 
+import base64
 import inspect
 from pathlib import Path
 
@@ -34,6 +35,7 @@ def test_production_server_uses_google_login(
             "GOOGLE_CLIENT_SECRET": "fake-google-secret-0000",
             "ADMIN_EMAILS": "admin@example.com",
             "DB_PATH": str(tmp_path / "nh.db"),
+            "KEY_ENCRYPTION_KEY": base64.b64encode(bytes(32)).decode(),
         }
     )
     server = create_server(settings, db.connect(":memory:"))

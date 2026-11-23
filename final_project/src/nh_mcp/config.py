@@ -4,11 +4,15 @@ NH 주소는 모의 서버로 고정한다. 실전 주소로 바꾸는 환경 �
 나머지는 환경 변수로 받고, 빠졌거나 틀리면 서버를 띄우지 않는다.
 """
 
+import base64
+import binascii
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from nh_mcp.domain import Env
+
+KEY_BYTES = 32
 
 NH_BASE_URL = "https://apidemo.futures.co.kr"
 NH_STREAM_URL = "wss://apidemo.futures.co.kr"
@@ -30,6 +34,7 @@ class Settings:
     admin_emails: frozenset[str]
     open_signup: bool
     db_path: Path
+    key_encryption_key: bytes = field(repr=False)
 
 
 def load_settings(environ: Mapping[str, str]) -> Settings:
@@ -65,4 +70,17 @@ def load_settings(environ: Mapping[str, str]) -> Settings:
         admin_emails=admin_emails,
         open_signup=open_signup,
         db_path=Path(required("DB_PATH")),
+        key_encryption_key=_encryption_key(required("KEY_ENCRYPTION_KEY")),
     )
+
+
+def _encryption_key(raw: str) -> bytes:
+    try:
+        key = base64.b64decode(raw, validate=True)
+    except binascii.Error:
+        raise ConfigError("KEY_ENCRYPTION_KEY는 base64여야 합니다.") from None
+    if len(key) != KEY_BYTES:
+        raise ConfigError(
+            f"KEY_ENCRYPTION_KEY는 {KEY_BYTES}바이트를 base64로 적은 값이어야 합니다."
+        )
+    return key
