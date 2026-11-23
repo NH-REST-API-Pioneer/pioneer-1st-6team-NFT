@@ -758,6 +758,7 @@ name = "nh-futures-mcp"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "cryptography" },
     { name = "fastmcp" },
 ]
 
@@ -771,7 +772,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "fastmcp", specifier = ">=4.2.4,<5" }]
+requires-dist = [
+    { name = "cryptography", specifier = ">=50.0.2" },
+    { name = "fastmcp", specifier = ">=4.2.4,<5" },
+]
 
 [package.metadata.requires-dev]
 dev = [

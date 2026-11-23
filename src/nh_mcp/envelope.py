@@ -3,13 +3,10 @@
 from datetime import datetime, timedelta, timezone
 from typing import Literal, NotRequired, TypedDict
 
-from nh_mcp.domain import Env
+from nh_mcp.domain import Env, JsonValue
 
 # 한국은 서머타임이 없어 고정 오프셋으로 충분하다.
 KST = timezone(timedelta(hours=9))
-
-# float는 넣지 않는다. 가격과 금액은 Decimal을 문자열로 바꿔 담는다.
-type JsonValue = str | int | bool | list[JsonValue] | dict[str, JsonValue] | None
 
 type ErrorCode = Literal[
     "INVALID_INPUT",
