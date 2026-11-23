@@ -1,22 +1,35 @@
-"""FastMCP 서버: 도구를 등록하고 HTTP로 띄운다."""
+"""FastMCP 서버: 도구를 등록하고 HTTP로 띄운다.
 
-from collections.abc import Callable
+로그인 없이 서버를 만드는 길은 없다. build_server는 인증을 반드시 받고,
+운영 서버를 만드는 create_server는 Google 로그인만 쓴다.
+"""
+
+import os
+import sqlite3
 from datetime import UTC, datetime
 
 from fastmcp import FastMCP
+from fastmcp.server.auth import AuthProvider
+from fastmcp.server.middleware import AuthMiddleware
+from fastmcp.utilities.authorization import AuthCheck
 
 from nh_mcp import envelope
-from nh_mcp.config import ENV
+from nh_mcp.auth.access import AccessPolicy, make_gate
+from nh_mcp.auth.google import google_provider
+from nh_mcp.config import ENV, Settings, load_settings
+from nh_mcp.domain import Clock
+from nh_mcp.store import db
 
-type Clock = Callable[[], datetime]
+HOST = "127.0.0.1"
+PORT = 8000
 
 
-def _utc_now() -> datetime:
+def utc_now() -> datetime:
     return datetime.now(UTC)
 
 
-def build_server(clock: Clock = _utc_now) -> FastMCP:
-    mcp = FastMCP("nh-futures-mcp")
+def build_server(auth: AuthProvider, gate: AuthCheck, clock: Clock = utc_now) -> FastMCP:
+    mcp = FastMCP("nh-futures-mcp", auth=auth, middleware=[AuthMiddleware(auth=gate)])
 
     @mcp.tool(annotations={"readOnlyHint": True})
     def ping() -> envelope.Success:
@@ -30,8 +43,17 @@ def build_server(clock: Clock = _utc_now) -> FastMCP:
     return mcp
 
 
+def create_server(settings: Settings, conn: sqlite3.Connection) -> FastMCP:
+    policy = AccessPolicy(settings.open_signup, settings.admin_emails)
+    return build_server(google_provider(settings), make_gate(policy, conn, utc_now))
+
+
 def main() -> None:
-    build_server().run(transport="http")
+    settings = load_settings(os.environ)
+    settings.db_path.parent.mkdir(parents=True, exist_ok=True)
+    create_server(settings, db.connect(settings.db_path)).run(
+        transport="http", host=HOST, port=PORT
+    )
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@
 """
 
 import json
-from collections.abc import Callable, Mapping
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import cast
@@ -18,7 +18,7 @@ from typing import cast
 import httpx2
 
 from nh_mcp.config import NH_BASE_URL
-from nh_mcp.domain import JsonValue
+from nh_mcp.domain import Clock, JsonValue
 from nh_mcp.nh.limits import RateLimiter, grade_of
 
 TOKEN_PATH = "/auth-service/v1/token"
@@ -38,7 +38,6 @@ RATE_BACKOFF_SECONDS = 1.0
 OK_CODES = frozenset({"EGW002", "EGW013", "0"})
 HIDDEN = "***"
 
-type Clock = Callable[[], datetime]
 type JsonObject = dict[str, JsonValue]
 
 
