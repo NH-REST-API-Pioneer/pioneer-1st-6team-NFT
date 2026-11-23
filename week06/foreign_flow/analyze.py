@@ -59,6 +59,18 @@ STALE_S = 120
 # (5주차 고정 20만 원은 5분 보유용이라 15분 보유에선 하루 σ 의 0.27배밖에 안 돼서 평범한 날에도 걸렸음)
 VOL_K = 1.0
 NO_RISK = {"stop_pt": 0.0, "daily_loss_krw": 0}
+# 11/24 추가 (diag/risk_replay.py 로 학습 나흘 재생해서 고름):
+#   손절 = STOP_VOL_K × 진입 직전 15분 기대 변동폭 (직전 VOL_WIN 분 1분 체결가 변화 σ × √h). 1분 중간가로 봄.
+#     변동폭을 아직 못 재는 장 초반(체결 20분 미만)엔 학습일 중앙값(vol_fallback_pt).
+#   수량 = |z| ≥ SIZE_THETA2 면 SIZE_N2 계약, 아니면 1계약 (신호 세기로 나눠 들어감). 청산은 한꺼번에.
+VOL_WIN = 30
+STOP_VOL_K = 2.0
+SIZE_THETA2, SIZE_N2 = 1.5, 2
+
+
+def move_sd(f: pd.DataFrame, h: int) -> pd.Series:
+    """t 행까지 직전 VOL_WIN 분 1분 체결가 변화 σ × √h (pt) — h 분 동안 움직일 만한 폭. 실행기도 같은 함수."""
+    return f["last"].diff().rolling(VOL_WIN, min_periods=20).std() * math.sqrt(h)
 
 
 def vol_limit(F: dict[str, pd.DataFrame], rule: dict, k: float = VOL_K) -> dict:
@@ -111,12 +123,13 @@ def features(p: pd.DataFrame) -> pd.DataFrame:
     for h in HS:
         f[f"r_{h}"] = (np.log(mid.shift(-h) / mid)) * 1e4
     f["mid"] = mid
+    f["last"] = p["MINI_last"] if "MINI_last" in p else np.nan
     f["spread"] = p["MINI_spread"].where(p["MINI_spread"] > 0)
     return f
 
 
 def signals(f: pd.DataFrame) -> list[str]:
-    return [c for c in f.columns if not c.startswith("r_") and c not in ("mid", "stale", "spread")]
+    return [c for c in f.columns if not c.startswith("r_") and c not in ("mid", "stale", "spread", "last")]
 
 
 def usable(idx: pd.DatetimeIndex, h: int) -> np.ndarray:
@@ -206,9 +219,12 @@ def fee_krw(px: float) -> float:
 
 
 def simulate_risk(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, sd: float,
-                  stop_pt: float = 0.0, daily_loss_krw: float = 0) -> list[dict]:
-    """simulate 에 손절·하루 한도를 더한 것 (실행기와 같은 순서: 시간 청산 → 손절 → 한도 → 진입). 원 단위 손익."""
+                  stop_pt: float = 0.0, daily_loss_krw: float = 0, stop_vol_k: float = 0.0,
+                  vol_fallback_pt: float = np.nan, size_theta2: float = 0.0, size_n2: int = 1) -> list[dict]:
+    """simulate 에 손절·하루 한도·수량을 더한 것 (실행기와 같은 순서: 시간 청산 → 손절 → 한도 → 진입). 원 단위 손익.
+    stop_vol_k > 0 이면 손절 폭 = stop_vol_k × move_sd (없으면 vol_fallback_pt), 아니면 고정 stop_pt."""
     m = fresh(f, h)
+    sdv = move_sd(f, h) if stop_vol_k else None
     z, mid, idx = f[sig] / sd, f["mid"], f.index
     pos = {t: i for i, t in enumerate(idx)}
     spr = lambda tt: f.at[tt, "spread"] if np.isfinite(f.at[tt, "spread"]) else TICK_PT  # noqa: E731
@@ -222,16 +238,22 @@ def simulate_risk(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, 
         if not np.isfinite(zt) or abs(zt) <= theta or not np.isfinite(f.at[t, f"r_{h}"]):
             continue
         side, i, m0 = int(np.sign(zt) * sign), pos[t], mid.iloc[pos[t]]
+        n = size_n2 if size_theta2 and abs(zt) >= size_theta2 else 1
+        stop = stop_pt
+        if stop_vol_k:
+            v = sdv.iloc[i]
+            stop = stop_vol_k * (v if np.isfinite(v) else vol_fallback_pt)
         k, why = h, "time"
         for j in range(1, h):
             mj = mid.iloc[i + j]
-            if stop_pt and np.isfinite(mj) and side * (mj - m0) <= -stop_pt:
+            if stop and np.isfinite(mj) and side * (mj - m0) <= -stop:
                 k, why = j, "stop"
                 break
-        krw = side * (mid.iloc[i + k] - m0) * PT_KRW - (spr(t) + spr(idx[i + k])) / 2 * PT_KRW \
-            - fee_krw(m0) - fee_krw(mid.iloc[i + k])
+        krw = n * (side * (mid.iloc[i + k] - m0) * PT_KRW - (spr(t) + spr(idx[i + k])) / 2 * PT_KRW
+                   - fee_krw(m0) - fee_krw(mid.iloc[i + k]))
         cum += krw
-        trades.append({"t": t, "side": side, "z": float(zt), "exit_t": idx[i + k], "why": why, "krw": float(krw)})
+        trades.append({"t": t, "side": side, "z": float(zt), "n": n, "stop_pt": float(stop), "exit_t": idx[i + k],
+                       "why": why, "krw": float(krw)})
         busy_until = idx[i + k]
     return trades
 
@@ -239,7 +261,9 @@ def simulate_risk(f: pd.DataFrame, sig: str, h: int, theta: float, sign: float, 
 def simulate_rule(f: pd.DataFrame, rule: dict) -> list[dict]:
     r = rule.get("risk", NO_RISK)
     return simulate_risk(f, rule["signal"], int(rule["h"]), rule["theta"], rule["sign"], rule["sd"],
-                         stop_pt=r.get("stop_pt", 0.0), daily_loss_krw=r.get("daily_loss_krw", 0))
+                         stop_pt=r.get("stop_pt", 0.0), daily_loss_krw=r.get("daily_loss_krw", 0),
+                         stop_vol_k=r.get("stop_vol_k", 0.0), vol_fallback_pt=r.get("vol_fallback_pt", np.nan),
+                         size_theta2=r.get("size_theta2", 0.0), size_n2=int(r.get("size_n2", 1)))
 
 
 # ---------------------------------------------------------------- 고르기

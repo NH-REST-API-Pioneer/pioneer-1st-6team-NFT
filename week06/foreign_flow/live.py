@@ -18,8 +18,13 @@
   - 매 분 t+3초에 두 파일을 읽어 convert.investor_cols·trade_cols → analyze.features 로 t 행 신호 계산 (분석과 같은 코드).
   - 투자자 스냅샷이 120초 넘게 늦으면(analyze.STALE_S) 진입 안 함. 체결 신호(aggr) 규칙은 마지막 체결이
     WS_STALE_S 초 넘게 지났을 때도 진입 안 함 (웹소켓 끊김).
-  - |z| > θ 이고 포지션이 없으면 sign(z)·rule.sign 방향 시장가 1계약, h 분 뒤 분 경계에서 시장가 청산.
-  - 위험관리는 규칙 파일의 risk (stop_pt, daily_loss_krw). 0 이면 끔.
+  - |z| > θ 이고 포지션이 없으면 sign(z)·rule.sign 방향 시장가 주문, h 분 뒤 분 경계에서 한꺼번에 시장가 청산.
+  - 위험관리는 규칙 파일의 risk. 0 이면 끔.
+      daily_loss_krw   그날 실현 손익이 이만큼 지면 새 진입 없음
+      stop_pt          고정 손절 (중간가가 진입 중간가보다 이만큼 불리하면 청산)
+      stop_vol_k       변동폭 손절: 진입 때 analyze.move_sd × k 를 그 포지션의 손절 폭으로 고정 (stop_pt 대신)
+      vol_fallback_pt  장 초반 변동폭을 아직 못 잴 때 쓰는 값
+      size_theta2/n2   |z| ≥ size_theta2 면 size_n2 계약, 아니면 1계약
   - 08:55 전·15:35 뒤·주말엔 바로 끝남. 진입은 09:05~(15:35 − h), 15:35 에는 무조건 청산. 끝나거나 SIGTERM 이면 청산하고 끝냄.
   - 시작할 때 미니 잔고가 남아 있으면(전에 죽은 경우) 먼저 청산.
 기록: data/live/YYYYMMDD_<규칙파일 이름>.jsonl·_trades.csv. 계좌번호 등은 지움.
@@ -221,13 +226,14 @@ class PaperBroker:
         except Exception as e:  # noqa: BLE001 — 기록용
             return {"error": str(e)[:200]}
 
-    def fill(self, side: int, why: str, q: dict) -> float | None:
+    def fill(self, side: int, why: str, q: dict, n: int = 1) -> float | None:
         px = q.get("ask") if side > 0 else q.get("bid")
         if not px:
             return None
-        self.pos += side
-        self.last_fill_fee = round(analyze.fee_krw(px), 2)
-        self.j.write("fill", side=side, price=px, source="paper", fee=self.last_fill_fee, text=f"종이 체결 · {why}")
+        self.pos += side * n
+        self.last_fill_fee = round(analyze.fee_krw(px) * n, 2)
+        self.j.write("fill", side=side, n=n, price=px, source="paper", fee=self.last_fill_fee,
+                     text=f"종이 체결 {n}계약 · {why}")
         return px
 
     def position(self) -> int | None:
@@ -269,18 +275,18 @@ class MockAccountBroker(PaperBroker):
         self.last_fee = snap["fee"]
         return None if before is None else round(snap["fee"] - before, 2)
 
-    def fill(self, side: int, why: str, q: dict) -> float | None:
+    def fill(self, side: int, why: str, q: dict, n: int = 1) -> float | None:
         from nh_client import NHError, rows
         self.last_fill_fee = None
         s = "buy" if side > 0 else "sell"
         try:
-            res = self.c.market_order(SYM, s, 1)
+            res = self.c.market_order(SYM, s, n)
         except NHError as e:
             self.j.write("order", side=side, ok=False, text=f"주문 실패 · {why}", error=str(e)[:300])
             return None
         ord_no = str(res.get("ord_no") or "").strip()
         self.j.write("order", side=side, ord_no=ord_no, msg_cd=res.get("msg_cd"), msg_cntn=res.get("msg_cntn"),
-                     ok=bool(ord_no), text=f"시장가 1계약 · {why}")
+                     ok=bool(ord_no), n=n, text=f"시장가 {n}계약 · {why}")
         if not ord_no:
             return None
         last = None
@@ -299,7 +305,7 @@ class MockAccountBroker(PaperBroker):
             if sts == "6":
                 px = (num(last.get("avg_exec_pric")) or num(last.get("exec_pric"))) or None
                 self.last_fill_fee = self._fee_after_fill()
-                self.j.write("fill", side=side, price=px, ord_no=ord_no, source="order-history",
+                self.j.write("fill", side=side, n=n, price=px, ord_no=ord_no, source="order-history",
                              exec_tm=last.get("exch_exec_tm"), fee=self.last_fill_fee, fee_total=self.last_fee,
                              text="모의계좌 체결")
                 return px
@@ -334,6 +340,10 @@ class Trader:
         risk = rule.get("risk", analyze.NO_RISK)
         self.stop_pt = risk.get("stop_pt", 0.0) if stop_pt is None else stop_pt
         self.daily_loss_krw = risk.get("daily_loss_krw", 0) if daily_loss_krw is None else daily_loss_krw
+        self.stop_vol_k = float(risk.get("stop_vol_k", 0.0))
+        self.vol_fallback_pt = float(risk.get("vol_fallback_pt", np.nan))
+        self.size_theta2, self.size_n2 = float(risk.get("size_theta2", 0.0)), int(risk.get("size_n2", 1))
+        self.n = 0                        # 지금 들고 있는 계약 수
         self.loss_halted = False          # 하루 손실 한도에 걸림 (그날은 새 진입 없음)
         self.side = 0                     # 지금 들고 있는 방향 (실행기 기준)
         self.exit_at: pd.Timestamp | None = None
@@ -343,63 +353,78 @@ class Trader:
 
     def _check_pos(self, why: str) -> None:
         pos = self.b.position()
-        if pos is not None and pos != self.side:
-            self.j.write("event", text=f"잔고 불일치 ({why}) — 실행기 {self.side}, 잔고 {pos}. 새 진입 멈춤", pos=pos)
-            self.side = pos
+        if pos is not None and pos != self.side * self.n:
+            self.j.write("event", text=f"잔고 불일치 ({why}) — 실행기 {self.side * self.n}, 잔고 {pos}. 새 진입 멈춤", pos=pos)
+            self.side, self.n = int(np.sign(pos)), abs(int(pos))
             self.halted = True
 
-    def enter(self, t: pd.Timestamp, side: int, z: float) -> None:
+    def size(self, z: float) -> int:
+        return self.size_n2 if self.size_theta2 and abs(z) >= self.size_theta2 else 1
+
+    def stop_for(self, msd: float) -> float:
+        """이번 포지션의 손절 폭 (pt). 0 이면 손절 없음."""
+        if self.stop_vol_k:
+            return self.stop_vol_k * (msd if np.isfinite(msd) else self.vol_fallback_pt)
+        return self.stop_pt
+
+    def enter(self, t: pd.Timestamp, side: int, z: float, msd: float = np.nan) -> None:
+        n, stop = self.size(z), self.stop_for(msd)
         q = self.b.quote()
-        px = self.b.fill(side, f"진입 z {z:+.2f}", q)
+        how = f"진입 z {z:+.2f} · {n}계약" + (f" · 손절 {stop:.2f}pt" if stop else "")
+        px = self.b.fill(side, how, q, n)
         if px is None:
             self._check_pos("진입 실패 뒤")
             return
-        self.side, self.exit_at = side, t + pd.Timedelta(minutes=self.h)
-        self.entry = {"t": t, "side": side, "z": z, "px": px, "quote": q, "fee": self.b.last_fill_fee,
-                      "mid": mid_of(q, px)}
+        self.side, self.n, self.exit_at = side, n, t + pd.Timedelta(minutes=self.h)
+        self.entry = {"t": t, "side": side, "z": z, "n": n, "px": px, "quote": q, "fee": self.b.last_fill_fee,
+                      "mid": mid_of(q, px), "stop_pt": stop, "move_sd": msd}
         self._check_pos("진입 뒤")
 
     def exit(self, t: pd.Timestamp, why: str) -> bool:
         if self.side == 0:
             return True
         q = self.b.quote()
-        px = self.b.fill(-self.side, why, q)
+        n = max(self.n, 1)
+        px = self.b.fill(-self.side, why, q, n)
         if px is None:
             self._check_pos("청산 실패 뒤")
             return self.side == 0
         e = self.entry or {}
         if e:
-            pnl_pt = self.side * (px - e["px"])
+            pnl_pt = self.side * (px - e["px"]) * n                        # 계약 수 곱한 pt
             fees = [x for x in (e.get("fee"), self.b.last_fill_fee) if x is not None]
-            fee_est = analyze.fee_krw(e["px"]) + analyze.fee_krw(px)     # 수수료를 못 잡았을 때 (수수료율로 계산)
+            fee_est = (analyze.fee_krw(e["px"]) + analyze.fee_krw(px)) * n  # 수수료를 못 잡았을 때 (수수료율로 계산)
             mid_in = ((e["quote"].get("bid") or 0) + (e["quote"].get("ask") or 0)) / 2 or e["px"]
-            tr = {"entry_t": e["t"], "exit_t": t, "side": self.side, "z": round(e["z"], 3),
+            tr = {"entry_t": e["t"], "exit_t": t, "side": self.side, "n": n, "z": round(e["z"], 3),
+                  "stop_pt": round(e.get("stop_pt") or 0.0, 3),
                   "entry_px": e["px"], "exit_px": px, "entry_bid": e["quote"].get("bid"),
                   "entry_ask": e["quote"].get("ask"), "exit_bid": q.get("bid"), "exit_ask": q.get("ask"),
                   "pnl_pt": round(pnl_pt, 4), "fee_krw": sum(fees) if len(fees) == 2 else None,
                   "pnl_krw": round(pnl_pt * analyze.PT_KRW - (sum(fees) if len(fees) == 2 else fee_est)),
-                  "net_bp": round(pnl_pt / mid_in * 1e4 - (sum(fees) if len(fees) == 2 else fee_est)
-                                  / analyze.PT_KRW / mid_in * 1e4, 2), "why": why}
+                  "net_bp": round((pnl_pt / mid_in * 1e4 - (sum(fees) if len(fees) == 2 else fee_est)
+                                   / analyze.PT_KRW / mid_in * 1e4) / n, 2), "why": why}   # 1계약당 bp
             self.trades.append(tr)
             if self.trades_csv is not None:      # 거래마다 덧붙임 — 중간에 죽고 다시 떠도 앞 거래가 남음
                 pd.DataFrame([tr]).to_csv(self.trades_csv, mode="a", index=False,
                                           header=not self.trades_csv.exists())
             self.j.write("trade", text=f"거래 {len(self.trades)} · {tr['pnl_krw']:+,}원", **tr)
-        self.side, self.exit_at, self.entry = 0, None, None
+        self.side, self.n, self.exit_at, self.entry = 0, 0, None, None
         self._check_pos("청산 뒤")
         return self.side == 0
 
     def day_pnl(self) -> float:
         return float(sum(x["pnl_krw"] for x in self.trades))
 
-    def step(self, t: pd.Timestamp, z: float, stale: bool) -> None:
-        """분 경계 t 에서: 시간 청산 → 손절 → 하루 한도 → 진입 판단 (analyze.simulate_risk 와 같은 순서)."""
+    def step(self, t: pd.Timestamp, z: float, stale: bool, msd: float = np.nan) -> None:
+        """분 경계 t 에서: 시간 청산 → 손절 → 하루 한도 → 진입 판단 (analyze.simulate_risk 와 같은 순서).
+        msd = t 행 analyze.move_sd (변동폭 손절용)."""
         if self.side and self.exit_at is not None and t >= self.exit_at:
             self.exit(t, f"{self.h}분 보유 끝")
-        if self.side and self.stop_pt and self.entry and np.isfinite(self.entry.get("mid", np.nan)):
+        stop = (self.entry or {}).get("stop_pt") or 0.0
+        if self.side and stop and np.isfinite(self.entry.get("mid", np.nan)):
             m = mid_of(self.b.quote())
-            if np.isfinite(m) and self.side * (m - self.entry["mid"]) <= -self.stop_pt:
-                self.exit(t, f"손절 {self.stop_pt:g}pt (중간가 {m:.2f}, 진입 {self.entry['mid']:.2f})")
+            if np.isfinite(m) and self.side * (m - self.entry["mid"]) <= -stop:
+                self.exit(t, f"손절 {stop:.2f}pt (중간가 {m:.2f}, 진입 {self.entry['mid']:.2f})")
         if not self.loss_halted and self.daily_loss_krw and self.day_pnl() <= -self.daily_loss_krw:
             self.loss_halted = True
             self.j.write("event", text=f"하루 손실 한도 {self.daily_loss_krw:,.0f}원 — 오늘은 새 진입 없음", pnl=self.day_pnl())
@@ -407,7 +432,7 @@ class Trader:
         self.j.write("minute", t=t, z=None if not np.isfinite(z) else round(z, 3), stale=stale,
                      side=self.side, want=want)
         if self.side == 0 and not self.halted and not self.loss_halted and want and entry_window(t, self.h):
-            self.enter(t, want, z)
+            self.enter(t, want, z, msd)
 
 
 def mid_of(q: dict, fallback: float = np.nan) -> float:
@@ -465,7 +490,7 @@ def live(paper: bool) -> int:
     pos = broker.position()
     if pos:
         j.write("event", text=f"시작할 때 미니 잔고 {pos} — 먼저 청산", pos=pos)
-        tr.side = int(np.sign(pos))
+        tr.side, tr.n = int(np.sign(pos)), abs(int(pos))
         tr.entry = None
         tr.exit(pd.Timestamp(now_kst()).floor("1min"), "시작 때 남은 잔고 청산")
 
@@ -492,13 +517,15 @@ def live(paper: bool) -> int:
                     age_s=None if not np.isfinite(age) else round(age))
         ws_was_stale = ws_stale
         for trader, r in traders:
-            z, stale = np.nan, True
+            z, stale, msd = np.nan, True, np.nan
             if f is not None:
                 try:
                     z, stale = signal_at(f, t, r, ws_stale)
+                    if trader.stop_vol_k and t in f.index:
+                        msd = float(analyze.move_sd(f, trader.h).at[t])
                 except Exception as e:  # noqa: BLE001
                     trader.j.write("event", text="신호 계산 실패", error=f"{type(e).__name__}: {str(e)[:200]}")
-            trader.step(t, z, stale)
+            trader.step(t, z, stale, msd)
 
     # 끝: 무조건 청산 (실패하면 몇 번 더)
     for _ in range(5):
@@ -537,12 +564,13 @@ def replay(day: str, rule: dict, out: Path) -> list[dict]:
     j = Journal(out)
     b = ReplayBroker(f["mid"], j, f["spread"])
     tr = Trader(b, rule, j)
+    msd = analyze.move_sd(f, tr.h)
     for t in f.index:
         if t.strftime("%H:%M") >= analyze.LAST_EXIT:
             break
         b.now = t
         z, stale = signal_at(f, t, rule)
-        tr.step(t, z, stale)
+        tr.step(t, z, stale, float(msd.at[t]))
     b.now = f.index[f.index.strftime("%H:%M") >= analyze.LAST_EXIT][0]
     tr.exit(b.now, "마감")
     return tr.trades

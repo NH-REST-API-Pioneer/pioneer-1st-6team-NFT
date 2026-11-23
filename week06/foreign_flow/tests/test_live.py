@@ -30,12 +30,12 @@ class FakeBroker(live.PaperBroker):
     def quote(self):
         return {"bid": 100.0, "ask": 100.02, "last": 100.0}
 
-    def fill(self, side, why, q):
+    def fill(self, side, why, q, n=1):
         if self.fail_next:
             self.fail_next = False
             return None
-        self.orders.append(side)
-        return super().fill(side, why, q)
+        self.orders.append(side * n)
+        return super().fill(side, why, q, n)
 
     def position(self):
         return self.pos if self.real_pos is None else self.real_pos
@@ -189,6 +189,43 @@ def test_daily_loss_limit_blocks_new_entries(tmp_path):
     assert tr.side == 0
 
 
+SIZED = dict(RULE, risk={"stop_pt": 0.0, "daily_loss_krw": 0, "stop_vol_k": 2.0, "vol_fallback_pt": 3.0,
+                         "size_theta2": 2.5, "size_n2": 2})
+
+
+def test_strong_signal_enters_two_contracts_and_exits_together(tmp_path):
+    j = live.Journal(tmp_path / "j.jsonl")
+    b = MovingBroker(j)
+    tr = live.Trader(b, SIZED, j)
+    tr.step(T("10:00"), -3.0, False, 10.0)          # |z| ≥ 2.5 → 2계약 매수 (손절 20pt 라 안 걸림)
+    assert tr.side == 1 and tr.n == 2 and b.pos == 2 and b.orders == [2]
+    b.m = 101.0
+    tr.step(T("10:05"), np.nan, False)               # 5분 보유 끝 → 2계약 한꺼번에 청산
+    assert tr.side == 0 and tr.n == 0 and b.pos == 0 and b.orders == [2, -2]
+    t0 = tr.trades[-1]
+    assert t0["n"] == 2 and t0["pnl_pt"] == pytest.approx(2 * (100.99 - 99.99 - 0.02))
+    assert t0["pnl_krw"] == round(t0["pnl_pt"] * analyze.PT_KRW - 2 * (analyze.fee_krw(100.01) + analyze.fee_krw(100.99)))
+    assert not tr.halted                             # 2계약이어도 잔고 불일치 아님
+    tr.step(T("10:06"), -2.0, False, 10.0)           # 약한 신호 → 1계약
+    assert tr.n == 1 and b.orders[-1] == 1
+
+
+def test_vol_stop_uses_move_sd_at_entry_or_fallback(tmp_path):
+    j = live.Journal(tmp_path / "j.jsonl")
+    b = MovingBroker(j)
+    tr = live.Trader(b, SIZED, j)
+    tr.step(T("10:00"), -2.0, False, 0.5)            # 손절 = 2 × 0.5 = 1pt
+    assert tr.entry["stop_pt"] == pytest.approx(1.0)
+    b.m = 99.2
+    tr.step(T("10:01"), np.nan, False, 5.0)          # 진입 뒤 변동폭이 커져도 손절 폭은 진입 때 값
+    assert tr.side == 1
+    b.m = 98.99
+    tr.step(T("10:02"), np.nan, False, 5.0)
+    assert tr.side == 0 and tr.trades[-1]["why"].startswith("손절 1.00pt")
+    tr.step(T("10:03"), -2.0, False, np.nan)         # 변동폭을 못 재면 vol_fallback_pt
+    assert tr.entry["stop_pt"] == pytest.approx(6.0)
+
+
 def test_risk_comes_from_rule_file():
     j = live.Journal(Path("/tmp") / "ff_risk_test.jsonl")
     tr = live.Trader(FakeBroker(j), dict(RULE, risk={"stop_pt": 2.5, "daily_loss_krw": 300_000}), j)
@@ -201,12 +238,13 @@ def test_live_loads_all_rule_files():
     order = live.load_rule(live.ORDER_RULE)
     papers = [live.load_rule(p) for p in live.PAPER_RULES]
     assert order["risk"]["daily_loss_krw"] > 0
+    assert order["risk"]["stop_vol_k"] == 2.0 and order["risk"]["size_theta2"] == 1.5 and order["risk"]["size_n2"] == 2
     assert papers[0]["signal"] == order["signal"] and papers[0]["risk"]["daily_loss_krw"] == 0   # 같은 규칙, 위험관리 끔
     assert all(r["valid_from"] == "20261123" and max(r["train_days"]) < r["valid_from"] for r in [order, *papers])
 
 
 def test_replay_matches_simulate_rule():
-    for day in ("20261117", "20261118", "20261120"):
+    for day in ("20261117", "20261118", "20261119", "20261120"):     # 19일은 손절·2계약이 실제로 걸리는 날
         for path in (live.ORDER_RULE, *live.PAPER_RULES):
             r = live.load_rule(path)
             out = Path("/tmp") / f"ff_replay_test_{day}.jsonl"
@@ -219,9 +257,9 @@ def test_replay_matches_simulate_rule():
 
 # ---------- 웹소켓 체결 읽기 ----------
 
-def _ka(tm, cbuy, csel, sym="A056C000", recv="2026-11-17T10:00:00.000"):
+def _ka(tm, cbuy, csel, sym="A056C000", recv="2026-11-17T10:00:00.000", last="780.00"):
     return json.dumps({"recv_ts": recv, "msg": {"header": {"action_code": "KA", "action_sym": sym},
-                       "body": {"sym": sym, "tick_div": "1", "exch_tm": tm, "last_pric": "780.00", "exec_qty": "1",
+                       "body": {"sym": sym, "tick_div": "1", "exch_tm": tm, "last_pric": last, "exec_qty": "1",
                                 "cum_buy_exec_qty": str(cbuy), "cum_sel_exec_qty": str(csel)}}}) + "\n"
 
 
@@ -267,7 +305,7 @@ def test_live_aggr_matches_panel_aggr(tmp_path, monkeypatch):
         cb += int(rng.integers(0, 5)); cs += int(rng.integers(0, 5))
         tm = (pd.Timestamp("2026-11-17 09:00") + pd.Timedelta(seconds=s - 120)).strftime("%H%M%S")
         for sym in ("A016C000", "A056C000"):
-            lines.append(_ka(tm, cb * (5 if sym == "A056C000" else 1), cs))
+            lines.append(_ka(tm, cb * (5 if sym == "A056C000" else 1), cs, last=f"{780 + rng.normal() * 2:.2f}"))
     (d / "09.jsonl").write_text("".join(lines))
     panel = analyze.features(convert.build_day(DAY).assign(MINI_mid=np.nan, MINI_spread=np.nan))
     ka = live.WsTail(d).poll()
@@ -275,6 +313,9 @@ def test_live_aggr_matches_panel_aggr(tmp_path, monkeypatch):
         t = T(hm)
         f = live.market_features(pd.DataFrame(), ka, DAY, t)
         assert f.at[t, "aggr_5"] == pytest.approx(panel.at[t, "aggr_5"])
+        # 변동폭 손절에 쓰는 move_sd 도 1분 표와 같음 (09:06 은 아직 20분이 안 돼 비어 있음)
+        a, b = analyze.move_sd(f, 15).at[t], analyze.move_sd(panel, 15).at[t]
+        assert (np.isnan(a) and np.isnan(b)) if hm == "09:06" else a == pytest.approx(b)
     assert live.ws_age_s(ka, DAY, T("10:10")) < 10
     assert live.ws_age_s(ka, DAY, T("10:30")) > live.WS_STALE_S
 
