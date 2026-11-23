@@ -1,0 +1,322 @@
+{
+ "server": "https://apidemo.futures.co.kr",
+ "result": {
+  "sym": "6AZ26",
+  "last_pric": "0.66330",
+  "limit_price": "0.62330",
+  "T2_accepted_ord_no": "0000000154",
+  "T2_resp_keys": {
+   "응답에만": [],
+   "명세에만": [],
+   "문자열 아닌 값": []
+  },
+  "H1_row": {
+   "occurs1_ord_no": "0000000154",
+   "occurs1_org_ord_no": "0000000000",
+   "occurs1_sym": "6AZ26",
+   "occurs1_ord_sts": "3",
+   "occurs1_trd_tp": "1",
+   "occurs1_qt_tp": "1",
+   "occurs1_ord_tp": "2",
+   "occurs1_ord_div": "0",
+   "occurs1_ord_pric": "0000000000.6233",
+   "occurs1_ord_qty": "0000001",
+   "occurs1_exec_qty": "0000000",
+   "occurs1_cxl_qty": "0000000",
+   "occurs1_mod_qty": "0000000"
+  },
+  "H1_keys": {
+   "응답에만": [],
+   "명세에만": [],
+   "문자열 아닌 값": []
+  },
+  "T4_cancel_without_qty_accepted": false,
+  "H3_rows": [],
+  "E1_rows": 0,
+  "E1_keys": "행 없음",
+  "E1_msgs": []
+ },
+ "log": [
+  {
+   "t": "2026-11-23T14:08:30",
+   "case": "H0 시작 전 주문내역",
+   "path": "/trade/v1/overseas/order-history",
+   "request": {
+    "nxt_key": "",
+    "inq_div": "0",
+    "trd_div_cd": "0"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0000"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:30",
+   "case": "T1 신규 sym 생략 (명세 N vs 필수입력)",
+   "path": "/trade/v1/overseas/order",
+   "request": {
+    "qt_div_cd": "1",
+    "trd_div_cd": "1",
+    "glb_ord_tp_cd": "2",
+    "ord_qty": "1",
+    "ord_pric": "0.62330",
+    "stop_pric": "",
+    "org_ord_no": "0"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:08:30",
+    "errorMessage": "[종목코드 입력여부 체크] 필수항목 입력하세요.",
+    "errorStatus": 400,
+    "errorCode": "5009",
+    "errorPath": "/trade/v1/overseas/order"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:31",
+   "case": "T1b 신규 sym 빈값",
+   "path": "/trade/v1/overseas/order",
+   "request": {
+    "qt_div_cd": "1",
+    "sym": "",
+    "trd_div_cd": "1",
+    "glb_ord_tp_cd": "2",
+    "ord_qty": "1",
+    "ord_pric": "0.62330",
+    "stop_pric": "",
+    "org_ord_no": "0"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:08:31",
+    "errorMessage": "[종목코드 입력여부 체크] 필수항목 입력하세요.",
+    "errorStatus": 400,
+    "errorCode": "5009",
+    "errorPath": "/trade/v1/overseas/order"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:31",
+   "case": "T2 신규 org_ord_no 생략 (명세 Y vs 정정·취소 필수)",
+   "path": "/trade/v1/overseas/order",
+   "request": {
+    "qt_div_cd": "1",
+    "sym": "6AZ26",
+    "trd_div_cd": "1",
+    "glb_ord_tp_cd": "2",
+    "ord_qty": "1",
+    "ord_pric": "0.62330",
+    "stop_pric": ""
+   },
+   "status": 200,
+   "response": {
+    "ord_no": "0000000154",
+    "trd_div_cd": "1",
+    "ord_qty": "00000000000001.000000000",
+    "org_ord_no": "0000000000",
+    "sym": "6AZ26",
+    "ord_pric": "00000000000000.623300000",
+    "err_msg": "주문이 정상처리 되었습니다.",
+    "biz_dt": "20261123",
+    "mo_ord_no": "0000000154",
+    "qt_div_cd": "1",
+    "err_cd": "00000"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:32",
+   "case": "T2b 신규 org_ord_no 빈값",
+   "path": "/trade/v1/overseas/order",
+   "request": {
+    "qt_div_cd": "1",
+    "sym": "6AZ26",
+    "trd_div_cd": "1",
+    "glb_ord_tp_cd": "2",
+    "ord_qty": "1",
+    "ord_pric": "0.62330",
+    "stop_pric": "",
+    "org_ord_no": ""
+   },
+   "status": 200,
+   "response": {
+    "ord_no": "0000000155",
+    "trd_div_cd": "1",
+    "ord_qty": "00000000000001.000000000",
+    "org_ord_no": "0000000000",
+    "sym": "6AZ26",
+    "ord_pric": "00000000000000.623300000",
+    "err_msg": "주문이 정상처리 되었습니다.",
+    "biz_dt": "20261123",
+    "mo_ord_no": "0000000155",
+    "qt_div_cd": "1",
+    "err_cd": "00000"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:34",
+   "case": "H1 주문내역 (신규 뒤)",
+   "path": "/trade/v1/overseas/order-history",
+   "request": {
+    "nxt_key": "",
+    "inq_div": "0",
+    "trd_div_cd": "0"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0002",
+    "Occurs1": "2행"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:35",
+   "case": "T4 취소 ord_qty 생략 (명세 Y vs 신규·정정 필수)",
+   "path": "/trade/v1/overseas/order",
+   "request": {
+    "qt_div_cd": "3",
+    "sym": "6AZ26",
+    "trd_div_cd": "1",
+    "glb_ord_tp_cd": "2",
+    "ord_pric": "0.62330",
+    "stop_pric": "",
+    "org_ord_no": "0000000154"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:08:35",
+    "errorMessage": "필수 필드 값이 비어져있습니다.: ord_qty",
+    "errorStatus": 400,
+    "errorCode": "ETR023",
+    "errorPath": "/trade/v1/overseas/order"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:36",
+   "case": "T4b 취소 ord_qty 빈값",
+   "path": "/trade/v1/overseas/order",
+   "request": {
+    "qt_div_cd": "3",
+    "sym": "6AZ26",
+    "trd_div_cd": "1",
+    "glb_ord_tp_cd": "2",
+    "ord_pric": "0.62330",
+    "stop_pric": "",
+    "org_ord_no": "0000000154",
+    "ord_qty": ""
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:08:35",
+    "errorMessage": "필수 필드 값이 비어져있습니다.: ord_qty",
+    "errorStatus": 400,
+    "errorCode": "ETR023",
+    "errorPath": "/trade/v1/overseas/order"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:38",
+   "case": "H2 정리 전 주문내역",
+   "path": "/trade/v1/overseas/order-history",
+   "request": {
+    "nxt_key": "",
+    "inq_div": "0",
+    "trd_div_cd": "0"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0002",
+    "Occurs1": "2행"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:39",
+   "case": "T5 정리 정상 취소 0000000154",
+   "path": "/trade/v1/overseas/order",
+   "request": {
+    "qt_div_cd": "3",
+    "sym": "6AZ26",
+    "trd_div_cd": "1",
+    "glb_ord_tp_cd": "2",
+    "ord_qty": "1",
+    "ord_pric": "0.62330",
+    "stop_pric": "",
+    "org_ord_no": "0000000154"
+   },
+   "status": 200,
+   "response": {
+    "ord_no": "0000000156",
+    "trd_div_cd": "1",
+    "ord_qty": "00000000000001.000000000",
+    "org_ord_no": "0000000154",
+    "sym": "6AZ26",
+    "ord_pric": "00000000000000.623300000",
+    "err_msg": "주문이 정상처리 되었습니다.",
+    "biz_dt": "20261123",
+    "mo_ord_no": "0000000154",
+    "qt_div_cd": "3",
+    "err_cd": "00000"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:39",
+   "case": "T5 정리 정상 취소 0000000155",
+   "path": "/trade/v1/overseas/order",
+   "request": {
+    "qt_div_cd": "3",
+    "sym": "6AZ26",
+    "trd_div_cd": "1",
+    "glb_ord_tp_cd": "2",
+    "ord_qty": "1",
+    "ord_pric": "0.62330",
+    "stop_pric": "",
+    "org_ord_no": "0000000155"
+   },
+   "status": 200,
+   "response": {
+    "ord_no": "0000000157",
+    "trd_div_cd": "1",
+    "ord_qty": "00000000000001.000000000",
+    "org_ord_no": "0000000155",
+    "sym": "6AZ26",
+    "ord_pric": "00000000000000.623300000",
+    "err_msg": "주문이 정상처리 되었습니다.",
+    "biz_dt": "20261123",
+    "mo_ord_no": "0000000155",
+    "qt_div_cd": "3",
+    "err_cd": "00000"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:42",
+   "case": "H3 정리 뒤 주문내역",
+   "path": "/trade/v1/overseas/order-history",
+   "request": {
+    "nxt_key": "",
+    "inq_div": "0",
+    "trd_div_cd": "0"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0000"
+   }
+  },
+  {
+   "t": "2026-11-23T14:08:42",
+   "case": "E1 해외_주문오류내역 (오늘)",
+   "path": "/trade/v1/overseas/order-error",
+   "request": {
+    "nxt_key": "",
+    "inq_dt": "20261123"
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0000"
+   }
+  }
+ ]
+}

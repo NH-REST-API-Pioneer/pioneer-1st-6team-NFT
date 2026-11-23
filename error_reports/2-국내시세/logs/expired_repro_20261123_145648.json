@@ -1,0 +1,368 @@
+{
+ "run_at": "2026-11-23T14:56:44",
+ "server": "https://apidemo.futures.co.kr",
+ "cases": {
+  "국내_현재가 A0169000": {
+   "request": {
+    "sym": "A0169000"
+   },
+   "status": 200,
+   "total_keys": 51,
+   "empty_keys": 51,
+   "response": {
+    "spt_chg": "",
+    "lo": "",
+    "up_act_pric": "",
+    "delta": "",
+    "mltplr": "",
+    "theta": "",
+    "rem_dy": "",
+    "lo_act_pric": "",
+    "trd_qty": "",
+    "dev": "",
+    "spt_chg_sign": "",
+    "up": "",
+    "chg": "",
+    "spt_sym": "",
+    "trd_amt": "",
+    "pd_trd_qty": "",
+    "high_pric": "",
+    "bid_pric": "",
+    "sym_nm": "",
+    "fact_bas": "",
+    "sym_exch": "",
+    "opint_chg": "",
+    "theo_pric": "",
+    "pl_rt": "",
+    "pd_opint": "",
+    "opint": "",
+    "theo_bas": "",
+    "rt": "",
+    "low_pric_dt": "",
+    "pd_sett_pric": "",
+    "dev_rt": "",
+    "ref_pric": "",
+    "life_high_pric": "",
+    "spt_rt": "",
+    "open_pric": "",
+    "theo_pric_chg": "",
+    "last_pric": "",
+    "lst_trd_dt": "",
+    "ask_pric": "",
+    "spt_pric": "",
+    "pd_theo_pric": "",
+    "chg_sign": "",
+    "high_pric_dt": "",
+    "opint_chg_sign": "",
+    "spt_cd": "",
+    "low_pric": "",
+    "rho": "",
+    "ivol": "",
+    "life_low_pric": "",
+    "gamma": "",
+    "vega": ""
+   }
+  },
+  "국내_현재가 A999X999": {
+   "request": {
+    "sym": "A999X999"
+   },
+   "status": 200,
+   "total_keys": 51,
+   "empty_keys": 51,
+   "response": {
+    "spt_chg": "",
+    "lo": "",
+    "up_act_pric": "",
+    "delta": "",
+    "mltplr": "",
+    "theta": "",
+    "rem_dy": "",
+    "lo_act_pric": "",
+    "trd_qty": "",
+    "dev": "",
+    "spt_chg_sign": "",
+    "up": "",
+    "chg": "",
+    "spt_sym": "",
+    "trd_amt": "",
+    "pd_trd_qty": "",
+    "high_pric": "",
+    "bid_pric": "",
+    "sym_nm": "",
+    "fact_bas": "",
+    "sym_exch": "",
+    "opint_chg": "",
+    "theo_pric": "",
+    "pl_rt": "",
+    "pd_opint": "",
+    "opint": "",
+    "theo_bas": "",
+    "rt": "",
+    "low_pric_dt": "",
+    "pd_sett_pric": "",
+    "dev_rt": "",
+    "ref_pric": "",
+    "life_high_pric": "",
+    "spt_rt": "",
+    "open_pric": "",
+    "theo_pric_chg": "",
+    "last_pric": "",
+    "lst_trd_dt": "",
+    "ask_pric": "",
+    "spt_pric": "",
+    "pd_theo_pric": "",
+    "chg_sign": "",
+    "high_pric_dt": "",
+    "opint_chg_sign": "",
+    "spt_cd": "",
+    "low_pric": "",
+    "rho": "",
+    "ivol": "",
+    "life_low_pric": "",
+    "gamma": "",
+    "vega": ""
+   }
+  },
+  "국내_호가 A0169000": {
+   "request": {
+    "exch_cd": "KSP",
+    "sym": "A0169000"
+   },
+   "status": 200,
+   "total_keys": 31,
+   "empty_keys": 31,
+   "response": {
+    "rt": "",
+    "lo": "",
+    "up_act_pric": "",
+    "sym": "",
+    "pre_ask_qty": "",
+    "bid_qty": "",
+    "lo_pric_3": "",
+    "lo_pric_2": "",
+    "lo_pric_1": "",
+    "lo_act_pric": "",
+    "nrec": "",
+    "diff_rt": "",
+    "cum_trd_amt": "",
+    "pre_bid_qty": "",
+    "net_bid_ask": "",
+    "open_pric": "",
+    "bid_cnt": "",
+    "last_pric": "",
+    "up": "",
+    "pd_close_pric": "",
+    "up_pric_1": "",
+    "up_pric_2": "",
+    "up_pric_3": "",
+    "cum_trd_qty": "",
+    "high_pric": "",
+    "ask_cnt": "",
+    "real": "",
+    "est_exec_pric": "",
+    "low_pric": "",
+    "ask_qty": "",
+    "qt_tm": ""
+   }
+  },
+  "국내_호가 A999X999": {
+   "request": {
+    "exch_cd": "KSP",
+    "sym": "A999X999"
+   },
+   "status": 200,
+   "total_keys": 31,
+   "empty_keys": 31,
+   "response": {
+    "rt": "",
+    "lo": "",
+    "up_act_pric": "",
+    "sym": "",
+    "pre_ask_qty": "",
+    "bid_qty": "",
+    "lo_pric_3": "",
+    "lo_pric_2": "",
+    "lo_pric_1": "",
+    "lo_act_pric": "",
+    "nrec": "",
+    "diff_rt": "",
+    "cum_trd_amt": "",
+    "pre_bid_qty": "",
+    "net_bid_ask": "",
+    "open_pric": "",
+    "bid_cnt": "",
+    "last_pric": "",
+    "up": "",
+    "pd_close_pric": "",
+    "up_pric_1": "",
+    "up_pric_2": "",
+    "up_pric_3": "",
+    "cum_trd_qty": "",
+    "high_pric": "",
+    "ask_cnt": "",
+    "real": "",
+    "est_exec_pric": "",
+    "low_pric": "",
+    "ask_qty": "",
+    "qt_tm": ""
+   }
+  },
+  "국내_차트(일) A0169000": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A0169000",
+    "req_qty": "3"
+   },
+   "status": 200,
+   "total_keys": 4,
+   "empty_keys": 4,
+   "response": {
+    "nxt_key": "",
+    "nrec": "",
+    "sym": "",
+    "nght_tp": ""
+   }
+  },
+  "국내_차트(일) A999X999": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A999X999",
+    "req_qty": "3"
+   },
+   "status": 200,
+   "total_keys": 4,
+   "empty_keys": 4,
+   "response": {
+    "nxt_key": "",
+    "nrec": "",
+    "sym": "",
+    "nght_tp": ""
+   }
+  },
+  "국내_차트(분) A0169000": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A0169000",
+    "req_qty": "3",
+    "dcnt": "1"
+   },
+   "status": 200,
+   "total_keys": 3,
+   "empty_keys": 3,
+   "response": {
+    "nxt_key": "",
+    "nrec": "",
+    "sym": ""
+   }
+  },
+  "국내_차트(분) A999X999": {
+   "request": {
+    "nght_tp": "1",
+    "sym": "A999X999",
+    "req_qty": "3",
+    "dcnt": "1"
+   },
+   "status": 200,
+   "total_keys": 3,
+   "empty_keys": 3,
+   "response": {
+    "nxt_key": "",
+    "nrec": "",
+    "sym": ""
+   }
+  },
+  "국내_종목예상체결가 A0169000": {
+   "request": {
+    "sym": "A0169000"
+   },
+   "status": 200,
+   "total_keys": 4,
+   "empty_keys": 4,
+   "response": {
+    "ref_pric": "",
+    "nrec": "",
+    "sym_exch": "",
+    "sym_nm": ""
+   }
+  },
+  "국내_종목예상체결가 A999X999": {
+   "request": {
+    "sym": "A999X999"
+   },
+   "status": 200,
+   "total_keys": 4,
+   "empty_keys": 4,
+   "response": {
+    "ref_pric": "",
+    "nrec": "",
+    "sym_exch": "",
+    "sym_nm": ""
+   }
+  },
+  "해외_현재가 6AU26": {
+   "request": {
+    "Iccurs1": [
+     {
+      "iccurs1_exch_cd": "FCME",
+      "iccurs1_sym": "6AU26"
+     }
+    ]
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:56:47",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: 6AU26]",
+    "errorStatus": 400,
+    "errorCode": "ETR029",
+    "errorPath": "/trade/v1/overseas/price"
+   }
+  },
+  "해외_현재가 6AZ99": {
+   "request": {
+    "Iccurs1": [
+     {
+      "iccurs1_exch_cd": "FCME",
+      "iccurs1_sym": "6AZ99"
+     }
+    ]
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:56:47",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: 6AZ99]",
+    "errorStatus": 400,
+    "errorCode": "ETR029",
+    "errorPath": "/trade/v1/overseas/price"
+   }
+  },
+  "해외_호가 6AU26": {
+   "request": {
+    "exch_cd": "FCME",
+    "sym": "6AU26"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:56:48",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: 6AU26]",
+    "errorStatus": 400,
+    "errorCode": "ETR029",
+    "errorPath": "/trade/v1/overseas/bid-price"
+   }
+  },
+  "해외_호가 6AZ99": {
+   "request": {
+    "exch_cd": "FCME",
+    "sym": "6AZ99"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:56:48",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: 6AZ99]",
+    "errorStatus": 400,
+    "errorCode": "ETR029",
+    "errorPath": "/trade/v1/overseas/bid-price"
+   }
+  }
+ }
+}

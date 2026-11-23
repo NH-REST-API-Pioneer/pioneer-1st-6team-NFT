@@ -1,0 +1,1485 @@
+{
+ "run_at": "2026-11-23T14:10:10",
+ "domestic": {
+  "data_fields": {
+   "KA": {
+    "count": 2,
+    "header_sample": {
+     "action_code": "KA",
+     "action_sym": "A756C000"
+    },
+    "key_diff": {
+     "spec_count": 46,
+     "got_count": 46,
+     "응답에만": [],
+     "명세에만": [],
+     "문자열 아닌 값": []
+    },
+    "body_sample": {
+     "cum_sel_exec_amt": "4985",
+     "rt": "0.94",
+     "tm_val": "0.00",
+     "up_act_pric": "1361.40",
+     "sym": "A756C000",
+     "mkt_bas": "-0.70",
+     "dev_rt": "-0.05",
+     "delta": "0.00000",
+     "dev_clr": "5",
+     "theta": "0.00000",
+     "lo_act_pric": "1334.80",
+     "dev_rt_clr": "5",
+     "dev": "-0.70",
+     "diff_rt": "12.50",
+     "cum_trd_amt": "10129167",
+     "open_pric": "1344.50",
+     "exec_div": "1",
+     "tick_div": "1",
+     "cum_sel_cnt": "20901",
+     "last_pric": "1348.10",
+     "theo_bas_clr": "3",
+     "opint_diff": "8664.00",
+     "und_last_pric": "1348.80",
+     "pd_trd_qty_rt": "106.78",
+     "bid_best_pric": "1348.10",
+     "cum_trd_qty": "753090",
+     "pd_trd_qty": "705291",
+     "high_pric": "1350.90",
+     "ival": "0.00",
+     "cum_buy_exec_amt": "5145",
+     "chg_div": "2",
+     "ask_best_pric": "1348.20",
+     "cum_sel_exec_qty": "370555",
+     "exec_qty": "10",
+     "theo_chg": "2.80",
+     "est_exec_pric": "0.00",
+     "low_pric": "1337.40",
+     "theo_pric": "1348.80",
+     "cum_buy_exec_qty": "382535",
+     "cum_buy_cnt": "24808",
+     "rho": "0.00000",
+     "ivol": "0.00",
+     "exch_tm": "141011",
+     "opint": "1289442",
+     "gamma": "0.00000",
+     "vega": "0.00000"
+    }
+   },
+   "KB": {
+    "count": 3,
+    "header_sample": {
+     "action_code": "KB",
+     "action_sym": "A756C000"
+    },
+    "key_diff": {
+     "spec_count": 176,
+     "got_count": 176,
+     "응답에만": [],
+     "명세에만": [],
+     "문자열 아닌 값": []
+    },
+    "body_sample": {
+     "ask_rt_clr_9": "3",
+     "ask_rt_clr_7": "3",
+     "ask_rt_clr_8": "3",
+     "ask_rt_clr_5": "2",
+     "ask_rt_clr_6": "3",
+     "ask_rt_clr_3": "2",
+     "ask_rt_clr_4": "2",
+     "ask_rt_clr_1": "2",
+     "ask_rt_clr_2": "2",
+     "ask_rt_10": "0.00",
+     "ask_rt_clr_10": "3",
+     "bid_qty_3": "767",
+     "bid_pre_7": "0",
+     "bid_qty_4": "491",
+     "bid_pre_6": "0",
+     "bid_qty_5": "427",
+     "bid_pre_9": "0",
+     "bid_qty_6": "0",
+     "bid_pre_8": "0",
+     "bid_qty_7": "0",
+     "bid_qty_8": "0",
+     "bid_qty_9": "0",
+     "bid_pre_clr_6": "3",
+     "ask_cnt": "842",
+     "pre_ask_qty_clr": "3",
+     "bid_pre_clr_7": "3",
+     "bid_pre_1": "0",
+     "bid_pre_clr_4": "3",
+     "bid_pre_clr_5": "2",
+     "bid_pre_3": "0",
+     "bid_pre_2": "0",
+     "bid_qty_1": "752",
+     "bid_pre_5": "427",
+     "bid_pre_clr_8": "3",
+     "bid_qty_2": "665",
+     "bid_pre_4": "0",
+     "bid_pre_clr_9": "3",
+     "est_exec_pric": "",
+     "ask_qty_10": "0",
+     "ask_clr_2": "2",
+     "ask_rt_8": "0.00",
+     "ask_clr_3": "2",
+     "ask_rt_7": "0.00",
+     "ask_clr_1": "2",
+     "ask_rt_9": "0.00",
+     "ask_clr_6": "3",
+     "ask_clr_7": "3",
+     "ask_clr_4": "2",
+     "ask_clr_5": "2",
+     "ask_clr_10": "3",
+     "ask_clr_8": "3",
+     "ask_clr_9": "3",
+     "bid_pric_10": "0.00",
+     "bid_pre_clr_2": "3",
+     "bid_pre_clr_3": "3",
+     "bid_pre_clr_1": "3",
+     "bid_rt_clr_9": "3",
+     "bid_rt_clr_8": "3",
+     "net_bid_ask": "2612",
+     "bid_cnt_1": "23",
+     "bid_rt_clr_7": "3",
+     "bid_cnt_2": "20",
+     "bid_rt_clr_6": "3",
+     "bid_cnt_3": "28",
+     "bid_rt_clr_5": "2",
+     "bid_cnt_4": "17",
+     "bid_rt_clr_4": "2",
+     "bid_rt_clr_3": "2",
+     "bid_cnt_5": "10",
+     "bid_rt_clr_2": "2",
+     "bid_cnt_6": "0",
+     "bid_rt_clr_1": "2",
+     "bid_cnt_7": "0",
+     "ask_pric_2": "1348.30",
+     "bid_cnt_8": "0",
+     "ask_pric_1": "1348.20",
+     "bid_cnt_9": "0",
+     "ask_pric_4": "1348.50",
+     "ask_pric_3": "1348.40",
+     "ask_cnt_10": "0",
+     "ask_pric_9": "0.00",
+     "ask_pre_clr_10": "3",
+     "ask_pric_6": "0.00",
+     "bid_rt_10": "0.00",
+     "ask_pric_5": "1348.60",
+     "ask_pric_8": "0.00",
+     "ask_pric_7": "0.00",
+     "ask_qty_9": "0",
+     "ask_qty_8": "0",
+     "ask_qty_7": "0",
+     "bid_pre_clr_10": "3",
+     "bid_rt_clr_10": "3",
+     "ask_pre_10": "0",
+     "ask_qty_2": "674",
+     "ask_qty_1": "615",
+     "ask_qty": "14576",
+     "ask_qty_6": "0",
+     "ask_qty_5": "724",
+     "ask_qty_4": "798",
+     "ask_qty_3": "875",
+     "ask_pre_1": "0",
+     "ask_cnt_3": "21",
+     "ask_cnt_2": "17",
+     "ask_cnt_1": "10",
+     "pre_ask_qty": "0",
+     "ask_cnt_7": "0",
+     "bid_qty": "17188",
+     "ask_cnt_6": "0",
+     "ask_cnt_5": "18",
+     "ask_cnt_4": "19",
+     "ask_cnt_9": "0",
+     "ask_cnt_8": "0",
+     "bid_pre_10": "0",
+     "pre_bid_qty": "0",
+     "ask_pre_6": "0",
+     "ask_pre_7": "0",
+     "ask_pre_8": "0",
+     "ask_pre_9": "0",
+     "ask_pre_2": "0",
+     "ask_pre_3": "0",
+     "ask_pre_4": "0",
+     "ask_pre_5": "0",
+     "seq_no": "",
+     "ask_pre_clr_1": "3",
+     "ask_pre_clr_2": "3",
+     "ask_pre_clr_3": "3",
+     "ask_pre_clr_4": "3",
+     "ask_pre_clr_5": "3",
+     "ask_pre_clr_6": "3",
+     "ask_pre_clr_7": "3",
+     "ask_rt_4": "0.97",
+     "ask_rt_3": "0.96",
+     "ask_rt_6": "0.00",
+     "ask_rt_5": "0.97",
+     "ask_rt_2": "0.95",
+     "ask_rt_1": "0.94",
+     "bid_rt_1": "0.93",
+     "bid_rt_2": "0.92",
+     "sym": "A756C000",
+     "bid_rt_9": "0.00",
+     "bid_qty_10": "0",
+     "bid_rt_7": "0.00",
+     "bid_rt_8": "0.00",
+     "bid_rt_5": "0.90",
+     "bid_rt_6": "0.00",
+     "bid_rt_3": "0.91",
+     "bid_rt_4": "0.91",
+     "ask_pric_10": "0.00",
+     "nght_tp": "KB",
+     "ask_pre_clr_8": "3",
+     "ask_pre_clr_9": "3",
+     "bid_cnt": "1218",
+     "bid_clr_10": "3",
+     "bid_clr_9": "3",
+     "bid_clr_8": "3",
+     "bid_clr_7": "3",
+     "bid_clr_6": "3",
+     "bid_clr_5": "2",
+     "est_exec_pric_clr": "",
+     "bid_clr_4": "2",
+     "bid_clr_3": "2",
+     "bid_clr_2": "2",
+     "bid_clr_1": "2",
+     "net_bid_ask_clr": "2",
+     "bid_pric_9": "0.00",
+     "bid_pric_3": "1347.80",
+     "bid_pric_4": "1347.70",
+     "bid_pric_1": "1348.00",
+     "bid_pric_2": "1347.90",
+     "bid_pric_7": "0.00",
+     "pre_bid_qty_clr": "3",
+     "bid_pric_8": "0.00",
+     "exch_tm": "141011",
+     "bid_pric_5": "1347.60",
+     "bid_pric_6": "0.00",
+     "bid_cnt_10": "0"
+    }
+   }
+  },
+  "rate_6_burst": {
+   "sent_in_sec": 0.0004,
+   "reply_count": 6,
+   "replies": [
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "A",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": ""
+    },
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "D",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": ""
+    },
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "A",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": ""
+    },
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "D",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": ""
+    },
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "A",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": ""
+    },
+    {
+     "code": "RT_INIT",
+     "data": {
+      "action": "D",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": ""
+    }
+   ]
+  },
+  "limit_21": {
+   "attempted": 21,
+   "rt_init_count": 17,
+   "non_ok": [
+    {
+     "idx": 18,
+     "sym": "A757A000",
+     "code": "RT_FAIL",
+     "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다.",
+     "raw": {
+      "code": "RT_FAIL",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A757A000"
+      },
+      "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다."
+     }
+    },
+    {
+     "idx": 19,
+     "sym": "A757B000",
+     "code": "RT_FAIL",
+     "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다.",
+     "raw": {
+      "code": "RT_FAIL",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A757B000"
+      },
+      "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다."
+     }
+    },
+    {
+     "idx": 20,
+     "sym": "A757C000",
+     "code": "RT_FAIL",
+     "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다.",
+     "raw": {
+      "code": "RT_FAIL",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A757C000"
+      },
+      "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다."
+     }
+    },
+    {
+     "idx": 21,
+     "sym": "A7583000",
+     "code": "RT_FAIL",
+     "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다.",
+     "raw": {
+      "code": "RT_FAIL",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7583000"
+      },
+      "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다."
+     }
+    }
+   ]
+  },
+  "missing_header_action": {
+   "replies": [
+    {
+     "code": "RT_FAIL",
+     "data": {
+      "action": "",
+      "action_code": "KA",
+      "action_sym": "A756C000"
+     },
+     "msg": "예외 발생 잘못된 action 입니다. A: 구독, D: 해지만 사용 가능합니다."
+    }
+   ],
+   "alive_after": true
+  },
+  "log": [
+   {
+    "conn": "국내",
+    "case": "session_init",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}",
+    "replies": [
+     {
+      "code": "INIT",
+      "msg": "INIT_SUCCESS"
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "1 KA 구독 A016C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A016C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A016C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "1 KA 구독 A756C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A756C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "1 KB 구독 A016C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KB\", \"action_sym\": \"A016C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KB",
+       "action_sym": "A016C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "1 KB 구독 A756C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KB\", \"action_sym\": \"A756C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KB",
+       "action_sym": "A756C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "1 KA 해제 A016C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A016C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A016C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "1 KA 해제 A756C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A756C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "1 KB 해제 A016C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KB\", \"action_sym\": \"A016C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KB",
+       "action_sym": "A016C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "1 KB 해제 A756C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KB\", \"action_sym\": \"A756C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KB",
+       "action_sym": "A756C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 01 KA A016C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A016C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A016C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 02 KA A0173000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A0173000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A0173000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 03 KA A0176000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A0176000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A0176000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 04 KA A0179000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A0179000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A0179000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 05 KA A017C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A017C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A017C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 06 KA A0186000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A0186000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A0186000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 07 KA A018C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A018C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A018C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 08 KA A756C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A756C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 09 KA A7571000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7571000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7571000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 10 KA A7572000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7572000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7572000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 11 KA A7573000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7573000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7573000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 12 KA A7574000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7574000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7574000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 13 KA A7575000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7575000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7575000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 14 KA A7576000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7576000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7576000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 15 KA A7577000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7577000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7577000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 16 KA A7578000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7578000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7578000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 17 KA A7579000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7579000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7579000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 18 KA A757A000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A757A000\"}}",
+    "replies": [
+     {
+      "code": "RT_FAIL",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A757A000"
+      },
+      "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다."
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 19 KA A757B000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A757B000\"}}",
+    "replies": [
+     {
+      "code": "RT_FAIL",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A757B000"
+      },
+      "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다."
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 20 KA A757C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A757C000\"}}",
+    "replies": [
+     {
+      "code": "RT_FAIL",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A757C000"
+      },
+      "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다."
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 상한 21 KA A7583000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7583000\"}}",
+    "replies": [
+     {
+      "code": "RT_FAIL",
+      "data": {
+       "action": "A",
+       "action_code": "KA",
+       "action_sym": "A7583000"
+      },
+      "msg": "현재 appkey로 20개 이상의 메시지를 등록할 수 없습니다."
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A016C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A016C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A016C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A0173000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A0173000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A0173000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A0176000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A0176000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A0176000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A0179000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A0179000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A0179000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A017C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A017C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A017C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A0186000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A0186000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A0186000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A018C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A018C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A018C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A756C000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756C000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A756C000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A7571000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7571000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A7571000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A7572000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7572000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A7572000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A7573000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7573000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A7573000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A7574000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7574000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A7574000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A7575000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7575000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A7575000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A7576000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7576000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A7576000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A7577000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7577000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A7577000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A7578000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7578000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A7578000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "3 해제 A7579000",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A7579000\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "KA",
+       "action_sym": "A7579000"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "국내",
+    "case": "4 header.action 누락 (마지막)",
+    "sent": "{\"header\": {\"api_ver\": \"1\"}, \"body\": {\"action_code\": \"KA\", \"action_sym\": \"A756C000\"}}",
+    "replies": [
+     {
+      "code": "RT_FAIL",
+      "data": {
+       "action": "",
+       "action_code": "KA",
+       "action_sym": "A756C000"
+      },
+      "msg": "예외 발생 잘못된 action 입니다. A: 구독, D: 해지만 사용 가능합니다."
+     }
+    ],
+    "alive_after": true
+   }
+  ]
+ },
+ "overseas": {
+  "data_fields": {
+   "FA": {
+    "count": 2,
+    "header_sample": {
+     "action_code": "FA",
+     "action_sym": "ESZ26"
+    },
+    "key_diff": {
+     "spec_count": 34,
+     "got_count": 34,
+     "응답에만": [],
+     "명세에만": [],
+     "문자열 아닌 값": []
+    },
+    "body_sample": {
+     "cum_sel_exec_amt": "482039725.25",
+     "rt": "2.15",
+     "fal_trd_qty": "0",
+     "sym": "ESZ26",
+     "biz_dt": "20261123",
+     "bid_qty": "8",
+     "ko_exec_tm": "141022",
+     "ko_trd_dt": "20261123",
+     "diff_rt": "149.50",
+     "qt_fgr": "2",
+     "open_pric": "7023.00",
+     "exec_div": "+",
+     "tick_div": "1",
+     "last_pric": "7084.50",
+     "seq_no": "0001",
+     "prd": "ES",
+     "pd_trd_qty_rt": "5.25",
+     "bid_best_pric": "7084.00",
+     "cum_trd_qty": "150315",
+     "pd_trd_qty": "2863990",
+     "high_pric": "7104.25",
+     "pric_ind": "3",
+     "cum_buy_exec_amt": "489129506.75",
+     "chg_div": "2",
+     "ask_best_pric": "7084.25",
+     "cum_sel_exec_qty": "68215",
+     "exec_qty": "6",
+     "low_pric": "6992.00",
+     "ris_trd_qty": "150315",
+     "cum_buy_exec_qty": "69200",
+     "ask_qty": "1",
+     "ref_dt": "20261122",
+     "exch_tm": "231022",
+     "opint": ""
+    }
+   },
+   "FB": {
+    "count": 2,
+    "header_sample": {
+     "action_code": "FB",
+     "action_sym": "ESZ26"
+    },
+    "key_diff": {
+     "spec_count": 51,
+     "got_count": 51,
+     "응답에만": [],
+     "명세에만": [],
+     "문자열 아닌 값": []
+    },
+    "body_sample": {
+     "ask_pre_1": "+1",
+     "ask_cnt_3": "12",
+     "ask_cnt_2": "6",
+     "ask_cnt_1": "1",
+     "pre_ask_qty": "-11",
+     "bid_qty": "56",
+     "ask_cnt_5": "14",
+     "ask_cnt_4": "13",
+     "pre_bid_qty": "+0",
+     "ask_pre_2": "+0",
+     "ask_pre_3": "+1",
+     "ask_pre_4": "+0",
+     "ask_pre_5": "+0",
+     "bid_qty_3": "12",
+     "bid_qty_4": "11",
+     "bid_qty_5": "13",
+     "prd": "ES",
+     "ask_cnt": "46",
+     "bid_pre_1": "+0",
+     "bid_pre_3": "+0",
+     "bid_pre_2": "+0",
+     "bid_qty_1": "8",
+     "bid_pre_5": "+0",
+     "bid_qty_2": "12",
+     "bid_pre_4": "+0",
+     "sym": "ESZ26",
+     "ko_exec_tm": "141022",
+     "bid_cnt_1": "8",
+     "bid_cnt": "56",
+     "bid_cnt_2": "12",
+     "bid_cnt_3": "12",
+     "bid_cnt_4": "11",
+     "bid_cnt_5": "13",
+     "ask_pric_2": "7084.50",
+     "ask_pric_1": "7084.25",
+     "ask_pric_4": "7085.00",
+     "ask_pric_3": "7084.75",
+     "pric_ind": "3",
+     "ask_pric_5": "7085.25",
+     "ask_qty_2": "6",
+     "bid_pric_3": "7083.50",
+     "ask_qty_1": "1",
+     "bid_pric_4": "7083.25",
+     "ask_qty": "52",
+     "bid_pric_1": "7084.00",
+     "bid_pric_2": "7083.75",
+     "ask_qty_5": "16",
+     "exch_tm": "231022",
+     "ask_qty_4": "15",
+     "bid_pric_5": "7083.00",
+     "ask_qty_3": "14"
+    }
+   }
+  },
+  "log": [
+   {
+    "conn": "해외",
+    "case": "session_init",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"0\"}, \"body\": {\"action_code\": \"session_init\", \"session_token\": \"<TOKEN>\"}}",
+    "replies": [
+     {
+      "code": "INIT",
+      "msg": "INIT_SUCCESS"
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "해외",
+    "case": "1 FA 구독 ESZ26",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"FA\", \"action_sym\": \"ESZ26\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "FA",
+       "action_sym": "ESZ26"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "해외",
+    "case": "1 FB 구독 ESZ26",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"FB\", \"action_sym\": \"ESZ26\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "FB",
+       "action_sym": "ESZ26"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "해외",
+    "case": "1 FA 구독 6AZ26",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"FA\", \"action_sym\": \"6AZ26\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "FA",
+       "action_sym": "6AZ26"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "해외",
+    "case": "1 FB 구독 6AZ26",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"A\"}, \"body\": {\"action_code\": \"FB\", \"action_sym\": \"6AZ26\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "A",
+       "action_code": "FB",
+       "action_sym": "6AZ26"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "해외",
+    "case": "1 FA 해제 ESZ26",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"FA\", \"action_sym\": \"ESZ26\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "FA",
+       "action_sym": "ESZ26"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "해외",
+    "case": "1 FB 해제 ESZ26",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"FB\", \"action_sym\": \"ESZ26\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "FB",
+       "action_sym": "ESZ26"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "해외",
+    "case": "1 FA 해제 6AZ26",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"FA\", \"action_sym\": \"6AZ26\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "FA",
+       "action_sym": "6AZ26"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   },
+   {
+    "conn": "해외",
+    "case": "1 FB 해제 6AZ26",
+    "sent": "{\"header\": {\"api_ver\": \"1\", \"action\": \"D\"}, \"body\": {\"action_code\": \"FB\", \"action_sym\": \"6AZ26\"}}",
+    "replies": [
+     {
+      "code": "RT_INIT",
+      "data": {
+       "action": "D",
+       "action_code": "FB",
+       "action_sym": "6AZ26"
+      },
+      "msg": ""
+     }
+    ],
+    "alive_after": true
+   }
+  ]
+ }
+}

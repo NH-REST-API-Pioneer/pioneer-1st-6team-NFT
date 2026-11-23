@@ -1,0 +1,442 @@
+{
+ "run_at": "2026-11-23T13:56:00",
+ "server": "https://apidemo.futures.co.kr",
+ "active_syms": {
+  "usd": "A756C000",
+  "k200": "A016C000",
+  "ovs": "6AZ26"
+ },
+ "expired_vs_invalid": {
+  "국내_현재가": {
+   "정상_USD (A756C000)": {
+    "status": 200,
+    "total_keys": 51,
+    "empty_keys": 0,
+    "nonempty_count": 51,
+    "nonempty_sample": {
+     "spt_chg": "2.90",
+     "lo": "1275.50",
+     "up_act_pric": "1361.50",
+     "delta": "0.00000",
+     "mltplr": "10000",
+     "theta": "0.00000",
+     "rem_dy": "29",
+     "lo_act_pric": "1334.90"
+    }
+   },
+   "정상_K200 (A016C000)": {
+    "status": 200,
+    "total_keys": 51,
+    "empty_keys": 0,
+    "nonempty_count": 51,
+    "nonempty_sample": {
+     "spt_chg": "-22.62",
+     "lo": "692.55",
+     "up_act_pric": "738.05",
+     "delta": "0.00000",
+     "mltplr": "250000",
+     "theta": "0.00000",
+     "rem_dy": "18",
+     "lo_act_pric": "723.05"
+    }
+   },
+   "만기_A0169000(명세샘플) (A0169000)": {
+    "status": 200,
+    "total_keys": 51,
+    "empty_keys": 51,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "만기_A756B000(11월물) (A756B000)": {
+    "status": 200,
+    "total_keys": 51,
+    "empty_keys": 51,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "없는종목_A999X999 (A999X999)": {
+    "status": 200,
+    "total_keys": 51,
+    "empty_keys": 51,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "빈값 ()": {
+    "status": 400,
+    "errorCode": "ETR023",
+    "errorMessage": "필수 필드 값이 비어져있습니다.: sym",
+    "errorStatus": 400
+   }
+  },
+  "국내_호가": {
+   "정상_USD (A756C000)": {
+    "status": 200,
+    "nrec": "10",
+    "occurs1_len": 10,
+    "occurs1_nonempty_cells": 100,
+    "top_nonempty": {
+     "rt": "0.94",
+     "lo": "1275.50",
+     "up_act_pric": "1361.50",
+     "sym": "A756C000",
+     "pre_ask_qty": "16094",
+     "bid_qty": "16569",
+     "lo_pric_3": "0.00",
+     "lo_pric_2": "0.00",
+     "lo_pric_1": "1275.50",
+     "lo_act_pric": "1334.90",
+     "nrec": "10",
+     "diff_rt": "12.60",
+     "cum_trd_amt": "9875077.3",
+     "pre_bid_qty": "16569",
+     "net_bid_ask": "475",
+     "open_pric": "1344.50",
+     "bid_cnt": "1208",
+     "last_pric": "1348.20",
+     "up": "1395.70",
+     "pd_close_pric": "1335.60",
+     "up_pric_1": "1395.70",
+     "up_pric_2": "0.00",
+     "up_pric_3": "0.00",
+     "cum_trd_qty": "734248",
+     "high_pric": "1350.90",
+     "ask_cnt": "879",
+     "real": "A756C000",
+     "est_exec_pric": "0.00",
+     "low_pric": "1337.40",
+     "ask_qty": "16094",
+     "qt_tm": "135602"
+    }
+   },
+   "정상_K200 (A016C000)": {
+    "status": 200,
+    "nrec": "10",
+    "occurs1_len": 10,
+    "occurs1_nonempty_cells": 100,
+    "top_nonempty": {
+     "rt": "-2.96",
+     "lo": "692.55",
+     "up_act_pric": "738.00",
+     "sym": "A016C000",
+     "pre_ask_qty": "813",
+     "bid_qty": "825",
+     "lo_pric_3": "602.20",
+     "lo_pric_2": "639.85",
+     "lo_pric_1": "692.55",
+     "lo_act_pric": "723.00",
+     "nrec": "10",
+     "diff_rt": "-22.25",
+     "cum_trd_amt": "22017233.",
+     "pre_bid_qty": "825",
+     "net_bid_ask": "12",
+     "open_pric": "719.90",
+     "bid_cnt": "565",
+     "last_pric": "730.50",
+     "up": "812.95",
+     "pd_close_pric": "752.75",
+     "up_pric_1": "812.95",
+     "up_pric_2": "865.65",
+     "up_pric_3": "903.30",
+     "cum_trd_qty": "121490",
+     "high_pric": "736.75",
+     "ask_cnt": "447",
+     "real": "A016C000",
+     "est_exec_pric": "0.00",
+     "low_pric": "708.25",
+     "ask_qty": "813",
+     "qt_tm": "135602"
+    }
+   },
+   "만기_A0169000(명세샘플) (A0169000)": {
+    "status": 200,
+    "total_keys": 31,
+    "empty_keys": 31,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "만기_A756B000(11월물) (A756B000)": {
+    "status": 200,
+    "total_keys": 31,
+    "empty_keys": 31,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "없는종목_A999X999 (A999X999)": {
+    "status": 200,
+    "total_keys": 31,
+    "empty_keys": 31,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "빈값 ()": {
+    "status": 400,
+    "errorCode": "ETR023",
+    "errorMessage": "필수 필드 값이 비어져있습니다.: sym",
+    "errorStatus": 400
+   }
+  },
+  "국내_차트(일)": {
+   "정상_USD (A756C000)": {
+    "status": 200,
+    "nrec": "3",
+    "occurs1_len": 3,
+    "occurs1_nonempty_cells": 24,
+    "top_nonempty": {
+     "nxt_key": "20261119",
+     "nrec": "3",
+     "sym": "A756C000",
+     "nght_tp": "1"
+    }
+   },
+   "정상_K200 (A016C000)": {
+    "status": 200,
+    "nrec": "3",
+    "occurs1_len": 3,
+    "occurs1_nonempty_cells": 24,
+    "top_nonempty": {
+     "nxt_key": "20261119",
+     "nrec": "3",
+     "sym": "A016C000",
+     "nght_tp": "1"
+    }
+   },
+   "만기_A0169000(명세샘플) (A0169000)": {
+    "status": 200,
+    "total_keys": 4,
+    "empty_keys": 4,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "만기_A756B000(11월물) (A756B000)": {
+    "status": 200,
+    "total_keys": 4,
+    "empty_keys": 4,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "없는종목_A999X999 (A999X999)": {
+    "status": 200,
+    "total_keys": 4,
+    "empty_keys": 4,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "빈값 ()": {
+    "status": 400,
+    "errorCode": "ETR023",
+    "errorMessage": "필수 필드 값이 비어져있습니다.: sym",
+    "errorStatus": 400
+   }
+  },
+  "국내_차트(분)": {
+   "정상_USD (A756C000)": {
+    "status": 200,
+    "nrec": "3",
+    "occurs1_len": 3,
+    "occurs1_nonempty_cells": 30,
+    "top_nonempty": {
+     "nxt_key": "20261123135400",
+     "nrec": "3",
+     "sym": "A756C000"
+    }
+   },
+   "정상_K200 (A016C000)": {
+    "status": 200,
+    "nrec": "3",
+    "occurs1_len": 3,
+    "occurs1_nonempty_cells": 30,
+    "top_nonempty": {
+     "nxt_key": "20261123135400",
+     "nrec": "3",
+     "sym": "A016C000"
+    }
+   },
+   "만기_A0169000(명세샘플) (A0169000)": {
+    "status": 200,
+    "total_keys": 3,
+    "empty_keys": 3,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "만기_A756B000(11월물) (A756B000)": {
+    "status": 200,
+    "total_keys": 3,
+    "empty_keys": 3,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "없는종목_A999X999 (A999X999)": {
+    "status": 200,
+    "total_keys": 3,
+    "empty_keys": 3,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "빈값 ()": {
+    "status": 400,
+    "errorCode": "ETR023",
+    "errorMessage": "필수 필드 값이 비어져있습니다.: sym",
+    "errorStatus": 400
+   }
+  },
+  "국내_종목예상체결가": {
+   "정상_USD (A756C000)": {
+    "status": 200,
+    "nrec": "100",
+    "occurs1_len": 100,
+    "occurs1_nonempty_cells": 500,
+    "top_nonempty": {
+     "ref_pric": "1335.60",
+     "nrec": "100",
+     "sym_exch": "A756C000",
+     "sym_nm": "미국달러 F 202612"
+    }
+   },
+   "정상_K200 (A016C000)": {
+    "status": 200,
+    "nrec": "100",
+    "occurs1_len": 100,
+    "occurs1_nonempty_cells": 500,
+    "top_nonempty": {
+     "ref_pric": "752.75",
+     "nrec": "100",
+     "sym_exch": "A016C000",
+     "sym_nm": "코스피200 F 202612"
+    }
+   },
+   "만기_A0169000(명세샘플) (A0169000)": {
+    "status": 200,
+    "total_keys": 4,
+    "empty_keys": 4,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "만기_A756B000(11월물) (A756B000)": {
+    "status": 200,
+    "total_keys": 4,
+    "empty_keys": 4,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "없는종목_A999X999 (A999X999)": {
+    "status": 200,
+    "total_keys": 4,
+    "empty_keys": 4,
+    "nonempty_count": 0,
+    "nonempty_sample": {}
+   },
+   "빈값 ()": {
+    "status": 400,
+    "errorCode": "ETR023",
+    "errorMessage": "필수 필드 값이 비어져있습니다.: sym",
+    "errorStatus": 400
+   }
+  },
+  "해외_현재가": {
+   "정상_6AZ26 (6AZ26)": {
+    "status": 200,
+    "nrec": "1",
+    "occurs1_len": 1,
+    "occurs1_nonempty_cells": 26,
+    "top_nonempty": {
+     "nrec": "1"
+    }
+   },
+   "만기_6AU26(명세샘플) (6AU26)": {
+    "status": 400,
+    "errorCode": "ETR029",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: 6AU26]",
+    "errorStatus": 400
+   },
+   "없는종목_6AZ99 (6AZ99)": {
+    "status": 400,
+    "errorCode": "ETR029",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: 6AZ99]",
+    "errorStatus": 400
+   }
+  },
+  "해외_호가": {
+   "정상_6AZ26 (6AZ26)": {
+    "status": 200,
+    "total_keys": 60,
+    "empty_keys": 0,
+    "nonempty_count": 60,
+    "nonempty_sample": {
+     "ask_cnt_3": "22",
+     "ask_cnt_2": "22",
+     "ask_cnt_1": "26",
+     "biz_dt": "20261123",
+     "pre_ask_qty": "5",
+     "bid_qty": "484",
+     "ask_cnt_5": "21",
+     "ask_cnt_4": "20"
+    }
+   },
+   "만기_6AU26(명세샘플) (6AU26)": {
+    "status": 400,
+    "errorCode": "ETR029",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: 6AU26]",
+    "errorStatus": 400
+   },
+   "없는종목_6AZ99 (6AZ99)": {
+    "status": 400,
+    "errorCode": "ETR029",
+    "errorMessage": "해당 종목에 대한 종목정보를 찾을 수 없습니다. [종목: 6AZ99]",
+    "errorStatus": 400
+   }
+  }
+ },
+ "r15_intraday": {
+  "차트(분)_USD선물_A756C000": {
+   "rows": 30,
+   "latest_tm": "135600",
+   "occurs1_rt_nonempty_count": 0,
+   "sample_diff_rt": [
+    "12.60",
+    "12.60",
+    "12.70"
+   ]
+  },
+  "차트(분)_코스피200선물_A016C000": {
+   "rows": 30,
+   "latest_tm": "135600",
+   "occurs1_rt_nonempty_count": 0,
+   "sample_diff_rt": [
+    "-22.15",
+    "-22.20",
+    "-22.05"
+   ]
+  },
+  "옵션전체시세_01_261210": {
+   "rows": 261,
+   "c_theo_pric_chg_nonempty": 261,
+   "p_theo_pric_nonempty": 261,
+   "p_theo_pric_chg_nonempty": 0
+  },
+  "옵션전체시세_01_270114": {
+   "rows": 261,
+   "c_theo_pric_chg_nonempty": 261,
+   "p_theo_pric_nonempty": 261,
+   "p_theo_pric_chg_nonempty": 0
+  }
+ },
+ "live_prices": {
+  "domestic_usd": {
+   "sym": "A756C000",
+   "sym_nm": "미국달러 F 202612",
+   "last_pric": "1348.20",
+   "bid_pric": "1348.10",
+   "ask_pric": "1348.20",
+   "lo": "1275.50",
+   "up": "1395.70",
+   "exec_tm": null
+  },
+  "overseas_6AZ26": {
+   "sym": "6AZ26",
+   "last_pric": "0.66355",
+   "bid_best_pric_1": null,
+   "ask_best_pric_1": null,
+   "qt_tm": null
+  }
+ }
+}

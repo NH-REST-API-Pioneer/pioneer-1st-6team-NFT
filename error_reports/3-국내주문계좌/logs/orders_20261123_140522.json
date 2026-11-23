@@ -1,0 +1,438 @@
+{
+ "server": "https://apidemo.futures.co.kr",
+ "result": {
+  "sym": "A756C000",
+  "limit_price": "1333.6",
+  "O1_keys": [
+   "msg_cd",
+   "msg_cntn",
+   "ord_no"
+  ],
+  "H1_row": {
+   "occurs1_ord_no": "0000000601",
+   "occurs1_org_ord_no": "0000000601",
+   "occurs1_ord_sts": "3",
+   "occurs1_ord_sts_nm": "미체결",
+   "occurs1_ord_pric": "00000000001333.600000000",
+   "occurs1_ord_qty": "00000000000001.000000000",
+   "occurs1_rem_ord_qty": "00000000000001.000000000",
+   "occurs1_mod_qty": "00000000000000.000000000",
+   "occurs1_cxl_qty": "00000000000000.000000000",
+   "occurs1_exec_qty": "00000000000000.000000000",
+   "occurs1_trd_div": "1"
+  },
+  "H1_keys": {
+   "응답에만": [],
+   "명세에만": [],
+   "문자열 아닌 값": []
+  },
+  "O2_keys": [
+   "msg_cd",
+   "msg_cntn",
+   "ord_no"
+  ],
+  "H2_rows": [
+   {
+    "occurs1_ord_no": "0000000601",
+    "occurs1_org_ord_no": "0000000601",
+    "occurs1_ord_sts": "3",
+    "occurs1_ord_sts_nm": "정정완료",
+    "occurs1_ord_pric": "00000000001333.600000000",
+    "occurs1_ord_qty": "00000000000001.000000000",
+    "occurs1_rem_ord_qty": "00000000000000.000000000",
+    "occurs1_mod_qty": "00000000000001.000000000",
+    "occurs1_cxl_qty": "00000000000000.000000000",
+    "occurs1_exec_qty": "00000000000000.000000000",
+    "occurs1_trd_div": "1"
+   },
+   {
+    "occurs1_ord_no": "0000000602",
+    "occurs1_org_ord_no": "",
+    "occurs1_ord_sts": "3",
+    "occurs1_ord_sts_nm": "미체결",
+    "occurs1_ord_pric": "00000000001333.500000000",
+    "occurs1_ord_qty": "00000000000001.000000000",
+    "occurs1_rem_ord_qty": "00000000000001.000000000",
+    "occurs1_mod_qty": "00000000000000.000000000",
+    "occurs1_cxl_qty": "00000000000000.000000000",
+    "occurs1_exec_qty": "00000000000000.000000000",
+    "occurs1_trd_div": "1"
+   }
+  ],
+  "O3_keys": [
+   "msg_cd",
+   "msg_cntn",
+   "ord_no"
+  ],
+  "H3_rows": [
+   {
+    "occurs1_ord_no": "0000000601",
+    "occurs1_org_ord_no": "0000000601",
+    "occurs1_ord_sts": "3",
+    "occurs1_ord_sts_nm": "정정완료",
+    "occurs1_ord_pric": "00000000001333.600000000",
+    "occurs1_ord_qty": "00000000000001.000000000",
+    "occurs1_rem_ord_qty": "00000000000000.000000000",
+    "occurs1_mod_qty": "00000000000001.000000000",
+    "occurs1_cxl_qty": "00000000000000.000000000",
+    "occurs1_exec_qty": "00000000000000.000000000",
+    "occurs1_trd_div": "1"
+   },
+   {
+    "occurs1_ord_no": "0000000602",
+    "occurs1_org_ord_no": "",
+    "occurs1_ord_sts": "3",
+    "occurs1_ord_sts_nm": "정정완료",
+    "occurs1_ord_pric": "00000000001333.500000000",
+    "occurs1_ord_qty": "00000000000001.000000000",
+    "occurs1_rem_ord_qty": "00000000000000.000000000",
+    "occurs1_mod_qty": "00000000000000.000000000",
+    "occurs1_cxl_qty": "00000000000001.000000000",
+    "occurs1_exec_qty": "00000000000000.000000000",
+    "occurs1_trd_div": "1"
+   },
+   {
+    "occurs1_ord_no": "0000000603",
+    "occurs1_org_ord_no": "0000000602",
+    "occurs1_ord_sts": "3",
+    "occurs1_ord_sts_nm": "취소완료",
+    "occurs1_ord_pric": "00000000000000.000000000",
+    "occurs1_ord_qty": "00000000000001.000000000",
+    "occurs1_rem_ord_qty": "00000000000000.000000000",
+    "occurs1_mod_qty": "00000000000000.000000000",
+    "occurs1_cxl_qty": "00000000000000.000000000",
+    "occurs1_exec_qty": "00000000000000.000000000",
+    "occurs1_trd_div": "1"
+   }
+  ],
+  "E1_rows": 0,
+  "E1_keys": "행 없음",
+  "E1_msgs": [],
+  "남은 미체결": []
+ },
+ "log": [
+  {
+   "t": "2026-11-23T14:05:07",
+   "case": "주문내역 (시작 전)",
+   "path": "/trade/v1/domestic/order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0000"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:07",
+   "case": "O1 신규 지정가 매수 1",
+   "path": "/trade/v1/domestic/order",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "ord_pric": "1333.6",
+    "exec_cnd_cd": "1"
+   },
+   "status": 200,
+   "response": {
+    "ord_no": "0000000601",
+    "msg_cd": "",
+    "msg_cntn": ""
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:09",
+   "case": "H1 주문내역 (신규 뒤)",
+   "path": "/trade/v1/domestic/order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0001",
+    "Occurs1": "1행"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:09",
+   "case": "O2 정정 (가격 1틱 아래)",
+   "path": "/trade/v1/domestic/modify",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "ord_pric": "1333.5",
+    "exec_cnd_cd": "1",
+    "org_ord_no": "0000000601"
+   },
+   "status": 200,
+   "response": {
+    "ord_no": "0000000602",
+    "msg_cd": "",
+    "msg_cntn": ""
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:11",
+   "case": "H2 주문내역 (정정 뒤)",
+   "path": "/trade/v1/domestic/order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0002",
+    "Occurs1": "2행"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:12",
+   "case": "R5 정정 수량 2 (원주문 1)",
+   "path": "/trade/v1/domestic/modify",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "2",
+    "ord_pric": "1333.5",
+    "exec_cnd_cd": "1",
+    "org_ord_no": "0000000602"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:05:12",
+    "errorMessage": "처리불가 [원주문가격과 정정가격이 동일합니다. ]",
+    "errorStatus": 400,
+    "errorCode": "5039",
+    "errorPath": "/trade/v1/domestic/modify"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:12",
+   "case": "R6 취소 수량 2 (원주문 1)",
+   "path": "/trade/v1/domestic/cancel",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_qty": "2",
+    "org_ord_no": "0000000602"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:05:12",
+    "errorMessage": "처리불가 [원호가수량을 초과한 취소 주문입니다 . ]",
+    "errorStatus": 400,
+    "errorCode": "5039",
+    "errorPath": "/trade/v1/domestic/cancel"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:13",
+   "case": "R7 정정 가격 생략 (명세 필수)",
+   "path": "/trade/v1/domestic/modify",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "exec_cnd_cd": "1",
+    "org_ord_no": "0000000602"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:05:13",
+    "errorMessage": "필수 필드 값이 비어져있습니다.: ord_pric",
+    "errorStatus": 400,
+    "errorCode": "ETR023",
+    "errorPath": "/trade/v1/domestic/modify"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:13",
+   "case": "O3 취소",
+   "path": "/trade/v1/domestic/cancel",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_qty": "1",
+    "org_ord_no": "0000000602"
+   },
+   "status": 200,
+   "response": {
+    "ord_no": "0000000603",
+    "msg_cd": "",
+    "msg_cntn": ""
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:15",
+   "case": "H3 주문내역 (취소 뒤)",
+   "path": "/trade/v1/domestic/order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0003",
+    "Occurs1": "3행"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:16",
+   "case": "R1 신규 지정가인데 가격 생략 (명세 N)",
+   "path": "/trade/v1/domestic/order",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "exec_cnd_cd": "1"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:05:16",
+    "errorMessage": "처리불가 [주문가격(0)이 하한가(1275.5)보다 작음.정상호가 범위 위반 ]",
+    "errorStatus": 400,
+    "errorCode": "5039",
+    "errorPath": "/trade/v1/domestic/order"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:16",
+   "case": "R2 신규 체결조건 9",
+   "path": "/trade/v1/domestic/order",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "ord_pric": "1333.6",
+    "exec_cnd_cd": "9"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:05:16",
+    "errorMessage": "처리불가 [잘못된  체결조건코드 ]",
+    "errorStatus": 400,
+    "errorCode": "5039",
+    "errorPath": "/trade/v1/domestic/order"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:17",
+   "case": "R3 없는 원주문 취소",
+   "path": "/trade/v1/domestic/cancel",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_qty": "1",
+    "org_ord_no": "9999999"
+   },
+   "status": 400,
+   "response": {
+    "errorTime": "2026-11-23 14:05:17",
+    "errorMessage": "처리불가 [주문내역조회 에러 ]",
+    "errorStatus": 400,
+    "errorCode": "5039",
+    "errorPath": "/trade/v1/domestic/cancel"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:17",
+   "case": "R4 야간 신규주문 (「모의 미지원」)",
+   "path": "/trade/v1/domestic/order-night",
+   "request": {
+    "sym": "A756C000",
+    "trd_div": "1",
+    "ord_tp_cd": "1",
+    "ord_qty": "1",
+    "ord_pric": "1333.6",
+    "exec_cnd_cd": "1"
+   },
+   "status": 400,
+   "response": {
+    "errorMessage": "해당 API는 모의투자 에서 호출 할수 없습니다.",
+    "errorPath": "/trade/v1/domestic/order-night",
+    "errorTime": "2026-11-23 14:05:17",
+    "errorStatus": 400,
+    "errorCode": "EGW053"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:18",
+   "case": "E1 주문오류내역 (오늘)",
+   "path": "/trade/v1/domestic/order-error",
+   "request": {
+    "inq_dt": "20261123",
+    "trd_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0000",
+    "data_tot_cnt": "00000000000",
+    "nxt_data_yn": ""
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:20",
+   "case": "정리 전 주문내역",
+   "path": "/trade/v1/domestic/order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0003",
+    "Occurs1": "3행"
+   }
+  },
+  {
+   "t": "2026-11-23T14:05:22",
+   "case": "정리 뒤 주문내역",
+   "path": "/trade/v1/domestic/order-history",
+   "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+   },
+   "status": 200,
+   "response": {
+    "nxt_key": "",
+    "nrec": "0003",
+    "Occurs1": "3행"
+   }
+  }
+ ]
+}

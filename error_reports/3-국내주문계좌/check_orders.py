@@ -85,7 +85,14 @@ last, low_limit = float(px["last_pric"]), float(px["lo"])
 LP = f"{last - 15:.1f}"
 assert float(LP) > low_limit, "하한가 아래"
 print(f"종목 {SYM} 현재가 {last} 하한가 {low_limit} → 지정가 매수 {LP}")
-before = [r for r in history("주문내역 (시작 전)") if r.get("occurs1_rem_ord_qty", "0").strip("0") != ""]
+def has_rem(r):
+    try:
+        return float(str(r.get("occurs1_rem_ord_qty", "0")).strip() or "0") > 0
+    except ValueError:
+        return str(r.get("occurs1_rem_ord_qty", "0")).strip("0. ") != ""
+
+
+before = [r for r in history("주문내역 (시작 전)") if has_rem(r)]
 print("시작 전 미체결", len(before), "건")
 
 NEW = {"sym": SYM, "trd_div": "1", "ord_tp_cd": "1", "ord_qty": "1", "ord_pric": LP, "exec_cnd_cd": "1"}
@@ -150,7 +157,7 @@ print("   주문오류내역", result["E1_rows"], "행", result["E1_keys"], resu
 # ---------- 정리: 미체결 모두 취소 ----------
 time.sleep(1.5)
 rows = history("정리 전 주문내역")
-left = [r for r in rows if str(r.get("occurs1_rem_ord_qty", "0")).strip("0") != "" and r not in before]
+left = [r for r in rows if has_rem(r) and r not in before]
 for r in left:
     call(D + "cancel", {"sym": r["occurs1_sym"], "trd_div": r.get("occurs1_trd_div") or "1",
                         "ord_qty": str(int(float(r["occurs1_rem_ord_qty"]))), "org_ord_no": r["occurs1_ord_no"]}, "정리 취소 " + r["occurs1_ord_no"])
@@ -158,7 +165,7 @@ if night:
     call(D + "cancel-night", {"sym": SYM, "trd_div": "1", "ord_qty": "1", "org_ord_no": night}, "정리 야간 취소")
 time.sleep(1.5)
 rows = history("정리 뒤 주문내역")
-still = [status(r) for r in rows if str(r.get("occurs1_rem_ord_qty", "0")).strip("0") != ""]
+still = [status(r) for r in rows if has_rem(r)]
 result["남은 미체결"] = still
 print("남은 미체결:", still or "없음")
 
