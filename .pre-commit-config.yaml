@@ -1,0 +1,29 @@
+# ruff·pyright는 final_project에만 건다. 버전이 어긋나지 않게 final_project의 uv 환경으로 돈다.
+# gitleaks(비밀값 검사)는 저장소 전체에 건다.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check (final_project)
+        entry: uv run --project final_project ruff check --fix
+        language: system
+        types_or: [python, pyi]
+        files: ^final_project/
+      - id: ruff-format
+        name: ruff format (final_project)
+        entry: uv run --project final_project ruff format
+        language: system
+        types_or: [python, pyi]
+        files: ^final_project/
+      - id: pyright
+        name: pyright (final_project)
+        entry: uv run --project final_project pyright -p final_project
+        language: system
+        types_or: [python, pyi]
+        files: ^final_project/
+        pass_filenames: false
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
