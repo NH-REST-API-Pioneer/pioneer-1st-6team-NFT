@@ -11,7 +11,11 @@ type Serve = Callable[..., AbstractAsyncContextManager[str]]
 
 
 @contextlib.asynccontextmanager
-async def serving(server: FastMCP, allowed_hosts: list[str] | None = None) -> AsyncGenerator[str]:
+async def serving(
+    server: FastMCP,
+    allowed_hosts: list[str] | None = None,
+    allowed_origins: list[str] | None = None,
+) -> AsyncGenerator[str]:
     """서버를 실제 HTTP로 띄우고 MCP 주소를 돌려준다."""
     # 미리 열어 둔 소켓을 넘겨 포트 경합 없이 띄운다.
     # listen 중이라 서버가 뜨기 전에 들어온 연결도 대기열에서 기다린다.
@@ -27,6 +31,7 @@ async def serving(server: FastMCP, allowed_hosts: list[str] | None = None) -> As
             # 운영 서버처럼 Host 머리말을 거를 때만 켠다.
             host_origin_protection=allowed_hosts is not None,
             allowed_hosts=allowed_hosts,
+            allowed_origins=allowed_origins,
         )
     )
     try:

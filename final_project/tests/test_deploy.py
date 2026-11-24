@@ -65,23 +65,54 @@ def test_build_context_only_ships_the_code() -> None:
     assert allowed == {"pyproject.toml", "uv.lock", "README.md", "src/"}
 
 
+PUBLIC = load_settings(
+    {
+        "PUBLIC_BASE_URL": "https://mcp.example.com",
+        "GOOGLE_CLIENT_ID": "fake-client-id",
+        "GOOGLE_CLIENT_SECRET": "fake-google-secret-0000",
+        "ADMIN_EMAILS": "admin@example.com",
+        "DB_PATH": "data/nh.db",
+        "KEY_ENCRYPTION_KEY": base64.b64encode(bytes(32)).decode(),
+    }
+)
+
+
 def test_run_options_accept_only_the_public_host() -> None:
-    settings = load_settings(
-        {
-            "PUBLIC_BASE_URL": "https://mcp.example.com",
-            "GOOGLE_CLIENT_ID": "fake-client-id",
-            "GOOGLE_CLIENT_SECRET": "fake-google-secret-0000",
-            "ADMIN_EMAILS": "admin@example.com",
-            "DB_PATH": "data/nh.db",
-            "KEY_ENCRYPTION_KEY": base64.b64encode(bytes(32)).decode(),
-        }
-    )
-    assert run_options(settings) == {
+    assert run_options(PUBLIC) == {
         "host": "127.0.0.1",
         "port": 8000,
         "host_origin_protection": True,
         "allowed_hosts": ["mcp.example.com"],
+        "allowed_origins": ["https://mcp.example.com"],
     }
+
+
+def test_browser_form_through_the_https_tunnel_is_not_refused(serve: Serve) -> None:
+    """Tunnel 뒤의 서버는 http로 받지만 브라우저는 https Origin을 보낸다.
+
+    배포했을 때 키 등록 폼이 이것 때문에 막혔다.
+    """
+    options = run_options(PUBLIC)
+    world = World()
+
+    async def scenario() -> tuple[httpx2.Response, httpx2.Response]:
+        async with (
+            serve(
+                world.mcp,
+                allowed_hosts=options["allowed_hosts"],
+                allowed_origins=options["allowed_origins"],
+            ) as url,
+            httpx2.AsyncClient() as http,
+        ):
+            form = url.removesuffix("/mcp") + "/keys/register"
+            headers = {"Host": "mcp.example.com"}
+            ours = await http.post(form, headers={**headers, "Origin": "https://mcp.example.com"})
+            evil = await http.post(form, headers={**headers, "Origin": "https://evil.example.com"})
+        return ours, evil
+
+    ours, evil = asyncio.run(scenario())
+    assert "Forbidden Origin" not in ours.text
+    assert evil.status_code == 403 and "Forbidden Origin" in evil.text
 
 
 def test_server_refuses_requests_for_another_host(serve: Serve) -> None:

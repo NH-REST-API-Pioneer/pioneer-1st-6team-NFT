@@ -110,15 +110,22 @@ class RunOptions(TypedDict):
     port: int
     host_origin_protection: bool
     allowed_hosts: list[str]
+    allowed_origins: list[str]
 
 
 def run_options(settings: Settings) -> RunOptions:
-    """HTTP로 띄울 때의 옵션. Host 머리말은 공개 주소만 받는다(DNS 리바인딩 막기)."""
+    """HTTP로 띄울 때의 옵션. Host 머리말은 공개 주소만 받는다(DNS 리바인딩 막기).
+
+    Tunnel이 HTTPS를 풀고 http로 넘기므로 서버는 자기 주소를 http로 안다. 그래서 브라우저가
+    보내는 https Origin이 같은 사이트로 보이지 않는다. 공개 주소의 Origin을 따로 허용한다.
+    """
+    public = urlsplit(settings.public_base_url)
     return {
         "host": settings.bind_host,
         "port": PORT,
         "host_origin_protection": True,
-        "allowed_hosts": [urlsplit(settings.public_base_url).netloc],
+        "allowed_hosts": [public.netloc],
+        "allowed_origins": [f"{public.scheme}://{public.netloc}"],
     }
 
 
