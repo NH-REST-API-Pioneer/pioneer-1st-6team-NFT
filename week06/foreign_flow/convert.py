@@ -54,7 +54,7 @@ def ka_row(sym: str, b: dict) -> dict:
 def read_ws(day_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     """KA(체결 tick_div=1)·KB(호가) 줄."""
     ka, kb = [], []
-    for p in sorted(day_dir.glob("*.jsonl.gz")) + sorted(day_dir.glob("[0-2][0-9].jsonl")):
+    for p in sorted(day_dir.glob("[0-2][0-9].jsonl.gz")) + sorted(day_dir.glob("[0-2][0-9].jsonl")):
         opener = gzip.open if p.suffix == ".gz" else open
         with opener(p, "rt", encoding="utf-8") as f:
             for line in f:
@@ -81,9 +81,13 @@ def read_ws(day_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
 def read_rest(day_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     inv, px = [], []
     p = day_dir / "rest.jsonl"
-    if not p.exists():
+    if p.exists():
+        text = p.read_text(encoding="utf-8")
+    elif p.with_suffix(".jsonl.gz").exists():          # 수집기가 다음 날 아침에 압축해 둔 것
+        text = gzip.decompress(p.with_suffix(".jsonl.gz").read_bytes()).decode("utf-8")
+    else:
         return pd.DataFrame(), pd.DataFrame()
-    for line in p.read_text(encoding="utf-8").splitlines():
+    for line in text.splitlines():
         try:
             r = json.loads(line)
         except json.JSONDecodeError:
