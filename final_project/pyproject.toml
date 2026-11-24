@@ -45,6 +45,9 @@ include = ["src", "tests"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "docker: 실제 Docker로 도는 격리 테스트(Docker가 없으면 건너뛰지 않고 실패한다)",
+]
 
 # 의존 방향: tools · runner → services → markets → nh. guard는 계층 밖(services만 부른다).
 # 괄호는 아직 없는 계층(선택 계층). 계층이 생기면 괄호를 벗긴다.
@@ -66,7 +69,8 @@ layers = [
     "nh",
 ]
 exhaustive = true
-# 계층 밖: 공용 타입·설정·응답 형식·로그인·키 보관·운영 보호 장치(속도 제한)·저장소·서버 조립.
+# 계층 밖: 공용 타입·설정·응답 형식·로그인·키 보관·운영 보호 장치(속도 제한)·저장소·서버 조립·
+# 전략 격리 실행·백테스트 계산.
 exhaustive_ignores = [
     "auth",
     "config",
@@ -75,8 +79,10 @@ exhaustive_ignores = [
     "guard",
     "keys",
     "ops",
+    "sandbox",
     "server",
     "store",
+    "strategies",
 ]
 
 [[tool.importlinter.contracts]]
@@ -97,7 +103,9 @@ source_modules = [
     "nh_mcp.envelope",
     "nh_mcp.keys",
     "nh_mcp.ops",
+    "nh_mcp.sandbox",
     "nh_mcp.store",
+    "nh_mcp.strategies",
 ]
 forbidden_modules = ["nh_mcp.tools", "nh_mcp.services", "nh_mcp.markets", "nh_mcp.server"]
 
@@ -115,4 +123,15 @@ forbidden_modules = ["nh_mcp.*"]
 # 새 nh_mcp 패키지는 자동으로 금지된다. domain만 허용한다.
 ignore_imports = [
     "nh_mcp.guard.** -> nh_mcp.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "sandbox·strategies는 domain만 import한다"
+type = "forbidden"
+source_modules = ["nh_mcp.sandbox", "nh_mcp.strategies"]
+forbidden_modules = ["nh_mcp.*"]
+# domain만 허용한다. sandbox/harness.py는 그마저 쓰지 않는다(tests/sandbox/test_harness_imports.py).
+ignore_imports = [
+    "nh_mcp.sandbox.** -> nh_mcp.domain",
+    "nh_mcp.strategies.** -> nh_mcp.domain",
 ]

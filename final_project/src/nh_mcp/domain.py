@@ -208,7 +208,7 @@ class RiskDecision:
     increases_position: bool
 
 
-type TokenPurpose = Literal["order", "limits"]
+type TokenPurpose = Literal["order", "limits", "strategy"]
 
 
 @dataclass(frozen=True)
@@ -220,3 +220,57 @@ class TokenRow:
     payload: str
     expires_at: datetime
     used_at: datetime | None
+
+
+# 전략 신호. 목표 포지션으로 읽는다: buy=매수 보유, sell=매도 보유, exit=정리, none=유지.
+type SignalName = Literal["buy", "sell", "exit", "none"]
+
+# 격리 실행이 실패한 이유. 사용자 말로 바꾸는 일은 위쪽 계층이 한다.
+type SandboxFailure = Literal[
+    "invalid_code",
+    "invalid_signal",
+    "exception",
+    "cpu",
+    "memory",
+    "processes",
+    "output",
+    "timeout",
+]
+
+
+@dataclass(frozen=True)
+class SandboxJob:
+    """격리 실행기에 보내는 일 한 건. 코드는 문자열 그대로 넘기기만 한다."""
+
+    code: str
+    params: dict[str, JsonValue]
+    bars: list[Candle]
+
+
+@dataclass(frozen=True)
+class SandboxResult:
+    """격리 실행 결과. 실패하면 signals는 비고, bar_index는 문제가 난 봉(모르면 None)."""
+
+    status: Literal["ok"] | SandboxFailure
+    signals: list[SignalName]
+    bar_index: int | None
+    detail: str
+
+
+# 하루 손실 한도에 닿았을 때: 정리하고 멈춘다 / 그대로 두고 멈춘다.
+type OnLoss = Literal["liquidate", "hold"]
+# auto: 신호대로 주문한다. suggest: 제안만 하고 사용자가 확인한다.
+type StrategyMode = Literal["auto", "suggest"]
+
+
+@dataclass(frozen=True)
+class StrategyScope:
+    """전략을 돌리는 범위. 확인 토큰에 담기고, 실행 중에는 이 안에서만 움직인다."""
+
+    quantity: int
+    max_position: int
+    daily_orders: int
+    daily_loss: Decimal
+    expires_at: datetime
+    on_loss: OnLoss
+    mode: StrategyMode

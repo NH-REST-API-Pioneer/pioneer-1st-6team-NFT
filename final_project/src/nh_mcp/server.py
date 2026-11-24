@@ -31,19 +31,24 @@ from nh_mcp.markets.domestic_master import DomesticMaster
 from nh_mcp.markets.domestic_products import DomesticProducts
 from nh_mcp.nh.clients import ClientPool
 from nh_mcp.ops.rate_limit import LIMITS, RateLimiter
+from nh_mcp.sandbox.client import SandboxClient
+from nh_mcp.services.backtest import BacktestService
 from nh_mcp.services.connection import ConnectionService
 from nh_mcp.services.limits import APPROVE_PATH, LimitService
 from nh_mcp.services.orders import OrderService
 from nh_mcp.services.queries import QueryService
+from nh_mcp.services.strategy import StrategyService
 from nh_mcp.services.symbols import SymbolService
 from nh_mcp.store import db
 from nh_mcp.tools.account import register_account_tools
+from nh_mcp.tools.backtest import register_backtest_tools
 from nh_mcp.tools.connection import register_connection_tools
 from nh_mcp.tools.context import ToolContext
 from nh_mcp.tools.limits import register_limit_tools
 from nh_mcp.tools.limits_page import LimitsPage, add_limits_routes
 from nh_mcp.tools.market import register_market_tools
 from nh_mcp.tools.order import register_order_tools
+from nh_mcp.tools.strategy import register_strategy_tools
 
 PORT = 8000
 
@@ -78,6 +83,7 @@ class Wiring:
     google: httpx2.AsyncBaseTransport | None = None
     nh: httpx2.AsyncBaseTransport | None = None
     master: httpx2.AsyncBaseTransport | None = None
+    sandbox: httpx2.AsyncBaseTransport | None = None
 
 
 @dataclass(frozen=True)
@@ -88,7 +94,7 @@ class Parts:
 
 
 def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
-    """웹 로그인, 키 화면, 조회 도구, 한도 도구, (스위치가 켜졌으면) 주문 도구를 붙인다."""
+    """웹 로그인, 키 화면, 조회·한도·백테스트 도구와, 스위치가 켜졌으면 주문·승인 도구를 붙인다."""
     vault = Vault(wiring.settings.key_encryption_key)
     login = GoogleWebLogin(wiring.settings, wiring.conn, wiring.clock, transport=wiring.google)
     store = KeyStore(wiring.conn, vault, wiring.verify, wiring.clock)
@@ -109,10 +115,21 @@ def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
     )
     register_limit_tools(mcp, ctx, limit_service, limiter)
     add_limits_routes(mcp, LimitsPage(login, limit_service))
+    # 틱 표는 하루에 한 번 받아 백테스트와 주문이 나눠 쓴다.
+    products = DomesticProducts(pool, wiring.clock)
+    # 백테스트는 주문을 내지 않으므로 주문 스위치와 상관없이 붙인다. 급히 멈추려면 실행기를 내린다.
+    sandbox = SandboxClient(
+        wiring.settings.sandbox_url, wiring.settings.sandbox_token, transport=wiring.sandbox
+    )
+    backtests = BacktestService(wiring.conn, wiring.clock, queries, products, sandbox)
+    register_backtest_tools(mcp, ctx, backtests, limiter)
     if wiring.settings.orders_enabled:
-        products = DomesticProducts(pool, wiring.clock)
         orders = OrderService(wiring.conn, wiring.clock, domestic, products, orders_enabled=True)
         register_order_tools(mcp, ctx, orders, limiter)
+        # 전략 실행 승인도 주문 스위치를 따른다. M3에는 이 토큰을 쓰는 도구가 아직 없다.
+        register_strategy_tools(
+            mcp, ctx, StrategyService(wiring.conn, wiring.clock, domestic), limiter
+        )
         # get_orders가 응답을 못 받은 주문을 대조한다(UNKNOWN_STATE 안내가 get_orders를 가리킨다).
         register_account_tools(mcp, ctx, queries, orders.reconcile)
     else:

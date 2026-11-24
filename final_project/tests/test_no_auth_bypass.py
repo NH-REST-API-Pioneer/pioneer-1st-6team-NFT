@@ -36,6 +36,8 @@ def test_production_server_uses_google_login(
             "ADMIN_EMAILS": "admin@example.com",
             "DB_PATH": str(tmp_path / "nh.db"),
             "KEY_ENCRYPTION_KEY": base64.b64encode(bytes(32)).decode(),
+            "SANDBOX_URL": "http://executor.test",
+            "SANDBOX_TOKEN": "fake-sandbox-token-" + "0" * 16,
         }
     )
     server = create_server(settings, db.connect(":memory:"))

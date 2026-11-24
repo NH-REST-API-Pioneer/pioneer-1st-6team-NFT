@@ -16,6 +16,8 @@ type ErrorCode = Literal[
     "LIMITS_NOT_SET",
     # NH나 개발자센터가 잠시 답하지 않는다. 잠시 뒤 다시 시도할 수 있다.
     "TEMPORARILY_UNAVAILABLE",
+    # AI가 짠 전략 코드가 예외를 냈거나 자원 제한을 넘었다. 사유는 rule에 있다.
+    "STRATEGY_FAILED",
 ]
 
 

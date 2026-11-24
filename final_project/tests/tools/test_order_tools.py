@@ -347,6 +347,20 @@ def test_a_made_up_token_is_confirm_expired_and_calls_no_nh(serve: Serve, token:
     assert shop.nh.requests == []
 
 
+def test_a_strategy_token_is_not_an_order_token(serve: Serve) -> None:
+    """주문 내용이 그대로 든 토큰이라도 용도가 전략(strategy)이면 주문하지 않는다."""
+    shop = Shop()
+    (preview,) = run(serve, shop, [("preview_order", {"order": BUY})])
+    token = preview["data"]["confirm_token"]
+    with shop.conn:
+        shop.conn.execute("UPDATE confirm_tokens SET purpose = 'strategy'")
+
+    (placed,) = run(serve, shop, [("place_order", {"confirm_token": token})], Window("accept"))
+
+    assert placed["error"]["code"] == "CONFIRM_EXPIRED"
+    assert shop.calls(ORDER) == 0
+
+
 def test_no_secret_appears_in_any_response(serve: Serve) -> None:
     shop = Shop()
     steps: list[Step] = [

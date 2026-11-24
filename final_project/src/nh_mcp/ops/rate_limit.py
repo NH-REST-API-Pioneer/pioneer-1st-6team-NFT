@@ -14,9 +14,11 @@ PREVIEW_BUCKET = "preview"
 # 주문과 취소는 한 버킷을 같이 쓴다.
 ORDER_BUCKET = "order"
 LIMITS_BUCKET = "limits"
+# 백테스트는 격리 컨테이너를 하나씩 띄운다.
+BACKTEST_BUCKET = "backtest"
 
 LIMITS: Mapping[str, int] = MappingProxyType(
-    {PREVIEW_BUCKET: 20, ORDER_BUCKET: 10, LIMITS_BUCKET: 10}
+    {PREVIEW_BUCKET: 20, ORDER_BUCKET: 10, LIMITS_BUCKET: 10, BACKTEST_BUCKET: 10}
 )
 
 

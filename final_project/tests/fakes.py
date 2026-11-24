@@ -1,11 +1,13 @@
 """여러 테스트가 같이 쓰는 가짜: Google, 시계, 웹 로그인과 키 화면이 붙은 서버."""
 
+import asyncio
 import gzip
 import json
 from collections.abc import Mapping
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 from urllib.parse import parse_qs, urlparse
 
 import httpx2
@@ -33,6 +35,8 @@ SETTINGS = Settings(
     open_signup=False,
     db_path=Path("unused.db"),
     key_encryption_key=bytes(32),
+    sandbox_url="http://executor.test",
+    sandbox_token="fake-sandbox-token-" + "0" * 16,
 )
 
 
@@ -107,7 +111,43 @@ def mcp_token(sub: str, email: str) -> dict[str, object]:
 MCP_TOKENS = {
     "admin-token": mcp_token("g-admin", ADMIN),
     "second-admin-token": mcp_token("g-admin2", "second@example.com"),
+    # 로그인은 됐지만 허용 목록에 없는 사용자. 게이트가 막아야 한다.
+    "outsider-token": mcp_token("g-out", "outsider@example.com"),
 }
+
+
+class FakeSandbox:
+    """격리 실행기 흉내. 정해 둔 답(JSON 또는 상태 코드)을 차례로 돌려주고 마지막 것은 되풀이한다.
+
+    정해 둔 답이 없으면 봉 수만큼 "none"을 돌려준다. 받은 본문은 `jobs`에 남는다.
+    `hold`를 걸어 두면 그 이벤트가 켜질 때까지 답하지 않는다(취소·동시 실행 테스트).
+    """
+
+    def __init__(self) -> None:
+        self.jobs: list[dict[str, object]] = []
+        self.replies: list[Mapping[str, object] | int] = []
+        self.down = False
+        self.hold: asyncio.Event | None = None
+
+    def reply(self, answer: Mapping[str, object] | int) -> None:
+        self.replies.append(answer)
+
+    async def __call__(self, request: httpx2.Request) -> httpx2.Response:
+        job: dict[str, object] = json.loads(request.content)
+        self.jobs.append(job)
+        if self.hold is not None:
+            await self.hold.wait()
+        if self.down:
+            raise httpx2.ConnectError("실행기에 닿지 못함", request=request)
+        if self.replies:
+            answer = self.replies.pop(0) if len(self.replies) > 1 else self.replies[0]
+        else:
+            bars = job["bars"]
+            count = len(cast(list[object], bars)) if isinstance(bars, list) else 0
+            answer = {"status": "ok", "signals": ["none"] * count, "bar_index": None, "detail": ""}
+        if isinstance(answer, int):
+            return httpx2.Response(answer)
+        return httpx2.Response(200, content=json.dumps(dict(answer)).encode())
 
 
 class World:
@@ -118,8 +158,10 @@ class World:
         verify: Verify = accept_any_key,
         nh: httpx2.AsyncBaseTransport | None = None,
         orders_enabled: bool = False,
+        sandbox: FakeSandbox | None = None,
     ) -> None:
         self.master = FakeMaster()
+        self.sandbox = sandbox or FakeSandbox()
         self.conn = db.connect(":memory:")
         self.google = FakeGoogle()
         self.clock = Clock()
@@ -135,6 +177,7 @@ class World:
             google=httpx2.MockTransport(self.google),
             nh=nh,
             master=httpx2.MockTransport(self.master),
+            sandbox=httpx2.MockTransport(self.sandbox),
         )
         parts = attach(self.mcp, wiring)
         self.login, self.store, self.pool = parts.login, parts.store, parts.pool

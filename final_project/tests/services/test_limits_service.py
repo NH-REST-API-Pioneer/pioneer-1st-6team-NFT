@@ -5,9 +5,10 @@ import sqlite3
 from datetime import timedelta
 from decimal import Decimal
 
+import pytest
 from fakes import T0, Clock
 
-from nh_mcp.domain import RiskLimits, UserId
+from nh_mcp.domain import RiskLimits, TokenPurpose, UserId
 from nh_mcp.services.limits import LimitPlan, LimitService
 from nh_mcp.store import confirm_tokens, db, limits, users
 from nh_mcp.store.confirm_tokens import NewToken
@@ -291,14 +292,27 @@ def test_unknown_token_is_invalid() -> None:
     assert Setup().service.approve_link(Setup().user, "nope") == "invalid"
 
 
-def test_order_token_is_not_a_limits_link() -> None:
+@pytest.mark.parametrize("purpose", ["order", "strategy"])
+def test_other_purpose_token_is_not_a_limits_link(purpose: TokenPurpose) -> None:
     s = Setup()
     token, _ = confirm_tokens.issue(
-        s.conn, NewToken(s.user, "order", "{}"), T0, timedelta(minutes=2)
+        s.conn, NewToken(s.user, purpose, "{}"), T0, timedelta(minutes=2)
     )
 
     assert s.service.approve_link(s.user, token) == "invalid"
     assert s.service.pending(s.user, token) is None
+
+
+def test_strategy_token_with_a_limits_payload_is_not_a_limits_link() -> None:
+    """한도 내용이 그대로 든 토큰이라도 용도가 전략(strategy)이면 한도를 바꾸지 않는다."""
+    s = Setup()
+    token = s.link_token(s.service.plan(s.user, "domestic", CURRENT))
+    with s.conn:
+        s.conn.execute("UPDATE confirm_tokens SET purpose = 'strategy'")
+
+    assert s.service.pending(s.user, token) is None
+    assert s.service.approve_link(s.user, token) == "invalid"
+    assert s.stored() is None
 
 
 def test_malformed_payload_is_invalid() -> None:

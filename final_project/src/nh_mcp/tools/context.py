@@ -12,6 +12,7 @@ from nh_mcp import envelope
 from nh_mcp.auth.access import current_user_id
 from nh_mcp.config import ENV
 from nh_mcp.domain import Clock, JsonValue, UserId
+from nh_mcp.services.backtest import RunnerUnavailable, StrategyFailed, StrategyInvalid
 from nh_mcp.services.orders import (
     ConfirmInvalid,
     InvalidCancel,
@@ -34,6 +35,7 @@ ORDERS_OFF_RULE = "demo_only"
 ORDERS_OFF = "지금은 주문이 꺼져 있습니다."
 KEY_MISSING = "NH 모의 키가 등록돼 있지 않습니다. 등록 화면에서 등록해 주세요: "
 UNAVAILABLE = "NH 모의 서버가 답하지 않습니다. 잠시 뒤 다시 시도해 주세요."
+RUNNER_UNAVAILABLE = "전략 실행기가 바쁘거나 답하지 않습니다. 잠시 뒤 다시 시도해 주세요."
 
 # 문구가 늘 같은 서비스 예외 → (오류 코드, 문구).
 _FIXED: dict[type[Exception], tuple[envelope.ErrorCode, str]] = {
@@ -113,9 +115,26 @@ class ToolContext:
                 response = envelope.error("UNKNOWN_STATE", message, meta)
             case OrdersDisabled():
                 response = envelope.error("RISK_BLOCKED", ORDERS_OFF, meta, rule=ORDERS_OFF_RULE)
+            case StrategyInvalid() | StrategyFailed() | RunnerUnavailable():
+                response = _strategy_error(exc, meta)
             case _:
                 raise exc
         return response
+
+
+def _strategy_error(
+    exc: StrategyInvalid | StrategyFailed | RunnerUnavailable, meta: envelope.Meta
+) -> envelope.Response:
+    """백테스트 서비스 예외를 오류 응답으로. 실패 사유는 rule에 담는다."""
+    match exc:
+        case StrategyInvalid(message=message):
+            return envelope.error("INVALID_INPUT", message, meta)
+        case StrategyFailed(reason=reason, message=message):
+            return envelope.error("STRATEGY_FAILED", message, meta, rule=reason)
+        case RunnerUnavailable():
+            return envelope.error(
+                "TEMPORARILY_UNAVAILABLE", RUNNER_UNAVAILABLE, meta, retryable=True
+            )
 
 
 def whole(value: object, low: int, high: int) -> int | None:

@@ -9,6 +9,13 @@ from datetime import datetime, timedelta
 from nh_mcp.domain import TokenPurpose, TokenRow, UserId
 from nh_mcp.store.db import parse_stamp, stamp
 
+# 저장된 용도 문자열 → 용도. 여기에 없는 값은 없는 토큰으로 읽는다.
+_PURPOSES: dict[str, TokenPurpose] = {
+    "order": "order",
+    "limits": "limits",
+    "strategy": "strategy",
+}
+
 
 def _hash(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
@@ -47,7 +54,9 @@ def find(conn: sqlite3.Connection, token: str) -> TokenRow | None:
     ).fetchone()
     if row is None:
         return None
-    purpose: TokenPurpose = "order" if row[1] == "order" else "limits"
+    purpose = _PURPOSES.get(str(row[1]))
+    if purpose is None:
+        return None
     return TokenRow(
         user_id=UserId(int(row[0])),
         purpose=purpose,

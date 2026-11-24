@@ -4,6 +4,13 @@
 #   docker compose --env-file .env -f deploy/compose.yaml up -d --build
 # Cloudflare 대시보드 > Tunnels > Public Hostname:  mcp.<도메인>  →  Service: HTTP, URL: mcp:8000
 #
+# 전략 코드는 격리 컨테이너에서만 돈다. 처음 한 번(그리고 harness나 numpy·pandas 버전이 바뀔 때)
+# 전략 이미지를 먼저 빌드한 뒤 올린다:
+#   docker compose --env-file .env -f deploy/compose.yaml --profile build build sandbox-image
+#   docker compose --env-file .env -f deploy/compose.yaml up -d --build
+# .env의 DOCKER_GID는 호스트의 docker 그룹 번호다(`stat -c %g /var/run/docker.sock`).
+# docker 소켓은 executor만 마운트한다. executor는 바깥으로 나가지 못하는 sandbox 망에만 있다.
+#
 # 암호화 열쇠(KEY_ENCRYPTION_KEY)는 환경 변수로만 받고, DB가 있는 볼륨에는 두지 않는다.
 services:
   mcp:
@@ -21,6 +28,13 @@ services:
       OPEN_SIGNUP: ${OPEN_SIGNUP:-false}
       ORDERS_ENABLED: ${ORDERS_ENABLED:-false}  # 주문 차단 스위치. 비우면 주문 도구가 없다
       KEY_ENCRYPTION_KEY: ${KEY_ENCRYPTION_KEY:?.env에 KEY_ENCRYPTION_KEY를 넣어 주세요}
+      SANDBOX_URL: http://executor:8100
+      SANDBOX_TOKEN: ${SANDBOX_TOKEN:?.env에 SANDBOX_TOKEN을 넣어 주세요}
+    networks:
+      - default               # cloudflared가 닿는 망
+      - sandbox               # 실행기가 있는 안쪽 망
+    depends_on:
+      - executor
     volumes:
       - mcpdata:/data         # DB와 Google 로그인 상태. `docker compose down -v`를 하면 지워진다.
     init: true
@@ -32,6 +46,40 @@ services:
     tmpfs:
       - /tmp
 
+  executor:
+    build:
+      context: ..
+      dockerfile: deploy/executor.Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8100"                # sandbox 망의 mcp만 닿는다
+    environment:
+      SANDBOX_TOKEN: ${SANDBOX_TOKEN:?.env에 SANDBOX_TOKEN을 넣어 주세요}
+      SANDBOX_IMAGE: nh-mcp-sandbox:latest
+    networks:
+      - sandbox
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock   # 전략 컨테이너를 띄우려면 필요하다
+    group_add:
+      - "${DOCKER_GID:?.env에 DOCKER_GID를 넣어 주세요}"
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  # 전략을 돌리는 이미지. 서비스로는 뜨지 않고(profile) 위 빌드 명령으로만 만든다.
+  sandbox-image:
+    build:
+      context: ..
+      dockerfile: deploy/sandbox.Dockerfile
+    image: nh-mcp-sandbox:latest
+    profiles:
+      - build
+
   cloudflared:
     image: cloudflare/cloudflared:2026.10.7
     command: tunnel --no-autoupdate run
@@ -40,6 +88,10 @@ services:
     restart: unless-stopped
     depends_on:
       - mcp
+
+networks:
+  sandbox:
+    internal: true            # 바깥으로 나가지 못한다
 
 volumes:
   mcpdata:

@@ -7,7 +7,16 @@ NH 쪽 예외를 서비스 예외로 바꾼다. 도구는 nh와 markets를 직�
 from collections.abc import Awaitable
 from datetime import date
 
-from nh_mcp.domain import AccountState, Candle, Market, Order, OrderError, Quote, UserId
+from nh_mcp.domain import (
+    AccountState,
+    Candle,
+    Contract,
+    Market,
+    Order,
+    OrderError,
+    Quote,
+    UserId,
+)
 from nh_mcp.markets.domestic import DomesticMarket, Interval, NoSuchSymbol
 from nh_mcp.markets.domestic_master import MasterUnavailable
 from nh_mcp.nh.client import NoResponse, Rejected
@@ -56,16 +65,18 @@ class QueryService:
     def __init__(self, domestic: DomesticMarket) -> None:
         self._domestic = domestic
 
-    async def _check(self, symbol: str) -> None:
+    async def contract(self, symbol: str) -> Contract:
+        """종목 마스터의 종목. 없으면 UnknownSymbol, 마스터를 못 받으면 Unavailable."""
         try:
             contract = await self._domestic.contract(symbol)
         except MasterUnavailable:
             raise Unavailable() from None
         if contract is None:
             raise UnknownSymbol(symbol)
+        return contract
 
     async def quote(self, user_id: UserId, symbol: str) -> Quote:
-        await self._check(symbol)
+        await self.contract(symbol)
         return await call_nh(self._domestic.quote(user_id, symbol))
 
     async def candles(
@@ -76,7 +87,7 @@ class QueryService:
         period: tuple[date, date],
         limit: int,
     ) -> list[Candle]:
-        await self._check(symbol)
+        await self.contract(symbol)
         return await call_nh(self._domestic.candles(user_id, symbol, interval, period, limit))
 
     async def account(self, user_id: UserId) -> AccountState:

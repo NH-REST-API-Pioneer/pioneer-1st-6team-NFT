@@ -5,6 +5,7 @@ import pytest
 from nh_mcp.config import ENV, NH_BASE_URL, NH_STREAM_URL, ConfigError, load_settings
 
 FAKE_SECRET = "fake-google-secret-0000"
+SANDBOX_TOKEN = "fake-sandbox-token-" + "0" * 16
 GOOD = {
     "PUBLIC_BASE_URL": "https://mcp.example.com/",
     "GOOGLE_CLIENT_ID": "fake-client-id",
@@ -12,6 +13,8 @@ GOOD = {
     "ADMIN_EMAILS": " Admin@Example.com , ops@example.com ",
     "DB_PATH": "data/nh.db",
     "KEY_ENCRYPTION_KEY": base64.b64encode(bytes(32)).decode(),
+    "SANDBOX_URL": "http://executor:8100",
+    "SANDBOX_TOKEN": SANDBOX_TOKEN,
 }
 
 
@@ -40,6 +43,8 @@ def test_secret_is_not_in_repr() -> None:
         "GOOGLE_CLIENT_SECRET",
         "DB_PATH",
         "KEY_ENCRYPTION_KEY",
+        "SANDBOX_URL",
+        "SANDBOX_TOKEN",
     ],
 )
 def test_missing_required_value_fails_fast(name: str) -> None:
@@ -97,3 +102,32 @@ def test_bind_host_is_loopback_unless_container() -> None:
     assert load_settings({**GOOD, "BIND_HOST": "0.0.0.0"}).bind_host == "0.0.0.0"
     with pytest.raises(ConfigError):
         load_settings({**GOOD, "BIND_HOST": "192.168.0.10"})
+
+
+@pytest.mark.parametrize("name", ["SANDBOX_URL", "SANDBOX_TOKEN"])
+@pytest.mark.parametrize("orders", ["true", "false"])
+def test_sandbox_settings_are_required(name: str, orders: str) -> None:
+    # 주문 스위치와 상관없이 필수다. 빠져도, 빈 값이어도 서버를 띄우지 않는다.
+    env = {**GOOD, "ORDERS_ENABLED": orders}
+    with pytest.raises(ConfigError):
+        load_settings({k: v for k, v in env.items() if k != name})
+    with pytest.raises(ConfigError):
+        load_settings({**env, name: "  "})
+
+
+@pytest.mark.parametrize("raw", ["https://executor:8100", "executor:8100", "ftp://executor"])
+def test_sandbox_url_must_be_http(raw: str) -> None:
+    with pytest.raises(ConfigError):
+        load_settings({**GOOD, "SANDBOX_URL": raw})
+    assert load_settings(GOOD).sandbox_url == "http://executor:8100"
+
+
+def test_short_sandbox_token_is_refused() -> None:
+    with pytest.raises(ConfigError) as refused:
+        load_settings({**GOOD, "SANDBOX_TOKEN": "x" * 31})
+    assert "x" * 31 not in str(refused.value)
+    assert load_settings({**GOOD, "SANDBOX_TOKEN": "x" * 32}).sandbox_token == "x" * 32
+
+
+def test_sandbox_token_is_not_in_repr() -> None:
+    assert SANDBOX_TOKEN not in repr(load_settings(GOOD))

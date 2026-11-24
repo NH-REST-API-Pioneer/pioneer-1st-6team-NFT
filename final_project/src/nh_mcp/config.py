@@ -13,6 +13,8 @@ from pathlib import Path
 from nh_mcp.domain import Env
 
 KEY_BYTES = 32
+# 실행기 토큰의 최소 길이. 짧으면 추측으로 뚫릴 수 있다.
+SANDBOX_TOKEN_MIN = 32
 
 NH_BASE_URL = "https://apidemo.futures.co.kr"
 NH_STREAM_URL = "wss://apidemo.futures.co.kr"
@@ -37,6 +39,9 @@ class Settings:
     open_signup: bool
     db_path: Path
     key_encryption_key: bytes = field(repr=False)
+    # 전략 실행기 주소와 그 실행기에 말을 걸 때 쓰는 토큰. 주문 스위치와 상관없이 필수다.
+    sandbox_url: str
+    sandbox_token: str = field(repr=False)
     bind_host: str = "127.0.0.1"
     # 주문 차단 스위치. 꺼져 있으면 주문 도구를 등록하지 않고 서비스도 거부한다.
     orders_enabled: bool = False
@@ -73,6 +78,8 @@ def load_settings(environ: Mapping[str, str]) -> Settings:
         open_signup=open_signup,
         db_path=Path(required("DB_PATH")),
         key_encryption_key=_encryption_key(required("KEY_ENCRYPTION_KEY")),
+        sandbox_url=_sandbox_url(required("SANDBOX_URL")),
+        sandbox_token=_sandbox_token(required("SANDBOX_TOKEN")),
         bind_host=_bind_host(environ.get("BIND_HOST", BIND_HOSTS[0])),
         orders_enabled=_switch(environ, "ORDERS_ENABLED"),
     )
@@ -103,3 +110,16 @@ def _bind_host(raw: str) -> str:
     if host not in BIND_HOSTS:
         raise ConfigError(f"BIND_HOST는 {' 또는 '.join(BIND_HOSTS)}여야 합니다.")
     return host
+
+
+def _sandbox_url(raw: str) -> str:
+    # 실행기는 같은 호스트의 내부 네트워크에만 있어 http다. 밖으로 나가는 주소가 아니다.
+    if not raw.startswith("http://"):
+        raise ConfigError("SANDBOX_URL은 http:// 로 시작해야 합니다.")
+    return raw.rstrip("/")
+
+
+def _sandbox_token(raw: str) -> str:
+    if len(raw) < SANDBOX_TOKEN_MIN:
+        raise ConfigError(f"SANDBOX_TOKEN은 {SANDBOX_TOKEN_MIN}자 이상이어야 합니다.")
+    return raw

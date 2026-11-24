@@ -13,7 +13,7 @@ BOB = UserId(2)
 
 
 def test_the_bucket_values_are_the_agreed_ones() -> None:
-    assert dict(LIMITS) == {"preview": 20, "order": 10, "limits": 10}
+    assert dict(LIMITS) == {"preview": 20, "order": 10, "limits": 10, "backtest": 10}
 
 
 def test_twenty_previews_pass_and_the_twenty_first_is_refused() -> None:

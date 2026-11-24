@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import sqlite3
 from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
@@ -157,3 +158,33 @@ def test_two_simultaneous_consumes_succeed_only_once(tmp_path: Path) -> None:
     results = asyncio.run(race())
 
     assert results.count(True) == 1
+
+
+def test_strategy_token_round_trips() -> None:
+    conn = db.connect(":memory:")
+    user_a, _ = two_users(conn)
+
+    token, _ = confirm_tokens.issue(conn, NewToken(user_a, "strategy", PAYLOAD), NOW, TTL)
+    row = confirm_tokens.find(conn, token)
+
+    assert row is not None
+    assert row.purpose == "strategy"
+    assert confirm_tokens.consume(conn, token, user_a, "strategy", NOW) is True
+
+
+def test_unknown_purpose_reads_as_missing() -> None:
+    conn = db.connect(":memory:")
+    user_a, _ = two_users(conn)
+    # CHECK가 막지 않는 상태(옛·다른 판)에서 들어온 모르는 용도의 행을 흉내 낸다.
+    conn.execute("DROP TABLE confirm_tokens")
+    conn.execute(
+        "CREATE TABLE confirm_tokens (token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL, "
+        "purpose TEXT NOT NULL, payload TEXT NOT NULL, created_at TEXT NOT NULL, "
+        "expires_at TEXT NOT NULL, used_at TEXT)"
+    )
+    conn.execute(
+        "INSERT INTO confirm_tokens VALUES (?, ?, 'mystery', '{}', ?, ?, NULL)",
+        (hashlib.sha256(b"odd").hexdigest(), user_a, db.stamp(NOW), db.stamp(NOW + TTL)),
+    )
+
+    assert confirm_tokens.find(conn, "odd") is None
