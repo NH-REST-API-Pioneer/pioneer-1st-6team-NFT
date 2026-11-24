@@ -95,7 +95,7 @@ def test_browser_form_through_the_https_tunnel_is_not_refused(serve: Serve) -> N
     options = run_options(PUBLIC)
     world = World()
 
-    async def scenario() -> tuple[httpx2.Response, httpx2.Response]:
+    async def scenario() -> tuple[httpx2.Response, httpx2.Response, httpx2.Response]:
         async with (
             serve(
                 world.mcp,
@@ -108,11 +108,14 @@ def test_browser_form_through_the_https_tunnel_is_not_refused(serve: Serve) -> N
             headers = {"Host": "mcp.example.com"}
             ours = await http.post(form, headers={**headers, "Origin": "https://mcp.example.com"})
             evil = await http.post(form, headers={**headers, "Origin": "https://evil.example.com"})
-        return ours, evil
+            # Referrer-Policy가 no-referrer면 브라우저는 Origin을 "null"로 보낸다. 이것은 막힌다.
+            hidden = await http.post(form, headers={**headers, "Origin": "null"})
+        return ours, evil, hidden
 
-    ours, evil = asyncio.run(scenario())
+    ours, evil, hidden = asyncio.run(scenario())
     assert "Forbidden Origin" not in ours.text
     assert evil.status_code == 403 and "Forbidden Origin" in evil.text
+    assert hidden.status_code == 403
 
 
 def test_server_refuses_requests_for_another_host(serve: Serve) -> None:

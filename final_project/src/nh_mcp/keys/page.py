@@ -31,7 +31,9 @@ SECURITY_HEADERS = {
     "Content-Security-Policy": (
         "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'"
     ),
-    "Referrer-Policy": "no-referrer",
+    # no-referrer면 브라우저가 폼의 Origin을 "null"로 보내 서버의 Origin 검사에 막힌다.
+    # same-origin은 같은 사이트에만 Origin을 알리고, 다른 사이트로는 주소를 넘기지 않는다.
+    "Referrer-Policy": "same-origin",
     "X-Content-Type-Options": "nosniff",
 }
 STYLE = (

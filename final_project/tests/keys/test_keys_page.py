@@ -86,6 +86,7 @@ def test_register_shows_only_last4_and_stores_encrypted(serve: Serve) -> None:
     assert FAKE_KEY not in page.text and FAKE_SECRET not in page.text
     assert page.headers["cache-control"] == "no-store"
     assert "frame-ancestors 'none'" in page.headers["content-security-policy"]
+    assert page.headers["referrer-policy"] == "same-origin"
 
     user_id = UserId(session.user_id())
     saved = nh_keys.load(session.world.conn, user_id, "domestic")
