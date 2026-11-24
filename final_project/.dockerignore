@@ -1,0 +1,7 @@
+# 이미지에는 pyproject.toml, uv.lock, README.md, src/만 들어간다.
+*
+!pyproject.toml
+!uv.lock
+!README.md
+!src/
+**/__pycache__

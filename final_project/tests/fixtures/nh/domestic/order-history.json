@@ -1,0 +1,15 @@
+{
+  "path": "/trade/v1/domestic/order-history",
+  "request": {
+    "trd_div": "0",
+    "exec_div": "0",
+    "trd_tm_div_cd": "0",
+    "ord_div_cd": "0",
+    "nxt_key": ""
+  },
+  "status": 200,
+  "body": {
+    "nxt_key": "",
+    "nrec": "0000"
+  }
+}
