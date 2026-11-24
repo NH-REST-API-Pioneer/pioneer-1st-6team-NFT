@@ -9,8 +9,10 @@ import re
 from pathlib import Path
 
 import httpx2
+import uvicorn
 from conftest import Serve
 from fakes import World
+from starlette.applications import Starlette
 
 from nh_mcp.config import load_settings
 from nh_mcp.server import run_options
@@ -84,7 +86,22 @@ def test_run_options_accept_only_the_public_host() -> None:
         "host_origin_protection": True,
         "allowed_hosts": ["mcp.example.com"],
         "allowed_origins": ["https://mcp.example.com"],
+        "uvicorn_config": {"access_log": False},
     }
+
+
+def test_the_access_log_is_off_so_approval_links_are_not_written() -> None:
+    """접근 로그는 요청 주소를 그대로 적는다. 한도 승인 링크(/limits/approve/<토큰>)가 남는다."""
+    config = uvicorn.Config(Starlette(), **run_options(PUBLIC)["uvicorn_config"])
+
+    assert config.access_log is False
+
+
+def test_compose_passes_the_orders_switch_and_keeps_it_off_by_default() -> None:
+    lines = code_lines(COMPOSE)
+    assert any(re.fullmatch(r"\s*ORDERS_ENABLED: \$\{ORDERS_ENABLED:-false\}", ln) for ln in lines)
+    env_example = (ROOT / ".env.example").read_text(encoding="utf-8")
+    assert "ORDERS_ENABLED=false" in code_lines(env_example)
 
 
 def test_browser_form_through_the_https_tunnel_is_not_refused(serve: Serve) -> None:

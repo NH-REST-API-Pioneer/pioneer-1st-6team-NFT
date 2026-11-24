@@ -3,14 +3,13 @@
 키는 끝 4자리만 보여 준다. 사용자가 넣은 값을 화면에 되돌려 보여 주지 않는다.
 """
 
-import hmac
 from html import escape
 
 from fastmcp import FastMCP
-from starlette.datastructures import FormData
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse, Response
 
+from nh_mcp.auth.pages import checked_form, csrf_input, form_field, html_page
 from nh_mcp.auth.web import KEYS_PATH, LOGIN_PATH, LOGOUT_PATH, GoogleWebLogin, WebUser
 from nh_mcp.domain import Market
 from nh_mcp.keys.service import KeyNotAccepted, KeyStore, KeySummary
@@ -26,21 +25,6 @@ RESULTS = {
     "rejected": "모의 서버에서 이 키로 토큰을 받지 못했습니다. 모의 계좌의 키인지 확인해 주세요.",
     "unverified": "모의 서버에 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.",
 }
-SECURITY_HEADERS = {
-    "Cache-Control": "no-store",
-    "Content-Security-Policy": (
-        "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'"
-    ),
-    # no-referrer면 브라우저가 폼의 Origin을 "null"로 보내 서버의 Origin 검사에 막힌다.
-    # same-origin은 같은 사이트에만 Origin을 알리고, 다른 사이트로는 주소를 넘기지 않는다.
-    "Referrer-Policy": "same-origin",
-    "X-Content-Type-Options": "nosniff",
-}
-STYLE = (
-    "body{font-family:sans-serif;max-width:40rem;margin:2rem auto;padding:0 1rem;line-height:1.5}"
-    "table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:.3rem .6rem}"
-    "form{margin:1rem 0}.note{color:#555;font-size:.9rem}.result{font-weight:bold}"
-)
 
 
 def _market(value: object) -> Market | None:
@@ -51,22 +35,8 @@ def _market(value: object) -> Market | None:
     return None
 
 
-def _field(form: FormData, name: str) -> str:
-    value = form.get(name)
-    return value if isinstance(value, str) else ""
-
-
 def _html(body: str, status: int = 200) -> HTMLResponse:
-    page = (
-        "<!doctype html><html lang='ko'><meta charset='utf-8'>"
-        "<meta name='viewport' content='width=device-width, initial-scale=1'>"
-        f"<title>NH 모의 키 등록</title><style>{STYLE}</style><body>{body}</body></html>"
-    )
-    return HTMLResponse(page, status_code=status, headers=SECURITY_HEADERS)
-
-
-def _csrf(user: WebUser) -> str:
-    return f"<input type='hidden' name='csrf' value='{escape(user.csrf, quote=True)}'>"
+    return html_page("NH 모의 키 등록", body, status)
 
 
 def render(user: WebUser, keys: list[KeySummary], result: str | None) -> HTMLResponse:
@@ -92,7 +62,7 @@ def render(user: WebUser, keys: list[KeySummary], result: str | None) -> HTMLRes
 {table}
 <h2>키 등록 또는 교체</h2>
 <form method='post' action='{REGISTER_PATH}' autocomplete='off'>
-{_csrf(user)}
+{csrf_input(user)}
 <p><label>시장 <select name='market'>{options}</select></label></p>
 <p><label>APP Key <input type='password' name='app_key' required></label></p>
 <p><label>APP Secret <input type='password' name='app_secret' required></label></p>
@@ -100,11 +70,11 @@ def render(user: WebUser, keys: list[KeySummary], result: str | None) -> HTMLRes
 </form>
 <h2>키 지우기</h2>
 <form method='post' action='{DELETE_PATH}'>
-{_csrf(user)}
+{csrf_input(user)}
 <button type='submit'>등록한 키를 모두 지우기</button>
 </form>
 <form method='post' action='{LOGOUT_PATH}'>
-{_csrf(user)}
+{csrf_input(user)}
 <button type='submit'>로그아웃</button>
 </form>
 """
@@ -124,14 +94,14 @@ class KeysPage:
         return render(user, self._store.summaries(user.user_id), result)
 
     async def register(self, request: Request) -> Response:
-        checked = await self._checked(request)
+        checked = await checked_form(self._login, request)
         if checked is None:
             return _html("<p>요청이 맞지 않습니다. 다시 로그인해 주세요.</p>", status=403)
         user, form = checked
         market = _market(form.get("market"))
         if market is None:
             return _html("<p>시장을 골라 주세요.</p>", status=400)
-        credentials = Credentials(_field(form, "app_key"), _field(form, "app_secret"))
+        credentials = Credentials(form_field(form, "app_key"), form_field(form, "app_secret"))
         try:
             await self._store.register(user.user_id, market, credentials)
         except KeyNotAccepted as exc:
@@ -139,20 +109,11 @@ class KeysPage:
         return RedirectResponse(f"{KEYS_PATH}?result=registered", status_code=303)
 
     async def delete(self, request: Request) -> Response:
-        checked = await self._checked(request)
+        checked = await checked_form(self._login, request)
         if checked is None:
             return _html("<p>요청이 맞지 않습니다. 다시 로그인해 주세요.</p>", status=403)
         self._store.delete_all(checked[0].user_id)
         return RedirectResponse(f"{KEYS_PATH}?result=deleted", status_code=303)
-
-    async def _checked(self, request: Request) -> tuple[WebUser, FormData] | None:
-        user = self._login.current_user(request)
-        if user is None:
-            return None
-        form = await request.form()
-        if not hmac.compare_digest(_field(form, "csrf"), user.csrf):
-            return None
-        return user, form
 
 
 def add_keys_routes(mcp: FastMCP, page: KeysPage) -> None:

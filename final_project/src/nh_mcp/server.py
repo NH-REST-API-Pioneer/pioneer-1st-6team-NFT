@@ -28,15 +28,22 @@ from nh_mcp.keys.service import KeyStore, Verify, demo_server_verifier
 from nh_mcp.keys.vault import Vault
 from nh_mcp.markets.domestic import DomesticMarket
 from nh_mcp.markets.domestic_master import DomesticMaster
+from nh_mcp.markets.domestic_products import DomesticProducts
 from nh_mcp.nh.clients import ClientPool
+from nh_mcp.ops.rate_limit import LIMITS, RateLimiter
 from nh_mcp.services.connection import ConnectionService
+from nh_mcp.services.limits import APPROVE_PATH, LimitService
+from nh_mcp.services.orders import OrderService
 from nh_mcp.services.queries import QueryService
 from nh_mcp.services.symbols import SymbolService
 from nh_mcp.store import db
 from nh_mcp.tools.account import register_account_tools
 from nh_mcp.tools.connection import register_connection_tools
 from nh_mcp.tools.context import ToolContext
+from nh_mcp.tools.limits import register_limit_tools
+from nh_mcp.tools.limits_page import LimitsPage, add_limits_routes
 from nh_mcp.tools.market import register_market_tools
+from nh_mcp.tools.order import register_order_tools
 
 PORT = 8000
 
@@ -81,7 +88,7 @@ class Parts:
 
 
 def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
-    """웹 로그인, 키 화면, 조회 도구를 붙인다."""
+    """웹 로그인, 키 화면, 조회 도구, 한도 도구, (스위치가 켜졌으면) 주문 도구를 붙인다."""
     vault = Vault(wiring.settings.key_encryption_key)
     login = GoogleWebLogin(wiring.settings, wiring.conn, wiring.clock, transport=wiring.google)
     store = KeyStore(wiring.conn, vault, wiring.verify, wiring.clock)
@@ -91,10 +98,25 @@ def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
     keys_url = wiring.settings.public_base_url + KEYS_PATH
     ctx = ToolContext(wiring.conn, wiring.clock, keys_url)
     master = DomesticMaster(wiring.clock, transport=wiring.master)
-    queries = QueryService(DomesticMarket(pool, master, wiring.clock))
+    domestic = DomesticMarket(pool, master, wiring.clock)
+    queries = QueryService(domestic)
+    # 속도 제한은 프로세스 하나에 하나. 버킷은 사용자별로 나뉜다.
+    limiter = RateLimiter(wiring.clock, LIMITS)
     register_connection_tools(mcp, ctx, ConnectionService(store, pool, keys_url))
     register_market_tools(mcp, ctx, SymbolService(master), queries)
-    register_account_tools(mcp, ctx, queries)
+    limit_service = LimitService(
+        wiring.conn, wiring.clock, wiring.settings.public_base_url + APPROVE_PATH
+    )
+    register_limit_tools(mcp, ctx, limit_service, limiter)
+    add_limits_routes(mcp, LimitsPage(login, limit_service))
+    if wiring.settings.orders_enabled:
+        products = DomesticProducts(pool, wiring.clock)
+        orders = OrderService(wiring.conn, wiring.clock, domestic, products, orders_enabled=True)
+        register_order_tools(mcp, ctx, orders, limiter)
+        # get_orders가 응답을 못 받은 주문을 대조한다(UNKNOWN_STATE 안내가 get_orders를 가리킨다).
+        register_account_tools(mcp, ctx, queries, orders.reconcile)
+    else:
+        register_account_tools(mcp, ctx, queries)
     return Parts(login, store, pool)
 
 
@@ -105,12 +127,17 @@ def create_server(settings: Settings, conn: sqlite3.Connection) -> FastMCP:
     return mcp
 
 
+class UvicornOptions(TypedDict):
+    access_log: bool
+
+
 class RunOptions(TypedDict):
     host: str
     port: int
     host_origin_protection: bool
     allowed_hosts: list[str]
     allowed_origins: list[str]
+    uvicorn_config: UvicornOptions
 
 
 def run_options(settings: Settings) -> RunOptions:
@@ -118,6 +145,9 @@ def run_options(settings: Settings) -> RunOptions:
 
     Tunnel이 HTTPS를 풀고 http로 넘기므로 서버는 자기 주소를 http로 안다. 그래서 브라우저가
     보내는 https Origin이 같은 사이트로 보이지 않는다. 공개 주소의 Origin을 따로 허용한다.
+
+    uvicorn 접근 로그는 끈다. 요청 주소를 그대로 적어 한도 승인 링크(`/limits/approve/<토큰>`)가
+    로그에 남기 때문이다(안전 불변식 7).
     """
     public = urlsplit(settings.public_base_url)
     return {
@@ -126,6 +156,7 @@ def run_options(settings: Settings) -> RunOptions:
         "host_origin_protection": True,
         "allowed_hosts": [public.netloc],
         "allowed_origins": [f"{public.scheme}://{public.netloc}"],
+        "uvicorn_config": {"access_log": False},
     }
 
 

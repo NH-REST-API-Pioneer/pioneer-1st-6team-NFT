@@ -2,7 +2,7 @@
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal
 from typing import Literal, NewType
 
@@ -119,7 +119,11 @@ class OrderError:
 
 @dataclass(frozen=True)
 class AccountState:
-    """get_account와 리스크 규칙이 함께 쓴다. 손익은 확정과 평가를 따로 둔다."""
+    """get_account와 리스크 규칙이 함께 쓴다. 손익은 확정과 평가를 따로 둔다.
+
+    `complete`는 보유·미체결을 빠짐없이 읽었을 때만 True다. 읽지 못한 행이 있거나 페이지를
+    끝까지 받지 못했으면 False이고, 그러면 리스크 규칙은 모든 주문을 막는다.
+    """
 
     market: Market
     currency: str
@@ -130,3 +134,89 @@ class AccountState:
     positions: list[Position]
     open_orders: list[Order]
     as_of: datetime
+    complete: bool
+
+
+type OrderType = Literal["limit", "market"]
+
+
+@dataclass(frozen=True)
+class OrderRequest:
+    """주문 한 건의 내용. 확인 토큰에 담기고, 실행 때 이 값으로만 보낸다."""
+
+    market: Market
+    symbol: str
+    side: Side
+    type: OrderType
+    quantity: int
+    price: Decimal | None
+
+
+@dataclass(frozen=True)
+class RiskLimits:
+    """사용자별 한도. 하나라도 없으면 주문은 막힌다."""
+
+    daily_loss: Decimal
+    max_position: int
+    max_order_qty: int
+
+    def raises(self, new: "RiskLimits") -> bool:
+        """새 한도가 하나라도 더 커지면 True. 한도를 올리는 변경은 확인을 거친다."""
+        return (
+            new.daily_loss > self.daily_loss
+            or new.max_position > self.max_position
+            or new.max_order_qty > self.max_order_qty
+        )
+
+
+@dataclass(frozen=True)
+class Session:
+    """거래 시간(KST). 주문은 opens <= t < closes에 허용, closing_auction <= t는 종가 단일가."""
+
+    opens: time
+    closing_auction: time
+    closes: time
+
+
+@dataclass(frozen=True)
+class InstrumentRules:
+    contract: Contract
+    tick_size: Decimal
+    session: Session
+
+
+@dataclass(frozen=True)
+class RiskInput:
+    """리스크 규칙이 보는 모든 것. 없는 값은 None이고, None이면 막는다."""
+
+    order: OrderRequest
+    env: Env
+    instrument: InstrumentRules | None
+    limits: RiskLimits | None
+    account: AccountState
+    orderable_qty: int | None
+    now: datetime
+    orders_enabled: bool
+
+
+@dataclass(frozen=True)
+class RiskDecision:
+    allowed: bool
+    rule: str | None
+    message: str
+    warnings: list[str]
+    increases_position: bool
+
+
+type TokenPurpose = Literal["order", "limits"]
+
+
+@dataclass(frozen=True)
+class TokenRow:
+    """확인 토큰 저장 행. payload는 주문 또는 한도 내용을 담은 JSON 문자열."""
+
+    user_id: UserId
+    purpose: TokenPurpose
+    payload: str
+    expires_at: datetime
+    used_at: datetime | None

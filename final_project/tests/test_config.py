@@ -64,6 +64,21 @@ def test_open_signup_must_be_true_or_false() -> None:
         load_settings({**GOOD, "OPEN_SIGNUP": "yes"})
 
 
+def test_orders_are_off_when_the_switch_is_missing() -> None:
+    assert load_settings(GOOD).orders_enabled is False
+
+
+@pytest.mark.parametrize(("raw", "expected"), [("true", True), ("false", False), (" TRUE ", True)])
+def test_orders_switch_reads_true_or_false(raw: str, expected: bool) -> None:
+    assert load_settings({**GOOD, "ORDERS_ENABLED": raw}).orders_enabled is expected
+
+
+@pytest.mark.parametrize("raw", ["yes", "1", "on", ""])
+def test_orders_switch_must_be_true_or_false(raw: str) -> None:
+    with pytest.raises(ConfigError):
+        load_settings({**GOOD, "ORDERS_ENABLED": raw})
+
+
 @pytest.mark.parametrize("raw", ["not-base64!", base64.b64encode(bytes(16)).decode()])
 def test_encryption_key_must_be_32_bytes_of_base64(raw: str) -> None:
     with pytest.raises(ConfigError):

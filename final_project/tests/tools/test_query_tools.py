@@ -195,6 +195,7 @@ def test_account_sums_pnl_and_never_shows_account_identity(serve: Serve) -> None
     result = run(serve, world_with_key(nh), "get_account", {})
 
     data = result["data"]
+    assert data["complete"] is True
     assert (data["deposit"], data["orderable_amount"]) == ("50000000", "45000000")
     assert (data["realized_pnl"], data["unrealized_pnl"]) == ("100000", "625000")
     assert data["positions"][0]["side"] == "buy" and data["positions"][0]["quantity"] == 2
@@ -211,6 +212,16 @@ def test_unknown_pnl_stays_unknown(serve: Serve) -> None:
     nh.reply(API + "deposit", {"dps_aset_tot_amt": "1", "ord_psb_tot_amt": "1"})
     result = run(serve, world_with_key(nh), "get_account", {})
     assert result["data"]["realized_pnl"] is None
+
+
+def test_account_says_when_it_could_not_read_everything(serve: Serve) -> None:
+    nh = FakeNH()
+    unreadable = {"occurs1_sym": "A016C000", "occurs1_trd_div": "", "occurs1_opint_qty": "1"}
+    nh.reply(API + "open-interest", {"nxt_key": "", "nrec": "1", "Occurs1": [unreadable]})
+    result = run(serve, world_with_key(nh), "get_account", {})
+
+    assert result["ok"] is True
+    assert result["data"]["complete"] is False
 
 
 def test_orders_returns_history_and_errors(serve: Serve) -> None:

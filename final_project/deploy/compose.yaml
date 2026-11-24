@@ -19,6 +19,7 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?.env에 GOOGLE_CLIENT_SECRET을 넣어 주세요}
       ADMIN_EMAILS: ${ADMIN_EMAILS:?.env에 ADMIN_EMAILS를 넣어 주세요}
       OPEN_SIGNUP: ${OPEN_SIGNUP:-false}
+      ORDERS_ENABLED: ${ORDERS_ENABLED:-false}  # 주문 차단 스위치. 비우면 주문 도구가 없다
       KEY_ENCRYPTION_KEY: ${KEY_ENCRYPTION_KEY:?.env에 KEY_ENCRYPTION_KEY를 넣어 주세요}
     volumes:
       - mcpdata:/data         # DB와 Google 로그인 상태. `docker compose down -v`를 하면 지워진다.

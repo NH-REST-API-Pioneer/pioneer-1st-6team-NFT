@@ -1,12 +1,14 @@
 """계좌 도구: get_account, get_orders. 계좌번호와 계좌명은 돌려주지 않는다."""
 
+import contextlib
+from collections.abc import Awaitable, Callable
 from datetime import date
 
 from fastmcp import FastMCP
 
 from nh_mcp import envelope
-from nh_mcp.domain import KST, AccountState, JsonValue, Order, OrderError, Position
-from nh_mcp.services.queries import QueryService
+from nh_mcp.domain import KST, AccountState, JsonValue, Order, OrderError, Position, UserId
+from nh_mcp.services.queries import BrokerRejected, KeyMissing, QueryService, Unavailable
 from nh_mcp.tools.context import DOMESTIC_ONLY, ToolContext, text
 
 
@@ -64,10 +66,21 @@ def _account(a: AccountState) -> dict[str, JsonValue]:
         "positions": [_position(p) for p in a.positions],
         "open_orders": [_order(o) for o in a.open_orders],
         "as_of": a.as_of.astimezone(KST).isoformat(timespec="seconds"),
+        "complete": a.complete,
     }
 
 
-def register_account_tools(mcp: FastMCP, ctx: ToolContext, queries: QueryService) -> None:
+# 응답을 못 받은 주문을 오늘 주문 내역과 맞춰 보는 함수(`OrderService.reconcile`).
+type Reconcile = Callable[[UserId], Awaitable[None]]
+# 대조가 NH 쪽 사정으로 실패해도 목록은 보여 준다. 목록 조회가 같은 오류면 그때 오류로 답한다.
+_RECONCILE_SKIPPED = (Unavailable, BrokerRejected, KeyMissing)
+
+
+def register_account_tools(
+    mcp: FastMCP, ctx: ToolContext, queries: QueryService, reconcile: Reconcile | None = None
+) -> None:
+    """`reconcile`은 주문 스위치가 켜졌을 때만 받는다. 그러면 get_orders가 목록 전에 대조한다."""
+
     @mcp.tool(annotations={"readOnlyHint": True})
     async def get_account(market: str = "domestic") -> envelope.Response:
         """예수금, 주문가능금액, 오늘 확정손익, 평가손익, 보유 포지션, 미체결 주문을 돌려준다.
@@ -75,6 +88,7 @@ def register_account_tools(mcp: FastMCP, ctx: ToolContext, queries: QueryService
         쓸 때: 주문 전에 잔고와 여력을 볼 때, 사용자가 손익이나 포지션을 물을 때.
         쓰지 않을 때: 지난 주문의 체결 여부나 거부 사유는 get_orders.
         금액은 원화 문자열이다. 모르는 값은 null로 온다.
+        complete가 false면 보유나 미체결을 다 읽지 못한 것이다. 그동안 주문은 막힌다.
         """
         if market != "domestic":
             return ctx.invalid(DOMESTIC_ONLY)
@@ -102,7 +116,11 @@ def register_account_tools(mcp: FastMCP, ctx: ToolContext, queries: QueryService
             return ctx.invalid("day는 YYYY-MM-DD로 넣어 주세요.")
 
         async def work() -> dict[str, JsonValue]:
-            orders, errors = await queries.orders(ctx.user_id(), when)
+            user_id = ctx.user_id()
+            if reconcile is not None:
+                with contextlib.suppress(*_RECONCILE_SKIPPED):
+                    await reconcile(user_id)
+            orders, errors = await queries.orders(user_id, when)
             return {
                 "orders": [_order(o) for o in orders],
                 "order_errors": [_order_error(e) for e in errors],

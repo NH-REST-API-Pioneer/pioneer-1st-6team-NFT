@@ -10,6 +10,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import secrets
 import sqlite3
 from dataclasses import dataclass
@@ -38,7 +39,11 @@ KEYS_PATH = "/keys"
 LOGIN_PATH = "/keys/login"
 CALLBACK_PATH = "/keys/callback"
 LOGOUT_PATH = "/keys/logout"
+APPROVE_PREFIX = "/limits/approve/"
+TOKEN_CHARS = re.compile(r"[A-Za-z0-9_-]{1,128}")
 SESSION_COOKIE = "nh_mcp_session"
+# 세션은 /keys 밖의 한도 승인 화면에도 보내야 한다.
+SESSION_PATH = "/"
 LOGIN_COOKIE = "nh_mcp_login"
 SESSION_SECONDS = 30 * 60
 LOGIN_SECONDS = 10 * 60
@@ -47,6 +52,15 @@ TIMEOUT_SECONDS = 10.0
 HTTP_OK = 200
 
 type JsonObject = dict[str, JsonValue]
+
+
+def safe_return_to(value: str) -> str:
+    """로그인 뒤 돌아갈 같은 서버 경로. 허용 목록(/keys, 한도 승인 링크) 밖은 모두 /keys."""
+    if value == KEYS_PATH:
+        return value
+    if value.startswith(APPROVE_PREFIX) and TOKEN_CHARS.fullmatch(value[len(APPROVE_PREFIX) :]):
+        return value
+    return KEYS_PATH
 
 
 class CookieSealer:
@@ -145,8 +159,10 @@ class GoogleWebLogin:
             }
         )
         response = RedirectResponse(f"{AUTHORIZE_URL}?{query}", status_code=302)
+        return_to = safe_return_to(request.query_params.get("return_to", ""))
         cookie = self._login.seal(
-            {"state": state, "verifier": verifier}, self._now() + LOGIN_SECONDS
+            {"state": state, "verifier": verifier, "return_to": return_to},
+            self._now() + LOGIN_SECONDS,
         )
         self._set_cookie(response, LOGIN_COOKIE, cookie, LOGIN_SECONDS)
         return response
@@ -173,14 +189,16 @@ class GoogleWebLogin:
         if users.is_suspended(self._conn, user_id):
             return _message(403, "이 계정은 사용할 수 없습니다.")
 
-        response = RedirectResponse(KEYS_PATH, status_code=303)
+        return_to = pending.get("return_to") if pending else None
+        target = safe_return_to(return_to if isinstance(return_to, str) else "")
+        response = RedirectResponse(target, status_code=303)
         session: JsonObject = {
             "uid": int(user_id),
             "email": identity.email,
             "csrf": secrets.token_urlsafe(32),
         }
         cookie = self._session.seal(session, self._now() + SESSION_SECONDS)
-        self._set_cookie(response, SESSION_COOKIE, cookie, SESSION_SECONDS)
+        self._set_cookie(response, SESSION_COOKIE, cookie, SESSION_SECONDS, SESSION_PATH)
         response.delete_cookie(LOGIN_COOKIE, path=KEYS_PATH)
         return response
 
@@ -190,7 +208,7 @@ class GoogleWebLogin:
         if user is None or not hmac.compare_digest(str(form.get("csrf", "")), user.csrf):
             return _message(400, "요청이 맞지 않습니다.")
         response = RedirectResponse(LOGIN_PATH, status_code=303)
-        response.delete_cookie(SESSION_COOKIE, path=KEYS_PATH)
+        response.delete_cookie(SESSION_COOKIE, path=SESSION_PATH)
         return response
 
     async def _identity(self, code: str, verifier: str) -> Identity | None:
@@ -224,12 +242,14 @@ class GoogleWebLogin:
     def _now(self) -> int:
         return int(self._clock().timestamp())
 
-    def _set_cookie(self, response: Response, name: str, value: str, max_age: int) -> None:
+    def _set_cookie(
+        self, response: Response, name: str, value: str, max_age: int, path: str = KEYS_PATH
+    ) -> None:
         response.set_cookie(
             name,
             value,
             max_age=max_age,
-            path=KEYS_PATH,
+            path=path,
             httponly=True,
             secure=self._secure,
             samesite="lax",

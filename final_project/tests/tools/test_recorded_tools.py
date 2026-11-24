@@ -95,6 +95,7 @@ def test_account_of_an_empty_demo_account(serve: Serve) -> None:
     assert (data["deposit"], data["orderable_amount"]) == ("100000000.000", "100000000.000")
     assert data["realized_pnl"] == "0.000"
     assert data["positions"] == [] and data["open_orders"] == []
+    assert data["complete"] is True
 
 
 def test_orders_of_a_day_without_orders(serve: Serve) -> None:

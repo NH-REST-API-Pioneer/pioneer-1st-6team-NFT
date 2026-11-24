@@ -38,6 +38,8 @@ class Settings:
     db_path: Path
     key_encryption_key: bytes = field(repr=False)
     bind_host: str = "127.0.0.1"
+    # 주문 차단 스위치. 꺼져 있으면 주문 도구를 등록하지 않고 서비스도 거부한다.
+    orders_enabled: bool = False
 
 
 def load_settings(environ: Mapping[str, str]) -> Settings:
@@ -51,10 +53,7 @@ def load_settings(environ: Mapping[str, str]) -> Settings:
     if not public_base_url.startswith(("https://", *LOCAL_ORIGINS)):
         raise ConfigError("PUBLIC_BASE_URL은 https 주소여야 합니다(로컬 개발은 localhost만 http).")
 
-    open_signup_raw = environ.get("OPEN_SIGNUP", "false").strip().lower()
-    if open_signup_raw not in ("true", "false"):
-        raise ConfigError("OPEN_SIGNUP은 true 또는 false여야 합니다.")
-    open_signup = open_signup_raw == "true"
+    open_signup = _switch(environ, "OPEN_SIGNUP")
 
     admin_emails = frozenset(
         email.strip().lower()
@@ -75,7 +74,16 @@ def load_settings(environ: Mapping[str, str]) -> Settings:
         db_path=Path(required("DB_PATH")),
         key_encryption_key=_encryption_key(required("KEY_ENCRYPTION_KEY")),
         bind_host=_bind_host(environ.get("BIND_HOST", BIND_HOSTS[0])),
+        orders_enabled=_switch(environ, "ORDERS_ENABLED"),
     )
+
+
+def _switch(environ: Mapping[str, str], name: str) -> bool:
+    """켜고 끄는 설정. 없으면 false, true·false 밖의 값(빈 값 포함)이면 서버를 띄우지 않는다."""
+    raw = environ.get(name, "false").strip().lower()
+    if raw not in ("true", "false"):
+        raise ConfigError(f"{name}은(는) true 또는 false여야 합니다.")
+    return raw == "true"
 
 
 def _encryption_key(raw: str) -> bytes:

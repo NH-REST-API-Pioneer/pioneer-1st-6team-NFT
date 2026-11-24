@@ -3,6 +3,7 @@
 import gzip
 import json
 from collections.abc import Mapping
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -113,7 +114,10 @@ class World:
     """가짜 Google·NH에 붙은 서버 하나: MCP 도구, 웹 로그인, 키 화면."""
 
     def __init__(
-        self, verify: Verify = accept_any_key, nh: httpx2.AsyncBaseTransport | None = None
+        self,
+        verify: Verify = accept_any_key,
+        nh: httpx2.AsyncBaseTransport | None = None,
+        orders_enabled: bool = False,
     ) -> None:
         self.master = FakeMaster()
         self.conn = db.connect(":memory:")
@@ -124,7 +128,7 @@ class World:
         gate = make_gate(AccessPolicy(False, admins), self.conn, self.clock)
         self.mcp: FastMCP = build_server(StaticTokenVerifier(MCP_TOKENS), gate, clock=self.clock)
         wiring = Wiring(
-            SETTINGS,
+            replace(SETTINGS, orders_enabled=orders_enabled),
             self.conn,
             self.clock,
             verify,
@@ -157,11 +161,14 @@ class FakeNH:
     """NH 모의 서버 흉내. 경로마다 정해 둔 응답을 차례로 돌려주고, 마지막 것은 되풀이한다."""
 
     def __init__(self) -> None:
-        self.replies: dict[str, list[tuple[int, Mapping[str, object]]]] = {}
+        # 본문이 bytes면 그대로(빈 본문 등), 아니면 JSON으로 보낸다.
+        self.replies: dict[str, list[tuple[int, Mapping[str, object] | bytes]]] = {}
         self.requests: list[tuple[str, dict[str, object]]] = []
         self.down = False
+        # 이 경로들만 응답 없이 끊는다(요청은 기록된다).
+        self.down_paths: set[str] = set()
 
-    def reply(self, path: str, body: Mapping[str, object], status: int = 200) -> None:
+    def reply(self, path: str, body: Mapping[str, object] | bytes, status: int = 200) -> None:
         self.replies.setdefault(path, []).append((status, body))
 
     def __call__(self, request: httpx2.Request) -> httpx2.Response:
@@ -170,10 +177,12 @@ class FakeNH:
             return httpx2.Response(200, content=json.dumps(token).encode())
         payload: dict[str, object] = json.loads(request.content or b"{}")
         self.requests.append((request.url.path, payload))
-        if self.down:
+        if self.down or request.url.path in self.down_paths:
             raise httpx2.ReadTimeout("시간 초과", request=request)
         queue = self.replies.get(request.url.path, [(200, {})])
         status, body = queue.pop(0) if len(queue) > 1 else queue[0]
+        if isinstance(body, bytes):
+            return httpx2.Response(status, content=body)
         return httpx2.Response(status, content=json.dumps(dict(body), ensure_ascii=False).encode())
 
     def paths(self) -> list[str]:

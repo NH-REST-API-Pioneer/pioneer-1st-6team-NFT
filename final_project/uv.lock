@@ -761,6 +761,7 @@ dependencies = [
     { name = "cryptography" },
     { name = "fastmcp" },
     { name = "httpx2" },
+    { name = "pydantic" },
 ]
 
 [package.dev-dependencies]
@@ -777,6 +778,7 @@ requires-dist = [
     { name = "cryptography", specifier = ">=50.0.2" },
     { name = "fastmcp", specifier = ">=4.2.4,<5" },
     { name = "httpx2", specifier = ">=2.16.2,<3" },
+    { name = "pydantic", specifier = ">=2.14.4" },
 ]
 
 [package.metadata.requires-dev]

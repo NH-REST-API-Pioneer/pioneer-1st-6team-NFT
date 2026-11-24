@@ -1,4 +1,7 @@
-"""모든 도구가 같은 응답 형식(ok / data / error / meta)으로 답하는지 도구 목록으로 확인한다."""
+"""모든 도구가 같은 응답 형식(ok / data / error / meta)으로 답하는지 도구 목록으로 확인한다.
+
+주문 도구까지 보려고 주문 스위치를 켠 서버로 본다.
+"""
 
 import asyncio
 
@@ -9,7 +12,10 @@ from mcp_types import Tool
 
 
 async def listed(serve: Serve) -> list[Tool]:
-    async with serve(World().mcp) as url, Client(url, auth="admin-token") as client:
+    async with (
+        serve(World(orders_enabled=True).mcp) as url,
+        Client(url, auth="admin-token") as client,
+    ):
         return await client.list_tools()
 
 

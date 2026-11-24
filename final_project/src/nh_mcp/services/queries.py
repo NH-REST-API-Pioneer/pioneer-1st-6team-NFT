@@ -36,7 +36,8 @@ class UnknownSymbol(Exception):
     """종목 마스터에 없거나 NH가 모르는 종목코드다."""
 
 
-async def _call[T](work: Awaitable[T]) -> T:
+async def call_nh[T](work: Awaitable[T]) -> T:
+    """NH 조회 예외를 서비스 예외로 바꾼다. 주문 서비스도 조회에는 이것을 쓴다."""
     try:
         return await work
     except KeyNotRegistered:
@@ -65,7 +66,7 @@ class QueryService:
 
     async def quote(self, user_id: UserId, symbol: str) -> Quote:
         await self._check(symbol)
-        return await _call(self._domestic.quote(user_id, symbol))
+        return await call_nh(self._domestic.quote(user_id, symbol))
 
     async def candles(
         self,
@@ -76,10 +77,10 @@ class QueryService:
         limit: int,
     ) -> list[Candle]:
         await self._check(symbol)
-        return await _call(self._domestic.candles(user_id, symbol, interval, period, limit))
+        return await call_nh(self._domestic.candles(user_id, symbol, interval, period, limit))
 
     async def account(self, user_id: UserId) -> AccountState:
-        return await _call(self._domestic.account(user_id))
+        return await call_nh(self._domestic.account(user_id))
 
     async def orders(self, user_id: UserId, day: date) -> tuple[list[Order], list[OrderError]]:
-        return await _call(self._domestic.orders(user_id, day))
+        return await call_nh(self._domestic.orders(user_id, day))
