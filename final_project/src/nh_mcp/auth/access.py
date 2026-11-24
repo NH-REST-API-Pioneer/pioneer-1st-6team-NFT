@@ -4,9 +4,10 @@ import sqlite3
 from dataclasses import dataclass
 
 from fastmcp.server.auth.auth import AccessToken
+from fastmcp.server.dependencies import get_access_token
 from fastmcp.utilities.authorization import AuthCheck, AuthContext
 
-from nh_mcp.domain import Clock
+from nh_mcp.domain import Clock, UserId
 from nh_mcp.store import users
 
 
@@ -49,3 +50,16 @@ def make_gate(policy: AccessPolicy, conn: sqlite3.Connection, clock: Clock) -> A
         return not users.is_suspended(conn, user_id)
 
     return gate
+
+
+class NotLoggedIn(Exception):
+    """로그인한 사용자를 알 수 없다. 게이트를 지났다면 일어나지 않는다."""
+
+
+def current_user_id(conn: sqlite3.Connection) -> UserId:
+    """지금 MCP 요청을 보낸 사용자. 게이트가 허용한 사용자만 여기 온다."""
+    identity = identity_of(get_access_token())
+    user_id = users.find_by_google_sub(conn, identity.sub) if identity else None
+    if user_id is None:
+        raise NotLoggedIn("로그인한 사용자를 확인하지 못했습니다.")
+    return user_id

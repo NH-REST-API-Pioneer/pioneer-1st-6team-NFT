@@ -14,7 +14,7 @@ from pathlib import Path
 
 import httpx2
 
-from nh_mcp.envelope import KST
+from nh_mcp.domain import KST
 from nh_mcp.nh.client import Credentials, JsonObject, NHClient, Rejected
 from nh_mcp.nh.limits import grade_of
 from nh_mcp.nh.recording import Fixture, RecordingTransport

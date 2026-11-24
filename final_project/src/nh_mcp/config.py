@@ -20,6 +20,8 @@ ENV: Env = "demo"
 
 # 로컬 개발에서만 http를 허용한다. 배포 주소는 https여야 한다.
 LOCAL_ORIGINS = ("http://localhost", "http://127.0.0.1")
+# 서버가 받는 주소. 컨테이너 안에서만 0.0.0.0을 쓴다(밖으로 여는 포트는 없다).
+BIND_HOSTS = ("127.0.0.1", "0.0.0.0")
 
 
 class ConfigError(Exception):
@@ -35,6 +37,7 @@ class Settings:
     open_signup: bool
     db_path: Path
     key_encryption_key: bytes = field(repr=False)
+    bind_host: str = "127.0.0.1"
 
 
 def load_settings(environ: Mapping[str, str]) -> Settings:
@@ -71,6 +74,7 @@ def load_settings(environ: Mapping[str, str]) -> Settings:
         open_signup=open_signup,
         db_path=Path(required("DB_PATH")),
         key_encryption_key=_encryption_key(required("KEY_ENCRYPTION_KEY")),
+        bind_host=_bind_host(environ.get("BIND_HOST", BIND_HOSTS[0])),
     )
 
 
@@ -84,3 +88,10 @@ def _encryption_key(raw: str) -> bytes:
             f"KEY_ENCRYPTION_KEY는 {KEY_BYTES}바이트를 base64로 적은 값이어야 합니다."
         )
     return key
+
+
+def _bind_host(raw: str) -> str:
+    host = raw.strip()
+    if host not in BIND_HOSTS:
+        raise ConfigError(f"BIND_HOST는 {' 또는 '.join(BIND_HOSTS)}여야 합니다.")
+    return host

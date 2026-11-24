@@ -34,6 +34,7 @@ ACCOUNT_BODY: dict[str, JsonValue] = {
             "occurs1_ac_nm": "홍길동",
             "occurs1_sym": "A0166000",
             "occurs1_pl_amt": "15000",
+            "occurs1_user_ip_addr": "10.20.30.40",
         }
     ],
     "ac_no": "12345678901",
@@ -45,6 +46,7 @@ def test_scrub_removes_account_identifiers_and_tokens() -> None:
     text = json.dumps(cleaned, ensure_ascii=False)
     assert "12345678901" not in text
     assert "홍길동" not in text
+    assert "10.20.30.40" not in text
     assert FAKE_TOKEN not in text
     assert "A0166000" in text and "15000" in text
     assert isinstance(cleaned, dict) and cleaned["ac_no"] == REDACTED

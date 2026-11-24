@@ -1,0 +1,44 @@
+# NH선물 MCP 서버 배포. 서버 포트는 열지 않는다(ports 없음). 밖에서는 Cloudflare Tunnel로만 들어온다.
+#
+# 실행(final_project 폴더에서):
+#   docker compose --env-file .env -f deploy/compose.yaml up -d --build
+# Cloudflare 대시보드 > Tunnels > Public Hostname:  mcp.<도메인>  →  Service: HTTP, URL: mcp:8000
+#
+# 암호화 열쇠(KEY_ENCRYPTION_KEY)는 환경 변수로만 받고, DB가 있는 볼륨에는 두지 않는다.
+services:
+  mcp:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8000"                # 같은 compose 망의 cloudflared만 닿는다
+    environment:
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:?.env에 PUBLIC_BASE_URL을 넣어 주세요}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?.env에 GOOGLE_CLIENT_ID를 넣어 주세요}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?.env에 GOOGLE_CLIENT_SECRET을 넣어 주세요}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:?.env에 ADMIN_EMAILS를 넣어 주세요}
+      OPEN_SIGNUP: ${OPEN_SIGNUP:-false}
+      KEY_ENCRYPTION_KEY: ${KEY_ENCRYPTION_KEY:?.env에 KEY_ENCRYPTION_KEY를 넣어 주세요}
+    volumes:
+      - mcpdata:/data         # DB와 Google 로그인 상태. `docker compose down -v`를 하면 지워진다.
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  cloudflared:
+    image: cloudflare/cloudflared:2026.10.7
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${MCP_TUNNEL_TOKEN:?.env에 MCP_TUNNEL_TOKEN을 넣어 주세요}
+    restart: unless-stopped
+    depends_on:
+      - mcp
+
+volumes:
+  mcpdata:

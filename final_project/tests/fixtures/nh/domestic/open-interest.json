@@ -1,0 +1,11 @@
+{
+  "path": "/trade/v1/domestic/open-interest",
+  "request": {
+    "nxt_key": ""
+  },
+  "status": 200,
+  "body": {
+    "nxt_key": "",
+    "nrec": "0000"
+  }
+}

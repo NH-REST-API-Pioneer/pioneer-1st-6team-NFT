@@ -16,9 +16,12 @@ from nh_mcp.domain import JsonValue
 from nh_mcp.nh.client import TOKEN_PATH, JsonObject, NHError, parse_body
 
 REDACTED = "<redacted>"
-# 명세에서 계좌번호·계좌명을 담는 필드(ac_no, occurs1_ac_no, occurs1_ac_nm)와 인증 값.
-SENSITIVE_FIELDS = frozenset({"access_token", "appkey", "appsecret", "ac_no", "ac_nm"})
-SENSITIVE_SUFFIXES = ("_ac_no", "_ac_nm")
+# 명세에서 계좌번호·계좌명·사용자 IP를 담는 필드(ac_no, occurs1_ac_no, occurs1_ac_nm,
+# occurs1_user_ip_addr)와 인증 값.
+SENSITIVE_FIELDS = frozenset(
+    {"access_token", "appkey", "appsecret", "ac_no", "ac_nm", "user_ip_addr"}
+)
+SENSITIVE_SUFFIXES = ("_ac_no", "_ac_nm", "_user_ip_addr")
 REPLAY_TOKEN = "replay-token-not-real"
 
 

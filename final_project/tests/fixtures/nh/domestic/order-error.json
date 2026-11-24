@@ -1,0 +1,15 @@
+{
+  "path": "/trade/v1/domestic/order-error",
+  "request": {
+    "inq_dt": "20261124",
+    "trd_div_cd": "0",
+    "nxt_key": ""
+  },
+  "status": 200,
+  "body": {
+    "nxt_key": "",
+    "nrec": "0000",
+    "data_tot_cnt": "00000000000",
+    "nxt_data_yn": ""
+  }
+}

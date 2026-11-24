@@ -8,6 +8,7 @@
 import sqlite3
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from typing import Literal
 
 from nh_mcp.domain import Clock, JsonValue, Market, UserId
 from nh_mcp.keys.vault import Slot, Vault
@@ -15,10 +16,15 @@ from nh_mcp.nh.client import Credentials, NHClient, NHError, Rejected
 from nh_mcp.store import audit, nh_keys
 
 type Verify = Callable[[Credentials], Awaitable[None]]
+type Reason = Literal["empty", "rejected", "unverified"]
 
 
 class KeyNotAccepted(Exception):
     """모의 서버에서 이 키로 토큰을 받지 못했거나 확인하지 못했다. 저장하지 않았다."""
+
+    def __init__(self, reason: Reason, message: str) -> None:
+        super().__init__(message)
+        self.reason: Reason = reason
 
 
 @dataclass(frozen=True)
@@ -27,12 +33,17 @@ class KeySummary:
     app_key_last4: str
 
 
-async def verify_with_demo_server(credentials: Credentials, clock: Clock) -> None:
-    client = NHClient(credentials, clock)
-    try:
-        await client.check_credentials()
-    finally:
-        await client.aclose()
+def demo_server_verifier(clock: Clock) -> Verify:
+    """키로 모의 서버에서 접근토큰이 발급되는지 시험하는 함수를 돌려준다."""
+
+    async def verify(credentials: Credentials) -> None:
+        client = NHClient(credentials, clock)
+        try:
+            await client.check_credentials()
+        finally:
+            await client.aclose()
+
+    return verify
 
 
 class KeyStore:
@@ -49,18 +60,20 @@ class KeyStore:
     ) -> KeySummary:
         app_key, app_secret = credentials.app_key.strip(), credentials.app_secret.strip()
         if not app_key or not app_secret:
-            raise KeyNotAccepted("APP Key와 Secret을 모두 넣어 주세요.")
+            raise KeyNotAccepted("empty", "APP Key와 Secret을 모두 넣어 주세요.")
         try:
             await self._verify(Credentials(app_key, app_secret))
         except Rejected as exc:
             self._audit(user_id, "keys.rejected", {"market": market, "code": exc.code})
             raise KeyNotAccepted(
-                "모의 서버에서 이 키로 토큰을 받지 못했습니다. 모의 계좌의 키인지 확인해 주세요."
+                "rejected",
+                "모의 서버에서 이 키로 토큰을 받지 못했습니다. 모의 계좌의 키인지 확인해 주세요.",
             ) from None
         except NHError:
             self._audit(user_id, "keys.unverified", {"market": market})
             raise KeyNotAccepted(
-                "모의 서버에 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요."
+                "unverified",
+                "모의 서버에 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.",
             ) from None
 
         pair = nh_keys.SealedKeyPair(

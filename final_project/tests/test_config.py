@@ -75,3 +75,10 @@ def test_encryption_key_is_not_in_repr() -> None:
     settings = load_settings({**GOOD, "KEY_ENCRYPTION_KEY": base64.b64encode(key).decode()})
     assert settings.key_encryption_key == key
     assert repr(key) not in repr(settings)
+
+
+def test_bind_host_is_loopback_unless_container() -> None:
+    assert load_settings(GOOD).bind_host == "127.0.0.1"
+    assert load_settings({**GOOD, "BIND_HOST": "0.0.0.0"}).bind_host == "0.0.0.0"
+    with pytest.raises(ConfigError):
+        load_settings({**GOOD, "BIND_HOST": "192.168.0.10"})

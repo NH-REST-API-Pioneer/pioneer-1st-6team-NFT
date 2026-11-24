@@ -1,0 +1,16 @@
+{
+  "path": "/trade/v1/domestic/orderable-quantity",
+  "request": {
+    "ord_sts": "1",
+    "sym": "A016C000",
+    "trd_div": "1",
+    "ord_pric": "784.55"
+  },
+  "status": 200,
+  "body": {
+    "cls_psb_qty": "00000000000000.000000000",
+    "ord_psb_qty": "00000000000002.000000000",
+    "ord_psb_amt": "00000000000100000000.000",
+    "tot_psb_qty": "00000000000002.000000000"
+  }
+}

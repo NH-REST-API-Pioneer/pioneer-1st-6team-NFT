@@ -26,3 +26,8 @@ def is_suspended(conn: sqlite3.Connection, user_id: UserId) -> bool:
 def set_suspended(conn: sqlite3.Connection, user_id: UserId, suspended: bool) -> None:
     with conn:
         conn.execute("UPDATE users SET suspended = ? WHERE id = ?", (int(suspended), user_id))
+
+
+def find_by_google_sub(conn: sqlite3.Connection, google_sub: str) -> UserId | None:
+    row = conn.execute("SELECT id FROM users WHERE google_sub = ?", (google_sub,)).fetchone()
+    return None if row is None else UserId(int(row[0]))

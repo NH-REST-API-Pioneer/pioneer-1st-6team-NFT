@@ -31,4 +31,5 @@ def test_error_with_rule() -> None:
 
 def test_error_without_rule_has_no_rule_key() -> None:
     result = envelope.error("INVALID_INPUT", "수량이 0입니다", envelope.meta("demo", NOW))
+    assert "error" in result
     assert "rule" not in result["error"]
