@@ -120,18 +120,12 @@ def candle_row(day: str, close: str) -> dict[str, str]:
     }
 
 
-def test_candles_follow_pages_merge_and_sort(serve: Serve) -> None:
+def test_candles_merge_and_sort_in_one_short_response(serve: Serve) -> None:
     nh = FakeNH()
+    rows = [candle_row(day, close) for day, close in [("20261130", "352"), ("20261127", "350")]]
     nh.reply(
         API + "chart-daily",
-        {
-            "nxt_key": "K1",
-            "Occurs1": [candle_row("20261130", "352"), candle_row("20261127", "350")],
-        },
-    )
-    nh.reply(
-        API + "chart-daily",
-        {"nxt_key": "", "Occurs1": [candle_row("20261126", "349"), candle_row("20261127", "350")]},
+        {"nxt_key": "K1", "Occurs1": [*rows, candle_row("20261126", "349"), rows[1]]},
     )
     args = {"symbol": "A016C000", "period": {"start": "2026-11-01", "end": "2026-11-30"}}
     result = run(serve, world_with_key(nh), "get_candles", args)
@@ -139,9 +133,11 @@ def test_candles_follow_pages_merge_and_sort(serve: Serve) -> None:
     candles = result["data"]["candles"]
     assert [c["close"] for c in candles] == ["349", "350", "352"]
     assert candles[0]["at"] == "2026-11-26T00:00:00+09:00"
-    first, second = nh.requests[0][1], nh.requests[1][1]
-    assert (first["nxt_key"], first["req_qty"], first["nght_tp"]) == ("99999999", "200", "1")
-    assert second["nxt_key"] == "K1"
+    # 일봉 최대(999행)보다 적게 왔으니 기간을 다 받았다. nxt_key는 따르지 않는다.
+    [(path, sent)] = nh.requests
+    assert path == API + "chart-daily"
+    assert (sent["nxt_key"], sent["req_qty"], sent["nght_tp"]) == ("99999999", "999", "1")
+    assert (sent["inq_strt_dt"], sent["inq_ed_dt"]) == ("20261101", "20261130")
 
 
 def test_candles_reject_bad_period(serve: Serve) -> None:

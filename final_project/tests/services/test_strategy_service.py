@@ -5,20 +5,31 @@
 """
 
 import asyncio
+import hashlib
 import json
 import sqlite3
 from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
+from pathlib import Path
 
 import httpx2
 import pytest
 from fakes import T0, World
 
-from nh_mcp.domain import KST, JsonValue, RiskLimits, StrategyScope, UserId
+from nh_mcp.domain import (
+    KST,
+    JsonValue,
+    ModelHash,
+    RiskLimits,
+    StrategyScope,
+    Stream,
+    Streams,
+    UserId,
+)
 from nh_mcp.markets.domestic import DomesticMarket
 from nh_mcp.markets.domestic_master import DomesticMaster
-from nh_mcp.services.backtest import StrategyInvalid, code_hash, params_key
+from nh_mcp.services.backtest import MIXED, NO_MODEL, StrategyInvalid, code_hash, run_key
 from nh_mcp.services.orders import LimitsNotSet, RiskBlocked
 from nh_mcp.services.queries import UnknownSymbol
 from nh_mcp.services.strategy import (
@@ -35,9 +46,10 @@ from nh_mcp.store import limits, users
 from nh_mcp.store.backtests import SUCCESS, NewRun, RunKey, record
 
 SYMBOL = "A016C000"  # 코스피200 F 202612
+MINI = "A056C000"  # 미니코스피 F 202612
 SPREAD = "D016C73S"  # 코스피200 스프레드
 STOCK_FUTURE = "A0A6C000"  # 주식선물: 다른 종목
-CODE = "def on_bar(bar, history, params):\n    return 'none'\n"
+CODE = "def on_event(event, ctx):\n    return None\n"
 PARAMS: dict[str, JsonValue] = {"window": 3, "band": "0.02"}
 LIMITS = RiskLimits(Decimal("500000"), 3, 2)
 SCOPE = StrategyScope(
@@ -49,17 +61,21 @@ SCOPE = StrategyScope(
     on_loss="liquidate",
     mode="auto",
 )
-REQUEST = StrategyRequest(SYMBOL, CODE, PARAMS, "day", SCOPE)
+DAY: Streams = {SYMBOL: frozenset({"day"})}
+REQUEST = StrategyRequest(CODE, PARAMS, DAY, SCOPE)
+
+
+def streams(**chosen: list[Stream]) -> Streams:
+    return {symbol: frozenset(names) for symbol, names in chosen.items()}
 
 
 def key_for(
-    symbol: str = SYMBOL,
-    interval: str = "day",
+    chosen: Streams = DAY,
     code: str = CODE,
     params: dict[str, JsonValue] | None = None,
+    model: ModelHash | None = None,
 ) -> RunKey:
-    chosen = PARAMS if params is None else params
-    return RunKey("domestic", symbol, interval, code_hash(code), params_key(chosen))
+    return run_key(code, PARAMS if params is None else params, chosen, model)
 
 
 def add_run(conn: sqlite3.Connection, user: UserId, key: RunKey, status: str = SUCCESS) -> None:
@@ -81,8 +97,10 @@ def add_run(conn: sqlite3.Connection, user: UserId, key: RunKey, status: str = S
 class Desk:
     """한도를 정한 사용자, 같은 키의 성공한 백테스트 기록, 서비스."""
 
-    def __init__(self, with_limits: bool = True, with_run: bool = True) -> None:
-        self.world = World()
+    def __init__(
+        self, with_limits: bool = True, with_run: bool = True, data_dir: Path | None = None
+    ) -> None:
+        self.world = World(data_dir=data_dir)
         self.conn: sqlite3.Connection = self.world.conn
         clock = self.world.clock
         self.user: UserId = users.get_or_create(self.conn, "g-admin", "admin@example.com", T0)
@@ -93,7 +111,13 @@ class Desk:
             add_run(self.conn, self.user, key_for())
         master = DomesticMaster(clock, transport=httpx2.MockTransport(self.world.master))
         domestic = DomesticMarket(self.world.pool, master, clock)
-        self.service = StrategyService(self.conn, clock, domestic)
+        self.service = StrategyService(self.conn, clock, domestic, self.world.models)
+
+    def upload(self, user: UserId, content: bytes) -> ModelHash:
+        draft = self.world.models.draft(user)
+        draft.write(content)
+        assert asyncio.run(self.world.models.commit(user, draft, "model.pkl")) == "uploaded"
+        return ModelHash(hashlib.sha256(content).hexdigest())
 
     def tokens(self) -> list[tuple[str, str, str]]:
         """(용도, payload, 만료) 모두."""
@@ -130,10 +154,10 @@ def test_issues_strategy_token_with_full_scope() -> None:
     assert datetime.fromisoformat(expires) == result.expires_at
     assert json.loads(payload) == {
         "market": "domestic",
-        "symbol": SYMBOL,
-        "interval": "day",
+        "streams": {SYMBOL: ["day"]},
         "code_hash": code_hash(CODE),
         "params": '{"band":"0.02","window":3}',
+        "model_hash": None,
         "scope": {
             "quantity": 1,
             "max_position": 2,
@@ -145,18 +169,18 @@ def test_issues_strategy_token_with_full_scope() -> None:
         },
     }
     # 코드 원문은 토큰에 없다.
-    assert "on_bar" not in payload and CODE not in payload
+    assert "on_event" not in payload and CODE not in payload
     # 토큰 원문은 저장하지 않는다(감사 로그에도 없다).
     [(user, action, detail)] = desk.audits()
     assert (user, action) == (desk.user, "strategy.preview")
     assert detail == {
         "outcome": "issued",
-        "symbol": SYMBOL,
-        "interval": "day",
+        "streams": {SYMBOL: ["day"]},
         "code_hash": code_hash(CODE),
+        "model_hash": None,
     }
     assert result.confirm_token not in json.dumps(detail)
-    assert "on_bar" not in json.dumps(detail)
+    assert "on_event" not in json.dumps(detail)
 
 
 def test_summary_is_built_from_stored_values() -> None:
@@ -165,22 +189,23 @@ def test_summary_is_built_from_stored_values() -> None:
     result = go(desk)
 
     assert result.summary == (
-        "코스피200 F 202612 · 일봉 · 1회 1계약 · 최대 2계약 · 하루 10회 · "
+        "코스피200 F 202612 일봉 · 1회 1계약 · 최대 2계약 · 하루 10회 · "
         "일일 손실 300,000원 · 2026-12-08 09:00까지 · 손실 한도에서 정리 · 자동 모드"
     )
 
 
 def test_summary_for_minute_hold_suggest() -> None:
     desk = Desk()
-    add_run(desk.conn, desk.user, key_for(interval="minute"))
+    add_run(desk.conn, desk.user, key_for(streams(A016C000=["minute"])))
     expires = datetime(2026, 12, 3, 6, 45, 30, tzinfo=UTC)
     request = replace(
-        with_scope(on_loss="hold", mode="suggest", expires_at=expires), interval="minute"
+        with_scope(on_loss="hold", mode="suggest", expires_at=expires),
+        streams=streams(A016C000=["minute"]),
     )
 
     result = go(desk, request)
 
-    assert "1분봉" in result.summary
+    assert result.summary.startswith("코스피200 F 202612 1분봉 · ")
     assert result.summary.endswith(" · 2026-12-03 15:45까지 · 손실 한도에서 유지 · 제안 모드")
 
 
@@ -315,7 +340,9 @@ def test_requires_a_successful_backtest_with_the_same_key() -> None:
     changed_code = CODE + " "
     cases: list[tuple[str, StrategyRequest]] = [
         ("params", replace(REQUEST, params=other_params)),
-        ("interval", replace(REQUEST, interval="minute")),
+        ("interval", replace(REQUEST, streams=streams(A016C000=["minute"]))),
+        ("more streams", replace(REQUEST, streams=streams(A016C000=["day", "minute"]))),
+        ("more symbols", replace(REQUEST, streams=streams(A016C000=["day"], A056C000=["day"]))),
         ("code", replace(REQUEST, code=changed_code)),
     ]
     for name, request in cases:
@@ -338,7 +365,7 @@ def test_no_record_at_all_is_not_backtested() -> None:
     assert detail["outcome"] == "blocked" and detail["rule"] == NOT_BACKTESTED
 
 
-@pytest.mark.parametrize("status", ["cpu", "exception", "invalid_signal", "data_short"])
+@pytest.mark.parametrize("status", ["cpu", "exception", "invalid_output", "data_short"])
 def test_failed_runs_do_not_count(status: str) -> None:
     desk = Desk(with_run=False)
     add_run(desk.conn, desk.user, key_for(), status)
@@ -353,7 +380,7 @@ def test_another_symbol_is_not_backtested() -> None:
     desk = Desk()  # 기록은 SYMBOL 것
 
     with pytest.raises(RiskBlocked) as caught:
-        go(desk, replace(REQUEST, symbol=STOCK_FUTURE))
+        go(desk, replace(REQUEST, streams=streams(A0A6C000=["day"])))
 
     assert caught.value.rule == NOT_BACKTESTED
 
@@ -385,7 +412,7 @@ def test_not_a_future_is_invalid() -> None:
     desk = Desk()
 
     with pytest.raises(StrategyInvalid):
-        go(desk, replace(REQUEST, symbol=SPREAD))
+        go(desk, replace(REQUEST, streams=streams(D016C73S=["day"])))
     assert desk.tokens() == []
 
 
@@ -393,7 +420,7 @@ def test_unknown_symbol() -> None:
     desk = Desk()
 
     with pytest.raises(UnknownSymbol):
-        go(desk, replace(REQUEST, symbol="NOSUCH"))
+        go(desk, replace(REQUEST, streams=streams(NOSUCH=["day"])))
     assert desk.tokens() == []
 
 
@@ -402,4 +429,96 @@ def test_empty_code_is_invalid() -> None:
 
     with pytest.raises(StrategyInvalid):
         go(desk, replace(REQUEST, code=""))
+    assert desk.tokens() == []
+
+
+def test_two_symbols_in_any_order_match_one_backtest() -> None:
+    desk = Desk(with_run=False)
+    add_run(desk.conn, desk.user, key_for(streams(A016C000=["day", "minute"], A056C000=["day"])))
+    reordered = streams(A056C000=["day"], A016C000=["minute", "day"])
+
+    result = go(desk, replace(REQUEST, streams=reordered))
+
+    assert result.summary.startswith(
+        "코스피200 F 202612 일봉+1분봉, 미니코스피 F 202612 일봉 · 1회 1계약 · "
+    )
+    [(_, payload, _)] = desk.tokens()
+    assert json.loads(payload)["streams"] == {SYMBOL: ["day", "minute"], MINI: ["day"]}
+
+
+def test_a_tick_run_backtest_lets_the_same_tick_streams_through() -> None:
+    desk = Desk(with_run=False)
+    ticking = streams(A016C000=["tick", "book", "day"])
+    add_run(desk.conn, desk.user, key_for(ticking))
+
+    for other in (streams(A016C000=["tick", "day"]), streams(A016C000=["day"])):
+        with pytest.raises(RiskBlocked) as caught:
+            go(desk, replace(REQUEST, streams=other))
+        assert caught.value.rule == NOT_BACKTESTED
+    result = go(desk, replace(REQUEST, streams=streams(A016C000=["day", "book", "tick"])))
+
+    assert result.summary.startswith("코스피200 F 202612 호가(book)+일봉+체결(tick) · 1회 1계약")
+    [(_, payload, _)] = desk.tokens()
+    assert json.loads(payload)["streams"] == {SYMBOL: ["book", "day", "tick"]}
+
+
+@pytest.mark.parametrize(
+    "chosen",
+    [
+        streams(A016C000=["tick", "minute"]),
+        streams(A016C000=["book"], A056C000=["minute"]),
+    ],
+)
+def test_minute_with_tick_streams_is_refused(chosen: Streams) -> None:
+    desk = Desk()
+
+    with pytest.raises(StrategyInvalid) as caught:
+        go(desk, replace(REQUEST, streams=chosen))
+
+    assert caught.value.message == MIXED
+    assert desk.tokens() == []
+
+
+def test_model_hash_must_be_the_one_backtested(tmp_path: Path) -> None:
+    desk = Desk(with_run=False, data_dir=tmp_path)
+    used, other = desk.upload(desk.user, b"model used"), desk.upload(desk.user, b"other model")
+    add_run(desk.conn, desk.user, key_for(model=used))
+
+    for request in (REQUEST, replace(REQUEST, model=other)):
+        with pytest.raises(RiskBlocked) as caught:
+            go(desk, request)
+        assert caught.value.rule == NOT_BACKTESTED
+
+    result = go(desk, replace(REQUEST, model=used))
+
+    [(_, payload, _)] = desk.tokens()
+    assert json.loads(payload)["model_hash"] == used
+    assert f"모델 {used[:12]}" in result.summary
+    assert desk.audits()[-1][2]["model_hash"] == used
+
+
+def test_model_deleted_after_the_backtest_blocks_the_preview(tmp_path: Path) -> None:
+    desk = Desk(with_run=False, data_dir=tmp_path)
+    used = desk.upload(desk.user, b"model used")
+    add_run(desk.conn, desk.user, key_for(model=used))
+    assert desk.world.models.delete(desk.user, used)
+
+    with pytest.raises(StrategyInvalid) as caught:
+        go(desk, replace(REQUEST, model=used))
+
+    assert caught.value.message == NO_MODEL
+    assert "그런 모델 파일이 없습니다" in caught.value.message
+    assert desk.tokens() == []
+
+
+def test_another_users_model_is_a_missing_one(tmp_path: Path) -> None:
+    desk = Desk(with_run=False, data_dir=tmp_path)
+    theirs = desk.upload(desk.other, b"their model")
+    # 다른 사용자의 해시로 백테스트 기록이 있어도(같은 해시를 키로) 내 모델이 아니면 막는다.
+    add_run(desk.conn, desk.user, key_for(model=theirs))
+
+    with pytest.raises(StrategyInvalid) as caught:
+        go(desk, replace(REQUEST, model=theirs))
+
+    assert caught.value.message == NO_MODEL
     assert desk.tokens() == []

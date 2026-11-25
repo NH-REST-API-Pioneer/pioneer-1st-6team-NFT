@@ -1,10 +1,11 @@
 """실행 승인 미리보기: 전략을 켜도 되는 범위인지 보고, 통과하면 2분짜리 확인 토큰을 발급한다.
 
-검사 순서(하나라도 막히면 거기서 끝): 코드·파라미터 크기 → 국내 선물 종목 → 한도 있음 →
-범위 ≤ 한도 → 횟수·만료 범위 → 같은 사용자·종목·봉 간격·코드·파라미터의 성공한 백테스트.
-토큰에는 승인 범위 전체를 담는다. 코드 원문은 넣지 않고 해시만 넣는다
+검사 순서(하나라도 막히면 거기서 끝): 코드·파라미터 크기·흐름 모양 → 국내 선물 종목 → 한도 있음 →
+범위 ≤ 한도 → 횟수·만료 범위 → 모델 파일이 아직 있음 → 같은 사용자·흐름·코드·파라미터·모델의
+성공한 백테스트.
+토큰에는 흐름과 승인 범위 전체를 담는다. 코드 원문은 넣지 않고 해시만 넣는다
 (원문은 `backtest_runs`에 있다).
-M3에는 이 토큰을 쓰는 곳이 없다. M4의 `start_strategy`가 소진한다.
+아직 이 토큰을 쓰는 곳이 없다. M4b의 `start_strategy`가 소진한다.
 """
 
 import json
@@ -16,21 +17,28 @@ from decimal import Decimal
 from nh_mcp.domain import (
     KST,
     Clock,
+    Contract,
     JsonValue,
+    ModelHash,
     OnLoss,
     RiskLimits,
     StrategyMode,
     StrategyScope,
+    Streams,
     UserId,
 )
 from nh_mcp.guard.risk import LIMITS_NOT_SET
-from nh_mcp.markets.domestic import DomesticMarket, Interval
+from nh_mcp.markets.domestic import DomesticMarket
+from nh_mcp.models.store import ModelStore
 from nh_mcp.services.backtest import (
-    NOT_FUTURE,
+    NO_MODEL,
+    STREAM_NAMES,
     StrategyInvalid,
     check_strategy,
-    code_hash,
-    params_key,
+    check_streams,
+    futures,
+    run_key,
+    streams_data,
 )
 from nh_mcp.services.orders import LimitsNotSet, RiskBlocked
 from nh_mcp.services.queries import QueryService
@@ -44,7 +52,6 @@ MAX_APPROVAL = timedelta(days=7)
 SCOPE_EXCEEDS_LIMITS = "scope_exceeds_limits"
 NOT_BACKTESTED = "not_backtested"
 
-INTERVAL_NAMES: dict[Interval, str] = {"day": "일봉", "minute": "1분봉"}
 ON_LOSS_NAMES: dict[OnLoss, str] = {
     "liquidate": "손실 한도에서 정리",
     "hold": "손실 한도에서 유지",
@@ -52,18 +59,22 @@ ON_LOSS_NAMES: dict[OnLoss, str] = {
 MODE_NAMES: dict[StrategyMode, str] = {"auto": "자동 모드", "suggest": "제안 모드"}
 AUDIT_ACTION = "strategy.preview"
 NO_BACKTEST = (
-    "이 코드와 파라미터, 종목, 봉 간격으로 성공한 백테스트가 없습니다. "
+    "이 코드와 파라미터, 흐름(종목과 minute·day·tick·book), 모델 파일로 성공한 백테스트가 "
+    "없습니다. "
     "먼저 같은 값으로 backtest_strategy를 돌리세요."
 )
+# 요약에 보여 줄 모델 해시 앞자리 수.
+MODEL_PREFIX = 12
 
 
 @dataclass(frozen=True)
 class StrategyRequest:
-    symbol: str
     code: str
     params: dict[str, JsonValue]
-    interval: Interval
+    streams: Streams
     scope: StrategyScope
+    # 백테스트에 쓴 모델 파일의 해시. 없으면 모델 없는 전략이다.
+    model: ModelHash | None = None
 
 
 @dataclass(frozen=True)
@@ -121,10 +132,10 @@ def _payload(request: StrategyRequest, key: RunKey) -> str:
     scope = request.scope
     values: dict[str, JsonValue] = {
         "market": "domestic",
-        "symbol": request.symbol,
-        "interval": request.interval,
+        "streams": streams_data(request.streams),
         "code_hash": key.code_hash,
         "params": key.params,
+        "model_hash": key.model_hash,
         "scope": {
             "quantity": scope.quantity,
             "max_position": scope.max_position,
@@ -138,14 +149,23 @@ def _payload(request: StrategyRequest, key: RunKey) -> str:
     return json.dumps(values, sort_keys=True, ensure_ascii=False)
 
 
-def _summary(name: str, request: StrategyRequest) -> str:
+def _subjects(contracts: list[Contract], streams: Streams) -> str:
+    """종목 이름과 흐름. 예: "코스피200 F 202612 1분봉, 미니코스피 F 202612 일봉+1분봉"."""
+    return ", ".join(
+        c.name + " " + "+".join(STREAM_NAMES[name] for name in sorted(streams[c.symbol]))
+        for c in contracts
+    )
+
+
+def _summary(contracts: list[Contract], request: StrategyRequest) -> str:
     """승인 범위를 사람이 읽을 문장으로. 저장하는 값에서 서버가 만든다."""
     scope = request.scope
     until = scope.expires_at.astimezone(KST).strftime("%Y-%m-%d %H:%M")
+    model = [] if request.model is None else [f"모델 {request.model[:MODEL_PREFIX]}"]
     return " · ".join(
         [
-            name,
-            INTERVAL_NAMES[request.interval],
+            _subjects(contracts, request.streams),
+            *model,
             f"1회 {scope.quantity}계약",
             f"최대 {scope.max_position}계약",
             f"하루 {scope.daily_orders}회",
@@ -169,43 +189,44 @@ def _failure(exc: Exception) -> dict[str, JsonValue]:
 
 
 class StrategyService:
-    def __init__(self, conn: sqlite3.Connection, clock: Clock, domestic: DomesticMarket) -> None:
+    def __init__(
+        self, conn: sqlite3.Connection, clock: Clock, domestic: DomesticMarket, models: ModelStore
+    ) -> None:
         self._conn = conn
         self._clock = clock
         self._queries = QueryService(domestic)
+        self._models = models
 
     async def preview(self, user_id: UserId, request: StrategyRequest) -> StrategyPreview:
         """검사를 통과하면 승인 범위 전체를 담은 확인 토큰을 발급한다. 전략은 켜지 않는다."""
-        key = RunKey(
-            "domestic",
-            request.symbol,
-            request.interval,
-            code_hash(request.code),
-            params_key(request.params),
-        )
+        key = run_key(request.code, request.params, request.streams, request.model)
         detail: dict[str, JsonValue] = {
-            "symbol": request.symbol,
-            "interval": request.interval,
+            "streams": streams_data(request.streams),
             "code_hash": key.code_hash,
+            "model_hash": key.model_hash,
         }
         try:
-            name = await self._check(user_id, request, key)
+            contracts = await self._check(user_id, request, key)
             new = NewToken(user_id, "strategy", _payload(request, key))
             token, expires_at = confirm_tokens.issue(self._conn, new, self._clock(), STRATEGY_TTL)
         except Exception as exc:
             self._audit(user_id, detail | _failure(exc))
             raise
         self._audit(user_id, detail | {"outcome": "issued"})
-        return StrategyPreview(key.code_hash, _summary(name, request), token, expires_at)
+        return StrategyPreview(key.code_hash, _summary(contracts, request), token, expires_at)
 
-    async def _check(self, user_id: UserId, request: StrategyRequest, key: RunKey) -> str:
-        """스펙의 검사 순서. 통과하면 종목 이름."""
-        problem = check_strategy(request.code, request.params) or _form_problem(request.scope)
+    async def _check(
+        self, user_id: UserId, request: StrategyRequest, key: RunKey
+    ) -> list[Contract]:
+        """스펙의 검사 순서. 통과하면 종목들(종목코드 순)."""
+        problem = (
+            check_strategy(request.code, request.params)
+            or check_streams(request.streams)
+            or _form_problem(request.scope)
+        )
         if problem is not None:
             raise StrategyInvalid(problem)
-        contract = await self._queries.contract(request.symbol)
-        if contract.kind != "future":
-            raise StrategyInvalid(NOT_FUTURE)
+        contracts = await futures(self._queries, request.streams)
         limit = limits.get(self._conn, user_id, "domestic")
         if limit is None:
             raise LimitsNotSet()
@@ -217,9 +238,12 @@ class StrategyService:
         problem = _range_problem(request.scope, self._clock())
         if problem is not None:
             raise StrategyInvalid(problem)
+        # 백테스트한 뒤에 지운 모델 파일로는 켤 수 없다(모르면 막는다).
+        if request.model is not None and not self._models.exists(user_id, request.model):
+            raise StrategyInvalid(NO_MODEL)
         if not backtests.has_success(self._conn, user_id, key):
             raise RiskBlocked(NOT_BACKTESTED, NO_BACKTEST)
-        return contract.name
+        return contracts
 
     def _audit(self, user_id: UserId, detail: dict[str, JsonValue]) -> None:
         audit.record(self._conn, user_id, AUDIT_ACTION, detail, self._clock())

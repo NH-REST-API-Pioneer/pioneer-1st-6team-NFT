@@ -46,6 +46,16 @@ class Settings:
     # 주문 차단 스위치. 꺼져 있으면 주문 도구를 등록하지 않고 서비스도 거부한다.
     orders_enabled: bool = False
 
+    @property
+    def models_dir(self) -> Path:
+        """사용자가 올린 모델 파일을 두는 폴더. DB 파일과 같은 곳(배포는 /data 볼륨)이다."""
+        return self.db_path.parent / "models"
+
+    @property
+    def ticks_db_path(self) -> Path:
+        """저장한 틱·호가(`ticks.db`). 쓰기가 잦아 주 DB와 나누되 같은 폴더(배포는 /data 볼륨)다."""
+        return self.db_path.parent / "ticks.db"
+
 
 def load_settings(environ: Mapping[str, str]) -> Settings:
     def required(name: str) -> str:

@@ -17,7 +17,7 @@ from nh_mcp.domain import (
     Quote,
     UserId,
 )
-from nh_mcp.markets.domestic import DomesticMarket, Interval, NoSuchSymbol
+from nh_mcp.markets.domestic import CandleSeries, DomesticMarket, Interval, NoSuchSymbol
 from nh_mcp.markets.domestic_master import MasterUnavailable
 from nh_mcp.nh.client import NoResponse, Rejected
 from nh_mcp.nh.clients import KeyNotRegistered
@@ -87,6 +87,17 @@ class QueryService:
         period: tuple[date, date],
         limit: int,
     ) -> list[Candle]:
+        return (await self.candle_series(user_id, symbol, interval, period, limit)).candles
+
+    async def candle_series(
+        self,
+        user_id: UserId,
+        symbol: str,
+        interval: Interval,
+        period: tuple[date, date],
+        limit: int,
+    ) -> CandleSeries:
+        """봉과, 기간 앞쪽까지 다 받았는지. 백테스트는 다 받지 못한 흐름을 알린다."""
         await self.contract(symbol)
         return await call_nh(self._domestic.candles(user_id, symbol, interval, period, limit))
 

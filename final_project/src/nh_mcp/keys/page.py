@@ -3,6 +3,7 @@
 키는 끝 4자리만 보여 준다. 사용자가 넣은 값을 화면에 되돌려 보여 주지 않는다.
 """
 
+from collections.abc import Awaitable, Callable
 from html import escape
 
 from fastmcp import FastMCP
@@ -11,11 +12,13 @@ from starlette.responses import HTMLResponse, RedirectResponse, Response
 
 from nh_mcp.auth.pages import checked_form, csrf_input, form_field, html_page
 from nh_mcp.auth.web import KEYS_PATH, LOGIN_PATH, LOGOUT_PATH, GoogleWebLogin, WebUser
-from nh_mcp.domain import Market
+from nh_mcp.domain import Market, UserId
 from nh_mcp.keys.service import KeyNotAccepted, KeyStore, KeySummary
 from nh_mcp.nh.client import Credentials
 
 REGISTER_PATH = "/keys/register"
+# 모델 파일 화면(nh_mcp.models.page.MODELS_PATH). keys는 models를 import하지 않는다.
+MODELS_PATH = "/models"
 DELETE_PATH = "/keys/delete"
 MARKET_NAMES: dict[Market, str] = {"domestic": "국내", "overseas": "해외"}
 RESULTS = {
@@ -73,6 +76,8 @@ def render(user: WebUser, keys: list[KeySummary], result: str | None) -> HTMLRes
 {csrf_input(user)}
 <button type='submit'>등록한 키를 모두 지우기</button>
 </form>
+<h2>모델 파일</h2>
+<p>전략에 쓸 학습 모델은 <a href='{MODELS_PATH}'>모델 파일 화면</a>에서 올립니다.</p>
 <form method='post' action='{LOGOUT_PATH}'>
 {csrf_input(user)}
 <button type='submit'>로그아웃</button>
@@ -81,10 +86,16 @@ def render(user: WebUser, keys: list[KeySummary], result: str | None) -> HTMLRes
     return _html(body)
 
 
+# 키를 모두 지우고 그 사용자의 연결(NH 클라이언트, 틱 저장)을 끊는 일. 서버 조립이 넣어 준다
+# (services.connection.ConnectionService.disconnect, keys는 services를 import하지 않는다).
+type Disconnect = Callable[[UserId], Awaitable[None]]
+
+
 class KeysPage:
-    def __init__(self, login: GoogleWebLogin, store: KeyStore) -> None:
+    def __init__(self, login: GoogleWebLogin, store: KeyStore, disconnect: Disconnect) -> None:
         self._login = login
         self._store = store
+        self._disconnect = disconnect
 
     async def show(self, request: Request) -> Response:
         user = self._login.current_user(request)
@@ -112,7 +123,7 @@ class KeysPage:
         checked = await checked_form(self._login, request)
         if checked is None:
             return _html("<p>요청이 맞지 않습니다. 다시 로그인해 주세요.</p>", status=403)
-        self._store.delete_all(checked[0].user_id)
+        await self._disconnect(checked[0].user_id)
         return RedirectResponse(f"{KEYS_PATH}?result=deleted", status_code=303)
 
 

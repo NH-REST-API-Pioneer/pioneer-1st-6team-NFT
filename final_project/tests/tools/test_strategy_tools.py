@@ -5,6 +5,7 @@ NH는 가짜(녹화한 product-detail, 일봉 행은 명세 필드로 만든 것
 """
 
 import asyncio
+import hashlib
 import json
 from datetime import timedelta
 from decimal import Decimal
@@ -18,7 +19,7 @@ from fakes import ADMIN, T0, FakeNH, World
 from fastmcp import Client
 from mcp_types import Tool
 
-from nh_mcp.domain import KST, RiskLimits
+from nh_mcp.domain import KST, ModelHash, RiskLimits
 from nh_mcp.markets.domestic import CHART_DAILY
 from nh_mcp.markets.domestic_products import PRODUCT_DETAIL
 from nh_mcp.nh.client import Credentials
@@ -28,9 +29,10 @@ from nh_mcp.services.backtest import code_hash
 from nh_mcp.store import limits, users
 
 RECORDED = Path(__file__).resolve().parents[1] / "fixtures" / "nh" / "domestic"
-SYMBOL = "A016C000"
-CODE = "def on_bar(bar, history, params):\n    return 'none'\n"
-PERIOD = {"interval": "day", "start": "2026-11-02", "end": "2026-11-30"}
+SYMBOL = "A016C000"  # 코스피200 F 202612
+MINI = "A056C000"  # 미니코스피 F 202612
+CODE = "def on_event(event, ctx):\n    return None\n"
+DAY = {SYMBOL: ["day"]}
 PRICES = [("780.00", "781.00"), ("782.00", "779.50"), ("779.00", "783.25"), ("784.00", "786.00")]
 EXPIRES = (T0 + timedelta(days=2)).astimezone(KST).isoformat(timespec="seconds")
 SCOPE: dict[str, Any] = {
@@ -64,11 +66,13 @@ def chart_rows() -> dict[str, object]:
     return {"nrec": f"{len(rows):04d}", "nxt_key": "", "Occurs1": rows[::-1]}
 
 
-def lab(orders_enabled: bool = True, with_limits: bool = True) -> World:
+def lab(
+    orders_enabled: bool = True, with_limits: bool = True, data_dir: Path | None = None
+) -> World:
     nh = FakeNH()
     nh.reply(PRODUCT_DETAIL, recorded("product-detail"))
     nh.reply(CHART_DAILY, chart_rows())
-    world = World(nh=httpx2.MockTransport(nh), orders_enabled=orders_enabled)
+    world = World(nh=httpx2.MockTransport(nh), orders_enabled=orders_enabled, data_dir=data_dir)
     user = users.get_or_create(world.conn, "g-admin", ADMIN, T0)
     credentials = Credentials("fake-app-key-0000", "fake-app-secret-0000")
     asyncio.run(world.store.register(user, "domestic", credentials))
@@ -78,19 +82,22 @@ def lab(orders_enabled: bool = True, with_limits: bool = True) -> World:
 
 
 def strategy(**changes: object) -> dict[str, Any]:
-    return {"code": CODE, "params": {"window": 3}, "interval": "day"} | changes
+    return {"code": CODE, "params": {"window": 3}, "streams": DAY} | changes
 
 
 def preview_args(**changes: object) -> dict[str, Any]:
-    base: dict[str, Any] = {"symbol": SYMBOL, "strategy": strategy(), "scope": SCOPE}
+    base: dict[str, Any] = {"strategy": strategy(), "scope": SCOPE}
     return base | changes
 
 
-def backtest_args() -> dict[str, Any]:
+def backtest_args(streams: dict[str, list[str]] | None = None) -> dict[str, Any]:
     return {
-        "symbol": SYMBOL,
         "strategy": {"code": CODE, "params": {"window": 3}},
-        "period": PERIOD,
+        "data": {
+            "streams": DAY if streams is None else streams,
+            "start": "2026-11-02",
+            "end": "2026-11-30",
+        },
     }
 
 
@@ -134,7 +141,10 @@ def test_preview_strategy_is_listed_with_orders_on(serve: Serve) -> None:
     assert tool.description is not None
     assert "start_strategy가 아직 없다" in tool.description
     assert "backtest_strategy" in tool.description
-    assert set(tool.input_schema["properties"]) == {"symbol", "strategy", "scope", "market"}
+    assert set(tool.input_schema["properties"]) == {"strategy", "scope", "market"}
+    draft = tool.input_schema["properties"]["strategy"]
+    assert set(draft["properties"]) == {"code", "params", "streams", "model"}
+    assert set(draft["required"]) == {"code", "streams"}
 
 
 def test_end_to_end_backtest_then_preview(serve: Serve) -> None:
@@ -154,7 +164,7 @@ def test_end_to_end_backtest_then_preview(serve: Serve) -> None:
     assert set(data) == {"confirm_token", "code_hash", "summary", "expires_at"}
     assert data["code_hash"] == code_hash(CODE) == backtest["data"]["code_hash"]
     assert data["summary"] == (
-        "코스피200 F 202612 · 일봉 · 1회 1계약 · 최대 2계약 · 하루 10회 · "
+        "코스피200 F 202612 일봉 · 1회 1계약 · 최대 2계약 · 하루 10회 · "
         f"일일 손실 300,000원 · {EXPIRES[:10]} {EXPIRES[11:16]}까지 · "
         "손실 한도에서 정리 · 자동 모드"
     )
@@ -192,7 +202,7 @@ def test_limits_not_set(serve: Serve) -> None:
 
 
 def test_unknown_symbol_is_invalid(serve: Serve) -> None:
-    result = preview(serve, lab(), preview_args(symbol="NOSUCH"))
+    result = preview(serve, lab(), preview_args(strategy=strategy(streams={"NOSUCH": ["day"]})))
 
     assert result["error"]["code"] == "INVALID_INPUT"
 
@@ -216,7 +226,10 @@ def test_unknown_symbol_is_invalid(serve: Serve) -> None:
         preview_args(scope=SCOPE | {"daily_orders": 0}),
         preview_args(scope=SCOPE | {"daily_orders": 101}),
         preview_args(scope=SCOPE | {"daily_orders": 1.5}),
-        preview_args(strategy=strategy(interval="week")),
+        preview_args(strategy=strategy(streams={SYMBOL: ["week"]})),
+        # tick은 이제 받지만 minute과는 같이 못 쓴다.
+        preview_args(strategy=strategy(streams={SYMBOL: ["tick", "minute"]})),
+        preview_args(strategy=strategy(streams={})),
         preview_args(strategy=strategy(code="")),
         preview_args(strategy=strategy(params={"band": 0.02})),
         preview_args(market="overseas"),
@@ -277,3 +290,84 @@ def test_rate_limited_before_anything_else(serve: Serve) -> None:
     assert [r["error"]["code"] for r in results[:limit]] == ["INVALID_INPUT"] * limit
     assert results[limit]["error"]["code"] == "TEMPORARILY_UNAVAILABLE"
     assert results[limit]["error"]["retryable"] is True
+
+
+def test_backtest_with_other_streams_does_not_unlock_the_preview(serve: Serve) -> None:
+    world = lab()
+    other_streams = [
+        {SYMBOL: ["minute"]},
+        {SYMBOL: ["day", "minute"]},
+        {SYMBOL: ["day"], MINI: ["day"]},
+    ]
+
+    results = asyncio.run(
+        _calls(
+            serve,
+            world,
+            [("backtest_strategy", backtest_args())]
+            + [
+                ("preview_strategy", preview_args(strategy=strategy(streams=s)))
+                for s in other_streams
+            ],
+        )
+    )
+
+    assert results[0]["ok"] is True
+    for result in results[1:]:
+        assert result["error"]["code"] == "RISK_BLOCKED", result
+        assert result["error"]["rule"] == "not_backtested"
+
+
+def test_same_streams_in_another_order_unlock_the_preview(serve: Serve) -> None:
+    world = lab()
+    tested = {SYMBOL: ["day"], MINI: ["day"]}
+    reordered = {MINI: ["day"], SYMBOL: ["day"]}
+
+    backtest, result = asyncio.run(
+        _calls(
+            serve,
+            world,
+            [
+                ("backtest_strategy", backtest_args(tested)),
+                ("preview_strategy", preview_args(strategy=strategy(streams=reordered))),
+            ],
+        )
+    )
+
+    assert backtest["ok"] is True, backtest
+    assert result["ok"] is True, result
+    assert result["data"]["summary"].startswith(
+        "코스피200 F 202612 일봉, 미니코스피 F 202612 일봉 · "
+    )
+
+
+def test_preview_needs_the_backtested_model_and_its_file(serve: Serve, tmp_path: Path) -> None:
+    world = lab(data_dir=tmp_path)
+    user = users.get_or_create(world.conn, "g-admin", ADMIN, T0)
+    draft = world.models.draft(user)
+    draft.write(b"model bytes")
+    asyncio.run(world.models.commit(user, draft, "model.pkl"))
+    sha256 = ModelHash(hashlib.sha256(b"model bytes").hexdigest())
+    backtest = backtest_args()
+    backtest["strategy"]["model"] = sha256
+    with_model = preview_args(strategy=strategy(model=sha256))
+
+    done, without, matched = asyncio.run(
+        _calls(
+            serve,
+            world,
+            [
+                ("backtest_strategy", backtest),
+                ("preview_strategy", preview_args()),
+                ("preview_strategy", with_model),
+            ],
+        )
+    )
+    world.models.delete(user, sha256)
+    [deleted] = asyncio.run(_calls(serve, world, [("preview_strategy", with_model)]))
+
+    assert done["ok"] is True, done
+    assert without["error"]["rule"] == "not_backtested"
+    assert matched["ok"] is True, matched
+    assert deleted["ok"] is False and deleted["error"]["code"] == "INVALID_INPUT"
+    assert deleted["error"]["message"].startswith("그런 모델 파일이 없습니다")

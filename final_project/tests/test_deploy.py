@@ -9,6 +9,7 @@ import re
 from pathlib import Path
 
 import httpx2
+import pytest
 import uvicorn
 from conftest import Serve
 from fakes import World
@@ -16,12 +17,14 @@ from starlette.applications import Starlette
 
 from nh_mcp.config import load_settings
 from nh_mcp.server import run_options
+from nh_mcp.tools.contract import LIBRARIES, PYTHON
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPOSE = (ROOT / "deploy" / "compose.yaml").read_text(encoding="utf-8")
 DOCKERFILE = (ROOT / "deploy" / "Dockerfile").read_text(encoding="utf-8")
 DOCKERIGNORE = (ROOT / ".dockerignore").read_text(encoding="utf-8")
 EXECUTOR_DOCKERFILE = (ROOT / "deploy" / "executor.Dockerfile").read_text(encoding="utf-8")
+SANDBOX_DOCKERFILE = (ROOT / "deploy" / "sandbox.Dockerfile").read_text(encoding="utf-8")
 SECRETS = ("GOOGLE_CLIENT_SECRET", "KEY_ENCRYPTION_KEY", "TUNNEL_TOKEN")
 
 
@@ -165,10 +168,11 @@ def test_compose_passes_the_orders_switch_and_keeps_it_off_by_default() -> None:
     assert "ORDERS_ENABLED=false" in code_lines(env_example)
 
 
-def test_browser_form_through_the_https_tunnel_is_not_refused(serve: Serve) -> None:
+@pytest.mark.parametrize("path", ["/keys/register", "/models/upload", "/models/delete"])
+def test_browser_form_through_the_https_tunnel_is_not_refused(serve: Serve, path: str) -> None:
     """Tunnel 뒤의 서버는 http로 받지만 브라우저는 https Origin을 보낸다.
 
-    배포했을 때 키 등록 폼이 이것 때문에 막혔다.
+    배포했을 때 키 등록 폼이 이것 때문에 막혔다. 모델 파일 화면의 폼도 같다.
     """
     options = run_options(PUBLIC)
     world = World()
@@ -182,7 +186,7 @@ def test_browser_form_through_the_https_tunnel_is_not_refused(serve: Serve) -> N
             ) as url,
             httpx2.AsyncClient() as http,
         ):
-            form = url.removesuffix("/mcp") + "/keys/register"
+            form = url.removesuffix("/mcp") + path
             headers = {"Host": "mcp.example.com"}
             ours = await http.post(form, headers={**headers, "Origin": "https://mcp.example.com"})
             evil = await http.post(form, headers={**headers, "Origin": "https://evil.example.com"})
@@ -301,6 +305,81 @@ def test_strategy_image_is_built_by_its_own_profile_service() -> None:
     assert any("deploy/sandbox.Dockerfile" in ln for ln in image)
     assert any("image: nh-mcp-sandbox:latest" in ln for ln in image)
     assert list_items(image, "profiles") == ["build"]
+
+
+def run_commands(dockerfile: str) -> list[list[str]]:
+    """RUN 명령마다 단어 목록. 줄 끝 `\\`로 이은 줄은 하나로 합친다."""
+    joined = re.sub(r"\\\n", " ", "\n".join(code_lines(dockerfile)))
+    return [line.split()[1:] for line in joined.splitlines() if line.startswith("RUN ")]
+
+
+def pip_installs(dockerfile: str) -> list[tuple[list[str], list[str]]]:
+    """`pip install`마다 (옵션 단어들, 설치할 것들)."""
+    installs: list[tuple[list[str], list[str]]] = []
+    for words in run_commands(dockerfile):
+        if words[:2] != ["pip", "install"]:
+            continue
+        options: list[str] = []
+        packages: list[str] = []
+        rest = iter(words[2:])
+        for word in rest:
+            if word == "&&":
+                break
+            if word.startswith("-"):
+                options.append(word)
+                if word in ("--index-url", "--extra-index-url"):
+                    options.append(next(rest))
+            else:
+                packages.append(word)
+        installs.append((options, packages))
+    return installs
+
+
+def test_strategy_image_pins_every_library_exactly() -> None:
+    """전략 코드가 쓸 수 있는 라이브러리는 이 목록이고, 모두 정확한 버전으로 고정한다."""
+    installs = pip_installs(SANDBOX_DOCKERFILE)
+    packages = [pkg for _, pkgs in installs for pkg in pkgs]
+    assert sorted(pkg.split("==")[0] for pkg in packages) == [
+        "lightgbm",
+        "numpy",
+        "pandas",
+        "scikit-learn",
+        "scipy",
+        "statsmodels",
+        "torch",
+    ]
+    for pkg in packages:
+        assert re.fullmatch(r"[a-z][a-z-]*==\d+(\.\d+)+(\+cpu)?", pkg), pkg
+    for options, _ in installs:
+        assert "--no-cache-dir" in options
+        assert "--extra-index-url" not in options
+
+
+def test_contract_lists_the_libraries_the_strategy_image_pins() -> None:
+    """strategy://contract가 알리는 Python과 라이브러리 버전이 전략 이미지의 것과 같다."""
+    packages = [pkg for _, pkgs in pip_installs(SANDBOX_DOCKERFILE) for pkg in pkgs]
+    pinned = sorted(tuple(pkg.split("==")) for pkg in packages)
+    assert pinned == sorted(LIBRARIES)
+    [base] = [ln.split()[1] for ln in code_lines(SANDBOX_DOCKERFILE) if ln.startswith("FROM ")]
+    assert base == f"python:{PYTHON}-slim"
+
+
+def test_strategy_image_takes_torch_only_from_the_cpu_index() -> None:
+    """PyPI의 torch는 CUDA 라이브러리를 끌어온다. CPU 휠 색인 하나에서만 받는다."""
+    [(options, packages)] = [
+        (opts, pkgs) for opts, pkgs in pip_installs(SANDBOX_DOCKERFILE) if "--index-url" in opts
+    ]
+    assert options == ["--no-cache-dir", "--index-url", "https://download.pytorch.org/whl/cpu"]
+    assert len(packages) == 1 and re.fullmatch(r"torch==[\d.]+\+cpu", packages[0])
+
+
+def test_strategy_image_adds_only_openmp_from_apt() -> None:
+    """lightgbm이 실행할 때 쓰는 libgomp만 더한다. 추천 패키지와 패키지 목록은 남기지 않는다."""
+    apt = [" ".join(words) for words in run_commands(SANDBOX_DOCKERFILE) if "apt-get" in words]
+    assert apt == [
+        "apt-get update && apt-get install -y --no-install-recommends libgomp1"
+        " && rm -rf /var/lib/apt/lists/*"
+    ]
 
 
 def test_docker_gid_is_documented_in_the_env_example() -> None:

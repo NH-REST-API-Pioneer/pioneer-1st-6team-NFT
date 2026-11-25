@@ -44,10 +44,12 @@ ORDER, CANCEL, ORDERABLE_QTY = API + "order", API + "cancel", API + "orderable-q
 
 DAY_EXCHANGE = "KSP"
 DAY_SESSION = "1"
-# 한 번에 많이 요청하면 응답이 오지 않은 적이 있어
-# 명세 최대(분 2000, 일 999)보다 작게 나눠 받는다. (제안)
-CHART_CHUNK = 500
-# 페이지를 끝없이 따라가지 않는다. (제안)
+# 차트 한 번에 오는 최대 행 수(명세 최대, nh-api.md). 분봉은 Q26 측정으로도 2000이다.
+# 이보다 적게 오면 요청한 기간을 다 받은 것이다. 일봉 최대를 측정하지 못해 명세의 작은 값을 쓴다.
+CHART_PAGE_ROWS: dict[Interval, int] = {"minute": 2000, "day": 999}
+# 끝 날짜를 옮기며 받는 횟수 상한. 1분봉 25,000개는 하루치(약 411봉)가 겹쳐도 16번이면 된다.
+CHART_MAX_PAGES = 20
+# nxt_key 페이지를 끝없이 따라가지 않는다. (제안)
 MAX_PAGES = 20
 CHART_START_KEY = "99999999"
 OPEN_ORDERS = "2"  # exec_div: 미체결
@@ -158,6 +160,32 @@ def parse_candles(body: JsonObject, interval: Interval) -> list[Candle]:
         # 명세 이름은 "누적거래량"이지만 녹화(2026-11-24)로 보니 봉 하나의 거래량이다.
         candles.append(Candle(at, o, h, low, c, _int(row, "occurs1_cum_trd_qty")))
     return candles
+
+
+@dataclass(frozen=True)
+class CandleSeries:
+    """기간 안 봉(오래된 것부터, 많아야 limit개)과, 기간 앞쪽까지 다 받았는지.
+
+    complete가 False면 NH가 더 과거를 주지 않았거나(진전 없음) 요청 상한(CHART_MAX_PAGES)에
+    닿아 시작일까지 닿지 못했다. limit개를 채워 멈춘 것은 complete다(가장 최근 limit개를 원했다).
+    """
+
+    candles: list[Candle]
+    complete: bool
+
+
+def _chart_request(symbol: str, interval: Interval, start: date, until: date) -> JsonObject:
+    payload: JsonObject = {
+        "nght_tp": DAY_SESSION,
+        "sym": symbol,
+        "inq_strt_dt": start.strftime("%Y%m%d"),
+        "inq_ed_dt": until.strftime("%Y%m%d"),
+        "req_qty": str(CHART_PAGE_ROWS[interval]),
+        "nxt_key": CHART_START_KEY,
+    }
+    if interval == "minute":
+        payload["dcnt"] = "1"
+    return payload
 
 
 def parse_positions(body: JsonObject) -> list[Position]:
@@ -400,28 +428,36 @@ class DomesticMarket:
         interval: Interval,
         period: tuple[date, date],
         limit: int,
-    ) -> list[Candle]:
+    ) -> CandleSeries:
+        """끝 날짜를 옮기며 과거로 받는다(Q26). nxt_key는 같은 행을 되풀이해서 따르지 않는다.
+
+        첫 요청은 기간 끝 날까지, 다음 요청은 앞 응답의 가장 이른 날까지 받는다. 그날은 두 번
+        오므로 봉 시작 시각으로 합친다. 멈춤: limit개를 채움, 한 번에 오는 최대보다 적게 옴(기간을
+        다 받음), 시작일 전 봉이 옴, 새 봉이 없음(진전 없음), 요청 상한.
+        """
         client = await self._pool.client_for(user_id, "domestic")
         start, end = period
-        payload: JsonObject = {
-            "nght_tp": DAY_SESSION,
-            "sym": symbol,
-            "inq_strt_dt": start.strftime("%Y%m%d"),
-            "inq_ed_dt": end.strftime("%Y%m%d"),
-            "req_qty": str(min(CHART_CHUNK, limit)),
-            "nxt_key": CHART_START_KEY,
-        }
-        if interval == "minute":
-            payload["dcnt"] = "1"
         path = CHART_MINUTE if interval == "minute" else CHART_DAILY
         merged: dict[datetime, Candle] = {}
-        async for body in _Pages(client, path, payload):
-            for candle in parse_candles(body, interval):
-                if start <= candle.at.date() <= end:
-                    merged[candle.at] = candle
-            if len(merged) >= limit:
+        until = end
+        complete = False
+        for _ in range(CHART_MAX_PAGES):
+            body = await client.post(path, _chart_request(symbol, interval, start, until))
+            got = parse_candles(body, interval)
+            fresh = [c for c in got if start <= c.at.date() <= end and c.at not in merged]
+            merged.update((c.at, c) for c in fresh)
+            earliest = min((c.at.date() for c in got), default=until)
+            if (
+                len(merged) >= limit
+                or len(_rows(body)) < CHART_PAGE_ROWS[interval]
+                or earliest < start
+            ):
+                complete = True
                 break
-        return sorted(merged.values(), key=lambda c: c.at)[-limit:]
+            if not fresh:
+                break
+            until = earliest
+        return CandleSeries(sorted(merged.values(), key=lambda c: c.at)[-limit:], complete)
 
     async def account(self, user_id: UserId) -> AccountState:
         client = await self._pool.client_for(user_id, "domestic")

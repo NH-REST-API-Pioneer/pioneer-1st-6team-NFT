@@ -1,21 +1,38 @@
-"""격리 테스트가 함께 쓰는 봉 만들기."""
+"""격리 테스트가 함께 쓰는 일 만들기. 한 종목 A의 1분봉 실행이다."""
 
-from nh_mcp.sandbox.wire import WireBar
+from datetime import datetime, timedelta
+from decimal import Decimal
+
+from nh_mcp.domain import KST, BarEvent, Candle, JsonValue, MarketEvent, SandboxJob, SymbolTerms
+
+SYMBOL = "A"
+TICK = Decimal("0.05")
+TERMS = {SYMBOL: SymbolTerms(TICK, Decimal("250000"), Decimal("0"))}
+T0 = datetime(2026, 11, 2, 9, 0, tzinfo=KST)
 
 
-def bars(n: int) -> list[WireBar]:
-    """실행기가 보내는 모양 그대로의 봉 n개. 가격은 문자열, 거래량은 정수."""
-    out: list[WireBar] = []
+def bars(n: int) -> list[MarketEvent]:
+    """A의 1분봉 n개. 가격은 350~356을 돈다."""
+    out: list[MarketEvent] = []
     for i in range(n):
-        price = str(350 + i % 7)
-        out.append(
-            {
-                "at": f"2026-11-02T09:{i % 60:02d}:00+09:00",
-                "open": price,
-                "high": price,
-                "low": price,
-                "close": price,
-                "volume": 10 + i,
-            }
-        )
+        price = Decimal(350 + i % 7)
+        candle = Candle(T0 + timedelta(minutes=i), price, price, price, price, 10 + i)
+        out.append(BarEvent(SYMBOL, "minute", candle))
     return out
+
+
+def job(
+    code: str,
+    events: list[MarketEvent] | None = None,
+    params: dict[str, JsonValue] | None = None,
+    max_position: int = 1,
+) -> SandboxJob:
+    """A의 1분봉 실행. 이벤트를 주지 않으면 봉 3개."""
+    return SandboxJob(
+        code=code,
+        params=params or {},
+        streams={SYMBOL: frozenset({"minute"})},
+        max_position=max_position,
+        terms=TERMS,
+        events=bars(3) if events is None else events,
+    )

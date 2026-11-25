@@ -6,6 +6,8 @@
 
 import os
 import sqlite3
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import TypedDict
@@ -15,6 +17,7 @@ import httpx2
 from fastmcp import FastMCP
 from fastmcp.server.auth import AuthProvider
 from fastmcp.server.middleware import AuthMiddleware
+from fastmcp.server.server import LifespanCallable
 from fastmcp.utilities.authorization import AuthCheck
 
 from nh_mcp import envelope
@@ -29,14 +32,19 @@ from nh_mcp.keys.vault import Vault
 from nh_mcp.markets.domestic import DomesticMarket
 from nh_mcp.markets.domestic_master import DomesticMaster
 from nh_mcp.markets.domestic_products import DomesticProducts
+from nh_mcp.models.page import MODELS_PATH, ModelsPage, add_models_routes
+from nh_mcp.models.store import ModelStore, remove_drafts
 from nh_mcp.nh.clients import ClientPool
 from nh_mcp.ops.rate_limit import LIMITS, RateLimiter
+from nh_mcp.realtime.recorder import Recorder, pool_login
+from nh_mcp.realtime.session import Connect, Link, open_socket
 from nh_mcp.sandbox.client import SandboxClient
-from nh_mcp.services.backtest import BacktestService
+from nh_mcp.services.backtest import BacktestService, Sources
 from nh_mcp.services.connection import ConnectionService
 from nh_mcp.services.limits import APPROVE_PATH, LimitService
 from nh_mcp.services.orders import OrderService
 from nh_mcp.services.queries import QueryService
+from nh_mcp.services.recording import RecordingService
 from nh_mcp.services.strategy import StrategyService
 from nh_mcp.services.symbols import SymbolService
 from nh_mcp.store import db
@@ -48,6 +56,7 @@ from nh_mcp.tools.limits import register_limit_tools
 from nh_mcp.tools.limits_page import LimitsPage, add_limits_routes
 from nh_mcp.tools.market import register_market_tools
 from nh_mcp.tools.order import register_order_tools
+from nh_mcp.tools.recording import register_recording_tools
 from nh_mcp.tools.strategy import register_strategy_tools
 
 PORT = 8000
@@ -57,8 +66,15 @@ def utc_now() -> datetime:
     return datetime.now(UTC)
 
 
-def build_server(auth: AuthProvider, gate: AuthCheck, clock: Clock = utc_now) -> FastMCP:
-    mcp = FastMCP("nh-futures-mcp", auth=auth, middleware=[AuthMiddleware(auth=gate)])
+def build_server(
+    auth: AuthProvider,
+    gate: AuthCheck,
+    clock: Clock = utc_now,
+    lifespan: LifespanCallable[None] | None = None,
+) -> FastMCP:
+    mcp = FastMCP(
+        "nh-futures-mcp", auth=auth, middleware=[AuthMiddleware(auth=gate)], lifespan=lifespan
+    )
 
     @mcp.tool(annotations={"readOnlyHint": True})
     def ping() -> envelope.Response:
@@ -84,6 +100,8 @@ class Wiring:
     nh: httpx2.AsyncBaseTransport | None = None
     master: httpx2.AsyncBaseTransport | None = None
     sandbox: httpx2.AsyncBaseTransport | None = None
+    # NH 실시간(웹소켓) 연결 함수. 테스트는 가짜 실시간 서버로 돌린다.
+    stream: Connect = open_socket
 
 
 @dataclass(frozen=True)
@@ -91,25 +109,39 @@ class Parts:
     login: GoogleWebLogin
     store: KeyStore
     pool: ClientPool
+    models: ModelStore
+    # 시세 수신기. 만들기만 하고 켜지는 않는다(서버 수명에 맞춰 create_server가 켠다).
+    recorder: Recorder
 
 
 def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
-    """웹 로그인, 키 화면, 조회·한도·백테스트 도구와, 스위치가 켜졌으면 주문·승인 도구를 붙인다."""
+    """웹 로그인, 키·모델 파일 화면, 조회·한도·백테스트·틱 저장 도구와, 스위치가 켜졌으면 주문·승인
+    도구를 붙인다."""
     vault = Vault(wiring.settings.key_encryption_key)
     login = GoogleWebLogin(wiring.settings, wiring.conn, wiring.clock, transport=wiring.google)
     store = KeyStore(wiring.conn, vault, wiring.verify, wiring.clock)
     pool = ClientPool(wiring.conn, vault, wiring.clock, transport=wiring.nh)
-    add_web_login_routes(mcp, login)
-    add_keys_routes(mcp, KeysPage(login, store))
+    models = ModelStore(wiring.settings.models_dir, wiring.conn, wiring.clock)
     keys_url = wiring.settings.public_base_url + KEYS_PATH
+    models_url = wiring.settings.public_base_url + MODELS_PATH
     ctx = ToolContext(wiring.conn, wiring.clock, keys_url)
     master = DomesticMaster(wiring.clock, transport=wiring.master)
     domestic = DomesticMarket(pool, master, wiring.clock)
     queries = QueryService(domestic)
+    link = Link(pool_login(pool), wiring.clock, wiring.stream)
+    recorder = Recorder(wiring.conn, wiring.settings.ticks_db_path, link)
+    recording = RecordingService(wiring.conn, recorder, queries, models, models_url)
+    # 도구의 disconnect_account와 키 화면의 지우기가 같은 끊기를 쓴다(키·NH 클라이언트·틱 저장).
+    connection = ConnectionService(store, pool, recording, keys_url)
+    add_web_login_routes(mcp, login)
+    add_keys_routes(mcp, KeysPage(login, store, connection.disconnect))
+    add_models_routes(mcp, ModelsPage(login, models))
     # 속도 제한은 프로세스 하나에 하나. 버킷은 사용자별로 나뉜다.
     limiter = RateLimiter(wiring.clock, LIMITS)
-    register_connection_tools(mcp, ctx, ConnectionService(store, pool, keys_url))
+    register_connection_tools(mcp, ctx, connection)
     register_market_tools(mcp, ctx, SymbolService(master), queries)
+    # 틱 저장은 주문을 내지 않으므로 기본 묶음이다(주문 스위치와 상관없이 붙인다).
+    register_recording_tools(mcp, ctx, recording, limiter)
     limit_service = LimitService(
         wiring.conn, wiring.clock, wiring.settings.public_base_url + APPROVE_PATH
     )
@@ -121,26 +153,37 @@ def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
     sandbox = SandboxClient(
         wiring.settings.sandbox_url, wiring.settings.sandbox_token, transport=wiring.sandbox
     )
-    backtests = BacktestService(wiring.conn, wiring.clock, queries, products, sandbox)
-    register_backtest_tools(mcp, ctx, backtests, limiter)
+    # 틱 실행은 수신기가 저장한 체결·호가를 읽는다(ticks.db는 수신기가 켜질 때 열린다).
+    sources = Sources(queries, products, models, lambda: recorder.store)
+    backtests = BacktestService(wiring.conn, wiring.clock, sources, sandbox)
+    register_backtest_tools(mcp, ctx, backtests, limiter, models_url)
     if wiring.settings.orders_enabled:
         orders = OrderService(wiring.conn, wiring.clock, domestic, products, orders_enabled=True)
         register_order_tools(mcp, ctx, orders, limiter)
         # 전략 실행 승인도 주문 스위치를 따른다. M3에는 이 토큰을 쓰는 도구가 아직 없다.
         register_strategy_tools(
-            mcp, ctx, StrategyService(wiring.conn, wiring.clock, domestic), limiter
+            mcp, ctx, StrategyService(wiring.conn, wiring.clock, domestic, models), limiter
         )
         # get_orders가 응답을 못 받은 주문을 대조한다(UNKNOWN_STATE 안내가 get_orders를 가리킨다).
         register_account_tools(mcp, ctx, queries, orders.reconcile)
     else:
         register_account_tools(mcp, ctx, queries)
-    return Parts(login, store, pool)
+    return Parts(login, store, pool, models, recorder)
 
 
 def create_server(settings: Settings, conn: sqlite3.Connection) -> FastMCP:
     policy = AccessPolicy(settings.open_signup, settings.admin_emails)
-    mcp = build_server(google_provider(settings), make_gate(policy, conn, utc_now))
-    attach(mcp, Wiring(settings, conn, utc_now, demo_server_verifier(utc_now)))
+
+    @asynccontextmanager
+    async def lifespan(_: FastMCP) -> AsyncGenerator[None]:
+        # 서버가 도는 동안 시세 수신기를 켜 둔다. 내려갈 때 열린 분까지 저장한다.
+        async with parts.recorder.running():
+            yield
+
+    mcp = build_server(
+        google_provider(settings), make_gate(policy, conn, utc_now), lifespan=lifespan
+    )
+    parts = attach(mcp, Wiring(settings, conn, utc_now, demo_server_verifier(utc_now)))
     return mcp
 
 
@@ -180,6 +223,8 @@ def run_options(settings: Settings) -> RunOptions:
 def main() -> None:
     settings = load_settings(os.environ)
     settings.db_path.parent.mkdir(parents=True, exist_ok=True)
+    # 지난 실행이 모델 파일을 받다가 멈췄으면 임시 파일이 남는다. 받는 중인 것이 없을 때 치운다.
+    remove_drafts(settings.models_dir)
     server = create_server(settings, db.connect(settings.db_path))
     server.run(transport="http", **run_options(settings))
 

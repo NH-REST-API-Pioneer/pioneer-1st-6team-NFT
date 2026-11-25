@@ -3,7 +3,7 @@
 import httpx2
 
 from nh_mcp.domain import SandboxJob, SandboxResult
-from nh_mcp.sandbox.wire import MAX_DETAIL, TOKEN_HEADER, bar_to_wire, result_from_json
+from nh_mcp.sandbox.wire import MAX_DETAIL, TOKEN_HEADER, job_to_json, result_from_json
 
 # 실행기 쪽 벽시계(70초)보다 길게 둔다. 컨테이너를 띄우고 지우는 시간이 더 든다.
 TIMEOUT_SECONDS = 90.0
@@ -19,15 +19,17 @@ class SandboxDown(Exception):
     """실행기에 닿지 못했거나 알 수 없는 답이 왔다. 메시지에 토큰을 넣지 않는다."""
 
 
-def _consistent(result: SandboxResult, bar_count: int) -> bool:
-    """내용이 일이 맞는지 본다. 성공이면 봉마다 신호 하나, 실패면 신호 없음."""
+def _consistent(result: SandboxResult, event_count: int) -> bool:
+    """내용이 일과 맞는지 본다. 성공이면 시장 이벤트마다 출력이 적어도 하나(체결 이벤트의 출력이
+    더해진다), 실패면 출력 없음. 정확한 줄 수는 서비스가 체결 계산을 다시 돌려 맞춘다.
+    """
     if len(result.detail) > MAX_DETAIL:
         return False
-    if result.bar_index is not None and not 0 <= result.bar_index < bar_count:
+    if result.index is not None and not 0 <= result.index < event_count:
         return False
     if result.status == "ok":
-        return len(result.signals) == bar_count and result.bar_index is None and not result.detail
-    return not result.signals
+        return len(result.outputs) >= event_count and result.index is None and not result.detail
+    return not result.outputs
 
 
 class SandboxClient:
@@ -50,14 +52,9 @@ class SandboxClient:
         await self._http.aclose()
 
     async def run(self, job: SandboxJob) -> SandboxResult:
-        payload = {
-            "code": job.code,
-            "params": job.params,
-            "bars": [bar_to_wire(c) for c in job.bars],
-        }
         try:
             response = await self._http.post(
-                "/run", json=payload, headers={TOKEN_HEADER: self._token}
+                "/run", json=job_to_json(job), headers={TOKEN_HEADER: self._token}
             )
         except httpx2.HTTPError as exc:
             # 원인 예외는 잇지 않는다. 요청 머리말(토큰)이 따라오면 안 된다.
@@ -70,7 +67,7 @@ class SandboxClient:
             raw: object = response.json()
         except ValueError:
             raise SandboxDown("실행기 응답을 읽지 못했습니다") from None
-        result = result_from_json(raw)
-        if result is None or not _consistent(result, len(job.bars)):
+        result = result_from_json(raw, job)
+        if result is None or not _consistent(result, len(job.events)):
             raise SandboxDown("실행기 응답의 모양이 맞지 않습니다")
         return result

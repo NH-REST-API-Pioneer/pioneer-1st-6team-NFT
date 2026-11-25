@@ -315,6 +315,7 @@ def test_pages_carry_the_security_headers(serve: Serve) -> None:
 
 def test_return_to_accepts_only_same_server_allowed_paths() -> None:
     assert safe_return_to("/keys") == "/keys"
+    assert safe_return_to("/models") == "/models"
     assert safe_return_to("/limits/approve/abc_DEF-123") == "/limits/approve/abc_DEF-123"
     for bad in (
         "",

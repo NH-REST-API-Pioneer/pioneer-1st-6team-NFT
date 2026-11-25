@@ -7,7 +7,8 @@ from nh_mcp.store import backtests, db, users
 from nh_mcp.store.backtests import NewRun, RunKey
 
 NOW = datetime(2026, 12, 1, 1, 0, tzinfo=UTC)
-KEY = RunKey("domestic", "A016C000", "minute", "ab" * 32, '{"window":"20"}')
+STREAMS = '{"A016C000":["minute"]}'
+KEY = RunKey("domestic", STREAMS, "ab" * 32, '{"window":"20"}', None)
 
 
 def two_users(conn: sqlite3.Connection) -> tuple[UserId, UserId]:
@@ -21,7 +22,7 @@ def run_for(user_id: UserId, key: RunKey = KEY, status: str = "ok") -> NewRun:
     return NewRun(
         user_id=user_id,
         key=key,
-        code="def on_bar(bar, state): return 'none'",
+        code="def on_event(event, ctx): return None",
         settings='{"fee":"0"}',
         requested=(date(2026, 11, 1), date(2026, 11, 20)),
         first_bar_at=NOW,
@@ -39,13 +40,41 @@ def test_success_is_found_only_for_the_same_key() -> None:
 
     assert backtests.has_success(conn, user_a, KEY) is True
     for other in (
-        replace(KEY, interval="day"),
+        replace(KEY, streams='{"A016C000":["day"]}'),
+        replace(KEY, streams='{"A016C000":["day","minute"]}'),
+        replace(KEY, streams='{"A016C000":["minute"],"A0173000":["minute"]}'),
+        replace(KEY, streams='{"A0173000":["minute"]}'),
         replace(KEY, code_hash="cd" * 32),
         replace(KEY, params='{"window":"21"}'),
-        replace(KEY, symbol="A016C001"),
+        replace(KEY, model_hash="ef" * 32),
         replace(KEY, market="overseas"),
     ):
         assert backtests.has_success(conn, user_a, other) is False
+
+
+def test_model_hash_matches_only_the_same_hash_or_both_none() -> None:
+    conn = db.connect(":memory:")
+    user_a, _ = two_users(conn)
+    with_model = replace(KEY, model_hash="ef" * 32)
+    backtests.record(conn, run_for(user_a, with_model), NOW)
+
+    assert backtests.has_success(conn, user_a, with_model) is True
+    # 모델 없는 실행(NULL)은 모델을 쓴 실행과 다르다.
+    assert backtests.has_success(conn, user_a, KEY) is False
+    assert backtests.has_success(conn, user_a, replace(KEY, model_hash="00" * 32)) is False
+    backtests.record(conn, run_for(user_a), NOW)
+    assert backtests.has_success(conn, user_a, KEY) is True
+
+
+def test_streams_and_null_model_are_stored_as_given() -> None:
+    conn = db.connect(":memory:")
+    user_a, _ = two_users(conn)
+    run_id = backtests.record(conn, run_for(user_a), NOW)
+
+    row = conn.execute(
+        "SELECT user_id, streams, model_hash FROM backtest_runs WHERE id = ?", (run_id,)
+    ).fetchone()
+    assert row == (user_a, STREAMS, None)
 
 
 def test_failed_runs_do_not_count() -> None:

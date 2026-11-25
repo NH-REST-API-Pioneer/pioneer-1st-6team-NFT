@@ -36,6 +36,7 @@ TOKEN_URL = "https://oauth2.googleapis.com/token"
 TOKENINFO_URL = "https://oauth2.googleapis.com/tokeninfo"
 
 KEYS_PATH = "/keys"
+MODELS_PATH = "/models"
 LOGIN_PATH = "/keys/login"
 CALLBACK_PATH = "/keys/callback"
 LOGOUT_PATH = "/keys/logout"
@@ -55,8 +56,8 @@ type JsonObject = dict[str, JsonValue]
 
 
 def safe_return_to(value: str) -> str:
-    """로그인 뒤 돌아갈 같은 서버 경로. 허용 목록(/keys, 한도 승인 링크) 밖은 모두 /keys."""
-    if value == KEYS_PATH:
+    """로그인 뒤 돌아갈 같은 서버 경로. /keys, /models, 한도 승인 링크 밖은 모두 /keys."""
+    if value in (KEYS_PATH, MODELS_PATH):
         return value
     if value.startswith(APPROVE_PREFIX) and TOKEN_CHARS.fullmatch(value[len(APPROVE_PREFIX) :]):
         return value

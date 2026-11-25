@@ -12,6 +12,10 @@ dependencies = [
     "fastmcp>=4.2.4,<5",
     "httpx2>=2.16.2,<3",
     "pydantic>=2.14.4",
+    # 모델 파일 화면이 올리기 본문을 받는 대로 읽는다(nh_mcp/models/page.py).
+    "python-multipart>=0.0.34,<0.1",
+    # 시세 수신기의 NH 웹소켓 연결(nh_mcp/realtime/session.py).
+    "websockets>=17.4,<18",
 ]
 
 [build-system]
@@ -49,7 +53,8 @@ markers = [
     "docker: 실제 Docker로 도는 격리 테스트(Docker가 없으면 건너뛰지 않고 실패한다)",
 ]
 
-# 의존 방향: tools · runner → services → markets → nh. guard는 계층 밖(services만 부른다).
+# 의존 방향: tools · runner → services → markets → realtime → nh. guard는 계층 밖(services만 부른다).
+# realtime(시세 수신기)은 NH 클라이언트 쪽이다. nh 위에 두어 웹소켓 키를 nh로 받는다.
 # 괄호는 아직 없는 계층(선택 계층). 계층이 생기면 괄호를 벗긴다.
 # tools | runner: 서로 import 금지.
 # exhaustive: nh_mcp 아래 새 패키지는 계층에 넣거나 계층 밖 목록에 적어야 한다.
@@ -66,11 +71,12 @@ layers = [
     "tools | (runner)",
     "services",
     "markets",
+    "realtime",
     "nh",
 ]
 exhaustive = true
-# 계층 밖: 공용 타입·설정·응답 형식·로그인·키 보관·운영 보호 장치(속도 제한)·저장소·서버 조립·
-# 전략 격리 실행·백테스트 계산.
+# 계층 밖: 공용 타입·설정·응답 형식·로그인·키 보관·모델 파일 보관·운영 보호 장치(속도 제한)·
+# 저장소·서버 조립·전략 격리 실행·백테스트 계산.
 exhaustive_ignores = [
     "auth",
     "config",
@@ -78,6 +84,7 @@ exhaustive_ignores = [
     "envelope",
     "guard",
     "keys",
+    "models",
     "ops",
     "sandbox",
     "server",
@@ -86,10 +93,10 @@ exhaustive_ignores = [
 ]
 
 [[tool.importlinter.contracts]]
-name = "도구는 services만 거친다(markets·nh·guard 직접 호출 금지)"
+name = "도구는 services만 거친다(markets·realtime·nh·guard 직접 호출 금지)"
 type = "forbidden"
 source_modules = ["nh_mcp.tools"]
-forbidden_modules = ["nh_mcp.markets", "nh_mcp.nh", "nh_mcp.guard"]
+forbidden_modules = ["nh_mcp.markets", "nh_mcp.realtime", "nh_mcp.nh", "nh_mcp.guard"]
 # services를 거치는 간접 import는 설계대로다. 직접 import만 막는다.
 allow_indirect_imports = true
 
@@ -102,12 +109,19 @@ source_modules = [
     "nh_mcp.domain",
     "nh_mcp.envelope",
     "nh_mcp.keys",
+    "nh_mcp.models",
     "nh_mcp.ops",
     "nh_mcp.sandbox",
     "nh_mcp.store",
     "nh_mcp.strategies",
 ]
-forbidden_modules = ["nh_mcp.tools", "nh_mcp.services", "nh_mcp.markets", "nh_mcp.server"]
+forbidden_modules = [
+    "nh_mcp.tools",
+    "nh_mcp.services",
+    "nh_mcp.markets",
+    "nh_mcp.realtime",
+    "nh_mcp.server",
+]
 
 [[tool.importlinter.contracts]]
 name = "domain은 다른 nh_mcp 모듈을 import하지 않는다"
@@ -126,12 +140,15 @@ ignore_imports = [
 ]
 
 [[tool.importlinter.contracts]]
-name = "sandbox·strategies는 domain만 import한다"
+name = "sandbox·strategies는 domain만 import한다(실행기의 대화는 체결 계산도)"
 type = "forbidden"
 source_modules = ["nh_mcp.sandbox", "nh_mcp.strategies"]
 forbidden_modules = ["nh_mcp.*"]
-# domain만 허용한다. sandbox/harness.py는 그마저 쓰지 않는다(tests/sandbox/test_harness_imports.py).
+# domain만 허용한다. 하나만 더: 실행기의 대화(sandbox/container.py)는 체결 이벤트를 만들려고
+# 체결 계산(strategies/backtest.py)을 돌린다(2026-11-25 사람 승인). sandbox/harness.py는 nh_mcp를
+# 하나도 쓰지 않는다(tests/sandbox/test_harness_imports.py).
 ignore_imports = [
     "nh_mcp.sandbox.** -> nh_mcp.domain",
     "nh_mcp.strategies.** -> nh_mcp.domain",
+    "nh_mcp.sandbox.container -> nh_mcp.strategies.backtest",
 ]

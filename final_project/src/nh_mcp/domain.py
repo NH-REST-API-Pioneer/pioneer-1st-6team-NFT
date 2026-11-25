@@ -1,7 +1,8 @@
 """여러 계층이 함께 쓰는 타입. 다른 nh_mcp 모듈을 import하지 않는다."""
 
-from collections.abc import Callable
-from dataclasses import dataclass
+import re
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal
 from typing import Literal, NewType
@@ -222,13 +223,83 @@ class TokenRow:
     used_at: datetime | None
 
 
-# 전략 신호. 목표 포지션으로 읽는다: buy=매수 보유, sell=매도 보유, exit=정리, none=유지.
-type SignalName = Literal["buy", "sell", "exit", "none"]
+# 전략이 받는 데이터 흐름. 봉 실행은 minute·day, 틱 실행은 tick·book·day.
+type Stream = Literal["tick", "book", "minute", "day"]
+# 종목코드 → 받는 흐름. 저장·비교할 때는 종목·흐름을 정렬한 JSON으로 쓴다.
+type Streams = Mapping[str, frozenset[Stream]]
+
+
+@dataclass(frozen=True)
+class BarEvent:
+    """봉 하나. bar.at은 봉이 시작한 시각이다(NH 분봉은 시작 시각으로 찍힌다)."""
+
+    symbol: str
+    interval: Literal["minute", "day"]
+    bar: Candle
+
+
+@dataclass(frozen=True)
+class TickEvent:
+    """체결 하나. bid·ask는 그때의 최우선 호가(없으면 None)."""
+
+    symbol: str
+    at: datetime
+    price: Decimal
+    qty: int
+    bid: Decimal | None
+    ask: Decimal | None
+
+
+@dataclass(frozen=True)
+class BookEvent:
+    """호가. 단계마다 (가격, 잔량), 최우선부터."""
+
+    symbol: str
+    at: datetime
+    bids: tuple[tuple[Decimal, int], ...]
+    asks: tuple[tuple[Decimal, int], ...]
+
+
+@dataclass(frozen=True)
+class FillEvent:
+    """서버가 만든 체결. 백테스트는 모의 체결, 실시간은 NH 체결."""
+
+    symbol: str
+    at: datetime
+    side: Side
+    qty: int
+    price: Decimal
+
+
+type MarketEvent = BarEvent | TickEvent | BookEvent
+type StrategyEvent = MarketEvent | FillEvent
+
+
+@dataclass(frozen=True)
+class Target:
+    """종목 하나의 목표 포지션(부호 있는 계약 수). price가 None이면 시장가, 있으면 지정가."""
+
+    position: int
+    price: Decimal | None = None
+
+
+# 이벤트 하나에 대한 전략 출력. None은 그대로 둔다.
+type Output = Mapping[str, Target] | None
+
+
+@dataclass(frozen=True)
+class SymbolTerms:
+    """종목 하나의 체결 조건. 수수료는 체결 1건·1계약당 금액이다."""
+
+    tick: Decimal
+    multiplier: Decimal
+    fee_per_fill: Decimal
+
 
 # 격리 실행이 실패한 이유. 사용자 말로 바꾸는 일은 위쪽 계층이 한다.
 type SandboxFailure = Literal[
     "invalid_code",
-    "invalid_signal",
+    "invalid_output",
     "exception",
     "cpu",
     "memory",
@@ -238,28 +309,56 @@ type SandboxFailure = Literal[
 ]
 
 
+# 사용자가 올리는 모델 파일 하나의 상한. 50MiB(사람 결정, 2026-11-25).
+MAX_MODEL_BYTES = 50 * 1024 * 1024
+
+# 모델 파일 내용의 SHA-256(소문자 16진수 64자). 전략은 이 값으로 모델을 고르고, 보관 경로와
+# 백테스트 키에도 이 값이 들어간다. model_hash를 지난 값만 이 타입이 된다.
+ModelHash = NewType("ModelHash", str)
+_MODEL_HASH = re.compile(r"[0-9a-f]{64}")
+
+
+def model_hash(text: str) -> ModelHash | None:
+    """소문자 16진수 64자면 ModelHash, 아니면 None."""
+    return ModelHash(text) if _MODEL_HASH.fullmatch(text) else None
+
+
 @dataclass(frozen=True)
 class SandboxJob:
-    """격리 실행기에 보내는 일 한 건. 코드는 문자열 그대로 넘기기만 한다."""
+    """격리 실행기에 보내는 일 한 건. 코드는 문자열 그대로 넘기기만 한다.
+
+    streams는 종목마다 받는 흐름이다. 전략은 이 종목에만 목표를 낼 수 있고, 목표의 절댓값은
+    max_position을 넘을 수 없다. terms는 streams와 같은 종목마다 체결 조건이다.
+    model은 사용자가 올린 모델 파일의 내용(없으면 None)이다. 서버는 열어 보지 않고 넘기기만 하고,
+    전략 컨테이너 안에서만 읽힌다. 수십 MB라 repr에 넣지 않는다.
+    """
 
     code: str
     params: dict[str, JsonValue]
-    bars: list[Candle]
+    streams: Streams
+    max_position: int
+    terms: Mapping[str, SymbolTerms]
+    events: list[MarketEvent]
+    model: bytes | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)
 class SandboxResult:
-    """격리 실행 결과. 실패하면 signals는 비고, bar_index는 문제가 난 봉(모르면 None)."""
+    """격리 실행 결과. 출력은 전략에 넣은 순서(체결 이벤트 포함)와 한 줄씩 맞는다.
+
+    실패하면 outputs는 비고, index는 문제가 난 시장 이벤트의 순번이다(그 이벤트가 낸 체결
+    이벤트에서 났어도 같다. 모르면 None).
+    """
 
     status: Literal["ok"] | SandboxFailure
-    signals: list[SignalName]
-    bar_index: int | None
+    outputs: list[Output]
+    index: int | None
     detail: str
 
 
 # 하루 손실 한도에 닿았을 때: 정리하고 멈춘다 / 그대로 두고 멈춘다.
 type OnLoss = Literal["liquidate", "hold"]
-# auto: 신호대로 주문한다. suggest: 제안만 하고 사용자가 확인한다.
+# auto: 목표대로 주문한다. suggest: 제안만 하고 사용자가 확인한다.
 type StrategyMode = Literal["auto", "suggest"]
 
 

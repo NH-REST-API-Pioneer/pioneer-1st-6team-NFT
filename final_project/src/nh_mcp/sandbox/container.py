@@ -1,23 +1,38 @@
-"""전략 코드를 격리 컨테이너에서 돌리고 봉마다 신호를 받아 온다(안전 불변식 12).
+"""전략 코드를 격리 컨테이너에서 돌리고 이벤트마다 출력(목표 포지션)을 받아 온다(안전 불변식 12).
 
 코드는 문자열 그대로 하네스에 넘기기만 한다. 이 프로세스에서는 실행하지도 파싱하지도 않는다.
 docker run 인자는 상수다. 바뀌는 값은 이미지 이름과 무작위 컨테이너 이름뿐이고, 셸을 거치지 않는다.
+체결 계산(strategies/backtest.py)을 대화 안에서 돌려 체결 이벤트를 만들고, 출력은 여기서 검사한다.
+하네스는 전략 코드가 고칠 수 있는 프로세스라 그 검사를 믿지 않는다.
 """
 
 import asyncio
+import base64
 import contextlib
 import json
 import logging
 import secrets
 from typing import cast
 
-from nh_mcp.domain import JsonValue, SandboxFailure, SignalName
-from nh_mcp.sandbox.wire import MAX_DETAIL, Reply, WireBar
+from nh_mcp.domain import JsonValue, Output, SandboxFailure, SandboxJob, SandboxResult
+from nh_mcp.sandbox.wire import (
+    MAX_DETAIL,
+    BadOutput,
+    event_to_wire,
+    output_from_wire,
+    preview,
+)
+from nh_mcp.strategies.backtest import Simulator, decision_time
 
 NAME_PREFIX = "nhmcp-sbx-"
 # 실행기 쪽 벽시계 마감. 컨테이너 안 CPU 한도(60초)보다 길다.
 WALL_SECONDS = 70.0
+# 하네스가 쓰는 프로토콜 줄 하나의 상한(64KiB). 표준 출력 스트림의 limit이기도 하다.
+MAX_LINE = 65_536
+# 표준 출력 합계 상한은 max(MAX_STDOUT, STDOUT_PER_EVENT * 넣은 이벤트 줄 수)다. 이벤트마다 목표를
+# 내는 전략이 25,000 이벤트에서도 끝까지 돌게 넣은 만큼 늘린다. 설정·모델 줄은 늘리지 않는다.
 MAX_STDOUT = 1_048_576
+STDOUT_PER_EVENT = 256
 # 표준 에러(전략 코드의 print도 이리로 온다)도 이만큼만 받는다. 넘으면 출력 폭주로 끊는다.
 MAX_STDERR = 1_048_576
 # docker kill · rm · inspect 한 번을 기다리는 시간.
@@ -27,6 +42,8 @@ DOCKER_CLI_SECONDS = 30.0
 CPU_EXIT_CODES = frozenset({"137", "152"})
 # docker run이 컨테이너를 띄우지 못했을 때 내는 종료 코드(125 docker 오류, 126·127 실행 파일 문제).
 DOCKER_START_CODES = frozenset({125, 126, 127})
+# 모델 파일을 하네스에 넘기는 조각 하나의 바이트 수. base64로 한 줄 1MiB가 된다.
+MODEL_CHUNK = 768 * 1024
 
 _LOG = logging.getLogger(__name__)
 
@@ -36,8 +53,10 @@ FIXED_ARGS = (
     "--network",
     "none",
     "--read-only",
+    # 전략이 쓰는 16MiB에 모델 파일 자리(최대 50MiB, 하네스가 /tmp/model에 쓴다)를 더했다.
+    # tmpfs는 컨테이너 메모리(512MB)에서 빠진다.
     "--tmpfs",
-    "/tmp:size=16m,noexec,nosuid",
+    "/tmp:size=66m,noexec,nosuid",
     "--user",
     "65534:65534",
     "--cap-drop",
@@ -56,8 +75,10 @@ FIXED_ARGS = (
     "cpu=60:60",
     "--ulimit",
     "nofile=64:64",
+    # 파일 하나의 크기 상한. 모델 파일(최대 50MiB) 하나가 들어가야 한다. 쓰는 양의 합계는 위
+    # tmpfs 크기가 묶는다(이미지는 읽기 전용).
     "--ulimit",
-    "fsize=16777216:16777216",
+    "fsize=52428800:52428800",
     "-e",
     "PYTHONHASHSEED=0",
     "--workdir",
@@ -85,8 +106,8 @@ def docker_argv(image: str, name: str) -> list[str]:
     ]
 
 
-def failure(status: SandboxFailure, bar_index: int | None, detail: str) -> Reply:
-    return Reply(status, [], bar_index, detail[:MAX_DETAIL])
+def failure(status: SandboxFailure, index: int | None, detail: str) -> SandboxResult:
+    return SandboxResult(status, [], index, detail[:MAX_DETAIL])
 
 
 class ContainerStartError(Exception):
@@ -97,7 +118,7 @@ class ContainerStartError(Exception):
 
 
 class _OutputOverflowError(Exception):
-    """표준 출력이 한도를 넘었다."""
+    """표준 출력이 한도를 넘었다. 메시지는 실패 사유의 detail이다."""
 
 
 class _HarnessEndedError(Exception):
@@ -116,17 +137,6 @@ def _decode(line: bytes) -> dict[str, object] | None:
     return cast(dict[str, object], value)
 
 
-def _signal(message: dict[str, object] | None) -> SignalName | None:
-    value = None if message is None else message.get("signal")
-    if not isinstance(value, str):
-        return None
-    match value:
-        case "buy" | "sell" | "exit" | "none" as signal:
-            return signal
-        case _:
-            return None
-
-
 def _harness_reason(value: object, loading: bool) -> SandboxFailure | None:
     """하네스가 알릴 수 있는 사유만 받는다.
 
@@ -139,20 +149,27 @@ def _harness_reason(value: object, loading: bool) -> SandboxFailure | None:
             return reason
         case "invalid_code" as reason if loading:
             return reason
-        case "invalid_signal" | "exception" as reason if not loading:
+        case "invalid_output" | "exception" as reason if not loading:
             return reason
         case _:
             return None
 
 
+def _streams(job: SandboxJob) -> dict[str, JsonValue]:
+    return {symbol: [*sorted(names)] for symbol, names in sorted(job.streams.items())}
+
+
 class _Conversation:
-    """하네스와 한 줄씩 주고받는다. 읽은 양을 세고, 지금 어느 봉을 처리 중인지 적어 둔다."""
+    """하네스와 한 줄씩 주고받는다. 읽은 양을 세고, 지금 처리하는 시장 이벤트를 적어 둔다."""
 
     def __init__(self, stdin: asyncio.StreamWriter, stdout: asyncio.StreamReader) -> None:
         self.stdin = stdin
         self.stdout = stdout
-        self.bar_index: int | None = None
+        # 지금 넣는 시장 이벤트의 순번. 그 이벤트가 낸 체결 이벤트를 넣는 동안에도 같다.
+        self.index: int | None = None
         self.read_total = 0
+        # 넣은 이벤트 줄(시장·체결) 수. 표준 출력 합계 상한이 이만큼 늘어난다.
+        self.fed = 0
         # 하네스가 ready를 보냈는지. 그 전에 끝났다면 컨테이너가 아예 못 떴을 수도 있다.
         self.ready = False
 
@@ -163,54 +180,76 @@ class _Conversation:
         except ConnectionError as exc:
             raise _HarnessEndedError from exc
 
+    async def feed(self, event: JsonValue) -> None:
+        await self.send({"event": event})
+        self.fed += 1
+
+    def count(self, size: int) -> None:
+        self.read_total += size
+        cap = max(MAX_STDOUT, STDOUT_PER_EVENT * self.fed)
+        if self.read_total > cap:
+            raise _OutputOverflowError(f"표준 출력이 한도({cap}바이트)를 넘었습니다")
+
     async def receive(self) -> dict[str, object] | None:
         try:
             line = await self.stdout.readuntil(b"\n")
         except asyncio.LimitOverrunError as exc:
-            raise _OutputOverflowError from exc
+            raise _OutputOverflowError("출력 한 줄이 64KiB를 넘었습니다") from exc
         except asyncio.IncompleteReadError as exc:
-            self.read_total += len(exc.partial)
-            if self.read_total > MAX_STDOUT:
-                raise _OutputOverflowError from exc
+            self.count(len(exc.partial))
             raise _HarnessEndedError from exc
-        self.read_total += len(line)
-        if self.read_total > MAX_STDOUT:
-            raise _OutputOverflowError
+        self.count(len(line))
         return _decode(line)
 
-    def refusal(self, message: dict[str, object] | None, loading: bool) -> Reply:
-        """신호(또는 ready) 대신 온 줄을 실패 사유로 바꾼다.
+    def refusal(self, message: dict[str, object] | None, loading: bool) -> SandboxResult:
+        """출력(또는 ready) 대신 온 줄을 실패 사유로 바꾼다.
 
-        detail에는 전략 코드가 낸 것(받은 값, 하네스 줄의 detail)만 담는다. 프로토콜 출구는 전략
-        코드도 쓸 수 있어서다. 설명 문장은 MCP 서버가 붙이고, 전략 코드가 낸 부분을 표시한다.
+        detail에는 전략 코드가 낸 것(하네스 줄의 detail)만 담는다. 프로토콜 출구는 전략 코드도
+        쓸 수 있어서다. 설명 문장은 MCP 서버가 붙이고, 전략 코드가 낸 부분을 표시한다.
         """
         if message is not None:
             reason = _harness_reason(message.get("error"), loading)
             if reason is not None:
-                return failure(reason, self.bar_index, str(message.get("detail", "")))
-            if "signal" in message:
-                return failure("invalid_signal", self.bar_index, repr(str(message["signal"])[:100]))
+                return failure(reason, self.index, str(message.get("detail", "")))
         # 읽지 못한 줄은 보여 주지 않는다.
-        return failure("invalid_signal", self.bar_index, "")
+        return failure("invalid_output", self.index, "")
 
-    async def run(self, code: str, params: dict[str, JsonValue], bars: list[WireBar]) -> Reply:
-        await self.send({"code": code, "params": params})
+    async def send_model(self, model: bytes) -> None:
+        """모델 파일을 base64 조각 줄로 보내고 끝을 알린다. 전략 코드는 아직 불러오기 전이다."""
+        view = memoryview(model)
+        for start in range(0, len(model), MODEL_CHUNK):
+            piece = base64.b64encode(view[start : start + MODEL_CHUNK]).decode("ascii")
+            await self.send({"model_chunk": piece})
+        await self.send({"model_end": True})
+
+    async def run(self, job: SandboxJob) -> SandboxResult:
+        setup = {"code": job.code, "params": job.params, "streams": _streams(job)}
+        await self.send({**setup, "model": job.model is not None})
+        if job.model is not None:
+            await self.send_model(job.model)
         ready = await self.receive()
         if ready is None or ready.get("ready") is not True:
             return self.refusal(ready, loading=True)
         self.ready = True
-        signals: list[SignalName] = []
-        for index, bar in enumerate(bars):
-            # 신호를 받기 전에는 다음 봉을 보내지 않는다. 앞으로 올 봉은 컨테이너에 없다.
-            self.bar_index = index
-            await self.send({"bar": bar})
-            answer = await self.receive()
-            signal = _signal(answer)
-            if signal is None:
-                return self.refusal(answer, loading=False)
-            signals.append(signal)
+        sim = Simulator(job.terms)
+        outputs: list[Output] = []
+        for index, event in enumerate(job.events):
+            self.index = index
+            # 이 이벤트에서 난 체결이 먼저, 이벤트 자신이 다음이다. 출력을 받기 전에는 다음
+            # 이벤트를 보내지 않는다. 앞으로 올 이벤트는 컨테이너에 없다.
+            for fed in [*sim.on_market(event), event]:
+                await self.feed(event_to_wire(fed))
+                answer = await self.receive()
+                if answer is None or "output" not in answer:
+                    return self.refusal(answer, loading=False)
+                try:
+                    output = output_from_wire(answer["output"], job)
+                except BadOutput:
+                    return failure("invalid_output", index, preview(answer["output"]))
+                sim.on_output(output, decision_time(fed))
+                outputs.append(output)
         self.stdin.close()
-        return Reply("ok", signals, None, "")
+        return SandboxResult("ok", outputs, None, "")
 
 
 async def _docker(*args: str) -> str | None:
@@ -270,7 +309,7 @@ class _ErrorStream:
                     self.proc.kill()
 
 
-async def _exit_reason(name: str, talk: _Conversation, cli_code: int | None) -> Reply:
+async def _exit_reason(name: str, talk: _Conversation, cli_code: int | None) -> SandboxResult:
     """하네스가 답 없이 끝났을 때 컨테이너 상태로 사유를 가른다.
 
     컨테이너가 하네스를 돌리지 못했으면(상태를 못 읽음, 데몬이 남긴 오류, ready 전 docker 오류
@@ -290,24 +329,20 @@ async def _exit_reason(name: str, talk: _Conversation, cli_code: int | None) -> 
     # 전략 코드가 스스로 같은 코드로 끝냈으면(컨테이너 종료 코드와 같음) 코드의 실패다.
     if not talk.ready and cli_code in DOCKER_START_CODES and code != str(cli_code):
         raise ContainerStartError(f"docker run이 종료 코드 {cli_code}로 끝났습니다")
-    bar_index = talk.bar_index
+    index = talk.index
     if oom == "true":
-        return failure("memory", bar_index, "메모리 한도(512MB)를 넘었습니다")
+        return failure("memory", index, "메모리 한도(512MB)를 넘었습니다")
     if code in CPU_EXIT_CODES:
-        return failure("cpu", bar_index, "CPU 시간 한도(60초)를 넘었습니다")
+        return failure("cpu", index, "CPU 시간 한도(60초)를 넘었습니다")
     detail = (
         f"전략 프로세스가 종료 코드 {code}로 끝났습니다" if code else "종료 코드를 알 수 없습니다"
     )
-    return failure("exception", bar_index, detail)
+    return failure("exception", index, detail)
 
 
 async def run_in_container(
-    code: str,
-    params: dict[str, JsonValue],
-    bars: list[WireBar],
-    image: str,
-    wall_seconds: float = WALL_SECONDS,
-) -> Reply:
+    job: SandboxJob, image: str, wall_seconds: float = WALL_SECONDS
+) -> SandboxResult:
     """전략 코드를 새 컨테이너 하나에서 돌린다. 끝나면 어떤 경우에도 컨테이너를 지운다."""
     name = NAME_PREFIX + secrets.token_hex(8)
     proc = await asyncio.create_subprocess_exec(
@@ -315,7 +350,7 @@ async def run_in_container(
         stdin=asyncio.subprocess.PIPE,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
-        limit=MAX_STDOUT,
+        limit=MAX_LINE,
     )
     stdin, stdout, stderr = proc.stdin, proc.stdout, proc.stderr
     if stdin is None or stdout is None or stderr is None:
@@ -324,22 +359,22 @@ async def run_in_container(
     errors = _ErrorStream(stderr, proc)
     stderr_drain = asyncio.create_task(errors.drain())
     talk = _Conversation(stdin, stdout)
-    reply: Reply | None = None
+    reply: SandboxResult | None = None
     try:
         try:
             # 마감은 하나다. 모든 쓰기·읽기가 남은 시간 안에서 돈다.
             async with asyncio.timeout(wall_seconds):
                 try:
-                    reply = await talk.run(code, params, bars)
+                    reply = await talk.run(job)
                 except _HarnessEndedError:
                     # 컨테이너가 끝난 뒤에야 상태(OOM·종료 코드)가 확정된다.
                     stdin.close()
                     await proc.wait()
         except TimeoutError:
             await _docker("kill", name)
-            reply = failure("timeout", talk.bar_index, f"{wall_seconds:g}초 안에 끝나지 않았습니다")
-        except _OutputOverflowError:
-            reply = failure("output", talk.bar_index, "출력이 1MB를 넘었습니다")
+            reply = failure("timeout", talk.index, f"{wall_seconds:g}초 안에 끝나지 않았습니다")
+        except _OutputOverflowError as exc:
+            reply = failure("output", talk.index, str(exc))
         if reply is None:
             reply = await _exit_reason(name, talk, proc.returncode)
     finally:
@@ -353,7 +388,7 @@ async def run_in_container(
         await proc.wait()
     # 표준 에러는 끝까지 센 뒤에 본다. 한도를 넘었으면 다른 결과보다 먼저다.
     if errors.flooded:
-        return failure("output", talk.bar_index, "출력이 1MB를 넘었습니다")
+        return failure("output", talk.index, "표준 에러가 1MB를 넘었습니다")
     return reply
 
 

@@ -16,16 +16,24 @@ ORDER_BUCKET = "order"
 LIMITS_BUCKET = "limits"
 # 백테스트는 격리 컨테이너를 하나씩 띄운다.
 BACKTEST_BUCKET = "backtest"
+# 틱 저장 설정을 바꿀 때마다 NH에 웹소켓 키를 새로 받는다.
+RECORDING_BUCKET = "recording"
+# 버킷마다 횟수를 세는 고정 창.
+WINDOW = timedelta(minutes=1)
 
 LIMITS: Mapping[str, int] = MappingProxyType(
-    {PREVIEW_BUCKET: 20, ORDER_BUCKET: 10, LIMITS_BUCKET: 10, BACKTEST_BUCKET: 10}
+    {
+        PREVIEW_BUCKET: 20,
+        ORDER_BUCKET: 10,
+        LIMITS_BUCKET: 10,
+        BACKTEST_BUCKET: 10,
+        RECORDING_BUCKET: 10,
+    }
 )
 
 
 class RateLimiter:
-    def __init__(
-        self, clock: Clock, limits: Mapping[str, int], window: timedelta = timedelta(minutes=1)
-    ) -> None:
+    def __init__(self, clock: Clock, limits: Mapping[str, int], window: timedelta = WINDOW) -> None:
         self._clock = clock
         self._limits = dict(limits)
         self._window = window

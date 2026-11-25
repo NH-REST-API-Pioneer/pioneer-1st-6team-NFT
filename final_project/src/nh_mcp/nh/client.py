@@ -22,6 +22,7 @@ from nh_mcp.domain import Clock, JsonValue
 from nh_mcp.nh.limits import RateLimiter, grade_of
 
 TOKEN_PATH = "/auth-service/v1/token"
+WEBSOCKET_KEY_PATH = "/permission/v1/web-socket-key"
 TIMEOUT_SECONDS = 10.0
 # 만료 직전에 보낸 요청이 거절되지 않게 미리 다시 받는다.
 TOKEN_MARGIN = timedelta(minutes=5)
@@ -63,6 +64,15 @@ class Rejected(NHError):
 class Credentials:
     app_key: str = field(repr=False)
     app_secret: str = field(repr=False)
+
+
+@dataclass(frozen=True)
+class StreamLogin:
+    """실시간 연결 한 번에 쓰는 비밀값. 웹소켓 키는 연결 주소에, 접근토큰은 session_init에 들어간다.
+    둘 다 로그·예외·repr에 나오면 안 된다(안전 불변식 7)."""
+
+    access_key: str = field(repr=False)
+    session_token: str = field(repr=False)
 
 
 def parse_body(text: str) -> JsonValue:
@@ -108,12 +118,32 @@ class NHClient:
         await self._ensure_token()
 
     async def post(self, path: str, payload: Mapping[str, JsonValue]) -> JsonObject:
+        body, _ = await self._call("POST", path, dict(payload))
+        return body
+
+    async def stream_login(self, renew_token: bool = False) -> StreamLogin:
+        """실시간 연결 하나에 쓸 웹소켓 키와 접근토큰. 키는 연결 한 번에 한 번만 쓴다.
+
+        renew_token이면 들고 있던 토큰을 버리고 새로 받는다(session_init이 거절됐을 때).
+        """
+        if renew_token:
+            self._token = None
+        body, token = await self._call("GET", WEBSOCKET_KEY_PATH, None)
+        key = body.get("access_key")
+        if not isinstance(key, str) or not key:
+            raise NHError("웹소켓 키 응답에 키가 없습니다.")
+        return StreamLogin(key, token)
+
+    async def _call(
+        self, method: str, path: str, payload: JsonObject | None
+    ) -> tuple[JsonObject, str]:
+        """토큰을 붙여 부르고 (본문, 쓴 토큰)을 돌려준다. 문 앞에서 막힌 요청만 다시 보낸다."""
         grade = grade_of(path)
         reissued, rate_retries = False, 0
         while True:
             token = await self._ensure_token()
             await self._limiter.acquire(grade)
-            status, body = await self._send(path, dict(payload), token)
+            status, body = await self._request(method, path, json_body=payload, token=token)
             code = _error_code(body)
             if (status == HTTP_UNAUTHORIZED or code in REISSUE_CODES) and not reissued:
                 reissued = True
@@ -124,7 +154,7 @@ class NHClient:
                 rate_retries += 1
                 await self._limiter.sleep(RATE_BACKOFF_SECONDS)
                 continue
-            return self._accept(status, body)
+            return self._accept(status, body), token
 
     async def _ensure_token(self) -> str:
         now = self._clock()
@@ -136,7 +166,7 @@ class NHClient:
             "appsecret": self._credentials.app_secret,
         }
         await self._limiter.acquire(grade_of(TOKEN_PATH))
-        status, body = await self._request(TOKEN_PATH, form=form)
+        status, body = await self._request("POST", TOKEN_PATH, form=form)
         issued = self._accept(status, body)
         token, expires_in = issued.get("access_token"), issued.get("expires_in")
         if not isinstance(token, str) or not token or not isinstance(expires_in, str | int):
@@ -145,11 +175,9 @@ class NHClient:
         self._token_until = now + timedelta(seconds=int(expires_in))
         return token
 
-    async def _send(self, path: str, payload: JsonObject, token: str) -> tuple[int, JsonValue]:
-        return await self._request(path, json_body=payload, token=token)
-
     async def _request(
         self,
+        method: str,
         path: str,
         *,
         json_body: JsonObject | None = None,
@@ -158,7 +186,9 @@ class NHClient:
     ) -> tuple[int, JsonValue]:
         headers = {"Authorization": f"Bearer {token}"} if token else {}
         try:
-            response = await self._http.post(path, json=json_body, data=form, headers=headers)
+            response = await self._http.request(
+                method, path, json=json_body, data=form, headers=headers
+            )
         except httpx2.HTTPError:
             # 원래 예외에는 요청 머리말(토큰)이 달려 있을 수 있어 잇지 않는다.
             raise NoResponse(f"{path} 응답을 받지 못했습니다. 처리됐는지 알 수 없습니다.") from None

@@ -19,18 +19,19 @@ from nh_mcp.services.strategy import (
     StrategyRequest,
     StrategyService,
 )
-from nh_mcp.tools.backtest import AMOUNT, INTERVALS, StrategyCode, parse_strategy
+from nh_mcp.tools.backtest import AMOUNT, StrategyCode, parse_strategy, parse_streams
 from nh_mcp.tools.context import DOMESTIC_ONLY, ToolContext, Whole, whole
-from nh_mcp.tools.order import MAX_QUANTITY, MAX_SYMBOL_LENGTH
+from nh_mcp.tools.order import MAX_QUANTITY
 
 _ON_LOSS: dict[str, OnLoss] = {"liquidate": "liquidate", "hold": "hold"}
 _MODES: dict[str, StrategyMode] = {"auto": "auto", "suggest": "suggest"}
 
 
 class StrategyDraft(StrategyCode):
-    """백테스트한 전략 코드와 파라미터, 봉 간격("minute" 1분봉 또는 "day" 일봉)."""
+    """백테스트한 전략 코드와 파라미터, 모델 파일, 흐름(backtest_strategy의 data.streams와 같은
+    값)."""
 
-    interval: str
+    streams: dict[str, list[str]]
 
 
 class ScopeDraft(TypedDict):
@@ -87,26 +88,23 @@ def _scope(draft: ScopeDraft) -> StrategyScope | str:
     if on_loss is None:
         return 'scope.on_loss는 "liquidate"(손실 한도에서 정리) 또는 "hold"(유지)입니다.'
     if mode is None:
-        return 'scope.mode는 "auto"(신호대로 주문) 또는 "suggest"(제안만)입니다.'
+        return 'scope.mode는 "auto"(목표대로 주문) 또는 "suggest"(제안만)입니다.'
     return StrategyScope(*counts, Decimal(loss), expires, on_loss, mode)
 
 
-def _request(symbol: str, strategy: StrategyDraft, scope: ScopeDraft) -> StrategyRequest | str:
+def _request(strategy: StrategyDraft, scope: ScopeDraft) -> StrategyRequest | str:
     """서비스에 넘길 요청, 또는 입력이 잘못됐다고 알려 줄 문장."""
-    code = symbol.strip()
-    if not code or len(code) > MAX_SYMBOL_LENGTH:
-        return "symbol은 search_symbol 결과의 종목코드를 넣어 주세요."
     parsed = parse_strategy(strategy)
     if isinstance(parsed, str):
         return parsed
-    interval = INTERVALS.get(strategy["interval"])
-    if interval is None:
-        return 'strategy.interval은 "minute"(1분봉) 또는 "day"(일봉)입니다.'
+    streams = parse_streams(strategy["streams"])
+    if isinstance(streams, str):
+        return streams
     approved = _scope(scope)
     if isinstance(approved, str):
         return approved
-    source, params = parsed
-    return StrategyRequest(code, source, params, interval, approved)
+    code, params, model = parsed
+    return StrategyRequest(code, params, streams, approved, model)
 
 
 def register_strategy_tools(
@@ -114,25 +112,30 @@ def register_strategy_tools(
 ) -> None:
     @mcp.tool(annotations={"readOnlyHint": False, "destructiveHint": False})
     async def preview_strategy(
-        symbol: str, strategy: StrategyDraft, scope: ScopeDraft, market: str = "domestic"
+        strategy: StrategyDraft, scope: ScopeDraft, market: str = "domestic"
     ) -> envelope.Response:
         """전략을 켜도 되는 범위인지 내 위험 한도와 비교하고, 통과하면 확인 토큰을 발급한다.
 
-        전략은 켜지지 않고 주문도 나가지 않는다. M3에는 이 토큰을 쓰는 start_strategy가 아직 없다.
+        전략은 켜지지 않고 주문도 나가지 않는다. 이 토큰을 쓰는 start_strategy가 아직 없다.
+        범위와 제약은 strategy://contract.
         쓸 때: backtest_strategy 결과를 사용자에게 보여 주고 실행 범위를 정할 때.
         쓰지 않을 때: 코드를 시험하려면 backtest_strategy, 주문은 preview_order.
-        먼저 같은 코드·파라미터·종목·봉 간격으로 backtest_strategy를 성공해야 한다.
-        코드가 한 글자만 달라도, 간격이 달라도 안 된다(error.rule이 not_backtested).
-        symbol: search_symbol 결과의 국내 선물 종목코드. market은 "domestic"만 된다.
-        strategy: {"code", "params", "interval"}. backtest_strategy에 넣은 것과 똑같이 쓴다.
-        interval: "minute"(1분봉) 또는 "day"(일봉).
+        먼저 같은 code·params·streams·model로 backtest_strategy를 성공해야 한다. 코드가 한 글자만
+        달라도, 종목이나 흐름, 모델 파일이 하나라도 달라도 안 된다(error.rule이 not_backtested).
+        종목·흐름을 적는 순서는 상관없다.
+        strategy: {"code", "params", "streams", "model"(선택)}. backtest_strategy의
+        strategy.code·params·model과 data.streams를 똑같이 쓴다. 그 뒤에 사용자가 모델 파일을
+        지웠으면 INVALID_INPUT이다. streams: {종목코드: ["minute"(1분봉), "day"(일봉),
+        "tick"(체결), "book"(호가) 가운데 하나 이상]}, 종목코드는 search_symbol 결과의 국내 선물.
+        "minute"과 "tick"·"book"은 같이 쓸 수 없다(backtest_strategy와 같은 규칙).
+        market은 "domestic"만 된다.
         scope: 사용자가 정한 실행 범위. 내 한도(set_risk_limits)를 넘을 수 없다.
         quantity: 1회 주문 계약 수. max_position: 최대 보유 계약 수(quantity 이상).
         daily_orders: 하루 최대 주문 횟수(1~100). daily_loss: 하루 손실 한도, 원 단위 숫자만 쓴
         문자열(예: "300000"). expires_at: 승인이 끝나는 시각, 시간대가 있는 ISO 8601이고
         지금부터 7일 이내(예: "2026-12-03T15:45:00+09:00").
         on_loss: 손실 한도에 닿으면 "liquidate"(포지션 정리) 또는 "hold"(유지).
-        mode: "auto"(신호대로 주문) 또는 "suggest"(제안만, 사용자가 확인).
+        mode: "auto"(목표대로 주문) 또는 "suggest"(제안만, 사용자가 확인).
         다음: 응답의 summary를 사용자에게 그대로 보여 주고 승인을 받는다. 토큰은 2분 동안 한 번만
         쓸 수 있다. 막히면 error.code가 LIMITS_NOT_SET(한도 없음), RISK_BLOCKED(error.rule이
         scope_exceeds_limits 또는 not_backtested), INVALID_INPUT(입력 형식)이다.
@@ -142,7 +145,7 @@ def register_strategy_tools(
             return ctx.too_many()
         if market != "domestic":
             return ctx.invalid(DOMESTIC_ONLY)
-        request = _request(symbol, strategy, scope)
+        request = _request(strategy, scope)
         if isinstance(request, str):
             return ctx.invalid(request)
 
