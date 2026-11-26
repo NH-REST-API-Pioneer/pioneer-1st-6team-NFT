@@ -14,7 +14,7 @@ import pytest
 
 from nh_mcp.domain import BarEvent, Candle, MarketEvent, SandboxJob, SandboxResult, SymbolTerms
 from nh_mcp.sandbox import container
-from nh_mcp.sandbox.container import MAX_LINE, MAX_STDOUT, run_in_container
+from nh_mcp.sandbox.container import MAX_LINE, MAX_STDERR, MAX_STDOUT, run_in_container
 
 from .wire import T0, bars, job
 
@@ -132,3 +132,33 @@ def test_total_cap_grows_with_the_events_fed(
     assert reply.status == status, reply
     if status == "ok":
         assert reply == SandboxResult("ok", [None] * events, None, "")
+
+
+# 이벤트마다 print로 params["size"]바이트를 쓰는 전략. print는 표준 에러로 간다.
+NOISY = """
+import sys
+
+def on_event(event, ctx):
+    sys.stderr.write("x" * int(ctx.params["size"]))
+    sys.stderr.flush()
+    return None
+"""
+
+
+@pytest.mark.parametrize(
+    ("size", "events", "status"),
+    [
+        # 합계 1.2MB: 고정 1MiB는 넘지만 이벤트 6000개 * 256바이트 = 1.536MB 안이다.
+        (200, 6_000, "ok"),
+        # 합계 1.5MB: 이벤트 5000개 * 256바이트 = 1.28MB를 넘는다.
+        (300, 5_000, "output"),
+    ],
+)
+def test_stderr_cap_grows_with_the_events_fed(
+    sandbox_image: str, size: int, events: int, status: str
+) -> None:
+    # 띄워 둔 컨테이너는 며칠 돈다. 이벤트마다 print하는 전략이 고정 1MiB에 죽지 않아야 한다.
+    assert size * events > MAX_STDERR
+    run = job(NOISY, bars(events), params={"size": size})
+    reply = asyncio.run(run_in_container(run, sandbox_image, wall_seconds=60.0))
+    assert reply.status == status, reply

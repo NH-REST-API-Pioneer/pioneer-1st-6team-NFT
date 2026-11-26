@@ -356,7 +356,8 @@ def on_event(event, ctx):
 )
 @MODES
 def test_stderr_flood_is_stopped(mode: Mode, sandbox_image: str, flood: str) -> None:
-    # 표준 에러(print도 이리로 간다)도 1MB를 넘으면 끊는다. Docker 로그에는 쌓이지 않는다.
+    # 표준 에러(print도 이리로 간다)도 한도(처음 1MiB, 이벤트마다 256바이트씩 늘어남)를 넘으면
+    # 끊는다. Docker 로그에는 쌓이지 않는다.
     code = f"""
 import os, sys
 

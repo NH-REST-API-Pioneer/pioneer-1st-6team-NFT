@@ -53,7 +53,9 @@ MAX_LINE = 65_536
 # 내는 전략이 25,000 이벤트에서도 끝까지 돌게 넣은 만큼 늘린다. 설정·모델 줄은 늘리지 않는다.
 MAX_STDOUT = 1_048_576
 STDOUT_PER_EVENT = 256
-# 표준 에러(전략 코드의 print도 이리로 온다)도 이만큼만 받는다. 넘으면 출력 폭주로 끊는다.
+# 표준 에러(전략 코드의 print도 이리로 온다)도 같은 규칙이다:
+# max(MAX_STDERR, STDOUT_PER_EVENT * 넣은 이벤트 줄 수). 띄워 둔 컨테이너는 며칠 돌므로 고정 1MiB면
+# 이벤트마다 print하는 전략이 죽는다(사람 승인 2026-11-26). 넘으면 출력 폭주로 끊는다.
 MAX_STDERR = 1_048_576
 # docker kill · rm · inspect 한 번을 기다리는 시간.
 DOCKER_CLI_SECONDS = 30.0
@@ -69,7 +71,7 @@ EVENT_SECONDS = 2.0
 # 띄워 두는 컨테이너를 여는 데(시작, 모델 파일 전송, 코드 불러오기·init) 쓰는 벽시계 마감. 누적 CPU
 # 한도가 없어서 init이 쓰는 CPU는 이것이 묶는다. 백테스트의 CPU 한도(60초, --cpus 1)와 같은 크기다.
 OPEN_SECONDS = 60.0
-STDERR_FLOOD = "표준 에러가 1MB를 넘었습니다"
+STDERR_FLOOD = "표준 에러가 한도를 넘었습니다"
 
 _LOG = logging.getLogger(__name__)
 
@@ -348,14 +350,21 @@ class _ErrorStream:
     안 읽으면 파이프가 차서 컨테이너가 쓰다가 멈춘다. 끊긴 컨테이너는 마지막 정리(rm -f)가 지운다.
     """
 
-    def __init__(self, stream: asyncio.StreamReader, proc: asyncio.subprocess.Process) -> None:
+    def __init__(
+        self,
+        stream: asyncio.StreamReader,
+        proc: asyncio.subprocess.Process,
+        fed: Callable[[], int],
+    ) -> None:
         self.stream = stream
         self.proc = proc
+        # 지금까지 넣은 이벤트 줄 수. 한도가 이만큼 늘어난다.
+        self.fed = fed
         self.total = 0
 
     @property
     def flooded(self) -> bool:
-        return self.total > MAX_STDERR
+        return self.total > max(MAX_STDERR, STDOUT_PER_EVENT * self.fed())
 
     async def drain(self) -> None:
         cut = False
@@ -408,9 +417,9 @@ class _Box:
             raise RuntimeError("docker run 파이프를 열지 못했습니다")
         self.name = name
         self.proc = proc
-        self.errors = _ErrorStream(stderr, proc)
-        self.draining = asyncio.create_task(self.errors.drain())
         self.talk = _Conversation(stdin, stdout)
+        self.errors = _ErrorStream(stderr, proc, lambda: self.talk.fed)
+        self.draining = asyncio.create_task(self.errors.drain())
 
     async def kill(self) -> None:
         """컨테이너를 지우고 docker run을 끊는다. 이것이 끝나면 컨테이너는 남아 있지 않다."""
