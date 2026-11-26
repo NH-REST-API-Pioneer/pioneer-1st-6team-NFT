@@ -1,4 +1,7 @@
-"""주문 기록. 전송 전에 SUBMITTED 행을 먼저 쓰고, 응답을 받으면 갱신한다."""
+"""주문 기록. 전송 전에 SUBMITTED 행을 먼저 쓰고, 응답을 받으면 갱신한다.
+
+`run_id`는 자동 주문을 낸 전략 실행이다. 수동 주문은 None(NULL)이다.
+"""
 
 import sqlite3
 from dataclasses import dataclass
@@ -28,11 +31,12 @@ class StoredOrder:
     msg_cntn: str | None
     submitted_at: datetime
     updated_at: datetime
+    run_id: str | None
 
 
 _COLUMNS = (
     "id, user_id, market, symbol, side, order_type, quantity, price, status, "
-    "nh_order_no, msg_cd, msg_cntn, submitted_at, updated_at"
+    "nh_order_no, msg_cd, msg_cntn, submitted_at, updated_at, run_id"
 )
 
 _STATUSES: tuple[OrderStatus, ...] = (
@@ -72,16 +76,22 @@ def _row(row: tuple[object, ...]) -> StoredOrder:
         msg_cntn=None if row[11] is None else str(row[11]),
         submitted_at=parse_stamp(str(row[12])),
         updated_at=parse_stamp(str(row[13])),
+        run_id=None if row[14] is None else str(row[14]),
     )
 
 
 def insert_submitted(
-    conn: sqlite3.Connection, user_id: UserId, order: OrderRequest, now: datetime
+    conn: sqlite3.Connection,
+    user_id: UserId,
+    order: OrderRequest,
+    now: datetime,
+    run_id: str | None = None,
 ) -> int:
     with conn:
         cursor = conn.execute(
             "INSERT INTO orders (user_id, market, symbol, side, order_type, quantity, price, "
-            "status, submitted_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'SUBMITTED', ?, ?)",
+            "status, submitted_at, updated_at, run_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, 'SUBMITTED', ?, ?, ?)",
             (
                 user_id,
                 order.market,
@@ -92,6 +102,7 @@ def insert_submitted(
                 None if order.price is None else str(order.price),
                 stamp(now),
                 stamp(now),
+                run_id,
             ),
         )
     if cursor.lastrowid is None:
@@ -143,6 +154,15 @@ def list_for(conn: sqlite3.Connection, user_id: UserId) -> list[StoredOrder]:
         f"SELECT {_COLUMNS} FROM orders WHERE user_id = ? ORDER BY id", (user_id,)
     ).fetchall()
     return [_row(row) for row in rows]
+
+
+def count_for_run(conn: sqlite3.Connection, user_id: UserId, run_id: str, since: datetime) -> int:
+    """그 전략 실행이 since 뒤에 낸 주문 수(보낸 것 모두, 거부·모름 포함)."""
+    row: tuple[int] = conn.execute(
+        "SELECT COUNT(*) FROM orders WHERE user_id = ? AND run_id = ? AND submitted_at >= ?",
+        (user_id, run_id, stamp(since)),
+    ).fetchone()
+    return row[0]
 
 
 def unknown(

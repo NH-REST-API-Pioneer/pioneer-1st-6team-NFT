@@ -17,7 +17,7 @@ import httpx2
 import pytest
 from fakes import T0, FakeNH, World
 
-from nh_mcp.domain import KST, OrderRequest, RiskLimits, UserId
+from nh_mcp.domain import KST, OrderRequest, RiskLimits, RunSnapshot, StrategyScope, UserId
 from nh_mcp.markets.domestic import (
     CANCEL,
     DEPOSIT,
@@ -41,6 +41,7 @@ from nh_mcp.services.orders import (
     LimitsNotSet,
     MarketClosed,
     NotApproved,
+    NotRunOrder,
     OrdersDisabled,
     OrderService,
     Preview,
@@ -62,6 +63,14 @@ MARKET_BUY = OrderRequest("domestic", SYMBOL, "buy", "market", 1, None)
 ACK = {"ord_no": "0000000101", "msg_cd": "00000", "msg_cntn": "정상 처리"}
 # T0는 2026-12-01(화) 10:00 KST.
 TODAY_10 = T0.astimezone(KST)
+# 전략 승인 범위: 1회 2계약, 최대 3계약, 하루 5번, 손실 30만 원, 내일 이 시각 만료.
+RUN_SCOPE = StrategyScope(2, 3, 5, Decimal("300000"), T0 + timedelta(days=1), "hold", "auto")
+
+
+def snapshot(**changes: object) -> RunSnapshot:
+    """실행 중인 전략 "run-1"의 지금 모습. 바꿀 것만 넘긴다."""
+    base = RunSnapshot("run-1", RUN_SCOPE, frozenset({SYMBOL}), 0, 0, Decimal("0"))
+    return replace(base, **changes)
 
 
 def recorded(name: str) -> dict[str, Any]:
@@ -135,6 +144,9 @@ class Setup:
         self, token: str, approval: Approval = "approved", user: UserId | None = None
     ) -> StoredOrder:
         return asyncio.run(self.service.place(user or self.user, token, approval))
+
+    def place_auto(self, order: OrderRequest = BUY, run: RunSnapshot | None = None) -> StoredOrder:
+        return asyncio.run(self.service.place_auto(self.user, run or snapshot(), order))
 
     def order_calls(self) -> int:
         return self.nh.paths().count(ORDER)
@@ -1170,5 +1182,270 @@ def test_orders_disabled_refuses_preview_place_and_cancel() -> None:
         s.place(token)
     with pytest.raises(OrdersDisabled):
         asyncio.run(s.service.cancel(s.user, "0000000301"))
+
+    assert s.nh.paths() == []
+
+
+# ---- 자동 주문 (실행 중인 전략) ------------------------------------------------
+
+
+def test_place_auto_sends_the_order_once_and_tags_the_row_with_the_run() -> None:
+    s = Setup()
+
+    stored = s.place_auto()
+
+    assert s.order_calls() == 1
+    sent = [body for path, body in s.nh.requests if path == ORDER]
+    assert sent == [to_nh_order(BUY)]
+    assert (stored.status, stored.nh_order_no, stored.run_id) == ("ACCEPTED", "0000000101", "run-1")
+    assert s.row(stored.id).run_id == "run-1"
+    assert s.tokens() == 0
+    (detail,) = s.audit("order.place")
+    assert (detail["outcome"], detail["run_id"], detail["order_id"]) == (
+        "accepted",
+        "run-1",
+        stored.id,
+    )
+    assert detail["warnings"] == []
+    assert s.audit("order.approve") == []
+
+
+def test_a_manual_order_has_no_run() -> None:
+    s = Setup()
+
+    stored = s.place(s.preview().confirm_token)
+
+    assert stored.run_id is None
+    assert s.row(stored.id).run_id is None
+    (detail,) = s.audit("order.place")
+    assert "run_id" not in detail
+
+
+def test_place_auto_when_the_account_cannot_be_read_sends_nothing() -> None:
+    s = Setup()
+    s.nh.down_paths.add(DEPOSIT)
+
+    with pytest.raises(Unavailable):
+        s.place_auto()
+
+    assert s.order_calls() == 0
+    assert orders.list_for(s.conn, s.user) == []
+    (detail,) = s.audit("order.place")
+    assert (detail["outcome"], detail["run_id"]) == ("error", "run-1")
+
+
+def test_place_auto_on_an_incompletely_read_account_blocks_even_a_closing_order() -> None:
+    s = Setup()
+    incomplete_account(s, "position")
+
+    with pytest.raises(RiskBlocked) as caught:
+        s.place_auto()
+
+    assert caught.value.rule == "account_unknown"
+    assert s.order_calls() == 0
+
+
+def test_place_auto_without_user_limits_is_blocked() -> None:
+    s = Setup(with_limits=False)
+
+    with pytest.raises(LimitsNotSet):
+        s.place_auto()
+
+    assert s.order_calls() == 0
+
+
+def test_place_auto_obeys_the_users_order_limit_before_the_scope() -> None:
+    # 사용자 한도(1회 2계약)가 범위(1회 5계약)보다 좁으면 사용자 한도가 막는다.
+    s = Setup()
+    wide = snapshot(scope=replace(RUN_SCOPE, quantity=5, max_position=5))
+
+    with pytest.raises(RiskBlocked) as caught:
+        s.place_auto(replace(BUY, quantity=3), wide)
+
+    assert caught.value.rule == "max_order_qty"
+    assert s.order_calls() == 0
+
+
+def test_place_auto_outside_trading_hours_is_market_closed() -> None:
+    s = Setup()
+    s.clock.now = datetime(2026, 12, 1, 15, 45, tzinfo=KST)
+
+    with pytest.raises(MarketClosed):
+        s.place_auto()
+
+    assert s.order_calls() == 0
+
+
+def test_place_auto_with_orders_disabled_sends_nothing() -> None:
+    s = Setup(orders_enabled=False)
+
+    with pytest.raises(OrdersDisabled):
+        s.place_auto()
+
+    assert s.nh.paths() == []
+
+
+@pytest.mark.parametrize(
+    ("order", "changes", "rule"),
+    [
+        (BUY, {"scope": replace(RUN_SCOPE, mode="suggest")}, "scope_mode"),
+        (BUY, {"symbols": frozenset({KTB})}, "scope_symbol"),
+        (BUY, {"scope": replace(RUN_SCOPE, expires_at=T0)}, "scope_expired"),
+        (BUY, {"orders_today": 5}, "scope_daily_orders"),
+        (BUY, {"orders_today": None}, "scope_daily_orders"),
+        (replace(BUY, quantity=2), {"scope": replace(RUN_SCOPE, quantity=1)}, "scope_quantity"),
+        (BUY, {"resting_qty": 3}, "scope_position"),
+        (BUY, {"resting_qty": None}, "scope_position"),
+        (BUY, {"strategy_pnl": Decimal("-300000")}, "scope_daily_loss"),
+        (BUY, {"strategy_pnl": None}, "scope_daily_loss"),
+    ],
+)
+def test_place_auto_outside_the_approved_scope_sends_nothing(
+    order: OrderRequest, changes: dict[str, object], rule: str
+) -> None:
+    s = Setup()
+
+    with pytest.raises(RiskBlocked) as caught:
+        s.place_auto(order, snapshot(**changes))
+
+    assert caught.value.rule == rule
+    assert caught.value.message
+    assert s.order_calls() == 0
+    assert orders.list_for(s.conn, s.user) == []
+    (detail,) = s.audit("order.place")
+    assert (detail["outcome"], detail["rule"], detail["run_id"]) == ("blocked", rule, "run-1")
+
+
+def test_place_auto_reads_the_position_from_the_account() -> None:
+    # 보유 매수 2 + 이번 매수 2 = 4 > 범위 3. 사용자 한도(3)도 넘지만 범위 규칙보다 먼저 본다.
+    s = Setup()
+    s.nh.replies[OPEN_INTEREST] = [(200, occurs(held("1", "2", "2")))]
+    wide_user = RiskLimits(Decimal("500000"), 10, 2)
+    limits.put(s.conn, s.user, "domestic", wide_user, T0)
+
+    with pytest.raises(RiskBlocked) as caught:
+        s.place_auto(replace(BUY, quantity=2))
+
+    assert caught.value.rule == "scope_position"
+    assert s.order_calls() == 0
+    assert s.place_auto(BUY).status == "ACCEPTED"  # 2 + 1 = 3: 딱 최대
+
+
+def test_place_auto_lets_a_closing_order_through_when_the_strategy_loss_is_hit() -> None:
+    s = Setup()
+    s.nh.replies[OPEN_INTEREST] = [(200, occurs(held("2", "1", "1")))]
+
+    stored = s.place_auto(BUY, snapshot(strategy_pnl=Decimal("-1000000")))
+
+    assert stored.status == "ACCEPTED"
+    assert s.order_calls() == 1
+
+
+def test_place_auto_accepts_the_warnings_and_records_them() -> None:
+    # 자동 주문에는 주문마다의 미리보기가 없다. 시장가·종가 단일가 경고는 켤 때 한 번 보여 준다.
+    s = Setup()
+    s.clock.now = datetime(2026, 12, 1, 15, 35, 10, tzinfo=KST)
+
+    stored = s.place_auto(MARKET_BUY)
+
+    assert stored.status == "ACCEPTED"
+    (detail,) = s.audit("order.place")
+    assert any("시장가" in w for w in detail["warnings"])
+    assert any("종가 단일가" in w for w in detail["warnings"])
+
+
+def test_no_response_to_an_auto_order_is_unknown_and_never_resent() -> None:
+    s = Setup()
+    s.nh.down_paths.add(ORDER)
+
+    with pytest.raises(UnknownState):
+        s.place_auto()
+
+    assert s.order_calls() == 1
+    (row,) = orders.list_for(s.conn, s.user)
+    assert (row.status, row.nh_order_no, row.run_id) == ("UNKNOWN", None, "run-1")
+    (detail,) = s.audit("order.place")
+    assert (detail["outcome"], detail["run_id"]) == ("unknown", "run-1")
+    # 다음 늘리는 자동 주문도 그 행에 막힌다. 다시 보내지 않는다.
+    s.nh.down_paths.clear()
+    with pytest.raises(UnknownState):
+        s.place_auto()
+    assert s.order_calls() == 1
+
+
+def test_a_server_error_on_an_auto_order_is_unknown() -> None:
+    s = Setup()
+    s.nh.replies[ORDER] = [(503, b"")]
+
+    with pytest.raises(UnknownState):
+        s.place_auto()
+
+    assert s.order_calls() == 1
+    (row,) = orders.list_for(s.conn, s.user)
+    assert row.status == "UNKNOWN"
+
+
+def test_a_rejected_auto_order_is_broker_rejected_and_recorded() -> None:
+    s = Setup()
+    s.nh.replies[ORDER] = [(200, {"ord_no": "", "msg_cd": "40250", "msg_cntn": "수량 부족"})]
+
+    with pytest.raises(BrokerRejected):
+        s.place_auto()
+
+    (row,) = orders.list_for(s.conn, s.user)
+    assert (row.status, row.msg_cd, row.run_id) == ("REJECTED", "40250", "run-1")
+
+
+# ---- 전략의 취소 ----------------------------------------------------------
+
+
+def test_a_run_cancels_its_own_resting_order() -> None:
+    s = Setup()
+    stored = s.place_auto()
+    s.nh.replies[ORDER_HISTORY] = [(200, occurs(history(occurs1_ord_no="0000000101")))]
+    s.nh.reply(CANCEL, {"ord_no": "0000000102", "msg_cd": "", "msg_cntn": ""})
+
+    ack = asyncio.run(s.service.cancel_run_order(s.user, "run-1", stored.id))
+
+    assert ack.order_no == "0000000102"
+    sent = [body for path, body in s.nh.requests if path == CANCEL]
+    assert sent == [{"sym": SYMBOL, "trd_div": "1", "ord_qty": "1", "org_ord_no": "0000000101"}]
+
+
+@pytest.mark.parametrize("case", ["manual", "other_run", "other_user", "missing", "unknown"])
+def test_a_run_cannot_cancel_an_order_it_did_not_place(case: str) -> None:
+    s = Setup()
+    if case == "manual":
+        order_id = s.place(s.preview().confirm_token).id
+    elif case == "unknown":
+        s.nh.down_paths.add(ORDER)
+        with pytest.raises(UnknownState):
+            s.place_auto()
+        (row,) = orders.list_for(s.conn, s.user)
+        order_id = row.id
+    else:
+        order_id = s.place_auto().id
+    run_id, user = "run-1", s.user
+    if case == "other_run":
+        run_id = "run-2"
+    elif case == "other_user":
+        user = s.other
+    elif case == "missing":
+        order_id += 100
+    s.nh.replies[ORDER_HISTORY] = [(200, occurs(history(occurs1_ord_no="0000000101")))]
+
+    with pytest.raises(NotRunOrder):
+        asyncio.run(s.service.cancel_run_order(user, run_id, order_id))
+
+    assert CANCEL not in s.nh.paths()
+    refused = [d for d in s.audit("order.cancel") if d["outcome"] == "not_run_order"]
+    assert [(d["order_id"], d["run_id"]) for d in refused] == [(order_id, run_id)]
+
+
+def test_cancel_run_order_with_orders_disabled_sends_nothing() -> None:
+    s = Setup(orders_enabled=False)
+
+    with pytest.raises(OrdersDisabled):
+        asyncio.run(s.service.cancel_run_order(s.user, "run-1", 1))
 
     assert s.nh.paths() == []

@@ -1,4 +1,8 @@
-"""사용자 한 명의 NH 실시간 연결. 저장할 구독이 하나라도 있을 때만 연다.
+"""사용자 한 명의 NH 실시간 연결. 저장하거나 전략이 받을 구독이 하나라도 있을 때만 연다.
+
+NH 구독(desired)은 저장할 것(recording)과 전략 구독(`feed.py`)이 원하는 것의 합집합이다. ticks.db에
+쓰는 것(묶음, 저장 시각, 빈 구간)은 저장할 것만이다. 전략에는 원한 흐름의 행을 받는 대로 넘기고,
+끊기면 FeedGap, 다시 받으면 FeedResumed를 넘긴다.
 
 순서: 웹소켓 키 발급 → 연결 → session_init → INIT 확인 → 구독(A). pingpong은 받은 그대로 돌려준다.
 원하는 집합(desired)으로 수렴한다: 빠진 구독은 해제(D), 새 구독은 구독(A). 같은 집합을 다시 주면
@@ -30,6 +34,7 @@ from websockets.exceptions import ConnectionClosed
 from nh_mcp.config import NH_STREAM_URL
 from nh_mcp.domain import Clock, UserId
 from nh_mcp.nh.client import StreamLogin
+from nh_mcp.realtime.feed import Feed, FeedGap, FeedResumed, Subscription
 from nh_mcp.realtime.protocol import (
     Data,
     InitReply,
@@ -112,6 +117,7 @@ class Counts:
 
 @dataclass(frozen=True)
 class Status:
+    # NH에 원하는 구독: 저장할 것과 전략이 받을 것의 합집합.
     desired: frozenset[Sub]
     live: frozenset[Sub]
     # 구독이 거절된 것과 NH가 준 사유.
@@ -165,7 +171,10 @@ class Session:
         self._tuning = link.tuning
         self._sleep = link.sleep
         self._jitter = link.jitter
+        self._recording: frozenset[Sub] = frozenset()
         self._desired: frozenset[Sub] = frozenset()
+        self.feed = Feed(user_id, self._refresh_soon)
+        self._chores: set[asyncio.Task[None]] = set()
         # 이번 연결에서 구독(A)을 보내고 해제(D)를 보내지 않은 것.
         self._requested: set[Sub] = set()
         self._sent_at: dict[Sub, datetime] = {}
@@ -190,8 +199,13 @@ class Session:
     def __repr__(self) -> str:
         return f"Session(user={self._user})"
 
-    def start(self, desired: frozenset[Sub]) -> None:
-        self._desired = desired
+    @property
+    def recording(self) -> frozenset[Sub]:
+        return self._recording
+
+    def start(self, recording: frozenset[Sub]) -> None:
+        self._recording = recording
+        self._desired = recording | self.feed.wanted()
         self._runner = asyncio.create_task(self._run())
         self._flusher = asyncio.create_task(self._flush_loop())
 
@@ -205,13 +219,42 @@ class Session:
             counts=replace(self._counts),
         )
 
-    async def set(self, desired: frozenset[Sub]) -> None:
-        """원하는 집합을 바꾼다. 연결돼 있으면 차이만 보낸다. 비면 연결을 닫는다."""
+    def record(self, recording: frozenset[Sub]) -> None:
+        """저장할 집합을 바꾼다. NH 구독은 refresh가 맞춘다."""
         now = self._clock()
+        for sub in self._recording - recording:
+            # 일부러 멈춘 것이라 빈 구간이 아니다. 다시 켤 때 빈 구간이 생기지 않게 지운다.
+            self._store.forget(self._user, sub, now)
+        added = recording - self._recording
+        # 전략 때문에 이미 받거나 거절된 구독은 답이 다시 오지 않는다. 그 답이 하던 기록을 한다.
+        if added & self._live:
+            self._store.write(self._user, [], sorted(added & self._live), now)
+        for sub in sorted(added & self._failed.keys()):
+            self._store.open_gap(self._user, sub, now, "subscribe_failed")
+        self._recording = recording
+
+    def subscribe(self, owner: str, subs: frozenset[Sub]) -> Subscription:
+        """전략 구독을 더한다. 이미 받거나 거절된 흐름은 그 상태를 먼저 넣는다.
+
+        NH 구독은 refresh가 맞춘다.
+        """
+        now = self._clock()
+        handle = self.feed.add(owner, subs)
+        for sub in sorted(subs):
+            if sub in self._live:
+                handle.push(FeedResumed(sub, now))
+            elif sub in self._failed:
+                handle.push(FeedGap(sub, self._sent_at.get(sub, now), "subscribe_failed"))
+        return handle
+
+    async def refresh(self) -> None:
+        """NH 구독을 저장할 것과 전략 구독의 합집합으로 맞춘다. 연결돼 있으면 차이만 보낸다.
+
+        비면 연결을 닫는다.
+        """
         async with self._lock:
+            desired = self._recording | self.feed.wanted()
             for sub in self._desired - desired:
-                # 일부러 멈춘 것이라 빈 구간이 아니다. 다시 켤 때 빈 구간이 생기지 않게 지운다.
-                self._store.forget(self._user, sub, now)
                 self._live.discard(sub)
                 self._failed.pop(sub, None)
             self._desired = desired
@@ -232,13 +275,21 @@ class Session:
         self._closing.set()
         if self._flusher is not None:
             await self._flusher
-        if self._runner is not None:
-            self._runner.cancel()
-            await asyncio.gather(self._runner, return_exceptions=True)
+        tasks = [t for t in (self._runner, *self._chores) if t is not None]
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
         now = self._clock()
         await self._flush(final=True)
-        for sub in self._live:
+        for sub in self._live & self._recording:
             self._store.open_gap(self._user, sub, now, "server_stop")
+        self.feed.close_all("server_stop")
+
+    def _refresh_soon(self) -> None:
+        """밀린 전략 구독을 끊은 뒤 NH 구독을 맞춘다. 받는 쪽을 기다리게 하지 않게 따로 돈다."""
+        task = asyncio.create_task(self.refresh())
+        self._chores.add(task)
+        task.add_done_callback(self._chores.discard)
 
     async def _run(self) -> None:
         attempt = 0
@@ -318,7 +369,11 @@ class Session:
         message = parse(raw)
         if isinstance(message, Data):
             self._seq += 1
-            self._buffer.add(message.sub, kst_minute(now), (self._seq, *message.values))
+            row = (self._seq, *message.values)
+            minute = kst_minute(now)
+            if message.sub in self._recording:
+                self._buffer.add(message.sub, minute, row)
+            self.feed.data(message.sub, row, minute.date())
             if message.sub.stream == "tick":
                 self._counts.tick += 1
             else:
@@ -342,15 +397,22 @@ class Session:
         if reply.action != "A" or sub not in self._desired:
             return
         if reply.ok:
+            resumed = sub not in self._live
             self._live.add(sub)
             self._failed.pop(sub, None)
-            self._store.close_gap(self._user, sub, now)
-            self._store.write(self._user, [], [sub], now)
+            if sub in self._recording:
+                self._store.close_gap(self._user, sub, now)
+                self._store.write(self._user, [], [sub], now)
             log.info("사용자 %s 구독 %s %s", self._user, sub.symbol, sub.stream)
+            if resumed:
+                self.feed.mark(sub, FeedResumed(sub, now))
             return
         message = self._hide(reply.message)
         self._failed[sub] = message
-        self._store.open_gap(self._user, sub, self._sent_at.get(sub, now), "subscribe_failed")
+        sent_at = self._sent_at.get(sub, now)
+        if sub in self._recording:
+            self._store.open_gap(self._user, sub, sent_at, "subscribe_failed")
+        self.feed.mark(sub, FeedGap(sub, sent_at, "subscribe_failed"))
         log.warning("사용자 %s 구독 거절 %s %s: %s", self._user, sub.symbol, sub.stream, message)
 
     async def _converge(self, ws: Socket) -> None:
@@ -364,8 +426,10 @@ class Session:
             await ws.send(subscription(sub, on=True))
 
     def _lost(self) -> None:
-        for sub in self._live:
-            self._store.open_gap(self._user, sub, self._last_seen, "disconnect")
+        for sub in sorted(self._live):
+            if sub in self._recording:
+                self._store.open_gap(self._user, sub, self._last_seen, "disconnect")
+            self.feed.mark(sub, FeedGap(sub, self._last_seen, "disconnect"))
         self._live.clear()
         self._requested.clear()
 
@@ -386,7 +450,7 @@ class Session:
             self._flushed_minute = minute
             blocks = self._buffer.take(None if final else minute)
             until = now if final else minute
-            live = sorted(self._live)
+            live = sorted(self._live & self._recording)
             if blocks or live:
                 # 누르기와 쓰기는 이벤트 루프 밖에서 한다. 그동안에도 받기는 이어진다.
                 await asyncio.to_thread(self._store.write, self._user, blocks, live, until)

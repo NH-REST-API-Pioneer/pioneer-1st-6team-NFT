@@ -4,7 +4,8 @@ import asyncio
 import json
 import subprocess
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
+from dataclasses import replace
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -17,13 +18,29 @@ from nh_mcp.domain import (
     Candle,
     FillEvent,
     JsonValue,
+    Output,
     SandboxJob,
     SandboxResult,
+    SessionFailed,
+    SessionJob,
     SymbolTerms,
     Target,
 )
-from nh_mcp.sandbox.client import TIMEOUT_SECONDS, SandboxBusy, SandboxClient, SandboxDown
-from nh_mcp.sandbox.wire import MAX_DETAIL, event_to_wire, result_from_json, result_to_json
+from nh_mcp.sandbox.client import (
+    TIMEOUT_SECONDS,
+    SandboxBusy,
+    SandboxClient,
+    SandboxDown,
+    SessionGone,
+    SessionHandle,
+)
+from nh_mcp.sandbox.wire import (
+    MAX_DETAIL,
+    event_to_wire,
+    result_from_json,
+    result_to_json,
+    session_to_json,
+)
 
 TOKEN = "secret-token-" + "z" * 30
 SYMBOL = "A016C000"
@@ -315,3 +332,191 @@ def test_client_does_not_load_the_docker_launcher_or_the_executor_app() -> None:
         [sys.executable, "-c", probe], capture_output=True, text=True, check=True, timeout=60
     )
     assert json.loads(out.stdout) == []
+
+
+SESSION_ID = "A" * 20 + "b_-" + "9" * 20
+SESSION = SessionJob(
+    code="code",
+    params={"window": 5},
+    streams={SYMBOL: frozenset({"minute"})},
+    max_position=2,
+    terms={SYMBOL: SymbolTerms(Decimal("0.05"), Decimal("250000"), Decimal("1500"))},
+    expires_at=START + timedelta(days=7),
+    model=b"\x00model",
+)
+HANDLE = SessionHandle(SESSION_ID, replace(SESSION, model=None))
+BAR = BarEvent(SYMBOL, "minute", candle(0))
+
+type Handler = Callable[[httpx2.Request], httpx2.Response]
+
+
+def with_client[T](
+    handler: Handler, use: Callable[[SandboxClient], Coroutine[object, object, T]]
+) -> T:
+    async def scenario() -> T:
+        client = SandboxClient("http://executor:8100", TOKEN, httpx2.MockTransport(handler))
+        try:
+            return await use(client)
+        finally:
+            await client.aclose()
+
+    return asyncio.run(scenario())
+
+
+def open_with(handler: Handler) -> SessionHandle | SessionFailed:
+    return with_client(handler, lambda client: client.open_session(SESSION))
+
+
+def feed_with(handler: Handler) -> Output | SessionFailed:
+    return with_client(handler, lambda client: client.feed(HANDLE, BAR))
+
+
+def test_open_session_sends_the_wire_body_and_returns_a_handle() -> None:
+    seen: list[httpx2.Request] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        seen.append(request)
+        return httpx2.Response(200, json={"status": "ok", "session_id": SESSION_ID})
+
+    handle = open_with(handler)
+    assert handle == HANDLE
+    [request] = seen
+    assert (request.method, str(request.url)) == ("POST", "http://executor:8100/sessions")
+    assert request.headers["x-sandbox-token"] == TOKEN
+    assert json.loads(request.content) == session_to_json(SESSION)
+    assert json.loads(request.content)["expires_at"] == "2026-11-09T09:00:00+09:00"
+    # 식별자는 repr에 나오지 않는다. 모델 파일도 들고 있지 않는다.
+    assert SESSION_ID not in repr(handle)
+    assert isinstance(handle, SessionHandle)
+    assert handle.job.model is None
+
+
+def test_open_session_failure_is_returned() -> None:
+    body: dict[str, JsonValue] = {"status": "invalid_code", "detail": "on_event 함수가 없습니다"}
+    assert open_with(answer(body)) == SessionFailed("invalid_code", "on_event 함수가 없습니다")
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"status": "ok", "session_id": "short"},
+        {"status": "ok", "session_id": "a" * 42 + "/"},
+        {"status": "ok", "session_id": "a" * 44},
+        {"status": "ok", "session_id": 1},
+        {"status": "ok", "session_id": SESSION_ID, "extra": 1},
+        {"status": "ok"},
+        {"status": "weird", "detail": ""},
+        {"status": "exception"},
+        {"status": "exception", "detail": 1},
+        {"status": "exception", "detail": "x" * (MAX_DETAIL + 1)},
+        {"status": "exception", "detail": "", "extra": 1},
+        {"session_id": SESSION_ID},
+    ],
+)
+def test_open_session_bad_reply_is_down(body: dict[str, JsonValue]) -> None:
+    with pytest.raises(SandboxDown):
+        open_with(answer(body))
+
+
+def test_open_session_busy_and_down() -> None:
+    with pytest.raises(SandboxBusy):
+        open_with(lambda _: httpx2.Response(503, json={"status": "busy"}))
+    for code in (400, 401, 413, 500):
+        with pytest.raises(SandboxDown):
+            open_with(lambda _, code=code: httpx2.Response(code, json={"status": "x"}))
+    with pytest.raises(SandboxDown):
+        open_with(lambda _: httpx2.Response(200, content=b"not json"))
+
+
+def test_feed_sends_the_event_and_reads_the_output() -> None:
+    seen: list[httpx2.Request] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        seen.append(request)
+        return httpx2.Response(
+            200, json={"status": "ok", "output": {SYMBOL: {"position": -2, "price": "350.05"}}}
+        )
+
+    assert feed_with(handler) == {SYMBOL: Target(-2, Decimal("350.05"))}
+    [request] = seen
+    assert request.method == "POST"
+    assert str(request.url) == f"http://executor:8100/sessions/{SESSION_ID}/events"
+    assert request.headers["x-sandbox-token"] == TOKEN
+    assert json.loads(request.content) == event_to_wire(BAR)
+
+
+def test_feed_returns_no_change_and_failures() -> None:
+    assert feed_with(answer({"status": "ok", "output": None})) is None
+    body: dict[str, JsonValue] = {"status": "memory", "detail": "메모리 한도(512MB)를 넘었습니다"}
+    assert feed_with(answer(body)) == SessionFailed("memory", "메모리 한도(512MB)를 넘었습니다")
+
+
+def test_feed_on_a_gone_session_is_session_gone() -> None:
+    with pytest.raises(SessionGone):
+        feed_with(lambda _: httpx2.Response(404, json={"status": "gone"}))
+
+
+@pytest.mark.parametrize(
+    "output",
+    [
+        {"B": {"position": 1, "price": None}},  # 선언하지 않은 종목
+        {SYMBOL: {"position": 3, "price": None}},  # max_position 2를 넘는다
+        {SYMBOL: {"position": 1, "price": "350.03"}},  # 틱의 배수가 아니다
+        {SYMBOL: {"position": 1.0}},
+        "buy",
+    ],
+)
+def test_feed_output_outside_the_contract_is_down(output: JsonValue) -> None:
+    with pytest.raises(SandboxDown):
+        feed_with(answer({"status": "ok", "output": output}))
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        httpx2.Response(409, json={"status": "busy"}),
+        httpx2.Response(500, json={"status": "error"}),
+        httpx2.Response(200, json={"status": "ok"}),
+        httpx2.Response(200, json={"status": "ok", "output": None, "extra": 1}),
+        httpx2.Response(200, json={"status": "ok", "outputs": [None]}),
+        httpx2.Response(200, json=[None]),
+    ],
+)
+def test_feed_bad_reply_is_down(response: httpx2.Response) -> None:
+    with pytest.raises(SandboxDown):
+        feed_with(lambda _: response)
+
+
+def test_close_deletes_and_treats_gone_as_closed() -> None:
+    seen: list[httpx2.Request] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        seen.append(request)
+        code = 200 if len(seen) == 1 else 404
+        return httpx2.Response(code, json={"status": "closed" if code == 200 else "gone"})
+
+    async def close_twice(client: SandboxClient) -> None:
+        await client.close(HANDLE)
+        await client.close(HANDLE)
+
+    with_client(handler, close_twice)
+    assert [(r.method, r.url.path) for r in seen] == [("DELETE", f"/sessions/{SESSION_ID}")] * 2
+    assert all(r.headers["x-sandbox-token"] == TOKEN for r in seen)
+    with pytest.raises(SandboxDown):
+        with_client(lambda _: httpx2.Response(500), lambda client: client.close(HANDLE))
+
+
+def test_token_is_not_in_session_errors() -> None:
+    def refuse(request: httpx2.Request) -> httpx2.Response:
+        raise httpx2.ConnectError(f"refused {request.headers['x-sandbox-token']}", request=request)
+
+    calls: list[Callable[[SandboxClient], Coroutine[object, object, object]]] = [
+        lambda client: client.open_session(SESSION),
+        lambda client: client.feed(HANDLE, BAR),
+        lambda client: client.close(HANDLE),
+    ]
+    for call in calls:
+        with pytest.raises(SandboxDown) as caught:
+            with_client(refuse, call)
+        assert TOKEN not in str(caught.value)
+        assert caught.value.__cause__ is None

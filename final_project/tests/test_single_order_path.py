@@ -1,7 +1,8 @@
 """주문이 나가는 길은 하나다(안전 불변식 2). `src/nh_mcp` 전체를 AST로 훑는다.
 
 - NH로 신규 주문을 보내는 `send_order`를 쓰는 곳은 `OrderService._submit` 하나.
-- `_submit`을 부르는 곳은 `OrderService.place` 하나(토큰 소진과 리스크 재검사 뒤).
+- `_submit`을 부르는 곳은 `OrderService.place`(토큰 소진과 리스크 재검사 뒤)와
+  `OrderService.place_auto`(같은 리스크 검사와 승인 범위 규칙 뒤) 둘(사람 승인 2026-11-25).
 - 취소를 보내는 `send_cancel`을 쓰는 곳은 `OrderService.cancel` 하나.
 - NH 주문·취소 경로 상수(`ORDER`, `CANCEL`)를 읽는 곳은 `send_order`·`send_cancel` 안뿐.
 
@@ -71,8 +72,11 @@ def test_send_order_is_used_only_in_submit() -> None:
     assert uses("send_order")["send_order"] == [("services/orders.py", "OrderService._submit")]
 
 
-def test_submit_is_called_only_from_place() -> None:
-    assert uses("_submit")["_submit"] == [("services/orders.py", "OrderService.place")]
+def test_submit_is_called_only_from_place_and_place_auto() -> None:
+    assert uses("_submit")["_submit"] == [
+        ("services/orders.py", "OrderService.place"),
+        ("services/orders.py", "OrderService.place_auto"),
+    ]
 
 
 def test_send_cancel_is_used_only_in_cancel() -> None:
@@ -89,12 +93,17 @@ def test_the_nh_order_and_cancel_paths_are_read_only_by_the_two_senders() -> Non
 def test_the_scan_catches_a_second_caller(tmp_path: Path) -> None:
     """검사 자체가 무는지: 다른 파일에서 부르거나 이름을 빼 두면 잡힌다."""
     (tmp_path / "sneaky.py").write_text(
-        "async def go(market):\n"
+        "async def go(market, service):\n"
         "    send = market.send_order\n"
-        "    await getattr(market, 'send_cancel')(1, 2)\n",
+        "    await getattr(market, 'send_cancel')(1, 2)\n"
+        "    await service._submit(1, 2, {}, 0, run_id=None)\n",
         encoding="utf-8",
     )
 
-    found = uses("send_order", "send_cancel", root=tmp_path)
+    found = uses("send_order", "send_cancel", "_submit", root=tmp_path)
 
-    assert found == {"send_order": [("sneaky.py", "go")], "send_cancel": [("sneaky.py", "go")]}
+    assert found == {
+        "send_order": [("sneaky.py", "go")],
+        "send_cancel": [("sneaky.py", "go")],
+        "_submit": [("sneaky.py", "go")],
+    }

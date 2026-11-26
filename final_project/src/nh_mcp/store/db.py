@@ -53,6 +53,8 @@ CREATE TABLE IF NOT EXISTS risk_limits (
 );
 """
 
+# 주문 표. run_id(M4b, 자동 주문을 낸 전략 실행, 수동은 NULL)는 맨 뒤 칸이다. 옛 DB는 `_migrate`가
+# 행을 지우지 않고 칸만 더한다(`_NEW_COLUMNS`).
 _SCHEMA_TAIL = """
 CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY,
@@ -68,7 +70,8 @@ CREATE TABLE IF NOT EXISTS orders (
     msg_cd TEXT,
     msg_cntn TEXT,
     submitted_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    updated_at TEXT NOT NULL,
+    run_id TEXT
 );
 CREATE INDEX IF NOT EXISTS orders_by_user_status ON orders (user_id, status);
 """
@@ -122,7 +125,61 @@ CREATE TABLE IF NOT EXISTS tick_recordings (
 );
 """
 
-SCHEMA = _SCHEMA_HEAD + CONFIRM_TOKENS + _SCHEMA_TAIL + BACKTEST_RUNS + MODELS + TICK_RECORDINGS
+# 자동 실행(M4b). 실행 하나가 한 줄이고 켠 뒤에 바뀌는 칸은 state·reason·stopped_at·session_id·
+# last_event_at뿐이다. 상태는 runner/machine.py의 전이 표로만 바꾼다. session_id는 서버가 다시 뜰 때
+# 남은 전략 컨테이너를 닫으려고 둔다. strategy_events는 실행마다 최근 것만 남기는 기록이다.
+STRATEGY_RUNS = """
+CREATE TABLE IF NOT EXISTS strategy_runs (
+    run_id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    market TEXT NOT NULL CHECK (market IN ('domestic', 'overseas')),
+    streams TEXT NOT NULL,
+    code_hash TEXT NOT NULL,
+    params TEXT NOT NULL,
+    model_hash TEXT,
+    scope TEXT NOT NULL,
+    state TEXT NOT NULL CHECK (state IN ('starting', 'running', 'paused', 'stopped')),
+    reason TEXT,
+    started_at TEXT NOT NULL,
+    stopped_at TEXT,
+    session_id TEXT,
+    last_event_at TEXT
+);
+CREATE INDEX IF NOT EXISTS strategy_runs_by_user_state ON strategy_runs (user_id, state);
+CREATE TABLE IF NOT EXISTS strategy_events (
+    id INTEGER PRIMARY KEY,
+    run_id TEXT NOT NULL REFERENCES strategy_runs(run_id),
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    at TEXT NOT NULL,
+    kind TEXT NOT NULL
+        CHECK (kind IN ('output', 'order', 'fill', 'stop', 'warning', 'suggestion')),
+    symbol TEXT,
+    detail TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS strategy_events_by_run ON strategy_events (user_id, run_id, id);
+"""
+
+# 사용자가 등록 화면에서 켠 기능 묶음(M4b, 지금은 'auto_run'만). 행이 있으면 켜진 것이고 기본은
+# 꺼짐이다.
+USER_FEATURES = """
+CREATE TABLE IF NOT EXISTS user_features (
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    feature TEXT NOT NULL,
+    enabled_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, feature)
+);
+"""
+
+SCHEMA = (
+    _SCHEMA_HEAD
+    + CONFIRM_TOKENS
+    + _SCHEMA_TAIL
+    + BACKTEST_RUNS
+    + MODELS
+    + TICK_RECORDINGS
+    + STRATEGY_RUNS
+    + USER_FEATURES
+)
 
 
 def connect(path: Path | str) -> sqlite3.Connection:
@@ -150,21 +207,40 @@ def _table_sql(conn: sqlite3.Connection, name: str) -> str | None:
 #   남길 기록이 없다(M4a 설계 8절).
 _NEW_SHAPE = {"confirm_tokens": "'strategy'", "backtest_runs": "streams"}
 
+# 칸이 늘어난 표 → (칸 이름, 더할 칸 정의). 옛 표면 ALTER TABLE로 맨 뒤에 더한다(행은 그대로).
+# - orders(M4b): run_id가 없다. 주문 행은 지우지 않는다. 오늘의 UNKNOWN·SUBMITTED 행이 그 종목의
+#   늘리는 주문을 막고 있을 수 있다(불변식 5). 옛 행은 모두 수동 주문이라 NULL이 맞다.
+_NEW_COLUMNS = {"orders": ("run_id", "run_id TEXT")}
+
+
+def _columns(conn: sqlite3.Connection, name: str) -> set[str]:
+    return {str(row[1]) for row in conn.execute(f"PRAGMA table_info({name})").fetchall()}
+
 
 def _migrate(conn: sqlite3.Connection) -> None:
-    """옛 DB에서 모양이 바뀐 표만 지운다(SCHEMA가 새로 만든다). 다른 표는 건드리지 않는다."""
+    """옛 DB에서 모양이 바뀐 표는 지우고(SCHEMA가 새로 만든다), 칸이 늘어난 표는 칸을 더한다.
+
+    다른 표는 건드리지 않는다.
+    """
     stale = [
         name
         for name, marker in _NEW_SHAPE.items()
         if (sql := _table_sql(conn, name)) is not None and marker not in sql
     ]
-    if not stale:
+    missing = [
+        (name, definition)
+        for name, (column, definition) in _NEW_COLUMNS.items()
+        if _table_sql(conn, name) is not None and column not in _columns(conn, name)
+    ]
+    if not stale and not missing:
         return
     # executescript는 먼저 커밋하므로 쓰지 않고, 문장을 하나씩 한 트랜잭션에 묶는다.
     with conn:
         conn.execute("BEGIN IMMEDIATE")
         for name in stale:
             conn.execute(f"DROP TABLE {name}")
+        for name, definition in missing:
+            conn.execute(f"ALTER TABLE {name} ADD COLUMN {definition}")
 
 
 def stamp(moment: datetime) -> str:

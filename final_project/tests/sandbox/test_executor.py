@@ -18,6 +18,8 @@ from nh_mcp.domain import (
     MarketEvent,
     SandboxJob,
     SandboxResult,
+    SessionFailed,
+    SessionJob,
     SymbolTerms,
     Target,
     TickEvent,
@@ -53,6 +55,10 @@ class FakeRun:
         return self.reply
 
 
+async def no_sessions(work: SessionJob) -> SessionFailed:
+    raise AssertionError("백테스트 입구 테스트는 세션을 열지 않는다")
+
+
 def body(**extra: object) -> Body:
     return {**job_to_json(job(CODE, bars(2))), **extra}
 
@@ -63,7 +69,7 @@ async def post(
     token: str | None = TOKEN,
 ) -> httpx2.Response:
     headers = {} if token is None else {TOKEN_HEADER: token}
-    transport = httpx2.ASGITransport(app=make_app(TOKEN, run))
+    transport = httpx2.ASGITransport(app=make_app(TOKEN, run, no_sessions))
     async with httpx2.AsyncClient(transport=transport, base_url="http://executor") as http:
         return await http.post("/run", content=content, headers=headers)
 
@@ -358,7 +364,7 @@ def test_fourth_concurrent_run_is_busy() -> None:
         gate = asyncio.Event()
         run = FakeRun(gate=gate)
         payload = json.dumps(body()).encode()
-        transport = httpx2.ASGITransport(app=make_app(TOKEN, run))
+        transport = httpx2.ASGITransport(app=make_app(TOKEN, run, no_sessions))
         async with httpx2.AsyncClient(transport=transport, base_url="http://executor") as http:
 
             async def call() -> httpx2.Response:
@@ -384,7 +390,7 @@ def test_slot_is_released_when_run_fails() -> None:
 
     async def scenario() -> None:
         payload = json.dumps(body()).encode()
-        transport = httpx2.ASGITransport(app=make_app(TOKEN, Boom()))
+        transport = httpx2.ASGITransport(app=make_app(TOKEN, Boom(), no_sessions))
         async with httpx2.AsyncClient(transport=transport, base_url="http://executor") as http:
             for _ in range(MAX_CONCURRENT + 2):
                 resp = await http.post("/run", content=payload, headers={TOKEN_HEADER: TOKEN})
@@ -430,16 +436,22 @@ def test_reply_is_passed_through() -> None:
     }
 
 
-def test_only_post_run_exists() -> None:
+def test_only_the_documented_routes_exist() -> None:
+    """입구는 POST /run과 세션 넷(test_executor_sessions.py)뿐이다. 다른 경로·메서드는 없다."""
+
     async def scenario() -> list[int]:
-        transport = httpx2.ASGITransport(app=make_app(TOKEN, FakeRun()))
+        transport = httpx2.ASGITransport(app=make_app(TOKEN, FakeRun(), no_sessions))
+        headers = {TOKEN_HEADER: TOKEN}
         async with httpx2.AsyncClient(transport=transport, base_url="http://executor") as http:
             return [
-                (await http.get("/run")).status_code,
-                (await http.post("/other", content=b"{}")).status_code,
+                (await http.get("/run", headers=headers)).status_code,
+                (await http.post("/other", content=b"{}", headers=headers)).status_code,
+                (await http.get("/sessions", headers=headers)).status_code,
+                (await http.put("/sessions/x", content=b"{}", headers=headers)).status_code,
+                (await http.get("/sessions/x/events", headers=headers)).status_code,
             ]
 
-    assert asyncio.run(scenario()) == [405, 404]
+    assert asyncio.run(scenario()) == [405, 404, 405, 405, 405]
 
 
 def test_main_refuses_a_short_token(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -481,7 +493,7 @@ def test_main_removes_leftover_containers_before_serving(monkeypatch: pytest.Mon
 def test_end_to_end_with_real_docker(sandbox_image: str) -> None:
     run = partial(run_in_container, image=sandbox_image)
     payload = job_to_json(job(MEAN_REVERSION, bars(30), MEAN_REVERSION_PARAMS))
-    transport = httpx2.ASGITransport(app=make_app(TOKEN, run))
+    transport = httpx2.ASGITransport(app=make_app(TOKEN, run, no_sessions))
 
     async def scenario() -> httpx2.Response:
         async with httpx2.AsyncClient(transport=transport, base_url="http://executor") as http:

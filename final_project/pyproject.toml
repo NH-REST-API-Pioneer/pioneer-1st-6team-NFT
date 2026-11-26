@@ -55,11 +55,9 @@ markers = [
 
 # 의존 방향: tools · runner → services → markets → realtime → nh. guard는 계층 밖(services만 부른다).
 # realtime(시세 수신기)은 NH 클라이언트 쪽이다. nh 위에 두어 웹소켓 키를 nh로 받는다.
-# 괄호는 아직 없는 계층(선택 계층). 계층이 생기면 괄호를 벗긴다.
-# tools | runner: 서로 import 금지.
+# tools | runner: 서로 import 금지. 도구는 services의 입구(services/runs.py의 StrategyRuns)로 부르고
+# 서버 조립이 runner를 넣는다.
 # exhaustive: nh_mcp 아래 새 패키지는 계층에 넣거나 계층 밖 목록에 적어야 한다.
-# TODO(M4): runner를 금지 계약의 출발점에 넣는다.
-#   forbidden 계약은 없는 모듈을 오류로 보므로 대상 패키지가 생길 때 넣는다.
 [tool.importlinter]
 root_package = "nh_mcp"
 
@@ -68,7 +66,7 @@ name = "계층 의존 방향"
 type = "layers"
 containers = ["nh_mcp"]
 layers = [
-    "tools | (runner)",
+    "tools | runner",
     "services",
     "markets",
     "realtime",
@@ -101,7 +99,15 @@ forbidden_modules = ["nh_mcp.markets", "nh_mcp.realtime", "nh_mcp.nh", "nh_mcp.g
 allow_indirect_imports = true
 
 [[tool.importlinter.contracts]]
-name = "계층 밖 패키지는 도구·서비스·시장·서버를 부르지 않는다"
+name = "실행기는 services만 거친다(markets·realtime·nh·guard 직접 호출 금지)"
+type = "forbidden"
+source_modules = ["nh_mcp.runner"]
+forbidden_modules = ["nh_mcp.markets", "nh_mcp.realtime", "nh_mcp.nh", "nh_mcp.guard"]
+# 도구와 같은 규칙이다. 주문은 services의 place_auto·cancel_run_order로만 나간다(불변식 2).
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "계층 밖 패키지는 도구·실행기·서비스·시장·서버를 부르지 않는다"
 type = "forbidden"
 source_modules = [
     "nh_mcp.auth",
@@ -117,6 +123,7 @@ source_modules = [
 ]
 forbidden_modules = [
     "nh_mcp.tools",
+    "nh_mcp.runner",
     "nh_mcp.services",
     "nh_mcp.markets",
     "nh_mcp.realtime",

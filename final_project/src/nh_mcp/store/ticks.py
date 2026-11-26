@@ -256,13 +256,17 @@ def _floor(heads: list[tuple[int, int, int]], limit: int) -> int:
     return 0
 
 
+def read_row(stream: RecordStream, row: Row, day: date, scale: int = PRICE_SCALE) -> Trade | Book:
+    """저장 형식의 행 하나를 읽는다. day는 받은 분의 KST 날짜다. 수신기가 전략에 넘길 때도 쓴다."""
+    return _trade(row, day, scale) if stream == "tick" else _book(row, day, scale)
+
+
 def _unpacked(sub: Sub, blocks: list[tuple[str, int, bytes]]) -> Iterator[tuple[Sub, Trade | Book]]:
     """묶음을 받은 순서대로 하나씩 풀어 행을 낸다. 날짜는 받은 분의 KST 날짜다."""
-    read = _trade if sub.stream == "tick" else _book
     for minute, scale, data in blocks:
         day = parse_stamp(minute).astimezone(KST).date()
         for row in decode(data):
-            yield sub, read(row, day, scale)
+            yield sub, read_row(sub.stream, row, day, scale)
 
 
 def connect(path: Path | str) -> sqlite3.Connection:

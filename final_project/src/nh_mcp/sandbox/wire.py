@@ -10,7 +10,7 @@ import re
 from collections.abc import Mapping
 from datetime import datetime
 from decimal import Decimal
-from typing import Literal, cast
+from typing import Literal, Protocol, cast
 
 from nh_mcp.domain import (
     KST,
@@ -25,8 +25,11 @@ from nh_mcp.domain import (
     SandboxFailure,
     SandboxJob,
     SandboxResult,
+    SessionFailed,
+    SessionJob,
     StrategyEvent,
     Stream,
+    Streams,
     SymbolTerms,
     Target,
     TickEvent,
@@ -48,15 +51,38 @@ _EVENT_KEYS = {
     "tick": frozenset({"type", "symbol", "at", "price", "qty", "bid", "ask"}),
     "book": frozenset({"type", "symbol", "at", "bids", "asks"}),
 }
+_FILL_KEYS = frozenset({"type", "symbol", "at", "side", "qty", "price"})
 # model은 늘 있다(없으면 null). 키가 정확히 맞는지만 보면 되게 한다.
 _JOB_KEYS = frozenset({"code", "params", "streams", "max_position", "terms", "events", "model"})
+# 세션을 여는 본문은 일에서 이벤트를 빼고 만료 시각을 더했다.
+_SESSION_KEYS = (_JOB_KEYS - {"events"}) | {"expires_at"}
 _TERMS_KEYS = frozenset({"tick", "multiplier", "fee_per_fill"})
 _REPLY_KEYS = frozenset({"status", "outputs", "index", "detail"})
+_FAILED_KEYS = frozenset({"status", "detail"})
+_OPENED_KEYS = frozenset({"status", "session_id"})
+_FED_KEYS = frozenset({"status", "output"})
 _TARGET_KEYS = (frozenset({"position"}), frozenset({"position", "price"}))
 
 
+# 세션 식별자. 실행기가 secrets.token_urlsafe(32)로 만든다(추측할 수 없는 43자).
+_SESSION_ID = re.compile(r"[A-Za-z0-9_-]{43}")
+
+
 class BadOutput(Exception):
-    """전략 출력이 계약과 다르다."""
+    """전략 출력(또는 그것을 실은 실행기 응답)이 계약과 다르다."""
+
+
+class OutputContract(Protocol):
+    """출력 검사에 쓰는 것. SandboxJob과 SessionJob이 둘 다 이 모양이다."""
+
+    @property
+    def streams(self) -> Streams: ...
+
+    @property
+    def max_position(self) -> int: ...
+
+    @property
+    def terms(self) -> Mapping[str, SymbolTerms]: ...
 
 
 def _price(value: Decimal) -> str:
@@ -149,6 +175,26 @@ def job_to_json(job: SandboxJob) -> dict[str, JsonValue]:
         "events": [event_to_wire(e) for e in job.events],
         "model": None if job.model is None else base64.b64encode(job.model).decode("ascii"),
     }
+
+
+def session_to_json(job: SessionJob) -> dict[str, JsonValue]:
+    """세션을 여는 본문. 일 본문에서 이벤트를 빼고 만료 시각을 더한 것이다."""
+    body = job_to_json(
+        SandboxJob(job.code, job.params, job.streams, job.max_position, job.terms, [], job.model)
+    )
+    del body["events"]
+    return {**body, "expires_at": _stamp(job.expires_at)}
+
+
+def failed_to_json(failed: SessionFailed) -> dict[str, JsonValue]:
+    return {"status": failed.reason, "detail": failed.detail}
+
+
+def fed_to_json(outcome: Output | SessionFailed) -> dict[str, JsonValue]:
+    """이벤트 하나를 넣은 결과. 출력이거나, 세션이 끝난 사유다."""
+    if isinstance(outcome, SessionFailed):
+        return failed_to_json(outcome)
+    return {"status": "ok", "output": output_to_wire(outcome)}
 
 
 def result_to_json(r: SandboxResult) -> dict[str, JsonValue]:
@@ -247,6 +293,13 @@ def _book(item: dict[str, object], symbol: str, at: datetime) -> BookEvent | Non
     return BookEvent(symbol, at, bids, asks)
 
 
+def _fill(item: dict[str, object], symbol: str, at: datetime) -> FillEvent | None:
+    side, qty, price = item["side"], _int(item["qty"]), _decimal(item["price"])
+    if side not in ("buy", "sell") or qty is None or qty <= 0 or price is None or price <= 0:
+        return None
+    return FillEvent(symbol, at, "buy" if side == "buy" else "sell", qty, price)
+
+
 def market_event_from_wire(raw: object) -> MarketEvent | None:
     """시장 이벤트 하나를 검사하고 바꾼다. 종류마다 키가 정확히 맞아야 한다. 틀리면 None."""
     if not isinstance(raw, dict):
@@ -265,6 +318,25 @@ def market_event_from_wire(raw: object) -> MarketEvent | None:
             return _tick(item, symbol, at)
         case _:
             return _book(item, symbol, at)
+
+
+def event_from_wire(raw: object, streams: Streams) -> StrategyEvent | None:
+    """세션에 넣을 이벤트 하나. 선언한 종목·흐름의 시장 이벤트, 또는 선언한 종목의 체결 이벤트.
+
+    체결 이벤트는 키가 정확히 여섯 개, 매수·매도, 수량은 양의 정수, 가격은 0보다 큰 소수 문자열이다.
+    """
+    if not isinstance(raw, dict):
+        return None
+    item = cast(dict[str, object], raw)
+    if item.get("type") == "fill":
+        symbol, at = item.get("symbol"), _at(item.get("at"))
+        if frozenset(item) != _FILL_KEYS or not isinstance(symbol, str) or symbol not in streams:
+            return None
+        return None if at is None else _fill(item, symbol, at)
+    event = market_event_from_wire(item)
+    if event is None or stream_of(event) not in streams.get(event.symbol, frozenset()):
+        return None
+    return event
 
 
 def stream_of(event: MarketEvent) -> Stream:
@@ -379,6 +451,25 @@ def job_from_json(raw: object) -> SandboxJob | None:
     )
 
 
+def session_from_json(raw: object) -> SessionJob | None:
+    """세션을 여는 본문을 일로 바꾼다. 키가 정확히 일곱 개, 만료는 KST ISO 초 단위 시각이다.
+
+    만료 시각이 지났는지, 7일을 넘는지는 실행기가 본다(지금 시각이 필요하다).
+    """
+    if not isinstance(raw, dict) or frozenset(cast(dict[str, object], raw)) != _SESSION_KEYS:
+        return None
+    body = cast(dict[str, object], raw)
+    expires_at = _at(body["expires_at"])
+    # 나머지는 이벤트가 없는 일과 똑같이 검사한다.
+    rest = {key: value for key, value in body.items() if key != "expires_at"}
+    job = job_from_json({**rest, "events": []})
+    if expires_at is None or job is None:
+        return None
+    return SessionJob(
+        job.code, job.params, job.streams, job.max_position, job.terms, expires_at, job.model
+    )
+
+
 def _target(raw: object) -> Target:
     if not isinstance(raw, dict) or frozenset(cast(dict[str, object], raw)) not in _TARGET_KEYS:
         raise BadOutput
@@ -392,7 +483,7 @@ def _target(raw: object) -> Target:
     return Target(position, price[0])
 
 
-def output_from_wire(raw: object, job: SandboxJob) -> Output:
+def output_from_wire(raw: object, job: OutputContract) -> Output:
     """전략 출력 하나를 검사하고 바꾼다. 어기면 BadOutput.
 
     null 또는 {종목: {"position": 정수, "price": 소수 문자열(생략·null이면 시장가)}}. 종목은
@@ -442,6 +533,44 @@ def _status(raw: object) -> Literal["ok"] | SandboxFailure | None:
             return status
         case _:
             return None
+
+
+def _failed(body: dict[str, object]) -> SessionFailed | None:
+    """{"status": 실패 사유, "detail": 글(MAX_DETAIL자까지)}. 아니면 None."""
+    status, detail = _status(body.get("status")), body.get("detail")
+    if frozenset(body) != _FAILED_KEYS or status in (None, "ok"):
+        return None
+    if not isinstance(detail, str) or len(detail) > MAX_DETAIL:
+        return None
+    return SessionFailed(status, detail)
+
+
+def opened_from_json(raw: object) -> str | SessionFailed | None:
+    """세션을 연 응답. 세션 식별자, 또는 열지 못한 사유. 모양이 틀리면 None."""
+    if not isinstance(raw, dict):
+        return None
+    body = cast(dict[str, object], raw)
+    if body.get("status") != "ok":
+        return _failed(body)
+    session_id = body.get("session_id")
+    if frozenset(body) != _OPENED_KEYS or not isinstance(session_id, str):
+        return None
+    return session_id if _SESSION_ID.fullmatch(session_id) else None
+
+
+def fed_from_json(raw: object, job: OutputContract) -> Output | SessionFailed:
+    """이벤트를 넣은 응답. 출력도 이 세션의 계약대로 다시 검사한다. 모양이 틀리면 BadOutput."""
+    if not isinstance(raw, dict):
+        raise BadOutput
+    body = cast(dict[str, object], raw)
+    if body.get("status") == "ok":
+        if frozenset(body) != _FED_KEYS:
+            raise BadOutput
+        return output_from_wire(body["output"], job)
+    failed = _failed(body)
+    if failed is None:
+        raise BadOutput
+    return failed
 
 
 def result_from_json(raw: object, job: SandboxJob) -> SandboxResult | None:

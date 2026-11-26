@@ -15,7 +15,7 @@ from typing import Any
 import httpx2
 import pytest
 from conftest import Serve
-from fakes import ADMIN, T0, FakeNH, World
+from fakes import ADMIN, T0, FakeNH, World, auto_run_on
 from fastmcp import Client
 from mcp_types import Tool
 
@@ -78,6 +78,7 @@ def lab(
     asyncio.run(world.store.register(user, "domestic", credentials))
     if with_limits:
         limits.put(world.conn, user, "domestic", RiskLimits(Decimal("500000"), 3, 2), T0)
+    auto_run_on(world.conn, user)
     return world
 
 
@@ -139,7 +140,7 @@ def test_preview_strategy_is_listed_with_orders_on(serve: Serve) -> None:
     assert tool.annotations.read_only_hint is False
     assert tool.annotations.destructive_hint is False
     assert tool.description is not None
-    assert "start_strategy가 아직 없다" in tool.description
+    assert "start_strategy(confirm_token)" in tool.description
     assert "backtest_strategy" in tool.description
     assert set(tool.input_schema["properties"]) == {"strategy", "scope", "market"}
     draft = tool.input_schema["properties"]["strategy"]

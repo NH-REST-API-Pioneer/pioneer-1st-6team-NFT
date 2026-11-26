@@ -47,6 +47,7 @@ from nh_mcp.domain import (
 from nh_mcp.markets.domestic import CandleSeries, Interval
 from nh_mcp.markets.domestic_products import DomesticProducts
 from nh_mcp.models.store import ModelStore
+from nh_mcp.realtime.feed import Recorded, recorded_events
 from nh_mcp.sandbox.client import SandboxBusy, SandboxClient, SandboxDown
 from nh_mcp.sandbox.wire import stream_of
 from nh_mcp.services.queries import KeyMissing, QueryService
@@ -165,7 +166,6 @@ class BacktestRequest:
 
 # 흐름 하나: (종목코드, 흐름).
 type StreamId = tuple[str, Stream]
-type Recorded = TickEvent | BookEvent
 
 
 @dataclass(frozen=True)
@@ -405,36 +405,6 @@ def build_feed(fetched: Mapping[tuple[str, Interval], CandleSeries], start: date
             )
         coverage[(symbol, interval)] = _covered(fed, truncated)
     return Feed(events, coverage, warnings)
-
-
-def _levels(levels: tuple[ticks.Level, ...]) -> tuple[tuple[Decimal, int], ...]:
-    """최우선부터 잔량이 있는 단계까지. NH는 빈 단계를 가격·잔량 0으로 준다(모의는 5단계만 찬다)."""
-    out: list[tuple[Decimal, int]] = []
-    for level in levels:
-        if level.price is None or not level.qty:
-            break
-        out.append((level.price, level.qty))
-    return tuple(out)
-
-
-def recorded_events(rows: Iterable[tuple[ticks.Sub, ticks.Trade | ticks.Book]]) -> list[Recorded]:
-    """저장한 행을 받은 순서 그대로 이벤트로 바꾼다.
-
-    at은 거래소 시각(초)에 받은 날짜를 붙인 것이다. 앞 이벤트보다 이르면 앞 이벤트의 시각으로 둔다
-    (종목·흐름마다 거래소 시각이 어긋나 받은 순서와 다를 수 있다). 그래서 at은 받은 순서대로 뒤로
-    가지 않고, 판단한 뒤 처음 받은 그 종목의 체결에서 체결된다.
-    """
-    out: list[Recorded] = []
-    latest: datetime | None = None
-    for sub, row in rows:
-        at = row.at if latest is None or row.at > latest else latest
-        latest = at
-        match row:
-            case ticks.Trade(price=price, qty=qty, bid=bid, ask=ask):
-                out.append(TickEvent(sub.symbol, at, price, qty, bid, ask))
-            case ticks.Book(bids=bids, asks=asks):
-                out.append(BookEvent(sub.symbol, at, _levels(bids), _levels(asks)))
-    return out
 
 
 def place_days(recorded: list[Recorded], days: Mapping[str, CandleSeries]) -> list[MarketEvent]:

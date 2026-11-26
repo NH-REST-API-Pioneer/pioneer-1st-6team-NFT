@@ -1,8 +1,10 @@
 """주문 유스케이스: 미리보기, 주문, 취소, 응답을 못 받은 주문의 대조.
 
-- NH로 신규 주문을 보내는 곳은 `_submit` 하나이고 `_submit`을 부르는 곳은 `place` 하나다.
-  `place`는 토큰을 소진한 뒤 리스크 규칙(`guard.risk.evaluate`)을 다시 돌려 통과해야 보낸다.
-- 취소를 보내는 곳은 `cancel` 하나다.
+- NH로 신규 주문을 보내는 곳은 `_submit` 하나이고 `_submit`을 부르는 곳은 `place`·`place_auto`
+  둘이다. `place`는 토큰을 소진한 뒤 리스크 규칙(`guard.risk.evaluate`)을 다시 돌려 통과해야
+  보낸다. `place_auto`(실행 중인 전략)는 같은 리스크 규칙에 승인 범위 규칙
+  (`guard.strategy_scope.evaluate_scope`)을 더 지나야 보낸다. 사람 승인은 `start_strategy` 한 번.
+- 취소를 보내는 곳은 `cancel` 하나다. 전략은 `cancel_run_order`로 자기 주문만 취소한다.
 - 응답을 받지 못한 주문(시간 초과, HTTP 5xx·408)은 `UNKNOWN`으로 두고 다시 보내지 않는다.
   오늘 주문 내역과 맞춰 보아 하나로 정해질 때만 주문번호를 붙인다. 그 종목에 `UNKNOWN`이
   남으면 늘리는 주문은 막는다. 잠금 안에서 보이는 `SUBMITTED`(전송 중에 멈춘 행)도 똑같이 다룬다.
@@ -22,6 +24,7 @@ from typing import cast
 from nh_mcp.config import ENV
 from nh_mcp.domain import (
     KST,
+    AccountState,
     Clock,
     Contract,
     JsonValue,
@@ -30,12 +33,15 @@ from nh_mcp.domain import (
     OrderType,
     RiskDecision,
     RiskInput,
+    RunSnapshot,
+    ScopeInput,
     Side,
     UserId,
 )
 from nh_mcp.guard.confirm import judge
 from nh_mcp.guard.env import orders_allowed
 from nh_mcp.guard.risk import DEMO_ONLY, LIMITS_NOT_SET, ORDER_FORMAT, TRADING_HOURS, evaluate
+from nh_mcp.guard.strategy_scope import evaluate_scope, net_position
 from nh_mcp.markets.domestic import Ack, DomesticMarket, NHOrderState, NoSuchSymbol, OrderRow
 from nh_mcp.markets.domestic_master import MasterUnavailable
 from nh_mcp.markets.domestic_products import DomesticProducts
@@ -122,6 +128,14 @@ class InvalidCancel(Exception):
     def __init__(self, order_no: str) -> None:
         super().__init__(order_no)
         self.order_no = order_no
+
+
+class NotRunOrder(Exception):
+    """그 전략이 낸, 주문번호를 받은 행이 아니다(`cancel_run_order`). 아무것도 보내지 않았다."""
+
+    def __init__(self, order_id: int) -> None:
+        super().__init__(order_id)
+        self.order_id = order_id
 
 
 @dataclass(frozen=True)
@@ -351,7 +365,7 @@ class OrderService:
         detail: dict[str, JsonValue] = {"order": _order_json(order)}
         try:
             async with self._lock(user_id):
-                contract, decision = await self._check(user_id, order)
+                contract, decision, _ = await self._check(user_id, order)
                 payload = _payload(order, contract.name, decision.warnings)
                 new = NewToken(user_id, "order", payload)
                 token, expires_at = confirm_tokens.issue(self._conn, new, self._clock(), ORDER_TTL)
@@ -390,7 +404,7 @@ class OrderService:
             try:
                 if not confirm_tokens.consume(self._conn, token, user_id, "order", self._clock()):
                     raise ConfirmInvalid()
-                _, decision = await self._check(user_id, ticket.order)
+                _, decision, _ = await self._check(user_id, ticket.order)
                 # 사람이 보지 못한 경고(예: 확인 뒤 종가 단일가 구간)가 생기면 보내지 않는다.
                 new = _new_warnings(ticket, decision)
                 if new:
@@ -403,12 +417,63 @@ class OrderService:
                 self._audit(user_id, "order.place", detail | _failure(exc), started)
                 raise
             try:
-                stored = await self._submit(user_id, ticket.order, detail, started)
+                stored = await self._submit(user_id, ticket.order, detail, started, run_id=None)
             except asyncio.CancelledError:
                 cancelled: dict[str, JsonValue] = {"outcome": "unknown", "cancelled": True}
                 self._audit(user_id, "order.place", detail | cancelled, started)
                 raise
         return self._placed(user_id, stored, detail, started)
+
+    async def place_auto(
+        self, user_id: UserId, run: RunSnapshot, order: OrderRequest
+    ) -> StoredOrder:
+        """실행 중인 전략의 주문. 검사 → 승인 범위 → 전송. 확인 토큰과 주문마다의 승인 창은 없다.
+
+        사람 승인은 `start_strategy` 승인 창 한 번이고, 그 범위가 `run.scope`다. 응답을 받지 못하면
+        `UnknownState`로 알리고 다시 보내지 않는다(부른 쪽이 전략을 멈춘다).
+        """
+        self._require_enabled()
+        started = time.perf_counter_ns()
+        detail: dict[str, JsonValue] = {"order": _order_json(order), "run_id": run.run_id}
+        async with self._lock(user_id):
+            try:
+                _, decision, account = await self._check(user_id, order)
+                position = net_position(account.positions, order.symbol)
+                scope = evaluate_scope(ScopeInput(run, order, position, self._clock()))
+                if scope.rule is not None:
+                    raise RiskBlocked(scope.rule, scope.message)
+            except Exception as exc:
+                self._audit(user_id, "order.place", detail | _failure(exc), started)
+                raise
+            # 경고(시장가, 종가 단일가, 만기 임박)는 막지 않고 감사 로그에 남긴다. 주문마다 사람이
+            # 보는 미리보기가 없어 `warning_changed`(본 것과 다르면 막기)는 뜻이 없다. 셋 다 켤 때
+            # 알 수 있는 것이라 `start_strategy` 승인 창에서 한 번 보여 준다.
+            shown: dict[str, JsonValue] = {"warnings": list[JsonValue](decision.warnings)}
+            warned = detail | shown
+            try:
+                stored = await self._submit(user_id, order, warned, started, run_id=run.run_id)
+            except asyncio.CancelledError:
+                cancelled: dict[str, JsonValue] = {"outcome": "unknown", "cancelled": True}
+                self._audit(user_id, "order.place", warned | cancelled, started)
+                raise
+        return self._placed(user_id, stored, warned, started)
+
+    async def cancel_run_order(self, user_id: UserId, run_id: str, order_id: int) -> Ack:
+        """실행 중인 전략이 자기 주문을 취소한다. `order_id`는 `place_auto`가 돌려준 행 번호다.
+
+        그 전략이 낸 행이 아니거나(수동 주문, 다른 전략) 주문번호가 없으면 보내지 않는다.
+        """
+        self._require_enabled()
+        row = orders.get(self._conn, user_id, order_id)
+        if row is None or row.run_id != run_id or row.nh_order_no is None:
+            refused: dict[str, JsonValue] = {
+                "order_id": order_id,
+                "run_id": run_id,
+                "outcome": "not_run_order",
+            }
+            self._audit(user_id, "order.cancel", refused, time.perf_counter_ns())
+            raise NotRunOrder(order_id)
+        return await self.cancel(user_id, row.nh_order_no)
 
     async def cancel(self, user_id: UserId, order_no: str) -> Ack:
         """오늘 주문 내역에서 그 주문을 찾아 남은 수량 전부를 취소한다. 확인 토큰은 없다."""
@@ -470,8 +535,13 @@ class OrderService:
             raise ConfirmInvalid()
         return ticket
 
-    async def _check(self, user_id: UserId, order: OrderRequest) -> tuple[Contract, RiskDecision]:
-        """데이터를 모아 규칙을 돌린다. 막히면 예외. 잠금 안에서만 부른다."""
+    async def _check(
+        self, user_id: UserId, order: OrderRequest
+    ) -> tuple[Contract, RiskDecision, AccountState]:
+        """데이터를 모아 규칙을 돌린다. 막히면 예외. 잠금 안에서만 부른다.
+
+        돌려주는 계좌는 다 읽은 것이다(못 읽은 행이 있으면 `account_unknown`으로 막힌다).
+        """
         if order.market != "domestic":
             raise RiskBlocked(ORDER_FORMAT, "국내 선물만 주문할 수 있습니다.")
         await self._reconcile(user_id, tolerate_failure=True)
@@ -497,7 +567,7 @@ class OrderService:
             raise _blocked(decision)
         if decision.increases_position and self._unknown_today(user_id, order.symbol):
             raise UnknownState(UNKNOWN_HELD)
-        return contract, decision
+        return contract, decision, account
 
     async def _contract(self, symbol: str) -> Contract:
         try:
@@ -574,14 +644,18 @@ class OrderService:
         order: OrderRequest,
         detail: dict[str, JsonValue],
         started: int,
+        *,
+        run_id: str | None,
     ) -> StoredOrder:
         """NH로 신규 주문을 보내는 유일한 곳. SUBMITTED를 먼저 쓰고, 응답으로 상태를 바꾼다.
+
+        `run_id`는 자동 주문을 낸 전략 실행(수동은 None)이고 주문 행에 함께 쓴다.
 
         응답을 받지 못하면 UNKNOWN으로 두고 다시 보내지 않는다. SUBMITTED를 쓰지 못하면
         보내지 않는다. 보낸 뒤 결과 기록이나 다시 읽기에 실패하면 감사 로그에 unknown을 남기고
         UnknownState로 알린다. 갱신하지 못한 행은 SUBMITTED로 남아 나갔는지 모르는 행이 된다.
         """
-        order_id = orders.insert_submitted(self._conn, user_id, order, self._clock())
+        order_id = orders.insert_submitted(self._conn, user_id, order, self._clock(), run_id)
         try:
             ack = await self._domestic.send_order(user_id, order)
         except Rejected as exc:

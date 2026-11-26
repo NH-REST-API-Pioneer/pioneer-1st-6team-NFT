@@ -1,7 +1,8 @@
 """틱·호가 저장 켜고 끄기와, 사용자가 백테스트에 쓸 수 있는 데이터 보기.
 
 - 저장할 (종목, 흐름) 전체를 한 번에 받는다. 같은 집합을 다시 주면 NH에 아무것도 보내지 않는다.
-- 구독은 APP Key당 20건이다. 종목은 종목 마스터에 있는 국내 선물만 받는다(모르면 막는다).
+- 구독은 APP Key당 20건이다. 실행 중인 전략의 구독과 합쳐 센다(같은 것은 1건).
+- 종목은 종목 마스터에 있는 국내 선물만 받는다(모르면 막는다).
 - 키를 지우면 저장을 멈추고 저장 설정도 지운다. 나중에 새 키를 넣어도 사용자가 다시 켜기 전에는
   저절로 켜지지 않는다. 이미 저장한 틱은 보관 기간(30일)까지 남는다.
 - 서버를 다시 띄우면 수신기가 저장 설정대로 다시 켠다(`realtime/recorder.py`).
@@ -16,7 +17,7 @@ from typing import Literal
 
 from nh_mcp.domain import KST, JsonValue, UserId
 from nh_mcp.models.store import ModelStore
-from nh_mcp.realtime.recorder import MAX_SUBSCRIPTIONS, Recorder
+from nh_mcp.realtime.recorder import MAX_SUBSCRIPTIONS, Recorder, TooManySubscriptions
 from nh_mcp.realtime.session import Status
 from nh_mcp.services.queries import KeyMissing, QueryService, UnknownSymbol
 from nh_mcp.store import nh_keys, recordings
@@ -151,13 +152,21 @@ class RecordingService:
             if "domestic" not in nh_keys.registered_markets(self.conn, user_id):
                 raise KeyMissing("domestic")
             await self._check_futures({sub.symbol for sub in subs})
-        desired = await self.recorder.set_recording(user_id, subs)
+        try:
+            desired = await self.recorder.set_recording(user_id, subs)
+        except TooManySubscriptions as exc:
+            strategies = len(self.recorder.owned(user_id))
+            raise RecordingInvalid(
+                f"구독은 APP Key당 {MAX_SUBSCRIPTIONS}건까지인데 틱 저장 {len(subs)}건과 실행 "
+                f"중인 자동 실행 전략의 구독 {strategies}건을 합치면 {exc.count}건입니다(같은 "
+                "종목·흐름은 1건). 저장할 것을 줄이거나 전략을 멈추세요."
+            ) from None
         await self._settle(user_id, desired)
         status = self.recorder.status(user_id)
         return {
             "recording": _grouped(desired),
             "subscriptions": [_subscription(sub, status) for sub in sorted(desired)],
-            "used": len(desired),
+            "used": len(desired | self.recorder.owned(user_id)),
             "limit": MAX_SUBSCRIPTIONS,
             "connection": _connection(status),
             "note": NOTE,
@@ -186,7 +195,10 @@ class RecordingService:
         return {
             "recorded": listed,
             "recorded_total": len(recorded),
-            "subscriptions": {"used": len(desired), "limit": MAX_SUBSCRIPTIONS},
+            "subscriptions": {
+                "used": len(desired | self.recorder.owned(user_id)),
+                "limit": MAX_SUBSCRIPTIONS,
+            },
             "connection": _connection(status),
             "models": models,
             "models_url": self.models_url,

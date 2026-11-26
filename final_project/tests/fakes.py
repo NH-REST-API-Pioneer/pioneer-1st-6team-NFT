@@ -3,6 +3,7 @@
 import asyncio
 import gzip
 import json
+import sqlite3
 from collections.abc import Callable, Mapping, Sequence
 from contextlib import AbstractAsyncContextManager
 from dataclasses import replace
@@ -18,14 +19,24 @@ from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
 from nh_mcp.auth.access import AccessPolicy, make_gate
 from nh_mcp.auth.web import CALLBACK_PATH, LOGIN_PATH, TOKEN_URL, TOKENINFO_URL
 from nh_mcp.config import Settings
-from nh_mcp.domain import KST, BarEvent, MarketEvent, Output, SandboxJob, SymbolTerms, Target
+from nh_mcp.domain import (
+    KST,
+    BarEvent,
+    MarketEvent,
+    Output,
+    SandboxJob,
+    SymbolTerms,
+    Target,
+    UserId,
+)
 from nh_mcp.keys.service import Verify
 from nh_mcp.keys.vault import Vault
 from nh_mcp.nh.client import Credentials
 from nh_mcp.realtime.session import Connect, Socket
 from nh_mcp.sandbox.wire import job_from_json, output_to_wire
 from nh_mcp.server import Wiring, attach, build_server
-from nh_mcp.store import db
+from nh_mcp.services.runs import Standing
+from nh_mcp.store import db, features
 from nh_mcp.strategies.backtest import Simulator, decision_time
 
 CLIENT_ID = "fake-client-id"
@@ -275,6 +286,8 @@ class World:
         self.login, self.store, self.pool = parts.login, parts.store, parts.pool
         self.models = parts.models
         self.recorder = parts.recorder
+        self.runner = parts.runner
+        self.strategies = parts.strategies
 
     def _connect(self, url: str) -> AbstractAsyncContextManager[Socket]:
         # 서버를 만든 뒤에 바꾼 stream도 쓰이게 부를 때 찾는다.
@@ -337,3 +350,22 @@ class FakeNH:
 
     def paths(self) -> list[str]:
         return [path for path, _ in self.requests]
+
+
+class NoRuns:
+    """켜지 않는 자동 실행기 자리(`StrategyRuns`). 미리보기만 보는 테스트가 쓴다."""
+
+    async def start(self, user_id: UserId, approval: str, code: str, model: bytes | None) -> str:
+        raise AssertionError("이 테스트는 전략을 켜지 않습니다.")
+
+    async def stop(self, user_id: UserId, run_id: str) -> bool:
+        return False
+
+    def standing(self, user_id: UserId, run_id: str) -> Standing | None:
+        return None
+
+
+def auto_run_on(conn: sqlite3.Connection, *users: UserId) -> None:
+    """사용자가 등록 화면에서 "자동 실행"을 켠 것처럼."""
+    for user in users:
+        features.turn_on(conn, user, "auto_run", T0)

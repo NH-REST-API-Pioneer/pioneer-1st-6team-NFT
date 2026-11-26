@@ -7,7 +7,7 @@
 import os
 import sqlite3
 from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import TypedDict
@@ -26,7 +26,7 @@ from nh_mcp.auth.google import google_provider
 from nh_mcp.auth.web import KEYS_PATH, GoogleWebLogin, add_web_login_routes
 from nh_mcp.config import ENV, Settings, load_settings
 from nh_mcp.domain import Clock
-from nh_mcp.keys.page import KeysPage, add_keys_routes
+from nh_mcp.keys.page import AutoRunSwitch, KeysPage, add_keys_routes
 from nh_mcp.keys.service import KeyStore, Verify, demo_server_verifier
 from nh_mcp.keys.vault import Vault
 from nh_mcp.markets.domestic import DomesticMarket
@@ -38,6 +38,9 @@ from nh_mcp.nh.clients import ClientPool
 from nh_mcp.ops.rate_limit import LIMITS, RateLimiter
 from nh_mcp.realtime.recorder import Recorder, pool_login
 from nh_mcp.realtime.session import Connect, Link, open_socket
+from nh_mcp.runner.run import Deps
+from nh_mcp.runner.runner import Runner
+from nh_mcp.runner.timing import WallTimer
 from nh_mcp.sandbox.client import SandboxClient
 from nh_mcp.services.backtest import BacktestService, Sources
 from nh_mcp.services.connection import ConnectionService
@@ -45,6 +48,7 @@ from nh_mcp.services.limits import APPROVE_PATH, LimitService
 from nh_mcp.services.orders import OrderService
 from nh_mcp.services.queries import QueryService
 from nh_mcp.services.recording import RecordingService
+from nh_mcp.services.runs import LiveFeeds, RunMarket
 from nh_mcp.services.strategy import StrategyService
 from nh_mcp.services.symbols import SymbolService
 from nh_mcp.store import db
@@ -112,6 +116,10 @@ class Parts:
     models: ModelStore
     # 시세 수신기. 만들기만 하고 켜지는 않는다(서버 수명에 맞춰 create_server가 켠다).
     recorder: Recorder
+    # 전략 자동 실행기. 주문 스위치가 켜졌을 때만 있다. 서버 수명에 맞춰 수신기 다음에 켠다.
+    runner: Runner | None = None
+    # 실행 승인·자동 실행 서비스. 주문 스위치가 켜졌을 때만 있다.
+    strategies: StrategyService | None = None
 
 
 def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
@@ -131,10 +139,37 @@ def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
     link = Link(pool_login(pool), wiring.clock, wiring.stream)
     recorder = Recorder(wiring.conn, wiring.settings.ticks_db_path, link)
     recording = RecordingService(wiring.conn, recorder, queries, models, models_url)
-    # 도구의 disconnect_account와 키 화면의 지우기가 같은 끊기를 쓴다(키·NH 클라이언트·틱 저장).
-    connection = ConnectionService(store, pool, recording, keys_url)
+    # 틱 표는 하루에 한 번 받아 백테스트와 주문이 나눠 쓴다.
+    products = DomesticProducts(pool, wiring.clock)
+    sandbox = SandboxClient(
+        wiring.settings.sandbox_url, wiring.settings.sandbox_token, transport=wiring.sandbox
+    )
+    orders: OrderService | None = None
+    runner: Runner | None = None
+    strategies: StrategyService | None = None
+    if wiring.settings.orders_enabled:
+        orders = OrderService(wiring.conn, wiring.clock, domestic, products, orders_enabled=True)
+        deps = Deps(
+            wiring.conn,
+            WallTimer(wiring.clock),
+            RunMarket(queries, domestic, products),
+            LiveFeeds(recorder),
+            orders,
+            sandbox,
+        )
+        runner = Runner(deps)
+        strategies = StrategyService(wiring.conn, wiring.clock, domestic, models, runner)
+    # 도구의 disconnect_account와 키 화면의 지우기가 같은 끊기를 쓴다(전략·키·NH 클라이언트·틱).
+    connection = (
+        ConnectionService(store, pool, recording, keys_url)
+        if runner is None
+        else ConnectionService(store, pool, recording, keys_url, runner.key_removed)
+    )
     add_web_login_routes(mcp, login)
-    add_keys_routes(mcp, KeysPage(login, store, connection.disconnect))
+    switch = (
+        None if strategies is None else AutoRunSwitch(strategies.auto_run, strategies.set_auto_run)
+    )
+    add_keys_routes(mcp, KeysPage(login, store, connection.disconnect, switch))
     add_models_routes(mcp, ModelsPage(login, models))
     # 속도 제한은 프로세스 하나에 하나. 버킷은 사용자별로 나뉜다.
     limiter = RateLimiter(wiring.clock, LIMITS)
@@ -147,28 +182,20 @@ def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
     )
     register_limit_tools(mcp, ctx, limit_service, limiter)
     add_limits_routes(mcp, LimitsPage(login, limit_service))
-    # 틱 표는 하루에 한 번 받아 백테스트와 주문이 나눠 쓴다.
-    products = DomesticProducts(pool, wiring.clock)
     # 백테스트는 주문을 내지 않으므로 주문 스위치와 상관없이 붙인다. 급히 멈추려면 실행기를 내린다.
-    sandbox = SandboxClient(
-        wiring.settings.sandbox_url, wiring.settings.sandbox_token, transport=wiring.sandbox
-    )
     # 틱 실행은 수신기가 저장한 체결·호가를 읽는다(ticks.db는 수신기가 켜질 때 열린다).
     sources = Sources(queries, products, models, lambda: recorder.store)
     backtests = BacktestService(wiring.conn, wiring.clock, sources, sandbox)
     register_backtest_tools(mcp, ctx, backtests, limiter, models_url)
-    if wiring.settings.orders_enabled:
-        orders = OrderService(wiring.conn, wiring.clock, domestic, products, orders_enabled=True)
+    if orders is not None and strategies is not None:
         register_order_tools(mcp, ctx, orders, limiter)
-        # 전략 실행 승인도 주문 스위치를 따른다. M3에는 이 토큰을 쓰는 도구가 아직 없다.
-        register_strategy_tools(
-            mcp, ctx, StrategyService(wiring.conn, wiring.clock, domestic, models), limiter
-        )
+        # 자동 실행 도구도 주문 스위치를 따른다. 사용자가 "자동 실행" 묶음을 켰을 때만 보인다.
+        register_strategy_tools(mcp, ctx, strategies, limiter)
         # get_orders가 응답을 못 받은 주문을 대조한다(UNKNOWN_STATE 안내가 get_orders를 가리킨다).
         register_account_tools(mcp, ctx, queries, orders.reconcile)
     else:
         register_account_tools(mcp, ctx, queries)
-    return Parts(login, store, pool, models, recorder)
+    return Parts(login, store, pool, models, recorder, runner, strategies)
 
 
 def create_server(settings: Settings, conn: sqlite3.Connection) -> FastMCP:
@@ -177,7 +204,12 @@ def create_server(settings: Settings, conn: sqlite3.Connection) -> FastMCP:
     @asynccontextmanager
     async def lifespan(_: FastMCP) -> AsyncGenerator[None]:
         # 서버가 도는 동안 시세 수신기를 켜 둔다. 내려갈 때 열린 분까지 저장한다.
-        async with parts.recorder.running():
+        # 자동 실행기는 수신기 다음에 켜고 먼저 내린다. 켤 때 돌던 전략은 일시정지가 되고,
+        # 내릴 때는 작업만 멈춘다(다음에 켤 때 일시정지로 바뀐다).
+        async with AsyncExitStack() as stack:
+            await stack.enter_async_context(parts.recorder.running())
+            if parts.runner is not None:
+                await stack.enter_async_context(parts.runner.running())
             yield
 
     mcp = build_server(

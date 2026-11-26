@@ -12,12 +12,14 @@ from nh_mcp.domain import MAX_MODEL_BYTES, SandboxFailure
 from nh_mcp.models.store import MAX_FILES
 from nh_mcp.ops.rate_limit import BACKTEST_BUCKET, LIMITS, WINDOW
 from nh_mcp.sandbox.container import (
+    EVENT_SECONDS,
     FIXED_ARGS,
     MAX_LINE,
     MAX_STDOUT,
     STDOUT_PER_EVENT,
     WALL_SECONDS,
 )
+from nh_mcp.sandbox.executor import MAX_SESSIONS
 from nh_mcp.sandbox.wire import MAX_LEVELS
 from nh_mcp.services.backtest import (
     MAX_BARS,
@@ -30,6 +32,7 @@ from nh_mcp.services.backtest import (
     PER_USER,
 )
 from nh_mcp.services.recording import MAX_SUBSCRIPTIONS
+from nh_mcp.services.strategy import MAX_RUN_USERS, MAX_RUNS_PER_USER
 from nh_mcp.store.ticks import RETENTION
 
 CONTRACT_URI = "strategy://contract"
@@ -140,7 +143,18 @@ os.urandom을 읽으면 같은 입력에서도 결과가 갈린다.
 - 지연: 초단타는 안 된다. 컨테이너 이벤트 왕복 약 0.32ms(Mac에서 측정, 서버는 아직), 주문 REST \
 60~70ms(측정).
 
-## 3. 범위 밖이면
+## 3. 자동 실행(start_strategy)
+
+- 같은 코드로 띄워 둔 컨테이너에 이벤트를 하나씩 넣는다. 이벤트 하나에 {EVENT_SECONDS:g}초 안에 \
+답해야 하고 누적 CPU 한도는 없다. 체결은 NH 주문 내역에서 확인해 fill로 넣는다.
+- 켤 때 최근 봉(틱 전략은 오늘 저장한 틱)으로 상태를 채우고 그 출력은 주문하지 않는다. \
+그 종목에 보유·미체결이 있으면 켜지 않는다.
+- 한도: 한 사람 {MAX_RUNS_PER_USER}개, 종목마다 하나, 서버 사용자 {MAX_RUN_USERS}명·\
+컨테이너 {MAX_SESSIONS}개. 백테스트와 달리 실제 체결은 가정과 다를 수 있다.
+- 스스로 멈춤: 만료, 하루 주문 수, 일일 손실, 시세 끊김, 주문 거부 3번, 응답 없는 주문, \
+컨테이너 오류, 키 삭제. 서버가 다시 뜨면 일시정지이고 다시 승인받아야 켠다.
+
+## 4. 범위 밖이면
 
 사용자의 전략이 위 계약이나 제약 밖이면 비슷한 다른 전략으로 몰래 바꿔 짜지 않는다. 무엇이 안 되고 \
 왜 안 되는지 먼저 말하고, 어떻게 바꿔 시험할지 사용자와 정한다. 예: 외부 데이터, 1분봉과 틱 섞기, \

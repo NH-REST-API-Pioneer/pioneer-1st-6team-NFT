@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from conftest import Serve
-from fakes import World
+from fakes import ADMIN, T0, World, auto_run_on
 from fastmcp import Client
 
 from nh_mcp.domain import MAX_MODEL_BYTES
@@ -32,6 +32,7 @@ from nh_mcp.services.backtest import (
     MAX_TICK_EVENTS,
     PER_USER,
 )
+from nh_mcp.store import users
 from nh_mcp.store.ticks import RETENTION
 from nh_mcp.tools.contract import CONTRACT_URI, LIBRARIES, PYTHON
 
@@ -143,6 +144,8 @@ def test_contract_stays_short_enough_to_read_before_every_strategy(serve: Serve)
 def test_strategy_tools_point_to_the_contract(serve: Serve) -> None:
     async def scenario() -> dict[str, str]:
         world = World(orders_enabled=True)
+        # preview_strategy는 "자동 실행"을 켠 사용자에게만 보인다.
+        auto_run_on(world.conn, users.get_or_create(world.conn, "g-admin", ADMIN, T0))
         async with serve(world.mcp) as url, Client(url, auth="admin-token") as client:
             return {t.name: t.description or "" for t in await client.list_tools()}
 

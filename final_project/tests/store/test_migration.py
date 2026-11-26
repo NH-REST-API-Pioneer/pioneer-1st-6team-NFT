@@ -183,3 +183,71 @@ def test_rebuilt_backtest_runs_survives_the_next_open(tmp_path: Path) -> None:
     assert second.execute("SELECT streams FROM backtest_runs").fetchall() == [
         ('{"A016C000":["day"]}',)
     ]
+
+
+# run_id(M4b) 전의 orders. 지금 SCHEMA에서 맨 뒤 칸 하나만 뺀 모양이다.
+RUN_ID_COLUMN = ",\n    run_id TEXT\n);\nCREATE INDEX IF NOT EXISTS orders_by_user_status"
+
+
+def make_m4a_db(path: Path) -> None:
+    """orders에 run_id가 없는 DB. 오늘의 UNKNOWN 주문 하나를 넣는다."""
+    assert RUN_ID_COLUMN in db.SCHEMA
+    conn = sqlite3.connect(path)
+    old = RUN_ID_COLUMN.replace(",\n    run_id TEXT\n", "\n", 1)
+    conn.executescript(db.SCHEMA.replace(RUN_ID_COLUMN, old))
+    conn.execute(
+        "INSERT INTO users (id, google_sub, email, created_at) VALUES (1, 's', 'a@x.com', ?)",
+        (NOW,),
+    )
+    conn.execute(
+        "INSERT INTO orders (user_id, market, symbol, side, order_type, quantity, status, "
+        "submitted_at, updated_at) VALUES (1, 'domestic', 'A016C000', 'buy', 'market', 1, "
+        "'UNKNOWN', ?, ?)",
+        (NOW, NOW),
+    )
+    conn.commit()
+    assert "run_id" not in columns(conn, "orders")
+    conn.close()
+
+
+def test_m4a_orders_gain_run_id_and_keep_their_rows(tmp_path: Path) -> None:
+    path = tmp_path / "nh.db"
+    make_m4a_db(path)
+
+    conn = db.connect(path)
+
+    assert columns(conn, "orders")[-1] == "run_id"
+    # 행을 지우지 않는다. UNKNOWN 행이 그 종목의 늘리는 주문을 계속 막아야 한다.
+    assert conn.execute("SELECT symbol, status, run_id FROM orders").fetchall() == [
+        ("A016C000", "UNKNOWN", None)
+    ]
+    conn.execute(
+        "INSERT INTO orders (user_id, market, symbol, side, order_type, quantity, status, "
+        "submitted_at, updated_at, run_id) VALUES (1, 'domestic', 'A016C000', 'sell', 'market', "
+        "1, 'SUBMITTED', ?, ?, 'run-1')",
+        (NOW, NOW),
+    )
+    assert conn.execute("SELECT run_id FROM orders ORDER BY id").fetchall() == [(None,), ("run-1",)]
+
+
+def test_orders_with_run_id_survive_the_next_open(tmp_path: Path) -> None:
+    path = tmp_path / "nh.db"
+    make_m4a_db(path)
+    first = db.connect(path)
+    first.execute("UPDATE orders SET run_id = 'run-1'")
+    first.commit()
+    first.close()
+
+    second = db.connect(path)
+
+    assert columns(second, "orders").count("run_id") == 1
+    assert second.execute("SELECT run_id FROM orders").fetchall() == [("run-1",)]
+
+
+def test_a_fresh_orders_table_has_the_same_columns_as_a_migrated_one(tmp_path: Path) -> None:
+    path = tmp_path / "nh.db"
+    make_m4a_db(path)
+
+    migrated = columns(db.connect(path), "orders")
+
+    assert migrated == columns(db.connect(":memory:"), "orders")

@@ -2,8 +2,14 @@
 
 코드는 문자열 그대로 하네스에 넘기기만 한다. 이 프로세스에서는 실행하지도 파싱하지도 않는다.
 docker run 인자는 상수다. 바뀌는 값은 이미지 이름과 무작위 컨테이너 이름뿐이고, 셸을 거치지 않는다.
-체결 계산(strategies/backtest.py)을 대화 안에서 돌려 체결 이벤트를 만들고, 출력은 여기서 검사한다.
-하네스는 전략 코드가 고칠 수 있는 프로세스라 그 검사를 믿지 않는다.
+출력은 여기서 검사한다. 하네스는 전략 코드가 고칠 수 있는 프로세스라 그 검사를 믿지 않는다.
+
+두 가지로 돈다.
+- 백테스트(run_in_container): 실행마다 컨테이너 하나. 체결 계산(strategies/backtest.py)을 대화
+  안에서 돌려 체결 이벤트를 만든다.
+- 띄워 두는 컨테이너(ResidentSession, M4b 자동 실행): 전략마다 하나를 띄워 두고 이벤트를 하나씩
+  넣는다. 체결 계산은 없고 체결 이벤트도 부르는 쪽이 넣는다. 누적 CPU 한도 대신 이벤트마다 2초
+  마감이다.
 """
 
 import asyncio
@@ -12,9 +18,21 @@ import contextlib
 import json
 import logging
 import secrets
+from collections.abc import Awaitable, Callable
+from dataclasses import dataclass, replace
 from typing import cast
 
-from nh_mcp.domain import JsonValue, Output, SandboxFailure, SandboxJob, SandboxResult
+from nh_mcp.domain import (
+    JsonValue,
+    Output,
+    SandboxFailure,
+    SandboxJob,
+    SandboxResult,
+    SessionFailed,
+    SessionJob,
+    StrategyEvent,
+    Streams,
+)
 from nh_mcp.sandbox.wire import (
     MAX_DETAIL,
     BadOutput,
@@ -25,6 +43,8 @@ from nh_mcp.sandbox.wire import (
 from nh_mcp.strategies.backtest import Simulator, decision_time
 
 NAME_PREFIX = "nhmcp-sbx-"
+# 띄워 두는 컨테이너의 이름 접두어. 실행기가 다시 시작하면 이 이름도 모두 지운다.
+RESIDENT_PREFIX = "nhmcp-run-"
 # 실행기 쪽 벽시계 마감. 컨테이너 안 CPU 한도(60초)보다 길다.
 WALL_SECONDS = 70.0
 # 하네스가 쓰는 프로토콜 줄 하나의 상한(64KiB). 표준 출력 스트림의 limit이기도 하다.
@@ -44,6 +64,12 @@ CPU_EXIT_CODES = frozenset({"137", "152"})
 DOCKER_START_CODES = frozenset({125, 126, 127})
 # 모델 파일을 하네스에 넘기는 조각 하나의 바이트 수. base64로 한 줄 1MiB가 된다.
 MODEL_CHUNK = 768 * 1024
+# 띄워 둔 컨테이너가 이벤트 하나에 답하는 시간(사람 승인 2026-11-25, 불변식 12).
+EVENT_SECONDS = 2.0
+# 띄워 두는 컨테이너를 여는 데(시작, 모델 파일 전송, 코드 불러오기·init) 쓰는 벽시계 마감. 누적 CPU
+# 한도가 없어서 init이 쓰는 CPU는 이것이 묶는다. 백테스트의 CPU 한도(60초, --cpus 1)와 같은 크기다.
+OPEN_SECONDS = 60.0
+STDERR_FLOOD = "표준 에러가 1MB를 넘었습니다"
 
 _LOG = logging.getLogger(__name__)
 
@@ -90,24 +116,32 @@ FIXED_ARGS = (
     "--pull",
     "never",
 )
+# 띄워 두는 컨테이너(M4b 자동 실행)의 고정 인자. 위 인자에서 누적 CPU 한도 한 쌍
+# (--ulimit cpu=60:60)만 뺐다. 며칠씩 도는 컨테이너라 누적 한도가 있으면 언젠가 반드시 죽는다. 순간
+# 사용량은 --cpus 1이, 답하는 시간은 이벤트마다 2초 마감(EVENT_SECONDS)이 묶는다(사람 승인
+# 2026-11-25, 불변식 12).
+_CPU_LIMIT_AT = FIXED_ARGS.index("cpu=60:60") - 1
+RESIDENT_ARGS = FIXED_ARGS[:_CPU_LIMIT_AT] + FIXED_ARGS[_CPU_LIMIT_AT + 2 :]
+
+
+def _argv(args: tuple[str, ...], image: str, name: str) -> list[str]:
+    return ["docker", "run", *args, "--name", name, image, "python", "-s", "/harness/harness.py"]
 
 
 def docker_argv(image: str, name: str) -> list[str]:
-    return [
-        "docker",
-        "run",
-        *FIXED_ARGS,
-        "--name",
-        name,
-        image,
-        "python",
-        "-s",
-        "/harness/harness.py",
-    ]
+    return _argv(FIXED_ARGS, image, name)
+
+
+def resident_argv(image: str, name: str) -> list[str]:
+    return _argv(RESIDENT_ARGS, image, name)
 
 
 def failure(status: SandboxFailure, index: int | None, detail: str) -> SandboxResult:
     return SandboxResult(status, [], index, detail[:MAX_DETAIL])
+
+
+def _failed(reason: SandboxFailure, detail: str) -> SessionFailed:
+    return SessionFailed(reason, detail[:MAX_DETAIL])
 
 
 class ContainerStartError(Exception):
@@ -123,6 +157,10 @@ class _OutputOverflowError(Exception):
 
 class _HarnessEndedError(Exception):
     """하네스가 답 없이 끝났다(표준 출력 EOF 또는 표준 입력 파이프 끊김)."""
+
+
+class SessionClosedError(Exception):
+    """닫은(또는 넣는 동안 다른 쪽이 닫은) 세션에 이벤트를 넣었다. 컨테이너는 이미 없다."""
 
 
 def _decode(line: bytes) -> dict[str, object] | None:
@@ -155,8 +193,16 @@ def _harness_reason(value: object, loading: bool) -> SandboxFailure | None:
             return None
 
 
-def _streams(job: SandboxJob) -> dict[str, JsonValue]:
-    return {symbol: [*sorted(names)] for symbol, names in sorted(job.streams.items())}
+def _streams(streams: Streams) -> dict[str, JsonValue]:
+    return {symbol: [*sorted(names)] for symbol, names in sorted(streams.items())}
+
+
+@dataclass(frozen=True)
+class _Refusal:
+    """출력(또는 ready) 대신 받은 실패. detail은 전략 코드가 낸 것이거나 실행기의 설명이다."""
+
+    reason: SandboxFailure
+    detail: str
 
 
 class _Conversation:
@@ -201,7 +247,7 @@ class _Conversation:
         self.count(len(line))
         return _decode(line)
 
-    def refusal(self, message: dict[str, object] | None, loading: bool) -> SandboxResult:
+    def refusal(self, message: dict[str, object] | None, loading: bool) -> _Refusal:
         """출력(또는 ready) 대신 온 줄을 실패 사유로 바꾼다.
 
         detail에는 전략 코드가 낸 것(하네스 줄의 detail)만 담는다. 프로토콜 출구는 전략 코드도
@@ -210,9 +256,9 @@ class _Conversation:
         if message is not None:
             reason = _harness_reason(message.get("error"), loading)
             if reason is not None:
-                return failure(reason, self.index, str(message.get("detail", "")))
+                return _Refusal(reason, str(message.get("detail", "")))
         # 읽지 못한 줄은 보여 주지 않는다.
-        return failure("invalid_output", self.index, "")
+        return _Refusal("invalid_output", "")
 
     async def send_model(self, model: bytes) -> None:
         """모델 파일을 base64 조각 줄로 보내고 끝을 알린다. 전략 코드는 아직 불러오기 전이다."""
@@ -222,8 +268,9 @@ class _Conversation:
             await self.send({"model_chunk": piece})
         await self.send({"model_end": True})
 
-    async def run(self, job: SandboxJob) -> SandboxResult:
-        setup = {"code": job.code, "params": job.params, "streams": _streams(job)}
+    async def start(self, job: SandboxJob | SessionJob) -> _Refusal | None:
+        """설정과 모델 파일을 보내고 ready를 기다린다. 하네스가 거절하면 그 사유."""
+        setup = {"code": job.code, "params": job.params, "streams": _streams(job.streams)}
         await self.send({**setup, "model": job.model is not None})
         if job.model is not None:
             await self.send_model(job.model)
@@ -231,6 +278,23 @@ class _Conversation:
         if ready is None or ready.get("ready") is not True:
             return self.refusal(ready, loading=True)
         self.ready = True
+        return None
+
+    async def answer(self, event: StrategyEvent, job: SandboxJob | SessionJob) -> Output | _Refusal:
+        """이벤트 하나를 넣고 출력 하나를 받아 이 일의 계약대로 검사한다."""
+        await self.feed(event_to_wire(event))
+        answer = await self.receive()
+        if answer is None or "output" not in answer:
+            return self.refusal(answer, loading=False)
+        try:
+            return output_from_wire(answer["output"], job)
+        except BadOutput:
+            return _Refusal("invalid_output", preview(answer["output"]))
+
+    async def run(self, job: SandboxJob) -> SandboxResult:
+        refused = await self.start(job)
+        if refused is not None:
+            return failure(refused.reason, self.index, refused.detail)
         sim = Simulator(job.terms)
         outputs: list[Output] = []
         for index, event in enumerate(job.events):
@@ -238,14 +302,9 @@ class _Conversation:
             # 이 이벤트에서 난 체결이 먼저, 이벤트 자신이 다음이다. 출력을 받기 전에는 다음
             # 이벤트를 보내지 않는다. 앞으로 올 이벤트는 컨테이너에 없다.
             for fed in [*sim.on_market(event), event]:
-                await self.feed(event_to_wire(fed))
-                answer = await self.receive()
-                if answer is None or "output" not in answer:
-                    return self.refusal(answer, loading=False)
-                try:
-                    output = output_from_wire(answer["output"], job)
-                except BadOutput:
-                    return failure("invalid_output", index, preview(answer["output"]))
+                output = await self.answer(fed, job)
+                if isinstance(output, _Refusal):
+                    return failure(output.reason, index, output.detail)
                 sim.on_output(output, decision_time(fed))
                 outputs.append(output)
         self.stdin.close()
@@ -309,11 +368,12 @@ class _ErrorStream:
                     self.proc.kill()
 
 
-async def _exit_reason(name: str, talk: _Conversation, cli_code: int | None) -> SandboxResult:
+async def _exit_reason(name: str, ready: bool, cli_code: int | None, cpu_limit: bool) -> _Refusal:
     """하네스가 답 없이 끝났을 때 컨테이너 상태로 사유를 가른다.
 
     컨테이너가 하네스를 돌리지 못했으면(상태를 못 읽음, 데몬이 남긴 오류, ready 전 docker 오류
-    종료 코드) 전략 사유로 답하지 않고 ContainerStartError를 낸다.
+    종료 코드) 전략 사유로 답하지 않고 ContainerStartError를 낸다. cpu_limit은 누적 CPU 한도가 걸린
+    컨테이너(백테스트)인지다. 띄워 둔 컨테이너에는 한도가 없어 137을 CPU로 읽지 않는다.
     """
     state = await _docker(
         "inspect", "-f", "{{.State.OOMKilled}} {{.State.ExitCode}} {{.State.Error}}", name
@@ -327,17 +387,61 @@ async def _exit_reason(name: str, talk: _Conversation, cli_code: int | None) -> 
     if error:
         raise ContainerStartError(f"전략 컨테이너를 띄우지 못했습니다: {error[:200]}")
     # 전략 코드가 스스로 같은 코드로 끝냈으면(컨테이너 종료 코드와 같음) 코드의 실패다.
-    if not talk.ready and cli_code in DOCKER_START_CODES and code != str(cli_code):
+    if not ready and cli_code in DOCKER_START_CODES and code != str(cli_code):
         raise ContainerStartError(f"docker run이 종료 코드 {cli_code}로 끝났습니다")
-    index = talk.index
     if oom == "true":
-        return failure("memory", index, "메모리 한도(512MB)를 넘었습니다")
-    if code in CPU_EXIT_CODES:
-        return failure("cpu", index, "CPU 시간 한도(60초)를 넘었습니다")
+        return _Refusal("memory", "메모리 한도(512MB)를 넘었습니다")
+    if cpu_limit and code in CPU_EXIT_CODES:
+        return _Refusal("cpu", "CPU 시간 한도(60초)를 넘었습니다")
     detail = (
         f"전략 프로세스가 종료 코드 {code}로 끝났습니다" if code else "종료 코드를 알 수 없습니다"
     )
-    return failure("exception", index, detail)
+    return _Refusal("exception", detail)
+
+
+class _Box:
+    """docker run 프로세스 하나와 그 파이프. 표준 에러는 처음부터 끝까지 읽어 버리며 센다."""
+
+    def __init__(self, name: str, proc: asyncio.subprocess.Process) -> None:
+        stdin, stdout, stderr = proc.stdin, proc.stdout, proc.stderr
+        if stdin is None or stdout is None or stderr is None:
+            raise RuntimeError("docker run 파이프를 열지 못했습니다")
+        self.name = name
+        self.proc = proc
+        self.errors = _ErrorStream(stderr, proc)
+        self.draining = asyncio.create_task(self.errors.drain())
+        self.talk = _Conversation(stdin, stdout)
+
+    async def kill(self) -> None:
+        """컨테이너를 지우고 docker run을 끊는다. 이것이 끝나면 컨테이너는 남아 있지 않다."""
+        await _docker("rm", "-f", self.name)
+        if self.proc.returncode is None:
+            with contextlib.suppress(ProcessLookupError):
+                self.proc.kill()
+
+    async def reap(self) -> None:
+        """kill 뒤에 부른다. 표준 출력을 읽으므로 대화(feed)와 겹치게 부르면 안 된다.
+
+        다 읽어야 파이프가 닫히고 wait가 끝난다(출력 폭주로 읽기가 멈춘 경우도).
+        """
+        await _discard(self.talk.stdout)
+        await self.draining
+        await self.proc.wait()
+
+
+async def _launch(argv: list[str], name: str) -> _Box:
+    proc = await asyncio.create_subprocess_exec(
+        *argv,
+        stdin=asyncio.subprocess.PIPE,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        limit=MAX_LINE,
+    )
+    try:
+        return _Box(name, proc)
+    except RuntimeError:
+        await _docker("rm", "-f", name)
+        raise
 
 
 async def run_in_container(
@@ -345,20 +449,8 @@ async def run_in_container(
 ) -> SandboxResult:
     """전략 코드를 새 컨테이너 하나에서 돌린다. 끝나면 어떤 경우에도 컨테이너를 지운다."""
     name = NAME_PREFIX + secrets.token_hex(8)
-    proc = await asyncio.create_subprocess_exec(
-        *docker_argv(image, name),
-        stdin=asyncio.subprocess.PIPE,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-        limit=MAX_LINE,
-    )
-    stdin, stdout, stderr = proc.stdin, proc.stdout, proc.stderr
-    if stdin is None or stdout is None or stderr is None:
-        await _docker("rm", "-f", name)
-        raise RuntimeError("docker run 파이프를 열지 못했습니다")
-    errors = _ErrorStream(stderr, proc)
-    stderr_drain = asyncio.create_task(errors.drain())
-    talk = _Conversation(stdin, stdout)
+    box = await _launch(docker_argv(image, name), name)
+    talk, proc = box.talk, box.proc
     reply: SandboxResult | None = None
     try:
         try:
@@ -368,7 +460,7 @@ async def run_in_container(
                     reply = await talk.run(job)
                 except _HarnessEndedError:
                     # 컨테이너가 끝난 뒤에야 상태(OOM·종료 코드)가 확정된다.
-                    stdin.close()
+                    talk.stdin.close()
                     await proc.wait()
         except TimeoutError:
             await _docker("kill", name)
@@ -376,28 +468,143 @@ async def run_in_container(
         except _OutputOverflowError as exc:
             reply = failure("output", talk.index, str(exc))
         if reply is None:
-            reply = await _exit_reason(name, talk, proc.returncode)
+            ended = await _exit_reason(name, talk.ready, proc.returncode, cpu_limit=True)
+            reply = failure(ended.reason, talk.index, ended.detail)
     finally:
-        await _docker("rm", "-f", name)
-        if proc.returncode is None:
-            with contextlib.suppress(ProcessLookupError):
-                proc.kill()
-        # 다 읽어야 파이프가 닫히고 wait가 끝난다(출력 폭주로 읽기가 멈춘 경우도).
-        await _discard(stdout)
-        await stderr_drain
-        await proc.wait()
+        await box.kill()
+        await box.reap()
     # 표준 에러는 끝까지 센 뒤에 본다. 한도를 넘었으면 다른 결과보다 먼저다.
-    if errors.flooded:
-        return failure("output", talk.index, "표준 에러가 1MB를 넘었습니다")
+    if box.errors.flooded:
+        return failure("output", talk.index, STDERR_FLOOD)
     return reply
 
 
-async def remove_leftovers() -> int:
-    """지난 실행기가 남긴 전략 컨테이너(이름이 NAME_PREFIX로 시작)를 지운다. 지운 수를 돌려준다.
+class ResidentSession:
+    """띄워 둔 전략 컨테이너 하나(M4b 자동 실행). 이벤트를 하나 넣고 출력을 하나 받는다.
 
-    실행기가 시작할 때 한 번 부른다. 실패해도 시작을 막지 않는다(로그만 남긴다).
+    체결 계산은 없다. 체결 이벤트는 부르는 쪽(실시간이면 NH 체결)이 넣는다. 이벤트 하나에 2초 안에
+    답하지 않거나, 출력이 계약 밖이거나, 하네스가 오류를 알리거나, 컨테이너가 죽거나 한도(메모리·
+    프로세스·출력)를 넘으면 컨테이너를 지우고 사유(SessionFailed)를 돌려준다. 그 뒤로는 쓸 수 없다.
+    close는 몇 번 불러도 되고, 넣는 중인 이벤트가 있어도 컨테이너를 바로 지운다. 취소를 포함해 어느
+    길로 끝나도 컨테이너를 남기지 않는다. 한 번에 이벤트 하나만 넣는다(겹치는 것은 실행기가 막는다).
     """
-    listing = await _docker("ps", "-aq", "--filter", f"name=^{NAME_PREFIX}")
+
+    def __init__(self, box: _Box, contract: SessionJob) -> None:
+        self._box = box
+        # 출력 검사용 계약. 모델 파일(수십 MB)은 보낸 뒤 들고 있지 않는다.
+        self._contract = contract
+        # 대화(표준 출력 읽기)가 없을 때 선다. 닫기는 이것을 기다린 뒤에 파이프를 비운다.
+        self._idle = asyncio.Event()
+        self._idle.set()
+        self._closing: asyncio.Task[None] | None = None
+
+    @property
+    def name(self) -> str:
+        return self._box.name
+
+    async def feed(self, event: StrategyEvent) -> Output | SessionFailed:
+        """이벤트 하나를 넣고 출력 하나를 받는다. 닫은 세션이면 SessionClosedError."""
+        return await self._converse(lambda: self._box.talk.answer(event, self._contract))
+
+    async def close(self) -> None:
+        if self._closing is None:
+            self._closing = asyncio.create_task(self._shutdown())
+        # 부른 쪽이 취소돼도 닫기는 끝까지 간다.
+        await asyncio.shield(self._closing)
+
+    async def _shutdown(self) -> None:
+        await self._box.kill()
+        # 넣는 중인 이벤트가 있으면 그 읽기가 끝나기를 기다린다. 컨테이너가 없어서 곧 끝난다.
+        await self._idle.wait()
+        await self._box.reap()
+
+    @classmethod
+    async def open(
+        cls, job: SessionJob, image: str, open_seconds: float = OPEN_SECONDS
+    ) -> "ResidentSession | SessionFailed":
+        """컨테이너를 하나 띄우고 코드를 불러 ready까지 받는다. 못 열면 컨테이너를 지우고 사유.
+
+        컨테이너가 하네스를 돌리지 못하면(이미지 없음 등) ContainerStartError를 낸다.
+        """
+        name = RESIDENT_PREFIX + secrets.token_hex(8)
+        session = cls(await _launch(resident_argv(image, name), name), replace(job, model=None))
+
+        async def ready() -> _Refusal | None:
+            return await session._box.talk.start(job)
+
+        refused = await session._converse(ready, open_seconds)
+        return session if refused is None else refused
+
+    async def _converse[T](
+        self, step: Callable[[], Awaitable[T | _Refusal]], seconds: float = EVENT_SECONDS
+    ) -> T | SessionFailed:
+        """대화 한 단계를 마감 안에서 돌린다. 실패하면 컨테이너를 지우고 사유를 돌려준다."""
+        if self._closing is not None:
+            raise SessionClosedError
+        self._idle.clear()
+        try:
+            outcome = await self._guarded(step, seconds)
+        except BaseException:
+            # 취소 등. 대화가 어디서 멈췄는지 모르니 세션을 끝낸다.
+            self._idle.set()
+            await self.close()
+            raise
+        self._idle.set()
+        if self._closing is not None:
+            raise SessionClosedError
+        if isinstance(outcome, SessionFailed):
+            await self.close()
+        return outcome
+
+    async def _guarded[T](
+        self, step: Callable[[], Awaitable[T | _Refusal]], seconds: float
+    ) -> T | SessionFailed:
+        box = self._box
+        try:
+            async with asyncio.timeout(seconds):
+                outcome = await step()
+        except TimeoutError:
+            await _docker("kill", box.name)
+            return _failed("timeout", f"{seconds:g}초 안에 답하지 않았습니다")
+        except _OutputOverflowError as exc:
+            return _failed("output", str(exc))
+        except _HarnessEndedError:
+            return await self._ended()
+        # 표준 에러는 따로 읽으므로 넘친 것을 늦게 알 수 있다. 알게 된 첫 단계에서 끝낸다.
+        if box.errors.flooded:
+            return _failed("output", STDERR_FLOOD)
+        if isinstance(outcome, _Refusal):
+            return _failed(outcome.reason, outcome.detail)
+        return outcome
+
+    async def _ended(self) -> SessionFailed:
+        """하네스가 답 없이 끝났다. 컨테이너가 끝난 뒤에야 상태(OOM·종료 코드)가 확정된다."""
+        box = self._box
+        box.talk.stdin.close()
+        try:
+            async with asyncio.timeout(DOCKER_CLI_SECONDS):
+                await box.proc.wait()
+        except TimeoutError:
+            return _failed("timeout", "전략 컨테이너가 끝나지 않았습니다")
+        if self._closing is not None:
+            # 넣는 동안 다른 쪽이 닫았다(그래서 끝났다). 지운 컨테이너의 상태는 읽을 수 없다.
+            raise SessionClosedError
+        if box.errors.flooded:
+            return _failed("output", STDERR_FLOOD)
+        ended = await _exit_reason(box.name, box.talk.ready, box.proc.returncode, cpu_limit=False)
+        return _failed(ended.reason, ended.detail)
+
+
+async def remove_leftovers() -> int:
+    """지난 실행기가 남긴 전략 컨테이너(백테스트·띄워 둔 것 모두)를 지운다. 지운 수를 돌려준다.
+
+    실행기가 시작할 때 한 번 부른다. 실패해도 시작을 막지 않는다(로그만 남긴다). 실행기가 다시
+    시작하면 세션은 하나도 살아남지 않는다. MCP 서버는 세션이 없다는 답(404)을 받고 그 전략을
+    멈춘다.
+    """
+    listing = await _docker(
+        "ps", "-aq", "--filter", f"name=^{NAME_PREFIX}", "--filter", f"name=^{RESIDENT_PREFIX}"
+    )
     if listing is None:
         _LOG.warning("남은 전략 컨테이너 목록을 읽지 못했습니다")
         return 0

@@ -28,9 +28,12 @@ from nh_mcp.sandbox import container
 from nh_mcp.sandbox.container import (
     FIXED_ARGS,
     NAME_PREFIX,
+    RESIDENT_ARGS,
+    RESIDENT_PREFIX,
     ContainerStartError,
     docker_argv,
     remove_leftovers,
+    resident_argv,
     run_in_container,
 )
 from nh_mcp.sandbox.wire import MAX_DETAIL
@@ -93,6 +96,62 @@ def test_argv_is_constant() -> None:
         "-s",
         "/harness/harness.py",
     ]
+
+
+def test_resident_argv_is_constant() -> None:
+    """띄워 두는 컨테이너(M4b)의 인자. 누적 CPU 한도만 없고 나머지는 백테스트와 같다."""
+    assert resident_argv("img", "nhmcp-run-abc") == [
+        "docker",
+        "run",
+        "-i",
+        "--network",
+        "none",
+        "--read-only",
+        "--tmpfs",
+        "/tmp:size=66m,noexec,nosuid",
+        "--user",
+        "65534:65534",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--memory",
+        "512m",
+        "--memory-swap",
+        "512m",
+        "--pids-limit",
+        "32",
+        "--cpus",
+        "1",
+        "--ulimit",
+        "nofile=64:64",
+        "--ulimit",
+        "fsize=52428800:52428800",
+        "-e",
+        "PYTHONHASHSEED=0",
+        "--workdir",
+        "/sandbox",
+        "--log-driver",
+        "none",
+        "--pull",
+        "never",
+        "--name",
+        "nhmcp-run-abc",
+        "img",
+        "python",
+        "-s",
+        "/harness/harness.py",
+    ]
+
+
+def test_resident_args_drop_only_the_cpu_time_limit() -> None:
+    """사람 승인(2026-11-25, 불변식 12): 누적 CPU 한도 한 쌍만 뺀다. 순서도 그대로다."""
+    at = FIXED_ARGS.index("cpu=60:60")
+    assert FIXED_ARGS[at - 1 : at + 1] == ("--ulimit", "cpu=60:60")
+    assert FIXED_ARGS[: at - 1] + FIXED_ARGS[at + 1 :] == RESIDENT_ARGS
+    assert not [arg for arg in RESIDENT_ARGS if arg.startswith("cpu=")]
+    # 접두어가 달라 실행기가 두 종류를 가려 지울 수 있다. 어느 쪽도 다른 쪽의 앞부분이 아니다.
+    assert (NAME_PREFIX, RESIDENT_PREFIX) == ("nhmcp-sbx-", "nhmcp-run-")
 
 
 # 모델 파일 전(M4a U4까지)의 고정 인자. 모델 파일 때문에 바뀐 것은 아래 둘뿐이어야 한다.
@@ -535,20 +594,27 @@ def exists(name: str) -> bool:
 
 
 def test_leftover_containers_are_removed(sandbox_image: str) -> None:
-    """실행기가 시작할 때 남은 전략 컨테이너를 지운다. 이름이 접두어로 시작하지 않으면 둔다."""
-    leftover = NAME_PREFIX + "leftover-" + secrets.token_hex(4)
-    unrelated = "other-" + NAME_PREFIX + secrets.token_hex(4)
-    for name in (leftover, unrelated):
+    """실행기가 시작할 때 남은 전략 컨테이너(백테스트·띄워 둔 것)를 지운다.
+
+    이름이 두 접두어 가운데 하나로 시작하지 않으면 둔다. 실행기가 다시 시작하면 세션은 하나도
+    살아남지 않는다(MCP 서버는 404를 받고 전략을 멈춘다).
+    """
+    tag = secrets.token_hex(4)
+    leftover, resident = NAME_PREFIX + "leftover-" + tag, RESIDENT_PREFIX + "leftover-" + tag
+    unrelated = ["other-" + NAME_PREFIX + tag, "other-" + RESIDENT_PREFIX + tag]
+    for name in (leftover, resident, *unrelated):
         subprocess.run(
             ["docker", "create", "--name", name, sandbox_image, "python", "-c", "pass"],
             capture_output=True,
             check=True,
         )
     try:
-        assert asyncio.run(remove_leftovers()) == 1
-        assert exists(leftover) is False
-        assert exists(unrelated) is True
+        assert asyncio.run(remove_leftovers()) == 2
+        assert (exists(leftover), exists(resident)) == (False, False)
+        assert [exists(name) for name in unrelated] == [True, True]
     finally:
         subprocess.run(
-            ["docker", "rm", "-f", leftover, unrelated], capture_output=True, check=False
+            ["docker", "rm", "-f", leftover, resident, *unrelated],
+            capture_output=True,
+            check=False,
         )

@@ -356,6 +356,32 @@ class SandboxResult:
     detail: str
 
 
+@dataclass(frozen=True)
+class SessionJob:
+    """띄워 두는 전략 컨테이너 하나를 여는 일(M4b 자동 실행).
+
+    SandboxJob에서 이벤트를 빼고 만료를 더했다. 이벤트는 연 뒤에 하나씩 넣는다. 체결 계산은 없고
+    체결 이벤트도 부르는 쪽(실시간이면 NH 체결)이 넣는다. expires_at(승인 만료, 실행기가 최대 7일로
+    자른다)이 지나면 실행기가 닫는다.
+    """
+
+    code: str
+    params: dict[str, JsonValue]
+    streams: Streams
+    max_position: int
+    terms: Mapping[str, SymbolTerms]
+    expires_at: datetime
+    model: bytes | None = field(default=None, repr=False)
+
+
+@dataclass(frozen=True)
+class SessionFailed:
+    """띄워 둔 전략 컨테이너가 실패로 끝났다. 컨테이너는 이미 지웠고 그 세션은 다시 쓸 수 없다."""
+
+    reason: SandboxFailure
+    detail: str
+
+
 # 하루 손실 한도에 닿았을 때: 정리하고 멈춘다 / 그대로 두고 멈춘다.
 type OnLoss = Literal["liquidate", "hold"]
 # auto: 목표대로 주문한다. suggest: 제안만 하고 사용자가 확인한다.
@@ -373,3 +399,38 @@ class StrategyScope:
     expires_at: datetime
     on_loss: OnLoss
     mode: StrategyMode
+
+
+@dataclass(frozen=True)
+class RunSnapshot:
+    """실행 중인 전략의 지금 모습. 자동 주문 한 건마다 실행기가 채워 `place_auto`에 넘긴다.
+
+    symbols는 그 전략이 받는 흐름의 종목, resting_qty는 그 전략이 그 종목에 걸어 둔 미체결
+    (매수 +, 매도 -), orders_today는 오늘 그 전략이 낸 주문 수, strategy_pnl은 오늘 그 전략의
+    손익(실제 체결, 미청산은 마지막 가격 평가)이다. 모르는 값은 None이고, None이면 막는다.
+    """
+
+    run_id: str
+    scope: StrategyScope
+    symbols: frozenset[str]
+    resting_qty: int | None
+    orders_today: int | None
+    strategy_pnl: Decimal | None
+
+
+@dataclass(frozen=True)
+class ScopeInput:
+    """승인 범위 규칙이 보는 모든 것. position은 계좌에서 읽은 그 종목의 순포지션(매수 +)."""
+
+    run: RunSnapshot
+    order: OrderRequest
+    position: int
+    now: datetime
+
+
+@dataclass(frozen=True)
+class ScopeDecision:
+    """승인 범위 규칙의 결과. 통과면 rule이 None이다."""
+
+    rule: str | None
+    message: str

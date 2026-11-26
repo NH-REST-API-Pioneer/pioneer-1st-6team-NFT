@@ -38,7 +38,20 @@ def test_insert_writes_a_submitted_row_with_the_request() -> None:
     assert (first.nh_order_no, first.msg_cd, first.msg_cntn) == (None, None, None)
     assert first.submitted_at == NOW
     assert first.updated_at == NOW
+    assert first.run_id is None
     assert stored[market_id].price is None
+
+
+def test_insert_tags_an_automatic_order_with_its_run() -> None:
+    conn = db.connect(":memory:")
+    user_a, _ = two_users(conn)
+
+    auto = orders.insert_submitted(conn, user_a, LIMIT_BUY, NOW, "run-1")
+    manual = orders.insert_submitted(conn, user_a, LIMIT_BUY, NOW)
+    orders.update(conn, user_a, auto, Outcome("ACCEPTED", nh_order_no="0000123"), NOW)
+
+    tagged = {row.id: row.run_id for row in orders.list_for(conn, user_a)}
+    assert tagged == {auto: "run-1", manual: None}
 
 
 def test_update_changes_status_and_keeps_fields_that_were_not_given() -> None:

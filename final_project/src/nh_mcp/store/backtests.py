@@ -1,4 +1,5 @@
-"""백테스트 기록. 성공한 기록이 있어야 `preview_strategy`가 통과한다. 사용자 조건을 항상 건다."""
+"""백테스트 기록. 성공한 기록이 있어야 `preview_strategy`가 통과하고, `start_strategy`는 그 기록의
+코드 원문을 돌린다. 사용자 조건을 항상 건다."""
 
 import sqlite3
 from dataclasses import dataclass
@@ -84,3 +85,14 @@ def has_success(conn: sqlite3.Connection, user_id: UserId, key: RunKey) -> bool:
         (user_id, key.market, key.streams, key.code_hash, key.params, key.model_hash, SUCCESS),
     ).fetchone()
     return row is not None
+
+
+def code_for(conn: sqlite3.Connection, user_id: UserId, key: RunKey) -> str | None:
+    """이 사용자가 같은 흐름·코드·파라미터·모델로 성공한 백테스트의 코드 원문(가장 최근 것)."""
+    row = conn.execute(
+        "SELECT code FROM backtest_runs WHERE user_id = ? AND market = ? AND streams = ? "
+        "AND code_hash = ? AND params = ? AND model_hash IS ? AND status = ? "
+        "ORDER BY id DESC LIMIT 1",
+        (user_id, key.market, key.streams, key.code_hash, key.params, key.model_hash, SUCCESS),
+    ).fetchone()
+    return None if row is None else str(row[0])

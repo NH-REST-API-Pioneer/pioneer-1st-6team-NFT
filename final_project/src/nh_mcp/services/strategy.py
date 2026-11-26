@@ -1,23 +1,30 @@
-"""실행 승인 미리보기: 전략을 켜도 되는 범위인지 보고, 통과하면 2분짜리 확인 토큰을 발급한다.
+"""전략 실행 승인과 자동 실행: 미리보기(확인 토큰 발급), 켜기, 끄기, 상태, "자동 실행" 묶음 스위치.
 
-검사 순서(하나라도 막히면 거기서 끝): 코드·파라미터 크기·흐름 모양 → 국내 선물 종목 → 한도 있음 →
-범위 ≤ 한도 → 횟수·만료 범위 → 모델 파일이 아직 있음 → 같은 사용자·흐름·코드·파라미터·모델의
-성공한 백테스트.
-토큰에는 흐름과 승인 범위 전체를 담는다. 코드 원문은 넣지 않고 해시만 넣는다
+미리보기 검사 순서(하나라도 막히면 거기서 끝): 자동 실행 묶음이 켜짐 → 코드·파라미터 크기·흐름 모양
+→ 국내 선물 종목 → 한도 있음 → 범위 ≤ 한도 → 횟수·만료 범위 → 모델 파일이 아직 있음 → 같은
+사용자·흐름·코드·파라미터·모델의 성공한 백테스트.
+토큰에는 흐름, 종목 이름, 승인 범위 전체를 담는다. 코드 원문은 넣지 않고 해시만 넣는다
 (원문은 `backtest_runs`에 있다).
-아직 이 토큰을 쓰는 곳이 없다. M4b의 `start_strategy`가 소진한다.
+
+켜기: 토큰 확인(소진하지 않음) → 승인 창(거절이면 소진하고 끝) → 사용자별 잠금 안에서 묶음 → 한도
+(사용자당 5개, 종목당 1개, 서버 전체 100명) → 내 성공한 백테스트의 코드 원문과 모델 파일 → 토큰 소진
+(한 문장) → runner. 켜는 사이 묶음이 꺼졌으면 바로 끄고 거절한다.
+끄기는 확인 없이 바로 한다(위험을 줄이는 일). 묶음을 끄면 그 사용자의 전략을 모두 끈다.
 """
 
+import asyncio
+import hashlib
 import json
 import sqlite3
+from collections.abc import Mapping
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, time, timedelta
 from decimal import Decimal
+from typing import cast
 
 from nh_mcp.domain import (
     KST,
     Clock,
-    Contract,
     JsonValue,
     ModelHash,
     OnLoss,
@@ -27,30 +34,58 @@ from nh_mcp.domain import (
     Streams,
     UserId,
 )
-from nh_mcp.guard.risk import LIMITS_NOT_SET
+from nh_mcp.guard.confirm import judge
+from nh_mcp.guard.risk import EXPIRY_WARN_DAYS, LIMITS_NOT_SET
 from nh_mcp.markets.domestic import DomesticMarket
 from nh_mcp.models.store import ModelStore
+from nh_mcp.services.approval import Approval
 from nh_mcp.services.backtest import (
     NO_MODEL,
     STREAM_NAMES,
     StrategyInvalid,
     check_strategy,
     check_streams,
+    code_hash,
     futures,
+    params_key,
     run_key,
     streams_data,
+    streams_key,
 )
 from nh_mcp.services.orders import LimitsNotSet, RiskBlocked
 from nh_mcp.services.queries import QueryService
-from nh_mcp.store import audit, backtests, confirm_tokens, limits
+from nh_mcp.services.runs import Approved, Standing, StartRefused, StrategyRuns, parse_approval
+from nh_mcp.store import audit, backtests, confirm_tokens, features, limits, orders, strategy_runs
 from nh_mcp.store.backtests import RunKey
 from nh_mcp.store.confirm_tokens import NewToken
+from nh_mcp.store.features import Feature
+from nh_mcp.store.strategy_runs import RunEvent, RunRow
 
 STRATEGY_TTL = timedelta(minutes=2)
 MAX_DAILY_ORDERS = 100
 MAX_APPROVAL = timedelta(days=7)
 SCOPE_EXCEEDS_LIMITS = "scope_exceeds_limits"
 NOT_BACKTESTED = "not_backtested"
+# 켜기 한도(docs/strategies.md "한도"). 일시정지·멈춘 실행은 세지 않는다.
+MAX_RUNS_PER_USER = 5
+MAX_RUN_USERS = 100
+# get_strategy_status가 보여 주는 실행 수와 실행 하나의 기록 수.
+MAX_LISTED_RUNS = 20
+MAX_LISTED_EVENTS = 50
+
+AUTO_RUN: Feature = "auto_run"
+AUTO_RUN_OFF = "auto_run_off"
+TOO_MANY_RUNS = "too_many_runs"
+SYMBOL_IN_USE = "symbol_in_use"
+SERVER_FULL = "server_full"
+MODEL_MISSING = "model_missing"
+# 토큰을 소진한 뒤 runner가 켜기를 거절했을 때 덧붙인다.
+TOKEN_USED = "이 확인 토큰은 이미 썼습니다. 다시 켜려면 preview_strategy부터 해 주세요."
+# 도구가 끝에 등록 화면 주소를 붙인다.
+AUTO_RUN_IS_OFF = (
+    "자동 실행 묶음이 꺼져 있어 전략을 미리보기하거나 켤 수 없습니다. 사용자가 등록 화면의 "
+    "'자동 실행' 스위치를 켜야 합니다(AI는 켤 수 없습니다)."
+)
 
 ON_LOSS_NAMES: dict[OnLoss, str] = {
     "liquidate": "손실 한도에서 정리",
@@ -63,8 +98,16 @@ NO_BACKTEST = (
     "없습니다. "
     "먼저 같은 값으로 backtest_strategy를 돌리세요."
 )
-# 요약에 보여 줄 모델 해시 앞자리 수.
+NO_CODE = "승인한 코드로 성공한 내 백테스트 기록이 없습니다. backtest_strategy부터 다시 해 주세요."
+# 요약에 보여 줄 해시 앞자리 수.
 MODEL_PREFIX = 12
+# 자동 모드 승인 창에서 한 번 받아들이는 경고. 자동 주문은 이 경고로 막지 않는다(`place_auto`).
+ACCEPTED_WARNINGS = (
+    "목표에 가격이 없으면 시장가로 냅니다. 체결 가격이 예상과 크게 다를 수 있습니다.",
+    "종가 단일가 구간(장 마감 직전, 코스피200 선물은 15:35~15:45)에도 냅니다. 마감 때 종가로 "
+    "한 번에 체결됩니다.",
+    f"만기까지 {EXPIRY_WARN_DAYS}일 이하로 남은 종목에도 냅니다.",
+)
 
 
 @dataclass(frozen=True)
@@ -83,6 +126,58 @@ class StrategyPreview:
     summary: str
     confirm_token: str
     expires_at: datetime
+
+
+@dataclass(frozen=True)
+class PendingStart:
+    """승인 창에 띄울 것. `message`는 토큰에 저장한 값으로 서버가 만든 문구, `state`는 토큰의
+    SHA-256."""
+
+    message: str
+    state: str
+
+
+@dataclass(frozen=True)
+class RunView:
+    """실행 하나의 지금 모습. standing은 이 프로세스에서 도는 실행일 때만 있다."""
+
+    row: RunRow
+    orders_today: int
+    standing: Standing | None
+
+
+@dataclass(frozen=True)
+class RunDetail:
+    view: RunView
+    # 최근 기록(제안 빼고), 오래된 것부터.
+    events: list[RunEvent]
+    # 종목마다 가장 최근 제안(제안 모드), 종목코드 순.
+    suggestions: list[RunEvent]
+
+
+class StrategyTokenInvalid(Exception):
+    """`strategy` 확인 토큰이 없거나 남의 것이거나 만료됐거나 이미 썼다."""
+
+
+class StartDeclined(Exception):
+    """사람이 승인 창에서 승인하지 않았다. 토큰은 소진했다."""
+
+
+class RunMissing(Exception):
+    """이 사용자에게 그 run_id의 실행이 없다(남의 실행도 같은 답이다)."""
+
+
+class RunStarting(Exception):
+    """켜는 중이라 아직 끌 수 없다."""
+
+
+@dataclass(frozen=True)
+class _Ticket:
+    """확인 토큰에 담긴 승인 내용."""
+
+    payload: str
+    approved: Approved
+    names: dict[str, str]
 
 
 def _plain(value: Decimal) -> str:
@@ -128,11 +223,12 @@ def _range_problem(scope: StrategyScope, now: datetime) -> str | None:
     return None
 
 
-def _payload(request: StrategyRequest, key: RunKey) -> str:
+def _payload(request: StrategyRequest, key: RunKey, names: Mapping[str, str]) -> str:
     scope = request.scope
     values: dict[str, JsonValue] = {
         "market": "domestic",
         "streams": streams_data(request.streams),
+        "names": dict(sorted(names.items())),
         "code_hash": key.code_hash,
         "params": key.params,
         "model_hash": key.model_hash,
@@ -149,53 +245,143 @@ def _payload(request: StrategyRequest, key: RunKey) -> str:
     return json.dumps(values, sort_keys=True, ensure_ascii=False)
 
 
-def _subjects(contracts: list[Contract], streams: Streams) -> str:
-    """종목 이름과 흐름. 예: "코스피200 F 202612 1분봉, 미니코스피 F 202612 일봉+1분봉"."""
-    return ", ".join(
-        c.name + " " + "+".join(STREAM_NAMES[name] for name in sorted(streams[c.symbol]))
-        for c in contracts
-    )
+def _names(payload: str) -> dict[str, str]:
+    """토큰에 담은 종목 이름. 없거나 모양이 다르면 빈 것(창에는 종목코드만 나온다)."""
+    values: object = json.loads(payload)
+    raw = cast(dict[str, object], values).get("names") if isinstance(values, dict) else None
+    if not isinstance(raw, dict):
+        return {}
+    named = cast(dict[object, object], raw)
+    return {k: v for k, v in named.items() if isinstance(k, str) and isinstance(v, str)}
 
 
-def _summary(contracts: list[Contract], request: StrategyRequest) -> str:
-    """승인 범위를 사람이 읽을 문장으로. 저장하는 값에서 서버가 만든다."""
-    scope = request.scope
+def _streams_text(streams: Streams, symbol: str) -> str:
+    return "+".join(STREAM_NAMES[name] for name in sorted(streams[symbol]))
+
+
+def _scope_parts(scope: StrategyScope) -> list[str]:
     until = scope.expires_at.astimezone(KST).strftime("%Y-%m-%d %H:%M")
+    return [
+        f"1회 {scope.quantity}계약",
+        f"최대 {scope.max_position}계약",
+        f"하루 {scope.daily_orders}회",
+        f"일일 손실 {format(scope.daily_loss, ',f')}원",
+        f"{until}까지",
+        ON_LOSS_NAMES[scope.on_loss],
+    ]
+
+
+def _summary(names: Mapping[str, str], request: StrategyRequest) -> str:
+    """승인 범위를 사람이 읽을 문장으로. 저장하는 값에서 서버가 만든다.
+
+    예: "코스피200 F 202612 1분봉 · 1회 1계약 · … · 자동 모드".
+    """
+    subjects = ", ".join(
+        names[symbol] + " " + _streams_text(request.streams, symbol)
+        for symbol in sorted(request.streams)
+    )
     model = [] if request.model is None else [f"모델 {request.model[:MODEL_PREFIX]}"]
     return " · ".join(
-        [
-            _subjects(contracts, request.streams),
-            *model,
-            f"1회 {scope.quantity}계약",
-            f"최대 {scope.max_position}계약",
-            f"하루 {scope.daily_orders}회",
-            f"일일 손실 {format(scope.daily_loss, ',f')}원",
-            f"{until}까지",
-            ON_LOSS_NAMES[scope.on_loss],
-            MODE_NAMES[scope.mode],
-        ]
+        [subjects, *model, *_scope_parts(request.scope), MODE_NAMES[request.scope.mode]]
     )
+
+
+def approval_message(approved: Approved, names: Mapping[str, str]) -> str:
+    """start_strategy 승인 창의 문구. 토큰에 저장한 값으로만 만든다."""
+    scope = approved.scope
+    subjects = ", ".join(
+        (f"{names[s]}({s})" if s in names else s) + " " + _streams_text(approved.streams, s)
+        for s in sorted(approved.streams)
+    )
+    model = (
+        "모델 없음" if approved.model_hash is None else f"모델 {approved.model_hash[:MODEL_PREFIX]}"
+    )
+    auto = scope.mode == "auto"
+    lines = [
+        "모의 계좌에서 전략 자동 실행을 켭니다. "
+        + (
+            "켠 뒤에는 주문마다 묻지 않고, 서버가 아래 범위 안에서 바로 주문합니다."
+            if auto
+            else "제안 모드라 주문하지 않고 목표만 기록합니다."
+        ),
+        f"종목: {subjects}",
+        f"모드: {MODE_NAMES[scope.mode]}",
+        "범위: " + " · ".join(_scope_parts(scope)),
+        f"코드 {approved.code_hash[:MODEL_PREFIX]} · {model}",
+    ]
+    if auto:
+        lines.append("주문마다 경고를 다시 묻지 않습니다. 켜면 다음을 받아들입니다.")
+        lines += [f"- {warning}" for warning in ACCEPTED_WARNINGS]
+    lines.append("서버가 먼저 알려 주지 못합니다. 어떻게 됐는지는 AI에게 물어보세요.")
+    lines.append("승인할까요?")
+    return "\n".join(lines)
 
 
 def _failure(exc: Exception) -> dict[str, JsonValue]:
     """감사 로그에 남길 실패 내용. 예외 메시지는 넣지 않는다."""
     if isinstance(exc, RiskBlocked):
         return {"outcome": "blocked", "rule": exc.rule}
+    if isinstance(exc, StartRefused):
+        return {"outcome": "refused", "rule": exc.rule}
     if isinstance(exc, LimitsNotSet):
         return {"outcome": "blocked", "rule": LIMITS_NOT_SET}
     if isinstance(exc, StrategyInvalid):
         return {"outcome": "invalid"}
+    if isinstance(exc, StrategyTokenInvalid):
+        return {"outcome": "invalid_token"}
     return {"outcome": "error", "error": type(exc).__name__}
+
+
+def _detail(approved: Approved) -> dict[str, JsonValue]:
+    return {
+        "streams": streams_data(approved.streams),
+        "code_hash": approved.code_hash,
+        "model_hash": approved.model_hash,
+    }
 
 
 class StrategyService:
     def __init__(
-        self, conn: sqlite3.Connection, clock: Clock, domestic: DomesticMarket, models: ModelStore
+        self,
+        conn: sqlite3.Connection,
+        clock: Clock,
+        domestic: DomesticMarket,
+        models: ModelStore,
+        runs: StrategyRuns,
     ) -> None:
         self._conn = conn
         self._clock = clock
         self._queries = QueryService(domestic)
         self._models = models
+        self._runs = runs
+        self._locks: dict[UserId, asyncio.Lock] = {}
+
+    # ---- 자동 실행 묶음 --------------------------------------------------------
+
+    def auto_run(self, user_id: UserId) -> bool:
+        """이 사용자가 등록 화면에서 "자동 실행"을 켰는가. 기본은 꺼짐이다."""
+        return features.enabled(self._conn, user_id, AUTO_RUN)
+
+    async def set_auto_run(self, user_id: UserId, on: bool) -> int:
+        """묶음을 켜거나 끈다. 끄면 그 사용자의 전략을 모두 끄고, 끈 수를 돌려준다."""
+        if on:
+            features.turn_on(self._conn, user_id, AUTO_RUN, self._clock())
+            self._log(user_id, "strategy.auto_run", {"enabled": True})
+            return 0
+        # 먼저 끄면 그 뒤로는 새로 켜지지 않는다. 켜는 중이던 것은 start가 끝에서 다시 보고 끈다.
+        features.turn_off(self._conn, user_id, AUTO_RUN)
+        stopped = 0
+        for row in strategy_runs.list_for(self._conn, user_id):
+            if row.state != "stopped" and await self._runs.stop(user_id, row.run.run_id):
+                stopped += 1
+        self._log(user_id, "strategy.auto_run", {"enabled": False, "stopped": stopped})
+        return stopped
+
+    def _require_auto_run(self, user_id: UserId) -> None:
+        if not self.auto_run(user_id):
+            raise RiskBlocked(AUTO_RUN_OFF, AUTO_RUN_IS_OFF)
+
+    # ---- 미리보기 --------------------------------------------------------------
 
     async def preview(self, user_id: UserId, request: StrategyRequest) -> StrategyPreview:
         """검사를 통과하면 승인 범위 전체를 담은 확인 토큰을 발급한다. 전략은 켜지 않는다."""
@@ -206,19 +392,20 @@ class StrategyService:
             "model_hash": key.model_hash,
         }
         try:
-            contracts = await self._check(user_id, request, key)
-            new = NewToken(user_id, "strategy", _payload(request, key))
+            names = await self._check(user_id, request, key)
+            new = NewToken(user_id, "strategy", _payload(request, key, names))
             token, expires_at = confirm_tokens.issue(self._conn, new, self._clock(), STRATEGY_TTL)
         except Exception as exc:
-            self._audit(user_id, detail | _failure(exc))
+            self._log(user_id, AUDIT_ACTION, detail | _failure(exc))
             raise
-        self._audit(user_id, detail | {"outcome": "issued"})
-        return StrategyPreview(key.code_hash, _summary(contracts, request), token, expires_at)
+        self._log(user_id, AUDIT_ACTION, detail | {"outcome": "issued"})
+        return StrategyPreview(key.code_hash, _summary(names, request), token, expires_at)
 
     async def _check(
         self, user_id: UserId, request: StrategyRequest, key: RunKey
-    ) -> list[Contract]:
-        """스펙의 검사 순서. 통과하면 종목들(종목코드 순)."""
+    ) -> dict[str, str]:
+        """스펙의 검사 순서. 통과하면 종목코드 → 종목 이름."""
+        self._require_auto_run(user_id)
         problem = (
             check_strategy(request.code, request.params)
             or check_streams(request.streams)
@@ -243,7 +430,164 @@ class StrategyService:
             raise StrategyInvalid(NO_MODEL)
         if not backtests.has_success(self._conn, user_id, key):
             raise RiskBlocked(NOT_BACKTESTED, NO_BACKTEST)
-        return contracts
+        return {c.symbol: c.name for c in contracts}
 
-    def _audit(self, user_id: UserId, detail: dict[str, JsonValue]) -> None:
-        audit.record(self._conn, user_id, AUDIT_ACTION, detail, self._clock())
+    # ---- 켜기 -----------------------------------------------------------------
+
+    def pending_start(self, user_id: UserId, token: str) -> PendingStart:
+        """승인 창에 띄울 문구. 토큰은 소진하지 않는다. 켤 수 없는 것은 창을 띄우기 전에 막는다."""
+        self._require_auto_run(user_id)
+        ticket = self._ticket(user_id, token)
+        self._check_caps(user_id, ticket.approved.streams)
+        state = hashlib.sha256(token.encode()).hexdigest()
+        return PendingStart(approval_message(ticket.approved, ticket.names), state)
+
+    async def start(self, user_id: UserId, token: str, approval: Approval) -> RunRow:
+        """토큰 확인 → (거절이면 소진하고 끝) → 잠금 안에서 다시 검사 → 소진 → 켜기."""
+        try:
+            ticket = self._ticket(user_id, token)
+        except StrategyTokenInvalid as exc:
+            self._log(user_id, "strategy.start", _failure(exc))
+            raise
+        detail = _detail(ticket.approved)
+        self._log(user_id, "strategy.approve", detail | {"outcome": approval})
+        if approval == "declined":
+            # AI가 같은 토큰으로 승인 창을 되풀이해 띄우지 못하게 소진한다.
+            confirm_tokens.consume(self._conn, token, user_id, "strategy", self._clock())
+            raise StartDeclined()
+        async with self._lock(user_id):
+            try:
+                run_id = await self._start(user_id, token, ticket)
+            except Exception as exc:
+                self._log(user_id, "strategy.start", detail | _failure(exc))
+                raise
+        self._log(user_id, "strategy.start", detail | {"outcome": "started", "run_id": run_id})
+        return self._row(user_id, run_id)
+
+    async def _start(self, user_id: UserId, token: str, ticket: _Ticket) -> str:
+        self._require_auto_run(user_id)
+        approved = ticket.approved
+        self._check_caps(user_id, approved.streams)
+        code = self._code(user_id, approved)
+        model = await self._model(user_id, approved)
+        if not confirm_tokens.consume(self._conn, token, user_id, "strategy", self._clock()):
+            raise StrategyTokenInvalid()
+        try:
+            run_id = await self._runs.start(user_id, ticket.payload, code, model)
+        except StartRefused as exc:
+            raise StartRefused(exc.rule, f"{exc.message} {TOKEN_USED}") from None
+        if not self.auto_run(user_id):
+            await self._runs.stop(user_id, run_id)
+            self._require_auto_run(user_id)
+        return run_id
+
+    def _ticket(self, user_id: UserId, token: str) -> _Ticket:
+        row = confirm_tokens.find(self._conn, token)
+        if row is None or judge(row, user_id, "strategy", self._clock()) != "usable":
+            raise StrategyTokenInvalid()
+        approved = parse_approval(row.payload)
+        if approved is None:
+            raise StrategyTokenInvalid()
+        return _Ticket(row.payload, approved, _names(row.payload))
+
+    def _check_caps(self, user_id: UserId, streams: Streams) -> None:
+        """사용자당 MAX_RUNS_PER_USER개, 종목당 하나, 서버 전체 MAX_RUN_USERS명."""
+        live = strategy_runs.live(self._conn, user_id)
+        if len(live) >= MAX_RUNS_PER_USER:
+            raise StartRefused(
+                TOO_MANY_RUNS,
+                f"이미 전략 {len(live)}개가 켜져 있습니다(한 사람당 {MAX_RUNS_PER_USER}개까지). "
+                "stop_strategy로 하나를 끈 뒤 다시 켜 주세요.",
+            )
+        holders = sorted(
+            f"{symbol}(run_id {row.run.run_id})"
+            for row in live
+            for symbol in row.run.streams
+            if symbol in streams
+        )
+        if holders:
+            raise StartRefused(
+                SYMBOL_IN_USE,
+                "종목마다 전략은 하나만 켤 수 있습니다. 이미 도는 전략이 있습니다: "
+                + ", ".join(holders)
+                + ". 그 전략을 stop_strategy로 끄거나 다른 종목으로 해 주세요.",
+            )
+        if not live and strategy_runs.running_users(self._conn, user_id) >= MAX_RUN_USERS:
+            raise StartRefused(
+                SERVER_FULL,
+                f"지금 서버에서 전략을 돌리는 사용자가 {MAX_RUN_USERS}명이라 새 전략을 받지 "
+                "않습니다. 잠시 뒤 preview_strategy부터 다시 해 주세요.",
+            )
+
+    def _code(self, user_id: UserId, approved: Approved) -> str:
+        """승인한 해시와 같은, 내 성공한 백테스트의 코드 원문. 없으면 켜지 않는다."""
+        key = RunKey(
+            "domestic",
+            streams_key(approved.streams),
+            approved.code_hash,
+            params_key(approved.params),
+            approved.model_hash,
+        )
+        code = backtests.code_for(self._conn, user_id, key)
+        if code is None or code_hash(code) != approved.code_hash:
+            raise StartRefused(NOT_BACKTESTED, NO_CODE)
+        return code
+
+    async def _model(self, user_id: UserId, approved: Approved) -> bytes | None:
+        if approved.model_hash is None:
+            return None
+        data = await self._models.read(user_id, approved.model_hash)
+        if data is None:
+            raise StartRefused(MODEL_MISSING, NO_MODEL)
+        return data
+
+    # ---- 끄기·상태 -------------------------------------------------------------
+
+    async def stop(self, user_id: UserId, run_id: str) -> RunRow:
+        """바로 끈다. 이미 멈춘 실행은 그대로 돌려준다. 일시정지는 멈춤으로 바꾼다."""
+        row = strategy_runs.get(self._conn, user_id, run_id)
+        if row is None:
+            raise RunMissing()
+        if row.state == "stopped":
+            return row
+        if row.state == "starting" or not await self._runs.stop(user_id, run_id):
+            raise RunStarting()
+        self._log(user_id, "strategy.stop", {"run_id": run_id, "before": row.state})
+        return self._row(user_id, run_id)
+
+    def runs(self, user_id: UserId) -> list[RunView]:
+        """최근에 켠 실행부터 MAX_LISTED_RUNS개."""
+        recent = strategy_runs.recent(self._conn, user_id, MAX_LISTED_RUNS)
+        return [self._view(row) for row in recent]
+
+    def run(self, user_id: UserId, run_id: str) -> RunDetail:
+        row = strategy_runs.get(self._conn, user_id, run_id)
+        if row is None:
+            raise RunMissing()
+        events = strategy_runs.recent_events(self._conn, user_id, run_id, MAX_LISTED_EVENTS)
+        latest = strategy_runs.suggestions(self._conn, user_id, run_id)
+        return RunDetail(self._view(row), events, [latest[s] for s in sorted(latest)])
+
+    def _view(self, row: RunRow) -> RunView:
+        user_id, run_id = row.run.user_id, row.run.run_id
+        midnight = datetime.combine(self._clock().astimezone(KST).date(), time(), KST)
+        count = orders.count_for_run(self._conn, user_id, run_id, midnight)
+        standing = self._runs.standing(user_id, run_id) if row.state == "running" else None
+        return RunView(row, count, standing)
+
+    def _row(self, user_id: UserId, run_id: str) -> RunRow:
+        row = strategy_runs.get(self._conn, user_id, run_id)
+        if row is None:
+            raise RunMissing()
+        return row
+
+    # ---- 그 밖 ---------------------------------------------------------------
+
+    def _lock(self, user_id: UserId) -> asyncio.Lock:
+        lock = self._locks.get(user_id)
+        if lock is None:
+            lock = self._locks[user_id] = asyncio.Lock()
+        return lock
+
+    def _log(self, user_id: UserId, action: str, detail: dict[str, JsonValue]) -> None:
+        audit.record(self._conn, user_id, action, detail, self._clock())

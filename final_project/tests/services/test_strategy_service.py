@@ -15,7 +15,7 @@ from pathlib import Path
 
 import httpx2
 import pytest
-from fakes import T0, World
+from fakes import T0, NoRuns, World, auto_run_on
 
 from nh_mcp.domain import (
     KST,
@@ -109,9 +109,10 @@ class Desk:
             limits.put(self.conn, self.user, "domestic", LIMITS, T0)
         if with_run:
             add_run(self.conn, self.user, key_for())
+        auto_run_on(self.conn, self.user, self.other)
         master = DomesticMaster(clock, transport=httpx2.MockTransport(self.world.master))
         domestic = DomesticMarket(self.world.pool, master, clock)
-        self.service = StrategyService(self.conn, clock, domestic, self.world.models)
+        self.service = StrategyService(self.conn, clock, domestic, self.world.models, NoRuns())
 
     def upload(self, user: UserId, content: bytes) -> ModelHash:
         draft = self.world.models.draft(user)
@@ -155,6 +156,7 @@ def test_issues_strategy_token_with_full_scope() -> None:
     assert json.loads(payload) == {
         "market": "domestic",
         "streams": {SYMBOL: ["day"]},
+        "names": {SYMBOL: "코스피200 F 202612"},
         "code_hash": code_hash(CODE),
         "params": '{"band":"0.02","window":3}',
         "model_hash": None,
