@@ -1,0 +1,440 @@
+{"kind": "account", "at": "2026-11-25T08:55:02", "text": "계좌 · 시작", "fee": 0.0, "fut_cls_pl_amt": 0.0, "pl_tot_pric": 0.0, "ord_psb_tot_amt": 100000000.0}
+{"kind": "event", "at": "2026-11-25T08:55:02", "text": "시작 (mock-account)", "rule": {"name": "frgn_fut_15_h15", "signal": "frgn_fut_15", "h": 15, "theta": 0.5, "sign": -1.0, "sd": 298.7540136413037, "train_days": ["20261117", "20261118", "20261119", "20261120"], "train_b": -8.50099492424238, "train_t": -1.9151260685857006, "train_q_p": 0.32730815456760465, "train_same_sign": 3, "train_trades": 73, "train_net_bp_mean": 8.484875407873389, "fee_rate": 1.45e-05, "valid_from": "20261123", "note": "scan 통과 후보 없음 → 결과를 보고 조건(|t|≥2, 투자자 신호만)을 풀어 고름. θ = 거래 MIN_TRADES 건 이상, 비용 후 평균이 플러스인 날 SAME_SIGN_MIN 일 이상 중 평균 1등 (이 θ 규칙도 표를 본 뒤 정함)", "chosen_at": "2026-11-23T01:28:50", "risk": {"stop_pt": 0.0, "daily_loss_krw": 750000.0, "how": {"k": 1.0, "sd_trade_krw": 175384, "trades_per_day": 18.25, "sd_day_krw": 749240, "trades": 73, "check_sd_price_move_krw": 183555, "days": ["20261117", "20261118", "20261119", "20261120"], "stop_size": {"added_at": "2026-11-24", "how": "diag/risk_replay.py 로 학습 나흘(17~20) 재생해 손절·분할 변형 20개 비교 → 합계·1계약당·장중 최대 손실 기준 1등", "move_sd": "직전 30분 1분 체결가 변화 σ × √15, 학습일 중앙 3.39pt (10~90% 2.38~5.00)", "replay_krw": {"before": 2395203, "stop_only": 2610064, "size_only": 3517972, "both": 3687835}, "note": "표 안 차이는 거래 73건 합계 표준오차(약 150만) 안. 학습일에서 고른 값."}}, "stop_vol_k": 2.0, "vol_fallback_pt": 3.39, "size_theta2": 1.5, "size_n2": 2}}}
+{"kind": "minute", "at": "2026-11-25T08:56:03", "t": "2026-11-25 08:56:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T08:57:03", "t": "2026-11-25 08:57:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T08:58:03", "t": "2026-11-25 08:58:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T08:59:03", "t": "2026-11-25 08:59:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:00:03", "t": "2026-11-25 09:00:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:01:03", "t": "2026-11-25 09:01:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:02:03", "t": "2026-11-25 09:02:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:03:03", "t": "2026-11-25 09:03:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:04:03", "t": "2026-11-25 09:04:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:05:03", "t": "2026-11-25 09:05:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:06:03", "t": "2026-11-25 09:06:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:07:03", "t": "2026-11-25 09:07:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:08:03", "t": "2026-11-25 09:08:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:09:03", "t": "2026-11-25 09:09:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:10:03", "t": "2026-11-25 09:10:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:11:03", "t": "2026-11-25 09:11:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:12:03", "t": "2026-11-25 09:12:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:13:03", "t": "2026-11-25 09:13:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:14:03", "t": "2026-11-25 09:14:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:15:03", "t": "2026-11-25 09:15:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:16:03", "t": "2026-11-25 09:16:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:17:03", "t": "2026-11-25 09:17:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:18:03", "t": "2026-11-25 09:18:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:19:03", "t": "2026-11-25 09:19:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:20:03", "t": "2026-11-25 09:20:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:21:03", "t": "2026-11-25 09:21:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:22:03", "t": "2026-11-25 09:22:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:23:03", "t": "2026-11-25 09:23:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:24:03", "t": "2026-11-25 09:24:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:25:03", "t": "2026-11-25 09:25:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:26:03", "t": "2026-11-25 09:26:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:27:03", "t": "2026-11-25 09:27:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:28:03", "t": "2026-11-25 09:28:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:29:03", "t": "2026-11-25 09:29:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:30:03", "t": "2026-11-25 09:30:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:31:03", "t": "2026-11-25 09:31:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:32:03", "t": "2026-11-25 09:32:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:33:03", "t": "2026-11-25 09:33:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:34:03", "t": "2026-11-25 09:34:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:35:03", "t": "2026-11-25 09:35:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:36:03", "t": "2026-11-25 09:36:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:37:03", "t": "2026-11-25 09:37:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:38:03", "t": "2026-11-25 09:38:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:39:03", "t": "2026-11-25 09:39:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:40:03", "t": "2026-11-25 09:40:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:41:03", "t": "2026-11-25 09:41:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:42:03", "t": "2026-11-25 09:42:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:43:03", "t": "2026-11-25 09:43:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:44:03", "t": "2026-11-25 09:44:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:45:03", "t": "2026-11-25 09:45:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:46:03", "t": "2026-11-25 09:46:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:47:03", "t": "2026-11-25 09:47:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:48:03", "t": "2026-11-25 09:48:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:49:03", "t": "2026-11-25 09:49:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:50:03", "t": "2026-11-25 09:50:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:51:03", "t": "2026-11-25 09:51:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:52:03", "t": "2026-11-25 09:52:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:53:03", "t": "2026-11-25 09:53:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:54:03", "t": "2026-11-25 09:54:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:55:03", "t": "2026-11-25 09:55:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:56:03", "t": "2026-11-25 09:56:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:57:03", "t": "2026-11-25 09:57:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:58:03", "t": "2026-11-25 09:58:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T09:59:03", "t": "2026-11-25 09:59:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:00:03", "t": "2026-11-25 10:00:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:01:04", "t": "2026-11-25 10:01:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:02:03", "t": "2026-11-25 10:02:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:03:03", "t": "2026-11-25 10:03:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:04:03", "t": "2026-11-25 10:04:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:05:03", "t": "2026-11-25 10:05:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:06:03", "t": "2026-11-25 10:06:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:07:03", "t": "2026-11-25 10:07:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:08:03", "t": "2026-11-25 10:08:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:09:03", "t": "2026-11-25 10:09:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:10:03", "t": "2026-11-25 10:10:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:11:03", "t": "2026-11-25 10:11:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:12:03", "t": "2026-11-25 10:12:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:13:03", "t": "2026-11-25 10:13:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:14:03", "t": "2026-11-25 10:14:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:15:03", "t": "2026-11-25 10:15:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:16:03", "t": "2026-11-25 10:16:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:17:03", "t": "2026-11-25 10:17:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:18:03", "t": "2026-11-25 10:18:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:19:03", "t": "2026-11-25 10:19:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:20:03", "t": "2026-11-25 10:20:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:21:03", "t": "2026-11-25 10:21:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:22:03", "t": "2026-11-25 10:22:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:23:03", "t": "2026-11-25 10:23:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:24:03", "t": "2026-11-25 10:24:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:25:03", "t": "2026-11-25 10:25:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:26:03", "t": "2026-11-25 10:26:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:27:03", "t": "2026-11-25 10:27:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:28:03", "t": "2026-11-25 10:28:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:29:03", "t": "2026-11-25 10:29:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:30:03", "t": "2026-11-25 10:30:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:31:03", "t": "2026-11-25 10:31:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:32:03", "t": "2026-11-25 10:32:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:33:03", "t": "2026-11-25 10:33:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:34:03", "t": "2026-11-25 10:34:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:35:03", "t": "2026-11-25 10:35:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:36:03", "t": "2026-11-25 10:36:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:37:03", "t": "2026-11-25 10:37:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:38:03", "t": "2026-11-25 10:38:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:39:03", "t": "2026-11-25 10:39:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:40:03", "t": "2026-11-25 10:40:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:41:03", "t": "2026-11-25 10:41:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:42:03", "t": "2026-11-25 10:42:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:43:03", "t": "2026-11-25 10:43:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:44:03", "t": "2026-11-25 10:44:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:45:03", "t": "2026-11-25 10:45:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:46:03", "t": "2026-11-25 10:46:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:47:03", "t": "2026-11-25 10:47:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:48:03", "t": "2026-11-25 10:48:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:49:03", "t": "2026-11-25 10:49:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:50:03", "t": "2026-11-25 10:50:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:51:03", "t": "2026-11-25 10:51:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:52:03", "t": "2026-11-25 10:52:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:53:03", "t": "2026-11-25 10:53:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:54:03", "t": "2026-11-25 10:54:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:55:03", "t": "2026-11-25 10:55:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:56:03", "t": "2026-11-25 10:56:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:57:03", "t": "2026-11-25 10:57:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:58:03", "t": "2026-11-25 10:58:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T10:59:03", "t": "2026-11-25 10:59:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:00:03", "t": "2026-11-25 11:00:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:01:04", "t": "2026-11-25 11:01:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:02:03", "t": "2026-11-25 11:02:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:03:03", "t": "2026-11-25 11:03:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:04:03", "t": "2026-11-25 11:04:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:05:03", "t": "2026-11-25 11:05:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:06:03", "t": "2026-11-25 11:06:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:07:03", "t": "2026-11-25 11:07:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:08:03", "t": "2026-11-25 11:08:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:09:03", "t": "2026-11-25 11:09:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:10:03", "t": "2026-11-25 11:10:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:11:03", "t": "2026-11-25 11:11:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:12:03", "t": "2026-11-25 11:12:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:13:03", "t": "2026-11-25 11:13:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:14:03", "t": "2026-11-25 11:14:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:15:03", "t": "2026-11-25 11:15:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:16:03", "t": "2026-11-25 11:16:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:17:03", "t": "2026-11-25 11:17:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:18:03", "t": "2026-11-25 11:18:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:19:03", "t": "2026-11-25 11:19:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:20:03", "t": "2026-11-25 11:20:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:21:03", "t": "2026-11-25 11:21:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:22:03", "t": "2026-11-25 11:22:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:23:03", "t": "2026-11-25 11:23:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:24:03", "t": "2026-11-25 11:24:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:25:03", "t": "2026-11-25 11:25:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:26:03", "t": "2026-11-25 11:26:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:27:03", "t": "2026-11-25 11:27:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:28:03", "t": "2026-11-25 11:28:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:29:03", "t": "2026-11-25 11:29:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:30:03", "t": "2026-11-25 11:30:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:31:03", "t": "2026-11-25 11:31:00", "z": -1.422, "stale": false, "side": 0, "want": 1}
+{"kind": "order", "at": "2026-11-25T11:31:03", "side": 1, "ord_no": "0000000590", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 진입 z -1.42 · 1계약 · 손절 4.89pt"}
+{"kind": "fill", "at": "2026-11-25T11:31:04", "side": 1, "n": 1, "price": 728.86, "ord_no": "0000000590", "source": "order-history", "exec_tm": "113103914", "fee": 528.0, "fee_total": 528.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T11:32:03", "t": "2026-11-25 11:32:00", "z": -1.298, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:33:03", "t": "2026-11-25 11:33:00", "z": -1.254, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:34:03", "t": "2026-11-25 11:34:00", "z": -1.184, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:35:03", "t": "2026-11-25 11:35:00", "z": -1.149, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:36:03", "t": "2026-11-25 11:36:00", "z": -0.78, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:37:03", "t": "2026-11-25 11:37:00", "z": -0.613, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:38:03", "t": "2026-11-25 11:38:00", "z": -0.657, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:39:03", "t": "2026-11-25 11:39:00", "z": -0.474, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:40:03", "t": "2026-11-25 11:40:00", "z": -0.339, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:41:03", "t": "2026-11-25 11:41:00", "z": -0.386, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:42:03", "t": "2026-11-25 11:42:00", "z": -0.244, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:43:03", "t": "2026-11-25 11:43:00", "z": -0.485, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T11:44:03", "t": "2026-11-25 11:44:00", "z": -0.766, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:45:03", "t": "2026-11-25 11:45:00", "z": -0.994, "stale": false, "side": 1, "want": 1}
+{"kind": "order", "at": "2026-11-25T11:46:03", "side": -1, "ord_no": "0000000612", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T11:46:04", "side": -1, "n": 1, "price": 725.7, "ord_no": "0000000612", "source": "order-history", "exec_tm": "114603914", "fee": 526.0, "fee_total": 1054.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T11:46:04", "text": "거래 1 · -159,054원", "entry_t": "2026-11-25 11:31:00", "exit_t": "2026-11-25 11:46:00", "side": 1, "n": 1, "z": -1.422, "stop_pt": 4.889, "entry_px": 728.86, "exit_px": 725.7, "entry_bid": 728.8, "entry_ask": 728.86, "exit_bid": 725.68, "exit_ask": 725.76, "pnl_pt": -3.16, "fee_krw": 1054.0, "pnl_krw": -159054, "net_bp": -43.65, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T11:46:04", "t": "2026-11-25 11:46:00", "z": -1.229, "stale": false, "side": 0, "want": 1}
+{"kind": "order", "at": "2026-11-25T11:46:04", "side": 1, "ord_no": "0000000613", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 진입 z -1.23 · 1계약 · 손절 5.34pt"}
+{"kind": "fill", "at": "2026-11-25T11:46:05", "side": 1, "n": 1, "price": 725.8, "ord_no": "0000000613", "source": "order-history", "exec_tm": "114604794", "fee": 526.0, "fee_total": 1580.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T11:47:03", "t": "2026-11-25 11:47:00", "z": -1.228, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:48:03", "t": "2026-11-25 11:48:00", "z": -1.09, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:49:03", "t": "2026-11-25 11:49:00", "z": -1.145, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:50:03", "t": "2026-11-25 11:50:00", "z": -1.04, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:51:03", "t": "2026-11-25 11:51:00", "z": -1.024, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:52:03", "t": "2026-11-25 11:52:00", "z": -0.982, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:53:03", "t": "2026-11-25 11:53:00", "z": -1.087, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:54:03", "t": "2026-11-25 11:54:00", "z": -1.123, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:55:03", "t": "2026-11-25 11:55:00", "z": -1.059, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:56:03", "t": "2026-11-25 11:56:00", "z": -0.813, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:57:03", "t": "2026-11-25 11:57:00", "z": -0.998, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:58:03", "t": "2026-11-25 11:58:00", "z": -0.873, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T11:59:03", "t": "2026-11-25 11:59:00", "z": -1.064, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:00:04", "t": "2026-11-25 12:00:00", "z": -1.123, "stale": false, "side": 1, "want": 1}
+{"kind": "order", "at": "2026-11-25T12:01:05", "side": -1, "ord_no": "0000000629", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T12:01:05", "side": -1, "n": 1, "price": 723.36, "ord_no": "0000000629", "source": "order-history", "exec_tm": "120105049", "fee": 524.0, "fee_total": 2104.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T12:01:05", "text": "거래 2 · -123,050원", "entry_t": "2026-11-25 11:46:00", "exit_t": "2026-11-25 12:01:00", "side": 1, "n": 1, "z": -1.229, "stop_pt": 5.339, "entry_px": 725.8, "exit_px": 723.36, "entry_bid": 725.7, "entry_ask": 725.76, "exit_bid": 723.42, "exit_ask": 723.52, "pnl_pt": -2.44, "fee_krw": 1050.0, "pnl_krw": -123050, "net_bp": -33.91, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T12:01:05", "t": "2026-11-25 12:01:00", "z": -1.176, "stale": false, "side": 0, "want": 1}
+{"kind": "order", "at": "2026-11-25T12:01:05", "side": 1, "ord_no": "0000000630", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 진입 z -1.18 · 1계약 · 손절 4.55pt"}
+{"kind": "fill", "at": "2026-11-25T12:01:06", "side": 1, "n": 1, "price": 723.38, "ord_no": "0000000630", "source": "order-history", "exec_tm": "120105936", "fee": 524.0, "fee_total": 2628.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T12:02:03", "t": "2026-11-25 12:02:00", "z": -1.293, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:03:03", "t": "2026-11-25 12:03:00", "z": -1.384, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:04:03", "t": "2026-11-25 12:04:00", "z": -1.214, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:05:03", "t": "2026-11-25 12:05:00", "z": -1.187, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:06:04", "t": "2026-11-25 12:06:00", "z": -1.2, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:07:03", "t": "2026-11-25 12:07:00", "z": -1.201, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:08:03", "t": "2026-11-25 12:08:00", "z": -0.872, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:09:03", "t": "2026-11-25 12:09:00", "z": -0.871, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:10:03", "t": "2026-11-25 12:10:00", "z": -0.855, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:11:04", "t": "2026-11-25 12:11:00", "z": -1.038, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:12:03", "t": "2026-11-25 12:12:00", "z": -0.892, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:13:03", "t": "2026-11-25 12:13:00", "z": -0.965, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:14:03", "t": "2026-11-25 12:14:00", "z": -0.834, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T12:15:03", "t": "2026-11-25 12:15:00", "z": -0.687, "stale": false, "side": 1, "want": 1}
+{"kind": "order", "at": "2026-11-25T12:16:03", "side": -1, "ord_no": "0000000669", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T12:16:04", "side": -1, "n": 1, "price": 724.1, "ord_no": "0000000669", "source": "order-history", "exec_tm": "121603886", "fee": 525.0, "fee_total": 3153.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T12:16:04", "text": "거래 3 · +34,951원", "entry_t": "2026-11-25 12:01:00", "exit_t": "2026-11-25 12:16:00", "side": 1, "n": 1, "z": -1.176, "stop_pt": 4.551, "entry_px": 723.38, "exit_px": 724.1, "entry_bid": 723.3, "entry_ask": 723.38, "exit_bid": 724.02, "exit_ask": 724.1, "pnl_pt": 0.72, "fee_krw": 1049.0, "pnl_krw": 34951, "net_bp": 9.66, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T12:16:04", "t": "2026-11-25 12:16:00", "z": -0.519, "stale": false, "side": 0, "want": 1}
+{"kind": "order", "at": "2026-11-25T12:16:04", "side": 1, "ord_no": "0000000670", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 진입 z -0.52 · 1계약 · 손절 3.95pt"}
+{"kind": "fill", "at": "2026-11-25T12:16:05", "side": 1, "n": 1, "price": 724.12, "ord_no": "0000000670", "source": "order-history", "exec_tm": "121604765", "fee": 525.0, "fee_total": 3678.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T12:17:03", "t": "2026-11-25 12:17:00", "z": -0.34, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:18:03", "t": "2026-11-25 12:18:00", "z": -0.214, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:19:03", "t": "2026-11-25 12:19:00", "z": -0.212, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:20:03", "t": "2026-11-25 12:20:00", "z": -0.217, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:21:03", "t": "2026-11-25 12:21:00", "z": -0.181, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:22:03", "t": "2026-11-25 12:22:00", "z": -0.325, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:23:03", "t": "2026-11-25 12:23:00", "z": -0.49, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:24:03", "t": "2026-11-25 12:24:00", "z": -0.38, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:25:03", "t": "2026-11-25 12:25:00", "z": -0.3, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:26:03", "t": "2026-11-25 12:26:00", "z": 0.078, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:27:04", "t": "2026-11-25 12:27:00", "z": -0.03, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:28:03", "t": "2026-11-25 12:28:00", "z": -0.007, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:29:03", "t": "2026-11-25 12:29:00", "z": 0.098, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:30:03", "t": "2026-11-25 12:30:00", "z": 0.072, "stale": false, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T12:31:04", "side": -1, "ord_no": "0000000692", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T12:31:04", "side": -1, "n": 1, "price": 726.14, "ord_no": "0000000692", "source": "order-history", "exec_tm": "123104143", "fee": 526.0, "fee_total": 4204.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T12:31:04", "text": "거래 4 · +99,949원", "entry_t": "2026-11-25 12:16:00", "exit_t": "2026-11-25 12:31:00", "side": 1, "n": 1, "z": -0.519, "stop_pt": 3.945, "entry_px": 724.12, "exit_px": 726.14, "entry_bid": 724.08, "entry_ask": 724.16, "exit_bid": 726.1, "exit_ask": 726.16, "pnl_pt": 2.02, "fee_krw": 1051.0, "pnl_krw": 99949, "net_bp": 27.61, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T12:31:04", "t": "2026-11-25 12:31:00", "z": 0.271, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:32:03", "t": "2026-11-25 12:32:00", "z": 0.629, "stale": false, "side": 0, "want": -1}
+{"kind": "order", "at": "2026-11-25T12:32:03", "side": -1, "ord_no": "0000000697", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 진입 z +0.63 · 1계약 · 손절 4.11pt"}
+{"kind": "fill", "at": "2026-11-25T12:32:04", "side": -1, "n": 1, "price": 726.3, "ord_no": "0000000697", "source": "order-history", "exec_tm": "123203950", "fee": 527.0, "fee_total": 4731.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T12:33:03", "t": "2026-11-25 12:33:00", "z": 0.723, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:34:03", "t": "2026-11-25 12:34:00", "z": 0.821, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:35:04", "t": "2026-11-25 12:35:00", "z": 0.663, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:36:04", "t": "2026-11-25 12:36:00", "z": 0.708, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:37:03", "t": "2026-11-25 12:37:00", "z": 1.003, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:38:03", "t": "2026-11-25 12:38:00", "z": 1.117, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:39:03", "t": "2026-11-25 12:39:00", "z": 1.131, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:40:03", "t": "2026-11-25 12:40:00", "z": 1.224, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:41:03", "t": "2026-11-25 12:41:00", "z": 1.148, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:42:03", "t": "2026-11-25 12:42:00", "z": 1.323, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:43:04", "t": "2026-11-25 12:43:00", "z": 1.387, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:44:03", "t": "2026-11-25 12:44:00", "z": 1.514, "stale": false, "side": -1, "want": -1}
+{"kind": "order", "at": "2026-11-25T12:45:04", "side": 1, "ord_no": "0000000728", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 손절 4.11pt (중간가 730.60, 진입 726.30)"}
+{"kind": "fill", "at": "2026-11-25T12:45:04", "side": 1, "n": 1, "price": 730.64, "ord_no": "0000000728", "source": "order-history", "exec_tm": "124504134", "fee": 530.0, "fee_total": 5261.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T12:45:04", "text": "거래 5 · -218,057원", "entry_t": "2026-11-25 12:32:00", "exit_t": "2026-11-25 12:45:00", "side": -1, "n": 1, "z": 0.629, "stop_pt": 4.112, "entry_px": 726.3, "exit_px": 730.64, "entry_bid": 726.26, "entry_ask": 726.34, "exit_bid": 730.54, "exit_ask": 730.6, "pnl_pt": -4.34, "fee_krw": 1057.0, "pnl_krw": -218057, "net_bp": -60.05, "why": "손절 4.11pt (중간가 730.60, 진입 726.30)"}
+{"kind": "minute", "at": "2026-11-25T12:45:04", "t": "2026-11-25 12:45:00", "z": 1.603, "stale": false, "side": 0, "want": -1}
+{"kind": "order", "at": "2026-11-25T12:45:05", "side": -1, "ord_no": "0000000729", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 2, "text": "시장가 2계약 · 진입 z +1.60 · 2계약 · 손절 3.96pt"}
+{"kind": "fill", "at": "2026-11-25T12:45:05", "side": -1, "n": 2, "price": 730.56, "ord_no": "0000000729", "source": "order-history", "exec_tm": "124505120", "fee": 1059.0, "fee_total": 6320.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T12:46:03", "t": "2026-11-25 12:46:00", "z": 1.603, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:47:04", "t": "2026-11-25 12:47:00", "z": 1.354, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:48:03", "t": "2026-11-25 12:48:00", "z": 1.228, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:49:04", "t": "2026-11-25 12:49:00", "z": 0.952, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:50:03", "t": "2026-11-25 12:50:00", "z": 0.857, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T12:51:03", "t": "2026-11-25 12:51:00", "z": 0.475, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:52:03", "t": "2026-11-25 12:52:00", "z": 0.253, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:53:03", "t": "2026-11-25 12:53:00", "z": 0.11, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:54:04", "t": "2026-11-25 12:54:00", "z": 0.031, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:55:03", "t": "2026-11-25 12:55:00", "z": -0.187, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:56:04", "t": "2026-11-25 12:56:00", "z": -0.449, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:57:04", "t": "2026-11-25 12:57:00", "z": -0.465, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:58:04", "t": "2026-11-25 12:58:00", "z": -0.444, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T12:59:04", "t": "2026-11-25 12:59:00", "z": -0.554, "stale": false, "side": -1, "want": 1}
+{"kind": "order", "at": "2026-11-25T13:00:04", "side": 1, "ord_no": "0000000758", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 2, "text": "시장가 2계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T13:00:05", "side": 1, "n": 2, "price": 726.94, "ord_no": "0000000758", "source": "order-history", "exec_tm": "130004539", "fee": 1054.0, "fee_total": 7374.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T13:00:05", "text": "거래 6 · +359,887원", "entry_t": "2026-11-25 12:45:00", "exit_t": "2026-11-25 13:00:00", "side": -1, "n": 2, "z": 1.603, "stop_pt": 3.958, "entry_px": 730.56, "exit_px": 726.94, "entry_bid": 730.5, "entry_ask": 730.56, "exit_bid": 726.88, "exit_ask": 727.04, "pnl_pt": 7.24, "fee_krw": 2113.0, "pnl_krw": 359887, "net_bp": 49.26, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T13:00:05", "t": "2026-11-25 13:00:00", "z": -0.606, "stale": false, "side": 0, "want": 1}
+{"kind": "order", "at": "2026-11-25T13:00:05", "side": 1, "ord_no": "0000000759", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 진입 z -0.61 · 1계약 · 손절 5.84pt"}
+{"kind": "fill", "at": "2026-11-25T13:00:06", "side": 1, "n": 1, "price": 726.84, "ord_no": "0000000759", "source": "order-history", "exec_tm": "130005425", "fee": 527.0, "fee_total": 7901.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T13:01:05", "t": "2026-11-25 13:01:00", "z": -0.658, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T13:02:03", "t": "2026-11-25 13:02:00", "z": -0.88, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T13:03:04", "t": "2026-11-25 13:03:00", "z": -0.886, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T13:04:04", "t": "2026-11-25 13:04:00", "z": -0.698, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T13:05:03", "t": "2026-11-25 13:05:00", "z": -0.585, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T13:06:04", "t": "2026-11-25 13:06:00", "z": -0.359, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:07:04", "t": "2026-11-25 13:07:00", "z": -0.293, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:08:04", "t": "2026-11-25 13:08:00", "z": -0.249, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:09:04", "t": "2026-11-25 13:09:00", "z": -0.305, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:10:04", "t": "2026-11-25 13:10:00", "z": -0.217, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:11:04", "t": "2026-11-25 13:11:00", "z": -0.164, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:12:04", "t": "2026-11-25 13:12:00", "z": -0.163, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:13:04", "t": "2026-11-25 13:13:00", "z": -0.209, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:14:04", "t": "2026-11-25 13:14:00", "z": -0.115, "stale": false, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T13:15:04", "side": -1, "ord_no": "0000000764", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T13:15:04", "side": -1, "n": 1, "price": 727.16, "ord_no": "0000000764", "source": "order-history", "exec_tm": "131504059", "fee": 527.0, "fee_total": 8428.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T13:15:04", "text": "거래 7 · +14,946원", "entry_t": "2026-11-25 13:00:00", "exit_t": "2026-11-25 13:15:00", "side": 1, "n": 1, "z": -0.606, "stop_pt": 5.835, "entry_px": 726.84, "exit_px": 727.16, "entry_bid": 726.78, "entry_ask": 726.84, "exit_bid": 727.1, "exit_ask": 727.24, "pnl_pt": 0.32, "fee_krw": 1054.0, "pnl_krw": 14946, "net_bp": 4.11, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T13:15:04", "t": "2026-11-25 13:15:00", "z": -0.148, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:16:04", "t": "2026-11-25 13:16:00", "z": -0.202, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:17:04", "t": "2026-11-25 13:17:00", "z": 0.003, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:18:04", "t": "2026-11-25 13:18:00", "z": 0.195, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:19:04", "t": "2026-11-25 13:19:00", "z": 0.404, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:20:04", "t": "2026-11-25 13:20:00", "z": 0.564, "stale": false, "side": 0, "want": -1}
+{"kind": "order", "at": "2026-11-25T13:20:04", "side": -1, "ord_no": "0000000773", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 진입 z +0.56 · 1계약 · 손절 6.22pt"}
+{"kind": "fill", "at": "2026-11-25T13:20:04", "side": -1, "n": 1, "price": 729.44, "ord_no": "0000000773", "source": "order-history", "exec_tm": "132004267", "fee": 529.0, "fee_total": 8957.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T13:21:04", "t": "2026-11-25 13:21:00", "z": 0.718, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T13:22:04", "t": "2026-11-25 13:22:00", "z": 0.791, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T13:23:04", "t": "2026-11-25 13:23:00", "z": 0.785, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T13:24:04", "t": "2026-11-25 13:24:00", "z": 0.622, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T13:25:04", "t": "2026-11-25 13:25:00", "z": 0.465, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:26:04", "t": "2026-11-25 13:26:00", "z": 0.237, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:27:04", "t": "2026-11-25 13:27:00", "z": 0.171, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:28:04", "t": "2026-11-25 13:28:00", "z": 0.07, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:29:04", "t": "2026-11-25 13:29:00", "z": -0.055, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:30:04", "t": "2026-11-25 13:30:00", "z": -0.036, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:31:04", "t": "2026-11-25 13:31:00", "z": 0.026, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:32:04", "t": "2026-11-25 13:32:00", "z": -0.105, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:33:04", "t": "2026-11-25 13:33:00", "z": -0.398, "stale": false, "side": -1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:34:04", "t": "2026-11-25 13:34:00", "z": -0.757, "stale": false, "side": -1, "want": 1}
+{"kind": "order", "at": "2026-11-25T13:35:04", "side": 1, "ord_no": "0000000820", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T13:35:04", "side": 1, "n": 1, "price": 725.96, "ord_no": "0000000820", "source": "order-history", "exec_tm": "133504172", "fee": 526.0, "fee_total": 9483.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T13:35:04", "text": "거래 8 · +172,945원", "entry_t": "2026-11-25 13:20:00", "exit_t": "2026-11-25 13:35:00", "side": -1, "n": 1, "z": 0.564, "stop_pt": 6.222, "entry_px": 729.44, "exit_px": 725.96, "entry_bid": 729.44, "entry_ask": 729.5, "exit_bid": 725.96, "exit_ask": 726.02, "pnl_pt": 3.48, "fee_krw": 1055.0, "pnl_krw": 172945, "net_bp": 47.42, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T13:35:04", "t": "2026-11-25 13:35:00", "z": -0.623, "stale": false, "side": 0, "want": 1}
+{"kind": "order", "at": "2026-11-25T13:35:05", "side": 1, "ord_no": "0000000821", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 진입 z -0.62 · 1계약 · 손절 5.82pt"}
+{"kind": "fill", "at": "2026-11-25T13:35:05", "side": 1, "n": 1, "price": 725.96, "ord_no": "0000000821", "source": "order-history", "exec_tm": "133505062", "fee": 526.0, "fee_total": 10009.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T13:36:04", "t": "2026-11-25 13:36:00", "z": -0.734, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T13:37:04", "t": "2026-11-25 13:37:00", "z": -0.685, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T13:38:04", "t": "2026-11-25 13:38:00", "z": -0.672, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T13:39:04", "t": "2026-11-25 13:39:00", "z": -0.5, "stale": false, "side": 1, "want": 1}
+{"kind": "minute", "at": "2026-11-25T13:40:04", "t": "2026-11-25 13:40:00", "z": -0.372, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:41:04", "t": "2026-11-25 13:41:00", "z": -0.127, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:42:04", "t": "2026-11-25 13:42:00", "z": -0.158, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:43:04", "t": "2026-11-25 13:43:00", "z": -0.011, "stale": false, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:45:17", "t": "2026-11-25 13:44:00", "z": 0.022, "stale": false, "side": 1, "want": 0}
+{"kind": "event", "at": "2026-11-25T13:46:04", "text": "웹소켓 체결 끊김 — 체결 신호 진입 멈춤", "age_s": 137}
+{"kind": "minute", "at": "2026-11-25T13:47:07", "t": "2026-11-25 13:46:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "minute", "at": "2026-11-25T13:49:07", "t": "2026-11-25 13:48:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T13:51:27", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "event", "at": "2026-11-25T13:52:30", "text": "잔고 조회 실패", "error": "/trade/v1/domestic/open-interest → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/open-interest (Caused by Name"}
+{"kind": "minute", "at": "2026-11-25T13:53:33", "t": "2026-11-25 13:50:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T13:56:27", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "event", "at": "2026-11-25T13:57:30", "text": "잔고 조회 실패", "error": "/trade/v1/domestic/open-interest → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/open-interest (Caused by Name"}
+{"kind": "minute", "at": "2026-11-25T13:58:33", "t": "2026-11-25 13:55:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T14:01:27", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "event", "at": "2026-11-25T14:02:30", "text": "잔고 조회 실패", "error": "/trade/v1/domestic/open-interest → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/open-interest (Caused by Name"}
+{"kind": "minute", "at": "2026-11-25T14:03:33", "t": "2026-11-25 14:00:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T14:06:27", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "event", "at": "2026-11-25T14:07:30", "text": "잔고 조회 실패", "error": "/trade/v1/domestic/open-interest → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/open-interest (Caused by Name"}
+{"kind": "minute", "at": "2026-11-25T14:08:33", "t": "2026-11-25 14:05:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T14:11:27", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "event", "at": "2026-11-25T14:12:30", "text": "잔고 조회 실패", "error": "/trade/v1/domestic/open-interest → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/open-interest (Caused by Name"}
+{"kind": "minute", "at": "2026-11-25T14:13:33", "t": "2026-11-25 14:10:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T14:16:27", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "event", "at": "2026-11-25T14:17:30", "text": "잔고 조회 실패", "error": "/trade/v1/domestic/open-interest → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/open-interest (Caused by Name"}
+{"kind": "minute", "at": "2026-11-25T14:18:33", "t": "2026-11-25 14:15:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T14:21:27", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "event", "at": "2026-11-25T14:22:30", "text": "잔고 조회 실패", "error": "/trade/v1/domestic/open-interest → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/open-interest (Caused by Name"}
+{"kind": "minute", "at": "2026-11-25T14:23:33", "t": "2026-11-25 14:20:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T14:26:27", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "event", "at": "2026-11-25T14:27:30", "text": "잔고 조회 실패", "error": "/trade/v1/domestic/open-interest → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/open-interest (Caused by Name"}
+{"kind": "minute", "at": "2026-11-25T14:28:33", "t": "2026-11-25 14:25:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T14:31:27", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "event", "at": "2026-11-25T14:32:30", "text": "잔고 조회 실패", "error": "/trade/v1/domestic/open-interest → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/open-interest (Caused by Name"}
+{"kind": "minute", "at": "2026-11-25T14:33:33", "t": "2026-11-25 14:30:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "order", "at": "2026-11-25T14:36:17", "side": -1, "ok": false, "text": "주문 실패 · 15분 보유 끝", "error": "/trade/v1/domestic/order → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/order (Caused by NameResolutionError(\"HTTPSConnection(host='apidemo.futures.co.kr', port=443): Failed to resolve 'apidemo.futures.co.kr' "}
+{"kind": "minute", "at": "2026-11-25T14:36:17", "t": "2026-11-25 14:35:00", "z": null, "stale": true, "side": 1, "want": 0}
+{"kind": "event", "at": "2026-11-25T14:37:04", "text": "웹소켓 체결 다시 들어옴", "age_s": 1}
+{"kind": "order", "at": "2026-11-25T14:37:04", "side": -1, "ord_no": "0000001069", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T14:37:05", "side": -1, "n": 1, "price": 720.48, "ord_no": "0000001069", "source": "order-history", "exec_tm": "143704810", "fee": 522.0, "fee_total": 10531.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T14:37:05", "text": "거래 9 · -275,048원", "entry_t": "2026-11-25 13:35:00", "exit_t": "2026-11-25 14:37:00", "side": 1, "n": 1, "z": -0.623, "stop_pt": 5.823, "entry_px": 725.96, "exit_px": 720.48, "entry_bid": 725.9, "entry_ask": 725.98, "exit_bid": 720.5, "exit_ask": 720.6, "pnl_pt": -5.48, "fee_krw": 1048.0, "pnl_krw": -275048, "net_bp": -75.78, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T14:37:05", "t": "2026-11-25 14:37:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:38:04", "t": "2026-11-25 14:38:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:39:04", "t": "2026-11-25 14:39:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:40:04", "t": "2026-11-25 14:40:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:41:04", "t": "2026-11-25 14:41:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:42:04", "t": "2026-11-25 14:42:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:43:04", "t": "2026-11-25 14:43:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:44:04", "t": "2026-11-25 14:44:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:45:04", "t": "2026-11-25 14:45:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:46:04", "t": "2026-11-25 14:46:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:47:04", "t": "2026-11-25 14:47:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:48:04", "t": "2026-11-25 14:48:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:49:04", "t": "2026-11-25 14:49:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:50:04", "t": "2026-11-25 14:50:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:51:04", "t": "2026-11-25 14:51:00", "z": null, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:52:04", "t": "2026-11-25 14:52:00", "z": 0.08, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:53:04", "t": "2026-11-25 14:53:00", "z": 0.335, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:54:04", "t": "2026-11-25 14:54:00", "z": 0.406, "stale": false, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T14:55:04", "t": "2026-11-25 14:55:00", "z": 0.573, "stale": false, "side": 0, "want": -1}
+{"kind": "order", "at": "2026-11-25T14:55:04", "side": -1, "ord_no": "0000001101", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 진입 z +0.57 · 1계약 · 손절 8.20pt"}
+{"kind": "fill", "at": "2026-11-25T14:55:04", "side": -1, "n": 1, "price": 722.8, "ord_no": "0000001101", "source": "order-history", "exec_tm": "145504260", "fee": 524.0, "fee_total": 11055.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T14:56:04", "t": "2026-11-25 14:56:00", "z": 0.805, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T14:57:04", "t": "2026-11-25 14:57:00", "z": 0.717, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T14:58:04", "t": "2026-11-25 14:58:00", "z": 1.19, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T14:59:04", "t": "2026-11-25 14:59:00", "z": 1.447, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:00:04", "t": "2026-11-25 15:00:00", "z": 1.569, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:01:04", "t": "2026-11-25 15:01:00", "z": 1.554, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:02:04", "t": "2026-11-25 15:02:00", "z": 1.056, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:03:04", "t": "2026-11-25 15:03:00", "z": 0.852, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:04:04", "t": "2026-11-25 15:04:00", "z": 1.089, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:05:04", "t": "2026-11-25 15:05:00", "z": 1.017, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:06:04", "t": "2026-11-25 15:06:00", "z": 1.285, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:07:04", "t": "2026-11-25 15:07:00", "z": 1.309, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:08:04", "t": "2026-11-25 15:08:00", "z": 1.285, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:09:04", "t": "2026-11-25 15:09:00", "z": 1.425, "stale": false, "side": -1, "want": -1}
+{"kind": "order", "at": "2026-11-25T15:10:04", "side": 1, "ord_no": "0000001124", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 1, "text": "시장가 1계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T15:10:05", "side": 1, "n": 1, "price": 724.3, "ord_no": "0000001124", "source": "order-history", "exec_tm": "151004330", "fee": 525.0, "fee_total": 11580.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T15:10:05", "text": "거래 10 · -76,049원", "entry_t": "2026-11-25 14:55:00", "exit_t": "2026-11-25 15:10:00", "side": -1, "n": 1, "z": 0.573, "stop_pt": 8.2, "entry_px": 722.8, "exit_px": 724.3, "entry_bid": 722.74, "entry_ask": 722.8, "exit_bid": 724.24, "exit_ask": 724.3, "pnl_pt": -1.5, "fee_krw": 1049.0, "pnl_krw": -76049, "net_bp": -21.04, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T15:10:05", "t": "2026-11-25 15:10:00", "z": 1.509, "stale": false, "side": 0, "want": -1}
+{"kind": "order", "at": "2026-11-25T15:10:05", "side": -1, "ord_no": "0000001125", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 2, "text": "시장가 2계약 · 진입 z +1.51 · 2계약 · 손절 5.84pt"}
+{"kind": "fill", "at": "2026-11-25T15:10:05", "side": -1, "n": 2, "price": 724.24, "ord_no": "0000001125", "source": "order-history", "exec_tm": "151005214", "fee": 1050.0, "fee_total": 12630.0, "text": "모의계좌 체결"}
+{"kind": "minute", "at": "2026-11-25T15:11:04", "t": "2026-11-25 15:11:00", "z": 1.945, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:12:04", "t": "2026-11-25 15:12:00", "z": 2.306, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:13:04", "t": "2026-11-25 15:13:00", "z": 2.375, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:14:04", "t": "2026-11-25 15:14:00", "z": 2.595, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:15:04", "t": "2026-11-25 15:15:00", "z": 2.699, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:16:04", "t": "2026-11-25 15:16:00", "z": 2.885, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:17:04", "t": "2026-11-25 15:17:00", "z": 3.298, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:18:04", "t": "2026-11-25 15:18:00", "z": 3.242, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:19:04", "t": "2026-11-25 15:19:00", "z": 3.244, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:20:04", "t": "2026-11-25 15:20:00", "z": 3.596, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:21:04", "t": "2026-11-25 15:21:00", "z": 3.479, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:22:04", "t": "2026-11-25 15:22:00", "z": 3.424, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:23:04", "t": "2026-11-25 15:23:00", "z": 3.616, "stale": false, "side": -1, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:24:04", "t": "2026-11-25 15:24:00", "z": 3.798, "stale": false, "side": -1, "want": -1}
+{"kind": "order", "at": "2026-11-25T15:25:04", "side": 1, "ord_no": "0000001166", "msg_cd": "", "msg_cntn": "", "ok": true, "n": 2, "text": "시장가 2계약 · 15분 보유 끝"}
+{"kind": "fill", "at": "2026-11-25T15:25:05", "side": 1, "n": 2, "price": 723.12, "ord_no": "0000001166", "source": "order-history", "exec_tm": "152504398", "fee": 1049.0, "fee_total": 13679.0, "text": "모의계좌 체결"}
+{"kind": "trade", "at": "2026-11-25T15:25:05", "text": "거래 11 · +109,901원", "entry_t": "2026-11-25 15:10:00", "exit_t": "2026-11-25 15:25:00", "side": -1, "n": 2, "z": 1.509, "stop_pt": 5.837, "entry_px": 724.24, "exit_px": 723.12, "entry_bid": 724.28, "entry_ask": 724.34, "exit_bid": 723.02, "exit_ask": 723.12, "pnl_pt": 2.24, "fee_krw": 2099.0, "pnl_krw": 109901, "net_bp": 15.17, "why": "15분 보유 끝"}
+{"kind": "minute", "at": "2026-11-25T15:25:05", "t": "2026-11-25 15:25:00", "z": 4.013, "stale": false, "side": 0, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:26:04", "t": "2026-11-25 15:26:00", "z": 4.041, "stale": false, "side": 0, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:27:04", "t": "2026-11-25 15:27:00", "z": 4.015, "stale": false, "side": 0, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:28:04", "t": "2026-11-25 15:28:00", "z": 4.25, "stale": false, "side": 0, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:29:04", "t": "2026-11-25 15:29:00", "z": 4.558, "stale": false, "side": 0, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:30:04", "t": "2026-11-25 15:30:00", "z": 4.945, "stale": false, "side": 0, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:31:04", "t": "2026-11-25 15:31:00", "z": 5.787, "stale": false, "side": 0, "want": -1}
+{"kind": "minute", "at": "2026-11-25T15:32:04", "t": "2026-11-25 15:32:00", "z": 5.553, "stale": false, "side": 0, "want": -1}
+{"kind": "event", "at": "2026-11-25T15:33:04", "text": "웹소켓 체결 끊김 — 체결 신호 진입 멈춤", "age_s": 131}
+{"kind": "minute", "at": "2026-11-25T15:33:04", "t": "2026-11-25 15:33:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "minute", "at": "2026-11-25T15:34:04", "t": "2026-11-25 15:34:00", "z": null, "stale": true, "side": 0, "want": 0}
+{"kind": "event", "at": "2026-11-25T15:35:03", "text": "끝 · 거래 11건 · -58,679원", "side": 0}
+{"kind": "event", "at": "2026-11-25T15:36:46", "text": "예수금 조회 실패 (끝)", "error": "/trade/v1/domestic/deposit → HTTP 0: ConnectionError: HTTPSConnectionPool(host='apidemo.futures.co.kr', port=443): Max retries exceeded with url: /trade/v1/domestic/deposit (Caused by NameResolutionEr"}
