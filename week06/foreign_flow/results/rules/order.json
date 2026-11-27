@@ -1,0 +1,58 @@
+{
+  "name": "frgn_fut_15_h15",
+  "signal": "frgn_fut_15",
+  "h": 15,
+  "theta": 0.5,
+  "sign": -1.0,
+  "sd": 298.7540136413037,
+  "train_days": [
+    "20261117",
+    "20261118",
+    "20261119",
+    "20261120"
+  ],
+  "train_b": -8.50099492424238,
+  "train_t": -1.9151260685857006,
+  "train_q_p": 0.32730815456760465,
+  "train_same_sign": 3,
+  "train_trades": 73,
+  "train_net_bp_mean": 8.484875407873389,
+  "fee_rate": 1.45e-05,
+  "valid_from": "20261123",
+  "note": "scan 통과 후보 없음 → 결과를 보고 조건(|t|≥2, 투자자 신호만)을 풀어 고름. θ = 거래 MIN_TRADES 건 이상, 비용 후 평균이 플러스인 날 SAME_SIGN_MIN 일 이상 중 평균 1등 (이 θ 규칙도 표를 본 뒤 정함)",
+  "chosen_at": "2026-11-23T01:28:50",
+  "risk": {
+    "stop_pt": 0.0,
+    "daily_loss_krw": 750000.0,
+    "how": {
+      "k": 1.0,
+      "sd_trade_krw": 175384,
+      "trades_per_day": 18.25,
+      "sd_day_krw": 749240,
+      "trades": 73,
+      "check_sd_price_move_krw": 183555,
+      "days": [
+        "20261117",
+        "20261118",
+        "20261119",
+        "20261120"
+      ],
+      "stop_size": {
+        "added_at": "2026-11-24",
+        "how": "diag/risk_replay.py 로 학습 나흘(17~20) 재생해 손절·분할 변형 20개 비교 → 합계·1계약당·장중 최대 손실 기준 1등",
+        "move_sd": "직전 30분 1분 체결가 변화 σ × √15, 학습일 중앙 3.39pt (10~90% 2.38~5.00)",
+        "replay_krw": {
+          "before": 2395203,
+          "stop_only": 2610064,
+          "size_only": 3517972,
+          "both": 3687835
+        },
+        "note": "표 안 차이는 거래 73건 합계 표준오차(약 150만) 안. 학습일에서 고른 값."
+      }
+    },
+    "stop_vol_k": 2.0,
+    "vol_fallback_pt": 3.39,
+    "size_theta2": 1.5,
+    "size_n2": 2
+  }
+}

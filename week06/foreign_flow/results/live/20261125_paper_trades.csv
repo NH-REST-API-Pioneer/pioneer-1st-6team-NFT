@@ -1,0 +1,2 @@
+entry_t,exit_t,side,n,z,stop_pt,entry_px,exit_px,entry_bid,entry_ask,exit_bid,exit_ask,pnl_pt,fee_krw,pnl_krw,net_bp,why
+2026-11-25 12:02:00,2026-11-25 13:02:00,1,1,-2.418,0.0,722.64,726.1,722.56,722.64,726.1,726.16,3.46,1050.33,171950,47.59,60분 보유 끝
