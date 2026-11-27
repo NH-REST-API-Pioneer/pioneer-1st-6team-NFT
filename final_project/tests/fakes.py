@@ -97,13 +97,16 @@ class FakeMaster:
     def __init__(self) -> None:
         self.requested: list[str] = []
         self.down = False
+        # 파일 이름(fut_opt 등) → 견본 뒤에 붙일 행. 옵션 테스트가 실제 옵션 행을 더한다.
+        self.extra: dict[str, str] = {}
 
     def __call__(self, request: httpx2.Request) -> httpx2.Response:
         self.requested.append(str(request.url))
         if self.down:
             raise httpx2.ConnectError("개발자센터에 닿지 못함", request=request)
         name = request.url.path.rsplit("/", 1)[-1].removesuffix(".mst.gz")
-        text = (MASTER_SAMPLES / f"{name}.mst").read_text(encoding="utf-8")
+        sample = (MASTER_SAMPLES / f"{name}.mst").read_text(encoding="utf-8")
+        text = sample + self.extra.get(name, "")
         return httpx2.Response(200, content=gzip.compress(text.encode()))
 
 
@@ -319,6 +322,8 @@ class FakeNH:
         self.replies: dict[str, list[tuple[int, Mapping[str, object] | bytes]]] = {}
         # (경로, 요청의 sym) → 그 종목에만 주는 답. 없으면 replies의 답이다.
         self.by_symbol: dict[tuple[str, str], Mapping[str, object]] = {}
+        # (경로, 요청 칸, 값) → 그 칸이 그 값인 요청에만 주는 (상태, 답). 예: 주문 내역의 exec_div.
+        self.by_field: dict[tuple[str, str, str], tuple[int, Mapping[str, object]]] = {}
         self.requests: list[tuple[str, dict[str, object]]] = []
         self.down = False
         # 이 경로들만 응답 없이 끊는다(요청은 기록된다).
@@ -331,6 +336,18 @@ class FakeNH:
         """이 경로에 이 종목(sym)으로 온 요청에만 늘 같은 답을 준다."""
         self.by_symbol[(path, sym)] = body
 
+    def reply_where(
+        self, path: str, key: str, value: str, body: Mapping[str, object], status: int = 200
+    ) -> None:
+        """이 경로에 요청 칸 key가 value인 요청에만 늘 같은 답을 준다."""
+        self.by_field[(path, key, value)] = (status, body)
+
+    def _by_field(self, path: str, payload: dict[str, object]) -> tuple[int, Mapping[str, object]]:
+        for (where, key, value), answer in self.by_field.items():
+            if where == path and payload.get(key) == value:
+                return answer
+        return 0, {}
+
     def __call__(self, request: httpx2.Request) -> httpx2.Response:
         if request.url.path == "/auth-service/v1/token":
             token = {"access_token": FAKE_NH_TOKEN, "expires_in": "86400"}
@@ -342,6 +359,9 @@ class FakeNH:
         only = self.by_symbol.get((request.url.path, str(payload.get("sym", ""))))
         if only is not None:
             return httpx2.Response(200, content=json.dumps(dict(only), ensure_ascii=False).encode())
+        status, where = self._by_field(request.url.path, payload)
+        if status:
+            return httpx2.Response(status, content=json.dumps(dict(where)).encode())
         queue = self.replies.get(request.url.path, [(200, {})])
         status, body = queue.pop(0) if len(queue) > 1 else queue[0]
         if isinstance(body, bytes):
@@ -369,3 +389,9 @@ def auto_run_on(conn: sqlite3.Connection, *users: UserId) -> None:
     """사용자가 등록 화면에서 "자동 실행"을 켠 것처럼."""
     for user in users:
         features.turn_on(conn, user, "auto_run", T0)
+
+
+def options_on(conn: sqlite3.Connection, *users: UserId) -> None:
+    """사용자가 등록 화면에서 "옵션"을 켠 것처럼."""
+    for user in users:
+        features.turn_on(conn, user, "options", T0)

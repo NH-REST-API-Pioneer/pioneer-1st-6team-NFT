@@ -9,7 +9,7 @@ import pytest
 from nh_mcp.domain import JsonValue
 from nh_mcp.nh.client import TOKEN_PATH, Credentials, NHClient
 from nh_mcp.nh.limits import grade_of
-from nh_mcp.nh.record import cases, orderable_case
+from nh_mcp.nh.record import board_case, cases, orderable_case
 from nh_mcp.nh.recording import (
     REDACTED,
     Fixture,
@@ -133,6 +133,10 @@ def test_replay_refuses_requests_it_has_no_recording_for() -> None:
 
 
 def test_recorder_never_calls_order_apis() -> None:
-    recorded = [*cases("A0166000", "20261201"), orderable_case("A0166000", "350.25")]
+    recorded = [
+        *cases("A0166000", "20261201"),
+        orderable_case("A0166000", "350.25"),
+        board_case("261210", 1, "99999999"),
+    ]
     assert recorded
     assert all(grade_of(path) != "order" for _, path, _ in recorded)

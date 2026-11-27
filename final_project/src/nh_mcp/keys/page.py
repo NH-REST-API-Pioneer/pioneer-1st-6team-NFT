@@ -20,6 +20,8 @@ from nh_mcp.nh.client import Credentials
 REGISTER_PATH = "/keys/register"
 # 로그인 쿠키가 /keys 아래에만 가므로 스위치도 그 아래에 둔다.
 AUTO_RUN_PATH = "/keys/auto-run"
+OPTIONS_PATH = "/keys/options"
+OPTION_SELL_PATH = "/keys/option-sell"
 # 모델 파일 화면(nh_mcp.models.page.MODELS_PATH). keys는 models를 import하지 않는다.
 MODELS_PATH = "/models"
 DELETE_PATH = "/keys/delete"
@@ -36,6 +38,11 @@ RESULTS = {
         "자동 실행을 끄고 돌던 전략을 모두 멈췄습니다. 걸린 주문은 취소했고 보유 포지션은 그대로 "
         "있습니다. AI에게 계좌(get_account)를 확인해 달라고 하세요."
     ),
+    "options_on": "옵션을 켰습니다. AI 앱에서 이 서버 연결을 새로 고치면 도구가 보입니다.",
+    "options_off": "옵션을 껐습니다. 옵션 매도도 함께 꺼졌습니다.",
+    "option_sell_on": "옵션 매도를 켰습니다.",
+    "option_sell_off": "옵션 매도를 껐습니다.",
+    "option_sell_needs_options": "옵션 매도는 '옵션'을 먼저 켜야 켤 수 있습니다.",
 }
 
 
@@ -51,27 +58,51 @@ def _html(body: str, status: int = 200) -> HTMLResponse:
     return html_page("NH 모의 키 등록", body, status)
 
 
-def _auto_run_section(user: WebUser, on: bool) -> str:
+def _toggle(user: WebUser, path: str, label: str, on: bool) -> str:
+    """스위치 하나: 지금 상태와, 누르면 반대로 바꾸는 폼."""
     state, button, value = (
         ("켜져 있습니다", "끄기", "off") if on else ("꺼져 있습니다", "켜기", "on")
     )
     return f"""
-<h2>자동 실행</h2>
-<p>지금 <strong>{state}</strong>.</p>
-<p class='note'>켜면 AI가 백테스트한 전략을 승인 범위와 함께 미리보기(preview_strategy)하고,
-승인 창에서 승인받아 서버에서 계속 돌릴 수 있습니다(start_strategy). 대화를 닫아도 돌고, 자동
-모드는 주문마다 묻지 않습니다. 끄면 이 계정에서 돌던 전략을 모두 멈춥니다. 걸린 주문은 취소하고
-보유 포지션은 그대로 둡니다. 켜고 끄는 것은 이 화면에서만 할 수 있고 AI는 바꿀 수 없습니다.</p>
-<form method='post' action='{AUTO_RUN_PATH}'>
+<p>{label}: 지금 <strong>{state}</strong>.</p>
+<form method='post' action='{path}'>
 {csrf_input(user)}
 <input type='hidden' name='enabled' value='{value}'>
-<button type='submit'>자동 실행 {button}</button>
+<button type='submit'>{label} {button}</button>
 </form>
 """
 
 
+def _auto_run_section(user: WebUser, on: bool) -> str:
+    return f"""
+<h2>자동 실행</h2>
+<p class='note'>켜면 AI가 백테스트한 전략을 승인 범위와 함께 미리보기(preview_strategy)하고,
+승인 창에서 승인받아 서버에서 계속 돌릴 수 있습니다(start_strategy). 대화를 닫아도 돌고, 자동
+모드는 주문마다 묻지 않습니다. 끄면 이 계정에서 돌던 전략을 모두 멈춥니다. 걸린 주문은 취소하고
+보유 포지션은 그대로 둡니다. 켜고 끄는 것은 이 화면에서만 할 수 있고 AI는 바꿀 수 없습니다.</p>
+{_toggle(user, AUTO_RUN_PATH, "자동 실행", on)}
+"""
+
+
+def _options_section(user: WebUser, options: bool, sell: bool) -> str:
+    return f"""
+<h2>옵션</h2>
+<p class='note'>켜면 AI가 코스피200 월물 옵션의 전광판(get_option_chain), 옵션 종목의 시세 · 차트와
+주문을 쓸 수 있습니다. 옵션 매도는 보유하지 않은 옵션을 파는 새 매도 주문입니다. 손실이 프리미엄보다
+커질 수 있어 따로 켭니다. '옵션'을 켜야 켤 수 있고, '옵션'을 끄면 함께 꺼집니다. 보유 옵션을
+정리하는 주문은 꺼도 낼 수 있습니다. 켜고 끄는 것은 이 화면에서만 할 수 있고 AI는 바꿀 수
+없습니다.</p>
+{_toggle(user, OPTIONS_PATH, "옵션", options)}
+{_toggle(user, OPTION_SELL_PATH, "옵션 매도", sell)}
+"""
+
+
 def render(
-    user: WebUser, keys: list[KeySummary], result: str | None, auto_run: bool | None = None
+    user: WebUser,
+    keys: list[KeySummary],
+    result: str | None,
+    switches: tuple[bool, bool],
+    auto_run: bool | None = None,
 ) -> HTMLResponse:
     rows = "".join(
         f"<tr><td>{MARKET_NAMES[k.market]}</td><td>····{escape(k.app_key_last4)}</td></tr>"
@@ -85,6 +116,7 @@ def render(
     notice = f"<p class='result'>{escape(RESULTS[result])}</p>" if result in RESULTS else ""
     options = "".join(f"<option value='{m}'>{name}</option>" for m, name in MARKET_NAMES.items())
     switch = "" if auto_run is None else _auto_run_section(user, auto_run)
+    option_switches = _options_section(user, *switches)
     body = f"""
 <h1>NH선물 모의 키 등록</h1>
 <p>{escape(user.email)} 로 로그인했습니다.</p>
@@ -107,6 +139,7 @@ def render(
 {csrf_input(user)}
 <button type='submit'>등록한 키를 모두 지우기</button>
 </form>
+{option_switches}
 {switch}
 <h2>모델 파일</h2>
 <p>전략에 쓸 학습 모델은 <a href='{MODELS_PATH}'>모델 파일 화면</a>에서 올립니다.</p>
@@ -134,17 +167,32 @@ class AutoRunSwitch:
     turn: Callable[[UserId, bool], Awaitable[int]]
 
 
+@dataclass(frozen=True)
+class OptionSwitches:
+    """ "옵션"·"옵션 매도" 스위치(services.options.OptionService의 switches·set_options·
+    set_option_sell).
+
+    state는 (옵션, 옵션 매도). turn_sell은 "옵션"이 꺼져 있으면 매도를 켜지 않고 거짓을 돌려준다.
+    """
+
+    state: Callable[[UserId], tuple[bool, bool]]
+    turn: Callable[[UserId, bool], None]
+    turn_sell: Callable[[UserId, bool], bool]
+
+
 class KeysPage:
     def __init__(
         self,
         login: GoogleWebLogin,
         store: KeyStore,
         disconnect: Disconnect,
+        options: OptionSwitches,
         auto_run: AutoRunSwitch | None = None,
     ) -> None:
         self._login = login
         self._store = store
         self._disconnect = disconnect
+        self._options = options
         self._auto_run = auto_run
 
     async def show(self, request: Request) -> Response:
@@ -153,7 +201,8 @@ class KeysPage:
             return RedirectResponse(LOGIN_PATH, status_code=303)
         result = request.query_params.get("result")
         on = None if self._auto_run is None else self._auto_run.is_on(user.user_id)
-        return render(user, self._store.summaries(user.user_id), result, on)
+        switches = self._options.state(user.user_id)
+        return render(user, self._store.summaries(user.user_id), result, switches, on)
 
     async def register(self, request: Request) -> Response:
         checked = await checked_form(self._login, request)
@@ -177,16 +226,46 @@ class KeysPage:
         await self._disconnect(checked[0].user_id)
         return RedirectResponse(f"{KEYS_PATH}?result=deleted", status_code=303)
 
-    async def switch_auto_run(self, request: Request) -> Response:
+    async def _switch_form(self, request: Request) -> tuple[UserId, bool] | Response:
+        """로그인·CSRF를 확인한 스위치 폼의 (사용자, 켜는가), 또는 거절 화면."""
         checked = await checked_form(self._login, request)
-        if checked is None or self._auto_run is None:
+        if checked is None:
             return _html("<p>요청이 맞지 않습니다. 다시 로그인해 주세요.</p>", status=403)
         user, form = checked
         wanted = {"on": True, "off": False}.get(form_field(form, "enabled"))
         if wanted is None:
             return _html("<p>켜기 또는 끄기를 골라 주세요.</p>", status=400)
-        stopped = await self._auto_run.turn(user.user_id, wanted)
+        return user.user_id, wanted
+
+    async def switch_auto_run(self, request: Request) -> Response:
+        if self._auto_run is None:
+            return _html("<p>요청이 맞지 않습니다. 다시 로그인해 주세요.</p>", status=403)
+        form = await self._switch_form(request)
+        if isinstance(form, Response):
+            return form
+        user_id, wanted = form
+        stopped = await self._auto_run.turn(user_id, wanted)
         result = "auto_run_on" if wanted else "auto_run_stopped" if stopped else "auto_run_off"
+        return RedirectResponse(f"{KEYS_PATH}?result={result}", status_code=303)
+
+    async def switch_options(self, request: Request) -> Response:
+        form = await self._switch_form(request)
+        if isinstance(form, Response):
+            return form
+        user_id, wanted = form
+        self._options.turn(user_id, wanted)
+        result = "options_on" if wanted else "options_off"
+        return RedirectResponse(f"{KEYS_PATH}?result={result}", status_code=303)
+
+    async def switch_option_sell(self, request: Request) -> Response:
+        form = await self._switch_form(request)
+        if isinstance(form, Response):
+            return form
+        user_id, wanted = form
+        if not self._options.turn_sell(user_id, wanted):
+            result = "option_sell_needs_options"
+        else:
+            result = "option_sell_on" if wanted else "option_sell_off"
         return RedirectResponse(f"{KEYS_PATH}?result={result}", status_code=303)
 
 
@@ -195,3 +274,5 @@ def add_keys_routes(mcp: FastMCP, page: KeysPage) -> None:
     mcp.custom_route(REGISTER_PATH, methods=["POST"])(page.register)
     mcp.custom_route(DELETE_PATH, methods=["POST"])(page.delete)
     mcp.custom_route(AUTO_RUN_PATH, methods=["POST"])(page.switch_auto_run)
+    mcp.custom_route(OPTIONS_PATH, methods=["POST"])(page.switch_options)
+    mcp.custom_route(OPTION_SELL_PATH, methods=["POST"])(page.switch_option_sell)

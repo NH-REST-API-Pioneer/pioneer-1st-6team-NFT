@@ -51,6 +51,18 @@ def test_parse_keeps_day_rows_and_reads_fields() -> None:
     assert {c.kind for c in contracts} == {"future", "spread", "call", "put"}
 
 
+def test_parse_reads_the_upper_limit_and_keeps_rows_without_one() -> None:
+    good = sample("fut_opt").split("\n")[0]  # A016C000, 상한가 812.95
+    cells = good.split(";")
+    unreadable = ";".join([*cells[:12], "", *cells[13:]])
+    zero = ";".join([*cells[:12], "0.00", *cells[13:]])
+
+    contracts, skipped = parse("\n".join([good, unreadable, zero]))
+
+    assert skipped == 0
+    assert [c.upper_limit for c in contracts] == [Decimal("812.95"), None, None]
+
+
 def test_broken_rows_are_skipped_and_counted() -> None:
     good = sample("fut_opt").split("\n")[0]
     broken = good.replace(";20261210;", ";2026-12-10;")

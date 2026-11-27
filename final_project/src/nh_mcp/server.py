@@ -10,6 +10,7 @@ from collections.abc import AsyncGenerator
 from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from functools import partial
 from typing import TypedDict
 from urllib.parse import urlsplit
 
@@ -26,12 +27,13 @@ from nh_mcp.auth.google import google_provider
 from nh_mcp.auth.web import KEYS_PATH, GoogleWebLogin, add_web_login_routes
 from nh_mcp.config import ENV, Settings, load_settings
 from nh_mcp.domain import Clock
-from nh_mcp.keys.page import AutoRunSwitch, KeysPage, add_keys_routes
+from nh_mcp.keys.page import AutoRunSwitch, KeysPage, OptionSwitches, add_keys_routes
 from nh_mcp.keys.service import KeyStore, Verify, demo_server_verifier
 from nh_mcp.keys.vault import Vault
 from nh_mcp.markets.domestic import DomesticMarket
 from nh_mcp.markets.domestic_master import DomesticMaster
 from nh_mcp.markets.domestic_products import DomesticProducts
+from nh_mcp.markets.options import DomesticOptions
 from nh_mcp.models.page import MODELS_PATH, ModelsPage, add_models_routes
 from nh_mcp.models.store import ModelStore, remove_drafts
 from nh_mcp.nh.clients import ClientPool
@@ -44,21 +46,25 @@ from nh_mcp.runner.timing import WallTimer
 from nh_mcp.sandbox.client import SandboxClient
 from nh_mcp.services.backtest import BacktestService, Sources
 from nh_mcp.services.connection import ConnectionService
+from nh_mcp.services.holdings import HoldingService
 from nh_mcp.services.limits import APPROVE_PATH, LimitService
+from nh_mcp.services.options import OptionService
 from nh_mcp.services.orders import OrderService
 from nh_mcp.services.queries import QueryService
 from nh_mcp.services.recording import RecordingService
 from nh_mcp.services.runs import LiveFeeds, RunMarket
 from nh_mcp.services.strategy import StrategyService
 from nh_mcp.services.symbols import SymbolService
-from nh_mcp.store import db
+from nh_mcp.store import db, features
 from nh_mcp.tools.account import register_account_tools
 from nh_mcp.tools.backtest import register_backtest_tools
 from nh_mcp.tools.connection import register_connection_tools
 from nh_mcp.tools.context import ToolContext
+from nh_mcp.tools.features import FeatureGate
 from nh_mcp.tools.limits import register_limit_tools
 from nh_mcp.tools.limits_page import LimitsPage, add_limits_routes
 from nh_mcp.tools.market import register_market_tools
+from nh_mcp.tools.options import register_option_tools
 from nh_mcp.tools.order import register_order_tools
 from nh_mcp.tools.recording import register_recording_tools
 from nh_mcp.tools.strategy import register_strategy_tools
@@ -136,6 +142,8 @@ def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
     master = DomesticMaster(wiring.clock, transport=wiring.master)
     domestic = DomesticMarket(pool, master, wiring.clock)
     queries = QueryService(domestic)
+    # get_account가 계좌를 받을 때마다 옵션 보유 기록을 맞춘다. 주문 점검은 OrderService가 맞춘다.
+    holdings = HoldingService(wiring.conn, domestic)
     link = Link(pool_login(pool), wiring.clock, wiring.stream)
     recorder = Recorder(wiring.conn, wiring.settings.ticks_db_path, link)
     recording = RecordingService(wiring.conn, recorder, queries, models, models_url)
@@ -165,16 +173,21 @@ def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
         if runner is None
         else ConnectionService(store, pool, recording, keys_url, runner.key_removed)
     )
+    options = OptionService(wiring.conn, wiring.clock, DomesticOptions(pool, master, wiring.clock))
     add_web_login_routes(mcp, login)
+    option_switches = OptionSwitches(options.switches, options.set_options, options.set_option_sell)
     switch = (
         None if strategies is None else AutoRunSwitch(strategies.auto_run, strategies.set_auto_run)
     )
-    add_keys_routes(mcp, KeysPage(login, store, connection.disconnect, switch))
+    add_keys_routes(mcp, KeysPage(login, store, connection.disconnect, option_switches, switch))
     add_models_routes(mcp, ModelsPage(login, models))
     # 속도 제한은 프로세스 하나에 하나. 버킷은 사용자별로 나뉜다.
     limiter = RateLimiter(wiring.clock, LIMITS)
+    # 켜지 않은 묶음("자동 실행", "옵션")의 도구를 그 사용자의 도구 목록에서 뺀다.
+    mcp.add_middleware(FeatureGate(ctx, partial(features.enabled, wiring.conn)))
     register_connection_tools(mcp, ctx, connection)
-    register_market_tools(mcp, ctx, SymbolService(master), queries)
+    register_market_tools(mcp, ctx, SymbolService(master), queries, options)
+    register_option_tools(mcp, ctx, options)
     # 틱 저장은 주문을 내지 않으므로 기본 묶음이다(주문 스위치와 상관없이 붙인다).
     register_recording_tools(mcp, ctx, recording, limiter)
     limit_service = LimitService(
@@ -191,10 +204,11 @@ def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
         register_order_tools(mcp, ctx, orders, limiter)
         # 자동 실행 도구도 주문 스위치를 따른다. 사용자가 "자동 실행" 묶음을 켰을 때만 보인다.
         register_strategy_tools(mcp, ctx, strategies, limiter)
-        # get_orders가 응답을 못 받은 주문을 대조한다(UNKNOWN_STATE 안내가 get_orders를 가리킨다).
-        register_account_tools(mcp, ctx, queries, orders.reconcile)
-    else:
-        register_account_tools(mcp, ctx, queries)
+    # 주문 스위치가 켜졌으면 get_orders가 응답을 못 받은 주문을 대조한다(UNKNOWN_STATE 안내가
+    # get_orders를 가리킨다).
+    register_account_tools(
+        mcp, ctx, queries, holdings, None if orders is None else orders.reconcile
+    )
     return Parts(login, store, pool, models, recorder, runner, strategies)
 
 

@@ -1,10 +1,19 @@
-"""주문 리스크 규칙. 순수 함수이고 입력이 모자라면 막는다."""
+"""주문 리스크 규칙. 순수 함수이고 입력이 모자라면 막는다.
 
+옵션(콜·풋)의 늘리는 주문은 선물의 종목별 포지션 한도 대신 옵션 규칙 7개(`_check_options`)를
+지난다. 옵션 청산은 옵션 규칙에 걸리지 않는다(`docs/options.md`).
+"""
+
+from collections.abc import Callable
 from decimal import Decimal
 
 from nh_mcp.domain import (
     KST,
+    Contract,
+    ContractKind,
     InstrumentRules,
+    OptionBook,
+    OptionLimits,
     Order,
     OrderRequest,
     Position,
@@ -23,6 +32,14 @@ MAX_ORDER_QTY = "max_order_qty"
 MAX_POSITION = "max_position"
 DAILY_LOSS = "daily_loss"
 MARGIN = "margin"
+OPTIONS_OFF = "options_off"
+OPTION_BOOK_UNKNOWN = "option_book_unknown"
+OPTION_SELL_OFF = "option_sell_off"
+OPTION_SHORT_LIMIT = "option_short_limit"
+OPTION_POSITION_LIMIT = "option_position_limit"
+PREMIUM_LIMIT = "premium_limit"
+
+OPTION_KINDS: frozenset[ContractKind] = frozenset({"call", "put"})
 
 # 만기까지 이 일수 이하로 남으면 경고한다.
 EXPIRY_WARN_DAYS = 3
@@ -106,7 +123,7 @@ def _check_price(order: OrderRequest, instrument: InstrumentRules) -> Block | No
         return ORDER_FORMAT, "지정가 주문에는 가격이 필요합니다."
     if order.price <= 0:
         return ORDER_FORMAT, "가격은 0보다 커야 합니다."
-    return _check_tick(order.price, instrument.tick_size)
+    return _check_tick(order.price, instrument.tick_at(order.price))
 
 
 def _check_format(inp: RiskInput) -> Block | None:
@@ -159,6 +176,116 @@ def _check_position(inp: RiskInput, limits: RiskLimits) -> Block | None:
     )
 
 
+def premium(order: OrderRequest, contract: Contract) -> Decimal | None:
+    """주문 하나의 프리미엄(원): 가격·승수·수량의 곱. 시장가는 종목의 상한가로 센다.
+
+    주문 검사(services)는 오늘 시세와 마스터의 상한가 중 큰 값을 종목에 넣어 넘긴다. 모르면 None.
+    """
+    price = order.price if order.type == "limit" else contract.upper_limit
+    if price is None:
+        return None
+    return price * contract.multiplier * order.quantity
+
+
+type OptionCheck = Callable[[RiskInput, OptionLimits, OptionBook, Contract], Block | None]
+
+
+def _check_option_short(
+    inp: RiskInput, limits: OptionLimits, book: OptionBook, _: Contract
+) -> Block | None:
+    """규칙 4·5: 늘리는 매도는 "옵션 매도"가 켜져 있고 매도 계약 수 합계 안이어야 한다."""
+    order = inp.order
+    if order.side == "buy":
+        return None
+    if not inp.option_sell:
+        return (
+            OPTION_SELL_OFF,
+            "'옵션 매도'가 꺼져 있어 보유하지 않은 옵션을 파는 새 매도는 막습니다. 보유 옵션을 "
+            "되파는 청산은 됩니다. 사용자가 등록 화면의 '옵션 매도' 스위치를 켜야 합니다"
+            "(AI는 켤 수 없습니다).",
+        )
+    shorts = book.short_total + book.pending_short + order.quantity
+    if shorts <= limits.max_short:
+        return None
+    return (
+        OPTION_SHORT_LIMIT,
+        f"옵션 매도 한도 {limits.max_short}계약을 넘습니다. 보유 매도 {book.short_total} + "
+        f"미체결 새 매도 {book.pending_short} + 이번 주문 {order.quantity} = {shorts}계약.",
+    )
+
+
+def _check_option_position(
+    inp: RiskInput, limits: OptionLimits, book: OptionBook, _: Contract
+) -> Block | None:
+    """규칙 6: 모든 옵션 종목의 계약 수 합계(매수·매도 합)."""
+    quantity = inp.order.quantity
+    total = book.long_total + book.short_total + book.pending_increase + quantity
+    if total <= limits.max_position:
+        return None
+    return (
+        OPTION_POSITION_LIMIT,
+        f"옵션 포지션 한도 {limits.max_position}계약(모든 옵션 합계)을 넘습니다. "
+        f"보유 매수 {book.long_total} + 보유 매도 {book.short_total} + 늘리는 미체결 "
+        f"{book.pending_increase} + 이번 주문 {quantity} = {total}계약.",
+    )
+
+
+def _check_premium(
+    inp: RiskInput, limits: OptionLimits, book: OptionBook, contract: Contract
+) -> Block | None:
+    """규칙 7: 늘리는 매수는 오늘 체결 + 미체결 매수 + 이번 주문 프리미엄이 하루 한도 안이어야 한다.
+
+    시장가는 상한가로 센다(`premium`).
+    """
+    if inp.order.side == "sell":
+        return None
+    cost = premium(inp.order, contract)
+    if cost is None:
+        return PREMIUM_LIMIT, "상한가를 몰라 시장가 매수의 프리미엄을 셀 수 없어 막습니다."
+    total = book.premium_spent + book.premium_pending + cost
+    if total <= limits.premium_daily:
+        return None
+    return (
+        PREMIUM_LIMIT,
+        f"하루 옵션 프리미엄 한도 {_plain(limits.premium_daily)}원을 넘습니다. "
+        f"오늘 체결 {_plain(book.premium_spent)} + 미체결 매수 {_plain(book.premium_pending)} + "
+        f"이번 주문 {_plain(cost)} = {_plain(total)}원.",
+    )
+
+
+OPTION_CHECKS: tuple[OptionCheck, ...] = (
+    _check_option_short,
+    _check_option_position,
+    _check_premium,
+)
+
+
+def _check_options(inp: RiskInput, limits: RiskLimits, contract: Contract) -> Block | None:
+    """늘리는 옵션 주문의 규칙 1~7. 순서대로 보고 첫 차단에서 멈춘다."""
+    if not inp.options_enabled:
+        return (
+            OPTIONS_OFF,
+            "옵션 묶음이 꺼져 있어 옵션 포지션을 늘리는 주문은 막습니다. 청산 주문은 됩니다. "
+            "사용자가 등록 화면의 '옵션' 스위치를 켜야 합니다(AI는 켤 수 없습니다).",
+        )
+    if limits.options is None:
+        return (
+            LIMITS_NOT_SET,
+            "옵션 한도가 설정되지 않아 옵션 포지션을 늘리는 주문은 할 수 없습니다.",
+        )
+    if inp.option_book is None:
+        return (
+            OPTION_BOOK_UNKNOWN,
+            "계좌의 옵션 보유·미체결이나 오늘 옵션 체결을 확인할 수 없어 옵션 포지션을 늘리는 "
+            "주문은 막습니다.",
+        )
+    for check in OPTION_CHECKS:
+        block = check(inp, limits.options, inp.option_book, contract)
+        if block is not None:
+            return block
+    return None
+
+
 def _check_daily_loss(inp: RiskInput, limits: RiskLimits) -> Block | None:
     realized = inp.account.realized_pnl
     unrealized = inp.account.unrealized_pnl
@@ -208,15 +335,19 @@ def _first_block(inp: RiskInput, limits: RiskLimits, increasing: bool) -> Block 
             return block
     if not increasing:
         return None
-    for check in (_check_position, _check_daily_loss):
-        block = check(inp, limits)
-        if block is not None:
-            return block
-    return _check_margin(inp)
+    instrument = inp.instrument
+    if instrument is not None and instrument.contract.kind in OPTION_KINDS:
+        block = _check_options(inp, limits, instrument.contract)
+    else:
+        block = _check_position(inp, limits)
+    return block or _check_daily_loss(inp, limits) or _check_margin(inp)
 
 
 def evaluate(inp: RiskInput) -> RiskDecision:
-    """규칙을 순서대로 돌려 첫 차단에서 멈춘다. 늘리는 주문에만 5~7번을 건다."""
+    """규칙을 순서대로 돌려 첫 차단에서 멈춘다. 늘리는 주문에만 5~7번을 건다.
+
+    옵션은 5번(종목별 포지션 한도) 자리에 옵션 규칙 7개를 건다.
+    """
     increasing = increases_position(inp.order, inp.account.positions, inp.account.open_orders)
     if inp.limits is None:
         return RiskDecision(

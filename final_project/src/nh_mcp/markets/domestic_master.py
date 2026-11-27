@@ -24,13 +24,14 @@ COLUMNS = 26
 DAY_SESSION = "day"
 
 # 칸 위치(0부터).
-OPT_TP, UNDER_NAME, EXPIRY, SESSION, SERIES, NAME_KOR, STRIKE, MULTIPLIER = (
+OPT_TP, UNDER_NAME, EXPIRY, SESSION, SERIES, NAME_KOR, UPPER_LIMIT, STRIKE, MULTIPLIER = (
     2,
     3,
     4,
     5,
     8,
     10,
+    12,
     14,
     17,
 )
@@ -81,7 +82,20 @@ def _contract(cells: list[str]) -> Contract | None:
         expiry=expiry,
         multiplier=multiplier,
         strike=strike,
+        upper_limit=_upper_limit(cells[UPPER_LIMIT]),
     )
+
+
+def _upper_limit(text: str) -> Decimal | None:
+    """상한가. 읽을 수 없거나 0 이하면 모름(None).
+
+    종목은 버리지 않는다. 상한가를 모르면 늘리는 시장가 옵션 매수만 막힌다.
+    """
+    try:
+        value = Decimal(text)
+    except InvalidOperation:
+        return None
+    return value if value.is_finite() and value > 0 else None
 
 
 def _normalize(text: str) -> str:
@@ -109,6 +123,11 @@ class DomesticMaster:
         """종목코드가 정확히 같은 주간 종목. 없으면 None."""
         contracts, _ = await self._load()
         return next((c for c in contracts if c.symbol == symbol), None)
+
+    async def contracts(self) -> list[Contract]:
+        """받아 둔 주간 종목 전부."""
+        contracts, _ = await self._load()
+        return contracts
 
     async def search(self, query: str, kind: ContractKind, limit: int) -> SearchResult:
         contracts, loaded_for = await self._load()

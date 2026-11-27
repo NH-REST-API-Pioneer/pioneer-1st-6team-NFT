@@ -2,20 +2,23 @@
 
 import contextlib
 from collections.abc import Awaitable, Callable
-from datetime import date
+from datetime import date, datetime
 
 from fastmcp import FastMCP
 
 from nh_mcp import envelope
-from nh_mcp.domain import KST, AccountState, JsonValue, Order, OrderError, Position, UserId
+from nh_mcp.domain import KST, ContractKind, JsonValue, Order, OrderError, Position, UserId
+from nh_mcp.services.holdings import AccountView, HoldingService
 from nh_mcp.services.queries import BrokerRejected, KeyMissing, QueryService, Unavailable
+from nh_mcp.store.option_holdings import Holding
 from nh_mcp.tools.context import DOMESTIC_ONLY, ToolContext, text
 
 
-def _position(p: Position) -> dict[str, JsonValue]:
+def _position(p: Position, kind: ContractKind | None) -> dict[str, JsonValue]:
     return {
         "symbol": p.symbol,
         "name": p.name,
+        "kind": kind,
         "side": p.side,
         "quantity": p.quantity,
         "closable": p.closable,
@@ -55,7 +58,22 @@ def _order_error(e: OrderError) -> dict[str, JsonValue]:
     }
 
 
-def _account(a: AccountState) -> dict[str, JsonValue]:
+def _expired(h: Holding) -> dict[str, JsonValue]:
+    return {
+        "symbol": h.symbol,
+        "side": h.side,
+        "quantity": h.quantity,
+        "expiry": h.expiry.isoformat(),
+        "closed_at": None if h.closed_at is None else _kst(h.closed_at),
+    }
+
+
+def _kst(moment: datetime) -> str:
+    return moment.astimezone(KST).isoformat(timespec="seconds")
+
+
+def _account(view: AccountView) -> dict[str, JsonValue]:
+    a = view.account
     return {
         "market": a.market,
         "currency": a.currency,
@@ -63,9 +81,10 @@ def _account(a: AccountState) -> dict[str, JsonValue]:
         "orderable_amount": text(a.orderable_amount),
         "realized_pnl": text(a.realized_pnl),
         "unrealized_pnl": text(a.unrealized_pnl),
-        "positions": [_position(p) for p in a.positions],
+        "positions": [_position(p, view.kinds.get(p.symbol)) for p in a.positions],
         "open_orders": [_order(o) for o in a.open_orders],
-        "as_of": a.as_of.astimezone(KST).isoformat(timespec="seconds"),
+        "expired_options": [_expired(h) for h in view.expired],
+        "as_of": _kst(a.as_of),
         "complete": a.complete,
     }
 
@@ -77,7 +96,11 @@ _RECONCILE_SKIPPED = (Unavailable, BrokerRejected, KeyMissing)
 
 
 def register_account_tools(
-    mcp: FastMCP, ctx: ToolContext, queries: QueryService, reconcile: Reconcile | None = None
+    mcp: FastMCP,
+    ctx: ToolContext,
+    queries: QueryService,
+    holdings: HoldingService,
+    reconcile: Reconcile | None = None,
 ) -> None:
     """`reconcile`은 주문 스위치가 켜졌을 때만 받는다. 그러면 get_orders가 목록 전에 대조한다."""
 
@@ -89,12 +112,15 @@ def register_account_tools(
         쓰지 않을 때: 지난 주문의 체결 여부나 거부 사유는 get_orders.
         금액은 원화 문자열이다. 모르는 값은 null로 온다.
         complete가 false면 보유나 미체결을 다 읽지 못한 것이다. 그동안 주문은 막힌다.
+        positions의 kind는 future·call·put(종목 마스터에 없으면 null)이다.
+        expired_options는 만기일이 지난 뒤 잔고에서 사라진 옵션(행사 또는 소멸) 중 최근 7일 것이다.
+        주문 없이 사라진 것이라 사용자에게 알린다. 만기일까지 사라진 옵션은 청산으로 보고 뺀다.
         """
         if market != "domestic":
             return ctx.invalid(DOMESTIC_ONLY)
 
         async def work() -> dict[str, JsonValue]:
-            return _account(await queries.account(ctx.user_id()))
+            return _account(await holdings.account(ctx.user_id()))
 
         return await ctx.answer(work())
 

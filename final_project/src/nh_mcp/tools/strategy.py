@@ -5,30 +5,25 @@
 `ORDERS_ENABLED=false`면 이 도구들은 등록되지 않는다(주문 도구와 같다).
 
 네 도구는 "자동 실행" 묶음이다(`docs/tools.md`). 사용자가 등록 화면에서 켜지 않았으면 도구 목록에서
-뺀다(`AutoRunGate`). 숨기기만으로 끝내지 않고 preview_strategy·start_strategy는 서비스가 다시 보고
-거절한다. stop_strategy·get_strategy_status는 숨기기만 하고 부르면 답한다. 묶음을 끄면 전략이 모두
-꺼지므로 둘은 남은 기록을 보거나 끄는 일뿐이고, 위험을 줄이는 끄기는 막지 않는다.
+뺀다(`tools/features.py`의 `FeatureGate`). 숨기기만으로 끝내지 않고
+preview_strategy·start_strategy는 서비스가 다시 보고 거절한다. stop_strategy·get_strategy_status는
+숨기기만 하고 부르면 답한다. 묶음을 끄면 전략이 모두 꺼지므로 둘은 남은 기록을 보거나 끄는
+일뿐이고, 위험을 줄이는 끄기는 막지 않는다.
 """
 
-from collections.abc import Sequence
 from datetime import datetime
 from decimal import Decimal
 from typing import TypedDict
 
 import mcp_types
 from fastmcp import Context, FastMCP
-from fastmcp.server.middleware import CallNext, Middleware, MiddlewareContext
-from fastmcp.tools import Tool
 
 from nh_mcp import envelope
-from nh_mcp.auth.access import NotLoggedIn
 from nh_mcp.domain import KST, JsonValue, OnLoss, StrategyMode, StrategyScope
 from nh_mcp.ops.rate_limit import ORDER_BUCKET, PREVIEW_BUCKET, RateLimiter
 from nh_mcp.services.backtest import streams_data
-from nh_mcp.services.orders import RiskBlocked
 from nh_mcp.services.runs import StartRefused
 from nh_mcp.services.strategy import (
-    AUTO_RUN_OFF,
     MAX_DAILY_ORDERS,
     SERVER_FULL,
     RunDetail,
@@ -282,10 +277,6 @@ def _failed(ctx: ToolContext, exc: Exception) -> envelope.Response:
         code, message, retryable = fixed
         return envelope.error(code, message, meta, retryable=retryable)
     match exc:
-        case RiskBlocked(rule=rule, message=message) if rule == AUTO_RUN_OFF:
-            return envelope.error(
-                "RISK_BLOCKED", f"{message} 등록 화면: {ctx.keys_url}", meta, rule=rule
-            )
         case StartRefused(rule=rule, message=message):
             code, retryable = _REFUSALS.get(rule, ("RISK_BLOCKED", False))
             if code == "KEY_NOT_REGISTERED":
@@ -295,43 +286,9 @@ def _failed(ctx: ToolContext, exc: Exception) -> envelope.Response:
             return ctx.failed(exc)
 
 
-# ---- 묶음 숨기기 ---------------------------------------------------------------
-
-
-class AutoRunGate(Middleware):
-    """ "자동 실행"을 켜지 않은 사용자의 도구 목록에서 그 묶음의 도구를 뺀다.
-
-    설정은 요청마다 DB에서 읽는다(등록 화면에서 바꾸면 다음 목록부터 바뀐다). 로그인한 사용자를
-    모르면 뺀다.
-    """
-
-    def __init__(self, ctx: ToolContext, strategies: StrategyService) -> None:
-        self._ctx = ctx
-        self._strategies = strategies
-
-    async def on_list_tools(
-        self,
-        context: MiddlewareContext[mcp_types.ListToolsRequest],
-        call_next: CallNext[mcp_types.ListToolsRequest, Sequence[Tool]],
-    ) -> Sequence[Tool]:
-        tools = await call_next(context)
-        if self._enabled():
-            return tools
-        return [tool for tool in tools if AUTO_RUN_TAG not in tool.tags]
-
-    def _enabled(self) -> bool:
-        try:
-            user_id = self._ctx.user_id()
-        except NotLoggedIn:
-            return False
-        return self._strategies.auto_run(user_id)
-
-
 def register_strategy_tools(
     mcp: FastMCP, ctx: ToolContext, strategies: StrategyService, limiter: RateLimiter
 ) -> None:
-    mcp.add_middleware(AutoRunGate(ctx, strategies))
-
     @mcp.tool(tags={AUTO_RUN_TAG}, annotations={"readOnlyHint": False, "destructiveHint": False})
     async def preview_strategy(
         strategy: StrategyDraft, scope: ScopeDraft, market: str = "domestic"

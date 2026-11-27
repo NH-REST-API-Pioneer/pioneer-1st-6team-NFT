@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
@@ -11,7 +12,7 @@ from builders import (
     risk_input,
 )
 
-from nh_mcp.domain import KST, OrderRequest, RiskLimits
+from nh_mcp.domain import KST, OrderRequest, RiskLimits, TickBand
 from nh_mcp.guard.risk import (
     ACCOUNT_UNKNOWN,
     DAILY_LOSS,
@@ -115,6 +116,50 @@ def test_market_order_passes_format_with_one_warning() -> None:
     d = evaluate(risk_input(order=order(type_="market", price=None)))
     assert d.allowed is True
     assert len(d.warnings) == 1
+
+
+# 코스피200옵션 호가 단위: 10 미만 0.01, 10 이상 0.05
+OPTION_TICKS = (TickBand(Decimal(0), Decimal("0.01")), TickBand(Decimal(10), Decimal("0.05")))
+
+
+@pytest.mark.parametrize(
+    ("price", "allowed"),
+    [
+        ("0.01", True),
+        ("9.98", True),
+        ("9.99", True),
+        ("10.00", True),
+        ("10.05", True),
+        ("32.15", True),
+        ("9.995", False),
+        ("10.01", False),
+        ("10.03", False),
+        ("32.16", False),
+    ],
+)
+def test_order_format_uses_the_tick_of_the_price_band(price: str, allowed: bool) -> None:
+    option = replace(instrument(), ticks=OPTION_TICKS)
+
+    d = evaluate(risk_input(instrument=option, order=order(price=Decimal(price))))
+
+    assert (d.allowed, d.rule) == (allowed, None if allowed else ORDER_FORMAT)
+
+
+def test_tick_mismatch_above_a_band_edge_names_ticks_of_that_band() -> None:
+    option = replace(instrument(), ticks=OPTION_TICKS)
+
+    d = evaluate(risk_input(instrument=option, order=order(price=Decimal("10.03"))))
+
+    assert "10.00" in d.message
+    assert "10.05" in d.message
+
+
+def test_order_format_blocks_when_no_band_covers_the_price() -> None:
+    no_ticks = replace(instrument(), ticks=())
+
+    d = evaluate(risk_input(instrument=no_ticks))
+
+    assert (d.allowed, d.rule) == (False, ORDER_FORMAT)
 
 
 def test_nearest_ticks() -> None:

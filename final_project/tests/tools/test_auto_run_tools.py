@@ -12,6 +12,7 @@ from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from decimal import Decimal
+from functools import partial
 from pathlib import Path
 from typing import Any, Literal
 
@@ -72,6 +73,7 @@ from nh_mcp.store.confirm_tokens import NewToken
 from nh_mcp.store.strategy_runs import Change, RunEvent, RunState, StrategyRun
 from nh_mcp.tools.backtest import register_backtest_tools
 from nh_mcp.tools.context import ToolContext
+from nh_mcp.tools.features import FeatureGate
 from nh_mcp.tools.strategy import register_strategy_tools
 
 KEYS_URL = "http://localhost:8000/keys"
@@ -125,6 +127,7 @@ class Bench:
         self.mcp = build_server(StaticTokenVerifier(TOKENS), gate, clock=timer)
         ctx = ToolContext(self.conn, timer, KEYS_URL)
         limiter = RateLimiter(timer, LIMITS)
+        self.mcp.add_middleware(FeatureGate(ctx, partial(features.enabled, self.conn)))
         register_strategy_tools(self.mcp, ctx, self.strategies, limiter)
         sources = Sources(
             QueryService(domestic),

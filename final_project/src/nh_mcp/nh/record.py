@@ -3,6 +3,8 @@
 조회 API만 녹화한다. 주문 등급 API는 녹화하지 않는다. 실패 응답도 남긴다.
 실행(평일 장중, final_project 폴더에서):
     uv run --env-file .env python -m nh_mcp.nh.record --sym <종목코드>
+코스피200 옵션 전광판만(price-all-option-1.json, -2.json, …):
+    uv run --env-file .env python -m nh_mcp.nh.record --board <만기일 뒤 6자리, 예 261210>
 """
 
 import argparse
@@ -23,6 +25,11 @@ FIXTURES = Path(__file__).resolve().parents[3] / "tests" / "fixtures" / "nh" / "
 DOMESTIC = "/trade/v1/domestic/"
 # 없는 종목코드. 오류 응답의 실제 모양을 남기려고 일부러 보낸다.
 UNKNOWN_SYMBOL = "A0000000"
+BOARD = DOMESTIC + "price-all-option"
+KOSPI200 = "01"  # prd
+FIRST_STRIKE = "99999999"  # nxt_stkr_pric 첫 쪽
+# 전광판 쪽을 따라가는 상한. 2026-12물 567행이 3쪽(쪽당 261행)이었다.
+BOARD_MAX_PAGES = 10
 
 
 def cases(sym: str, today: str) -> list[tuple[str, str, JsonObject]]:
@@ -74,14 +81,43 @@ async def record_one(
     return fixture
 
 
-async def record(sym: str) -> None:
+def board_case(exp_mon: str, page: int, strike: str) -> tuple[str, str, JsonObject]:
+    payload: JsonObject = {"prd": KOSPI200, "exp_mon": exp_mon, "nxt_stkr_pric": strike}
+    return (f"price-all-option-{page}", BOARD, payload)
+
+
+async def record_board(client: NHClient, captured: list[Fixture], exp_mon: str) -> None:
+    """응답의 다음 행사가(nxt_stkr_pric)를 따라 끝 쪽까지 녹화한다."""
+    strike = FIRST_STRIKE
+    seen = {strike}
+    for page in range(1, BOARD_MAX_PAGES + 1):
+        fixture = await record_one(client, captured, board_case(exp_mon, page, strike))
+        body = fixture.body if fixture else None
+        if not isinstance(body, dict):
+            return
+        rows = body.get("Occurs1")
+        count = len(rows) if isinstance(rows, list) else 0
+        strike = str(body.get("nxt_stkr_pric", "")).strip()
+        print(f"  {count}행, nxt_stkr_pric={strike!r}")
+        if not count or not strike or strike in seen:
+            return
+        seen.add(strike)
+    print(f"{BOARD_MAX_PAGES}쪽에서 멈춤")
+
+
+def _client() -> tuple[NHClient, list[Fixture]]:
     key = os.environ["NH_DEV_DOMESTIC_APP_KEY"]
     secret = os.environ["NH_DEV_DOMESTIC_APP_SECRET"]
     captured: list[Fixture] = []
     transport = RecordingTransport(httpx2.AsyncHTTPTransport(), captured.append, [key, secret])
     client = NHClient(Credentials(key, secret), lambda: datetime.now(UTC), transport=transport)
-    today = datetime.now(KST).strftime("%Y%m%d")
     FIXTURES.mkdir(parents=True, exist_ok=True)
+    return client, captured
+
+
+async def record(sym: str) -> None:
+    client, captured = _client()
+    today = datetime.now(KST).strftime("%Y%m%d")
     try:
         price = None
         for case in cases(sym, today):
@@ -96,10 +132,24 @@ async def record(sym: str) -> None:
         await client.aclose()
 
 
+async def record_board_only(exp_mon: str) -> None:
+    client, captured = _client()
+    try:
+        await record_board(client, captured, exp_mon)
+    finally:
+        await client.aclose()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="NH 모의 서버 응답 녹화(조회 API만)")
-    parser.add_argument("--sym", required=True, help="녹화에 쓸 국내 선물 종목코드")
-    asyncio.run(record(parser.parse_args().sym))
+    target = parser.add_mutually_exclusive_group(required=True)
+    target.add_argument("--sym", help="녹화에 쓸 국내 선물 종목코드")
+    target.add_argument("--board", help="코스피200 옵션 전광판만. 만기일 뒤 6자리(예 261210)")
+    args = parser.parse_args()
+    if args.board:
+        asyncio.run(record_board_only(args.board))
+    else:
+        asyncio.run(record(args.sym))
 
 
 if __name__ == "__main__":

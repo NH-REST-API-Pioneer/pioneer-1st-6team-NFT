@@ -29,7 +29,10 @@ type ContractKind = Literal["future", "spread", "call", "put"]
 
 @dataclass(frozen=True)
 class Contract:
-    """종목 하나. 국내는 종목 마스터에서 온다."""
+    """종목 하나. 국내는 종목 마스터에서 온다. upper_limit은 마스터의 그날 상한가(모르면 None).
+
+    주문 검사(services)는 upper_limit을 오늘 시세의 상한가와 견주어 큰 값으로 바꿔 규칙에 넘긴다.
+    """
 
     market: Market
     symbol: str
@@ -39,6 +42,7 @@ class Contract:
     expiry: date
     multiplier: Decimal
     strike: Decimal | None
+    upper_limit: Decimal | None = None
 
 
 type Side = Literal["buy", "sell"]
@@ -66,6 +70,51 @@ class Quote:
     upper_limit: Decimal | None
     lower_limit: Decimal | None
     book: list[BookLevel]
+    # 내재변동성, 델타, 이론가. 선물 시세에도 칸은 있지만 도구는 옵션 종목에만 보여 준다.
+    iv: Decimal | None
+    delta: Decimal | None
+    theoretical: Decimal | None
+
+
+@dataclass(frozen=True)
+class OptionSide:
+    """전광판의 콜 또는 풋 한 칸. 호가가 없으면 bid·ask가 None이다."""
+
+    symbol: str
+    last: Decimal | None
+    bid: Decimal | None
+    ask: Decimal | None
+    volume: int
+    open_interest: int
+    iv: Decimal | None
+    delta: Decimal | None
+    theoretical: Decimal | None
+
+
+@dataclass(frozen=True)
+class ChainRow:
+    """행사가 하나. 종목코드가 종목 마스터의 같은 종목이 아니면 그 칸은 None이다."""
+
+    strike: Decimal
+    call: OptionSide | None
+    put: OptionSide | None
+
+
+@dataclass(frozen=True)
+class OptionChain:
+    """한 만기의 옵션 전광판. rows는 행사가 오름차순이다.
+
+    종목코드는 종목 마스터에 있는 것만 들어온다. dropped는 전광판에 있었지만 마스터에 없어 비운
+    종목코드 수다(대응 선물 코드도 센다).
+    """
+
+    underlying: str
+    expiry: date
+    spot: Decimal
+    future_symbol: str | None
+    future_price: Decimal | None
+    rows: tuple[ChainRow, ...]
+    dropped: int
 
 
 @dataclass(frozen=True)
@@ -154,17 +203,41 @@ class OrderRequest:
 
 
 @dataclass(frozen=True)
+class OptionLimits:
+    """옵션 한도 셋. 하나만 있는 경우는 없다. 없으면 RiskLimits.options가 None이다."""
+
+    premium_daily: Decimal  # 원. 오늘 옵션 매수에 쓸 수 있는 프리미엄 합계
+    max_position: int  # 모든 옵션 종목의 계약 수 합계 상한(매수·매도 합)
+    max_short: int  # 매도 포지션 계약 수 합계 상한. 매도를 켠 사용자에게만 의미가 있다
+
+    def raises(self, new: "OptionLimits") -> bool:
+        return (
+            new.premium_daily > self.premium_daily
+            or new.max_position > self.max_position
+            or new.max_short > self.max_short
+        )
+
+
+@dataclass(frozen=True)
 class RiskLimits:
-    """사용자별 한도. 하나라도 없으면 주문은 막힌다."""
+    """사용자별 한도. 하나라도 없으면 주문은 막힌다. options가 없으면 늘리는 옵션 주문이 막힌다."""
 
     daily_loss: Decimal
-    max_position: int
-    max_order_qty: int
+    max_position: int  # 선물. 종목별
+    max_order_qty: int  # 선물·옵션 같이
+    options: OptionLimits | None = None
 
     def raises(self, new: "RiskLimits") -> bool:
-        """새 한도가 하나라도 더 커지면 True. 한도를 올리는 변경은 확인을 거친다."""
+        """새 한도가 하나라도 더 커지면 True. 한도를 올리는 변경은 확인을 거친다.
+
+        옵션 한도를 처음 정하는 것도 올리기다. 지우는 것은 옵션 주문을 막을 뿐이라 낮추기다.
+        """
+        options_up = new.options is not None and (
+            self.options is None or self.options.raises(new.options)
+        )
         return (
-            new.daily_loss > self.daily_loss
+            options_up
+            or new.daily_loss > self.daily_loss
             or new.max_position > self.max_position
             or new.max_order_qty > self.max_order_qty
         )
@@ -180,15 +253,50 @@ class Session:
 
 
 @dataclass(frozen=True)
+class TickBand:
+    """from_price 이상의 가격에 쓰는 호가 단위."""
+
+    from_price: Decimal
+    tick: Decimal
+
+
+@dataclass(frozen=True)
 class InstrumentRules:
+    """ticks는 from_price 오름차순이고 첫 칸은 0에서 시작한다. 선물은 칸이 하나다."""
+
     contract: Contract
-    tick_size: Decimal
+    ticks: tuple[TickBand, ...]
     session: Session
+
+    def tick_at(self, price: Decimal) -> Decimal:
+        """그 가격의 호가 단위. 칸 경계 가격은 위 칸을 쓴다. 맞는 칸이 없으면 0(모름)."""
+        return next((b.tick for b in reversed(self.ticks) if price >= b.from_price), Decimal(0))
+
+
+@dataclass(frozen=True)
+class OptionBook:
+    """옵션 규칙이 보는 계좌의 옵션 쪽. 모든 옵션 종목의 합이고 선물은 들어가지 않는다.
+
+    pending_increase는 다 체결되면 포지션을 늘리는 미체결 옵션 주문의 수량, pending_short는 그중
+    새 매도다. 금액은 가격·승수·수량의 곱(원)이고, 시장가 매수는 오늘 시세와 마스터의 상한가 중
+    큰 값으로 센다.
+    """
+
+    long_total: int  # 보유 옵션 매수 계약 합
+    short_total: int  # 보유 옵션 매도 계약 합
+    pending_increase: int
+    pending_short: int
+    premium_spent: Decimal  # 오늘 체결된 옵션 매수(청산 매수 포함)
+    premium_pending: Decimal  # 미체결 옵션 매수(청산 매수 포함)
 
 
 @dataclass(frozen=True)
 class RiskInput:
-    """리스크 규칙이 보는 모든 것. 없는 값은 None이고, None이면 막는다."""
+    """리스크 규칙이 보는 모든 것. 없는 값은 None이고, None이면 막는다.
+
+    options_enabled·option_sell은 사용자의 "옵션"·"옵션 매도" 스위치다. option_book은 옵션
+    주문에만 채우고, 만들지 못했으면 None이다. 선물 주문은 셋을 보지 않는다.
+    """
 
     order: OrderRequest
     env: Env
@@ -198,6 +306,9 @@ class RiskInput:
     orderable_qty: int | None
     now: datetime
     orders_enabled: bool
+    options_enabled: bool
+    option_sell: bool
+    option_book: OptionBook | None
 
 
 @dataclass(frozen=True)

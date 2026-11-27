@@ -1,4 +1,7 @@
-"""시세 · 종목 도구: search_symbol, get_quote, get_candles."""
+"""시세 · 종목 도구: search_symbol, get_quote, get_candles.
+
+옵션 종목의 시세 · 차트는 "옵션" 묶음을 켠 사용자에게만 준다(`OptionService.require_for`).
+"""
 
 from datetime import date, timedelta
 from typing import Literal, TypedDict
@@ -7,6 +10,7 @@ from fastmcp import FastMCP
 
 from nh_mcp import envelope
 from nh_mcp.domain import KST, Candle, Contract, JsonValue, Quote
+from nh_mcp.services.options import OptionService
 from nh_mcp.services.queries import QueryService
 from nh_mcp.services.symbols import SymbolService
 from nh_mcp.tools.context import DOMESTIC_ONLY, ToolContext, text
@@ -49,6 +53,20 @@ def _quote(q: Quote) -> dict[str, JsonValue]:
     }
 
 
+def _option(c: Contract, q: Quote) -> dict[str, JsonValue] | None:
+    """옵션 종목이면 종류 · 행사가 · 만기(종목 마스터)와 내재변동성 · 델타 · 이론가(NH 시세)."""
+    if c.kind not in ("call", "put") or c.strike is None:
+        return None
+    return {
+        "kind": c.kind,
+        "strike": str(c.strike),
+        "expiry": c.expiry.isoformat(),
+        "iv": text(q.iv),
+        "delta": text(q.delta),
+        "theoretical": text(q.theoretical),
+    }
+
+
 def _candle(c: Candle) -> dict[str, JsonValue]:
     return {
         "at": c.at.isoformat(),
@@ -77,7 +95,11 @@ def _date(raw: str | None, fallback: date) -> date | None:
 
 
 def register_market_tools(
-    mcp: FastMCP, ctx: ToolContext, symbols: SymbolService, queries: QueryService
+    mcp: FastMCP,
+    ctx: ToolContext,
+    symbols: SymbolService,
+    queries: QueryService,
+    options: OptionService,
 ) -> None:
     @mcp.tool(annotations={"readOnlyHint": True})
     async def search_symbol(query: str, market: str = "domestic") -> envelope.Response:
@@ -85,7 +107,8 @@ def register_market_tools(
 
         쓸 때: 시세나 주문에 쓸 종목코드가 필요할 때. 종목코드는 반드시 이 결과에서 고른다.
         종목코드를 추측해서 만들지 않는다.
-        쓰지 않을 때: 이 결과에서 받은 종목코드가 이미 있으면 바로 다음 도구를 쓴다.
+        쓰지 않을 때: 이 결과에서 받은 종목코드가 이미 있으면 바로 다음 도구를 쓴다. 옵션 종목코드는
+        get_option_chain에서 받는다(이 도구는 국내 선물만 찾는다).
         market: "domestic"(국내)만 된다. 해외는 아직 지원하지 않는다.
         예: query="코스피200", "미니코스피", "3년국채", "A016C000".
         """
@@ -111,13 +134,23 @@ def register_market_tools(
 
         쓸 때: 사용자가 지금 가격이나 호가를 물을 때, 주문 가격을 정하기 전에.
         쓰지 않을 때: 지난 흐름은 get_candles. 종목코드를 모르면 먼저 search_symbol.
-        symbol은 search_symbol 결과의 종목코드만 쓴다. 가격은 문자열로 온다.
+        symbol은 search_symbol 결과의 종목코드만 쓴다(옵션은 get_option_chain 결과). 가격은
+        문자열로 온다. 옵션 종목이면 option{kind, strike, expiry, iv, delta, theoretical}이 더 온다.
+        옵션 종목은 사용자가 등록 화면에서 "옵션"을 켜야 한다(아니면 error.rule이 options_off).
         """
         if market != "domestic":
             return ctx.invalid(DOMESTIC_ONLY)
 
         async def work() -> dict[str, JsonValue]:
-            return _quote(await queries.quote(ctx.user_id(), symbol.strip()))
+            code, user_id = symbol.strip(), ctx.user_id()
+            contract = await queries.contract(code)
+            options.require_for(user_id, contract)
+            quote = await queries.quote(user_id, code)
+            data = _quote(quote)
+            option = _option(contract, quote)
+            if option is not None:
+                data["option"] = option
+            return data
 
         return await ctx.answer(work())
 
@@ -136,6 +169,7 @@ def register_market_tools(
         period: {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}. 비우면 end는 오늘,
         start는 일봉이면 1년 전, 분봉이면 오늘.
         limit: 돌려줄 봉 수(1~2000). 기간 안에서 가장 최근 것부터 이만큼.
+        옵션 종목은 사용자가 등록 화면에서 "옵션"을 켜야 한다(아니면 error.rule이 options_off).
         """
         if market != "domestic":
             return ctx.invalid(DOMESTIC_ONLY)
@@ -150,11 +184,11 @@ def register_market_tools(
             return ctx.invalid(f"limit은 1~{MAX_CANDLES} 사이로 넣어 주세요.")
 
         async def work() -> dict[str, JsonValue]:
-            candles = await queries.candles(
-                ctx.user_id(), symbol.strip(), interval, (since, until), limit
-            )
+            code, user_id = symbol.strip(), ctx.user_id()
+            options.require_for(user_id, await queries.contract(code))
+            candles = await queries.candles(user_id, code, interval, (since, until), limit)
             return {
-                "symbol": symbol.strip(),
+                "symbol": code,
                 "interval": interval,
                 "candles": [_candle(c) for c in candles],
                 "count": len(candles),

@@ -11,7 +11,9 @@ from nh_mcp.domain import UserId
 from nh_mcp.store.db import stamp
 
 # auto_run: "자동 실행"(preview_strategy, start_strategy, stop_strategy, get_strategy_status).
-type Feature = Literal["auto_run"]
+# options: "옵션"(get_option_chain, 옵션 종목의 시세·차트·주문).
+# option_sell: "옵션 매도"(보유 없이 파는 옵션 주문). "옵션"이 켜져 있을 때만 켠다.
+type Feature = Literal["auto_run", "options", "option_sell"]
 
 
 def enabled(conn: sqlite3.Connection, user_id: UserId, feature: Feature) -> bool:

@@ -16,11 +16,13 @@ from nh_mcp.domain import (
     ContractKind,
     InstrumentRules,
     Session,
+    TickBand,
     UserId,
 )
 from nh_mcp.markets.domestic import JsonObject
 from nh_mcp.markets.domestic_master import parse
 from nh_mcp.markets.domestic_products import (
+    OPTION_UNDERLYING_TO_PRODUCT,
     PRODUCT_DETAIL,
     UNDERLYING_TO_PRODUCT,
     DomesticProducts,
@@ -36,6 +38,12 @@ RECORDED_BODY: JsonObject = json.loads(
 
 KOSPI200 = (Decimal("0.05"), Session(time(8, 45), time(15, 35), time(15, 45)))
 KTB3 = (Decimal("0.01"), Session(time(9, 0), time(15, 35), time(15, 45)))
+
+
+def one_band(product: tuple[Decimal, Session]) -> tuple[tuple[TickBand, ...], Session]:
+    """선물 규칙: 품목 행의 틱 하나가 모든 가격에 쓰인다."""
+    tick, session = product
+    return (TickBand(Decimal(0), tick),), session
 
 
 def contract(underlying: str = "KOSPI", kind: ContractKind = "future") -> Contract:
@@ -126,9 +134,13 @@ def test_a_name_that_appears_twice_with_the_same_values_is_kept() -> None:
     assert parse_products(body) == {"코스피200선물": KOSPI200}
 
 
-def master_futures() -> list[Contract]:
+def master_contracts(*kinds: ContractKind) -> list[Contract]:
     text = "".join((FIXTURES / "master" / f"{name}.mst").read_text("utf-8") for name in MASTERS)
-    return [c for c in parse(text)[0] if c.kind == "future"]
+    return [c for c in parse(text)[0] if c.kind in kinds]
+
+
+def master_futures() -> list[Contract]:
+    return master_contracts("future")
 
 
 MASTERS = ("fut_opt", "stk_fut_opt", "idx_fut_opt")
@@ -138,6 +150,7 @@ def test_every_mapped_product_exists_in_the_recorded_day_rows() -> None:
     products = parse_products(RECORDED_BODY)
 
     assert set(UNDERLYING_TO_PRODUCT.values()) <= set(products)
+    assert set(OPTION_UNDERLYING_TO_PRODUCT.values()) <= set(products)
     # 한 품목에 기초자산 하나. 둘이 한 품목을 가리키면 근거를 다시 본다.
     assert len(set(UNDERLYING_TO_PRODUCT.values())) == len(UNDERLYING_TO_PRODUCT)
 
@@ -191,7 +204,7 @@ def test_rules_for_the_kospi200_future() -> None:
 
     rules = setup.rules(contract())
 
-    assert rules == InstrumentRules(contract(), *KOSPI200)
+    assert rules == InstrumentRules(contract(), *one_band(KOSPI200))
     assert setup.nh.requests[-1] == (PRODUCT_DETAIL, {})
 
 
@@ -201,7 +214,7 @@ def test_rules_for_the_treasury_future() -> None:
     rules = setup.rules(contract("NKTB"))
 
     assert rules is not None
-    assert (rules.tick_size, rules.session) == KTB3
+    assert (rules.ticks, rules.session) == one_band(KTB3)
 
 
 def test_unmapped_underlying_gives_none_without_calling_nh() -> None:
@@ -212,11 +225,34 @@ def test_unmapped_underlying_gives_none_without_calling_nh() -> None:
     assert setup.calls() == 0
 
 
-@pytest.mark.parametrize("kind", ["call", "put", "spread"])
-def test_only_futures_have_rules(kind: ContractKind) -> None:
+def test_rules_for_kospi200_monthly_calls_and_puts() -> None:
+    setup = Setup()
+    options = master_contracts("call", "put")
+    prices = [Decimal(p) for p in ("0.01", "9.99", "10", "10.05", "85.65")]
+    ticks = [Decimal(t) for t in ("0.01", "0.01", "0.05", "0.05", "0.05")]
+
+    assert {(c.underlying, c.kind) for c in options} == {("KOSPI", "call"), ("KOSPI", "put")}
+    for option in options:
+        rules = setup.rules(option)
+        assert rules is not None
+        assert rules.session == KOSPI200[1]
+        assert [rules.tick_at(p) for p in prices] == ticks
+    assert setup.calls() == 1
+
+
+@pytest.mark.parametrize("kind", ["call", "put"])
+@pytest.mark.parametrize("underlying", ["WKI", "WKM", "MKOSPI", "KOSDAQ150", "WQI", "WQM"])
+def test_options_without_a_pair_have_no_rules(underlying: str, kind: ContractKind) -> None:
     setup = Setup()
 
-    assert setup.rules(contract(kind=kind)) is None
+    assert setup.rules(contract(underlying, kind)) is None
+    assert setup.calls() == 0
+
+
+def test_spreads_have_no_rules() -> None:
+    setup = Setup()
+
+    assert setup.rules(contract(kind="spread")) is None
     assert setup.calls() == 0
 
 
@@ -242,7 +278,7 @@ def test_no_response_gives_none_and_is_not_cached() -> None:
     assert setup.calls() == 1
 
     setup.nh.down = False
-    assert setup.rules(contract()) == InstrumentRules(contract(), *KOSPI200)
+    assert setup.rules(contract()) == InstrumentRules(contract(), *one_band(KOSPI200))
     assert setup.calls() == 2
 
 

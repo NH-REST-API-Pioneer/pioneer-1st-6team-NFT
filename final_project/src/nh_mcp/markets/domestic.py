@@ -53,6 +53,7 @@ CHART_MAX_PAGES = 20
 MAX_PAGES = 20
 CHART_START_KEY = "99999999"
 OPEN_ORDERS = "2"  # exec_div: 미체결
+FILLED = "1"  # exec_div: 체결
 EVERY = "0"
 # 오늘 주문 내역 전체(매매·체결·시간·주문 구분 모두 0).
 ALL_HISTORY: dict[str, JsonValue] = {
@@ -62,6 +63,7 @@ ALL_HISTORY: dict[str, JsonValue] = {
     "ord_div_cd": EVERY,
     "nxt_key": "",
 }
+TODAY_FILLS: dict[str, JsonValue] = ALL_HISTORY | {"exec_div": FILLED}
 # 주문 입력값(nh-api.md "국내 선물 신규주문 입력값").
 ORDER_TYPES: dict[OrderType, str] = {"limit": "1", "market": "2"}
 FAS = "1"  # exec_cnd_cd. 조건부·FOK·FAK는 쓰지 않는다.
@@ -140,6 +142,9 @@ def parse_quote(symbol: str, price: JsonObject, bid: JsonObject) -> Quote:
         upper_limit=_dec(price, "up"),
         lower_limit=_dec(price, "lo"),
         book=book,
+        iv=_dec(price, "ivol"),
+        delta=_dec(price, "delta"),
+        theoretical=_dec(price, "theo_pric"),
     )
 
 
@@ -307,6 +312,37 @@ def parse_order_rows(body: JsonObject) -> list[OrderRow]:
             )
         )
     return rows
+
+
+@dataclass(frozen=True)
+class Fill:
+    """오늘 체결이 있는 주문 내역 한 행. quantity는 체결 수량, price는 체결가(체결 수량 평균)."""
+
+    symbol: str
+    side: Side
+    quantity: int
+    price: Decimal
+
+
+def parse_fills(body: JsonObject) -> list[Fill] | None:
+    """체결 행(`exec_div=1`). 빈 행이 아닌데 방향·체결 수량, 체결이 있는 행의 체결가 중 하나라도
+    읽지 못하면 None(모름). 체결 수량이 0인 행은 뺀다.
+    """
+    fills: list[Fill] = []
+    for row in _rows(body):
+        if _blank(row):
+            continue
+        side = _side(_text(row, "occurs1_trd_div"))
+        quantity = _int(row, "occurs1_exec_qty")
+        price = _dec(row, "occurs1_exec_pric")
+        if side is None or quantity is None or quantity < 0:
+            return None
+        if quantity == 0:
+            continue
+        if price is None:
+            return None
+        fills.append(Fill(_text(row, "occurs1_sym"), side, quantity, price))
+    return fills
 
 
 def parse_order_errors(body: JsonObject) -> list[OrderError]:
@@ -519,6 +555,20 @@ class DomesticMarket:
             async for body in _Pages(client, ORDER_HISTORY, ALL_HISTORY)
             for row in parse_order_rows(body)
         ]
+
+    async def todays_fills(self, user_id: UserId) -> list[Fill] | None:
+        """오늘 체결이 있는 주문 행 전체. 읽지 못한 행이 있거나 끝 쪽까지 받지 못하면 None."""
+        client = await self._pool.client_for(user_id, "domestic")
+        pages = _Pages(client, ORDER_HISTORY, TODAY_FILLS)
+        parsed = [parse_fills(body) async for body in pages]
+        if not pages.complete:
+            return None
+        fills: list[Fill] = []
+        for page in parsed:
+            if page is None:
+                return None
+            fills += page
+        return fills
 
     async def orderable_qty(
         self, user_id: UserId, order: OrderRequest, upper_limit: Decimal | None

@@ -25,10 +25,34 @@ APPLIED = "한도를 적용했습니다."
 REJECTED = "거절했습니다. 한도는 바뀌지 않았습니다."
 
 
-def _value(limits: RiskLimits | None) -> tuple[str, str, str]:
+_LABELS = (
+    "하루 손실 한도",
+    "종목별 최대 계약",
+    "1회 최대 계약",
+    "옵션 하루 프리미엄",
+    "옵션 전체 최대 계약",
+    "옵션 매도 최대 계약",
+)
+
+
+def _value(limits: RiskLimits | None) -> tuple[str, ...]:
+    """_LABELS 순서의 값. 옵션 한도가 없으면 옵션 칸은 "없음"이다."""
     if limits is None:
-        return ("없음", "없음", "없음")
-    return (f"{limits.daily_loss}원", f"{limits.max_position}계약", f"{limits.max_order_qty}계약")
+        return ("없음",) * len(_LABELS)
+    futures = (
+        f"{limits.daily_loss}원",
+        f"{limits.max_position}계약",
+        f"{limits.max_order_qty}계약",
+    )
+    options = limits.options
+    if options is None:
+        return (*futures, "없음", "없음", "없음")
+    return (
+        *futures,
+        f"{options.premium_daily}원",
+        f"{options.max_position}계약",
+        f"{options.max_short}계약",
+    )
 
 
 def _message(text: str, status: int = 200) -> HTMLResponse:
@@ -37,7 +61,7 @@ def _message(text: str, status: int = 200) -> HTMLResponse:
 
 def _review(user: WebUser, current: RiskLimits | None, requested: RiskLimits) -> str:
     rows = zip(
-        ("하루 손실 한도", "종목별 최대 계약", "1회 최대 계약"),
+        _LABELS,
         _value(current),
         _value(requested),
         strict=True,

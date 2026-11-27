@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Literal, cast
 
-from nh_mcp.domain import Clock, JsonValue, Market, RiskLimits, UserId
+from nh_mcp.domain import Clock, JsonValue, Market, OptionLimits, RiskLimits, UserId
 from nh_mcp.guard.confirm import judge
 from nh_mcp.services.approval import Approval
 from nh_mcp.store import audit, confirm_tokens, limits
@@ -45,6 +45,16 @@ class SetResult:
     expires_at: datetime | None
 
 
+def _options_json(value: OptionLimits | None) -> dict[str, JsonValue] | None:
+    if value is None:
+        return None
+    return {
+        "premium_daily": str(value.premium_daily),
+        "max_position": value.max_position,
+        "max_short": value.max_short,
+    }
+
+
 def _json(value: RiskLimits | None) -> dict[str, JsonValue] | None:
     if value is None:
         return None
@@ -52,6 +62,7 @@ def _json(value: RiskLimits | None) -> dict[str, JsonValue] | None:
         "daily_loss": str(value.daily_loss),
         "max_position": value.max_position,
         "max_order_qty": value.max_order_qty,
+        "options": _options_json(value.options),
     }
 
 
@@ -66,6 +77,20 @@ def _object(raw: object) -> dict[object, object] | None:
     return cast(dict[object, object], raw) if isinstance(raw, dict) else None
 
 
+def _options_from(raw: object) -> OptionLimits | None:
+    """저장된 payload의 옵션 한도. null이거나 칸이 없으면(M5 전) None, 모양이 다르면 ValueError."""
+    if raw is None:
+        return None
+    values = _object(raw)
+    if values is None:
+        raise ValueError
+    premium = values.get("premium_daily")
+    position, short = values.get("max_position"), values.get("max_short")
+    if not isinstance(premium, str) or type(position) is not int or type(short) is not int:
+        raise ValueError
+    return OptionLimits(Decimal(premium), position, short)
+
+
 def _limits_from(raw: object) -> RiskLimits | None:
     """저장된 payload의 한도 객체. 모양이 다르면 None."""
     values = _object(raw)
@@ -76,8 +101,9 @@ def _limits_from(raw: object) -> RiskLimits | None:
     if not isinstance(daily_loss, str) or type(position) is not int or type(quantity) is not int:
         return None
     try:
-        return RiskLimits(Decimal(daily_loss), position, quantity)
-    except ArithmeticError:
+        options = _options_from(values.get("options"))
+        return RiskLimits(Decimal(daily_loss), position, quantity, options)
+    except (ArithmeticError, ValueError):
         return None
 
 
@@ -105,14 +131,32 @@ def _parse(payload: str) -> _Pending | None:
     return _Pending("domestic" if market == "domestic" else "overseas", current, requested)
 
 
+def _option_values(value: OptionLimits | None) -> tuple[str, str, str]:
+    if value is None:
+        return ("없음", "없음", "없음")
+    return (f"{value.premium_daily}원", f"{value.max_position}계약", f"{value.max_short}계약")
+
+
+def _option_message(current: OptionLimits | None, requested: OptionLimits | None) -> str:
+    """승인 문구의 옵션 부분. 양쪽 다 옵션 한도가 없으면 빈 문자열."""
+    if current is None and requested is None:
+        return ""
+    before, after = _option_values(current), _option_values(requested)
+    return (
+        f", 옵션 하루 프리미엄 {before[0]}→{after[0]}, 옵션 전체 최대 {before[1]}→{after[1]}, "
+        f"옵션 매도 최대 {before[2]}→{after[2]}"
+    )
+
+
 def _message(current: RiskLimits | None, requested: RiskLimits) -> str:
     before_loss = "없음" if current is None else str(current.daily_loss)
     before_position = "없음" if current is None else str(current.max_position)
     before_qty = "없음" if current is None else str(current.max_order_qty)
+    options = _option_message(None if current is None else current.options, requested.options)
     return (
         f"한도를 바꿉니다. 하루 손실 {before_loss}→{requested.daily_loss}원, "
         f"종목별 최대 {before_position}→{requested.max_position}계약, "
-        f"1회 최대 {before_qty}→{requested.max_order_qty}계약. 승인할까요?"
+        f"1회 최대 {before_qty}→{requested.max_order_qty}계약{options}. 승인할까요?"
     )
 
 
@@ -126,7 +170,10 @@ class LimitService:
         return limits.get(self._conn, user_id, market)
 
     def plan(self, user_id: UserId, market: Market, requested: RiskLimits) -> LimitPlan:
+        """requested.options가 None이면 지금 옵션 한도를 그대로 둔다. 옵션 한도는 지우지 않는다."""
         current = self.get(user_id, market)
+        if requested.options is None and current is not None:
+            requested = replace(requested, options=current.options)
         needs_approval = current is None or current.raises(requested)
         return LimitPlan(
             needs_approval=needs_approval,

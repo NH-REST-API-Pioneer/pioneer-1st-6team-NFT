@@ -13,6 +13,7 @@ from nh_mcp.auth.access import current_user_id
 from nh_mcp.config import ENV
 from nh_mcp.domain import Clock, JsonValue, UserId
 from nh_mcp.services.backtest import RunnerUnavailable, StrategyFailed, StrategyInvalid
+from nh_mcp.services.options import OPTION_SWITCH_RULES, UnknownExpiry
 from nh_mcp.services.orders import (
     ConfirmInvalid,
     InvalidCancel,
@@ -24,6 +25,7 @@ from nh_mcp.services.orders import (
     UnknownState,
 )
 from nh_mcp.services.queries import BrokerRejected, KeyMissing, Unavailable, UnknownSymbol
+from nh_mcp.services.strategy import AUTO_RUN_OFF
 
 DOMESTIC_ONLY = "지금은 국내(domestic)만 지원합니다."
 
@@ -36,13 +38,24 @@ ORDERS_OFF = "지금은 주문이 꺼져 있습니다."
 KEY_MISSING = "NH 모의 키가 등록돼 있지 않습니다. 등록 화면에서 등록해 주세요: "
 UNAVAILABLE = "NH 모의 서버가 답하지 않습니다. 잠시 뒤 다시 시도해 주세요."
 RUNNER_UNAVAILABLE = "전략 실행기가 바쁘거나 답하지 않습니다. 잠시 뒤 다시 시도해 주세요."
+# 사용자가 등록 화면의 묶음 스위치를 켜야 풀리는 거절. 문구 끝에 등록 화면 주소를 붙인다.
+SWITCH_RULES = frozenset({AUTO_RUN_OFF}) | OPTION_SWITCH_RULES
 
 # 문구가 늘 같은 서비스 예외 → (오류 코드, 문구).
 _FIXED: dict[type[Exception], tuple[envelope.ErrorCode, str]] = {
-    UnknownSymbol: ("INVALID_INPUT", "search_symbol 결과에 있는 종목코드만 쓸 수 있습니다."),
+    UnknownSymbol: (
+        "INVALID_INPUT",
+        "search_symbol(선물)이나 get_option_chain(옵션) 결과에 있는 종목코드만 쓸 수 있습니다.",
+    ),
+    UnknownExpiry: (
+        "INVALID_INPUT",
+        "코스피200 월물 옵션 만기가 아닙니다. expiry 없이 get_option_chain을 불러 받은 "
+        "expiries에서 고르세요.",
+    ),
     LimitsNotSet: (
         "LIMITS_NOT_SET",
-        "위험 한도가 없어 주문할 수 없습니다. 사용자와 값을 정한 뒤 set_risk_limits로 정하세요.",
+        "위험 한도가 없어 주문할 수 없습니다. 옵션 주문은 옵션 한도(set_risk_limits의 options)도 "
+        "있어야 합니다. 사용자와 값을 정한 뒤 set_risk_limits로 정하세요.",
     ),
     ConfirmInvalid: (
         "CONFIRM_EXPIRED",
@@ -108,6 +121,8 @@ class ToolContext:
             case BrokerRejected():
                 response = envelope.error("BROKER_REJECTED", f"NH가 거부했습니다: {exc}", meta)
             case RiskBlocked(rule=rule, message=message):
+                if rule in SWITCH_RULES:
+                    message = f"{message} 등록 화면: {self.keys_url}"
                 response = envelope.error("RISK_BLOCKED", message, meta, rule=rule)
             case MarketClosed(message=message):
                 response = envelope.error("MARKET_CLOSED", message, meta)

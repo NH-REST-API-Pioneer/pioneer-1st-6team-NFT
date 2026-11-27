@@ -2,12 +2,15 @@
 
 import re
 from decimal import Decimal
+from typing import TypedDict
 
 import mcp_types
-from fastmcp import Context, FastMCP
+from fastmcp import FastMCP
+from fastmcp.server.dependencies import get_context
+from pydantic import ConfigDict, with_config
 
 from nh_mcp import envelope
-from nh_mcp.domain import KST, JsonValue, RiskLimits
+from nh_mcp.domain import KST, JsonValue, OptionLimits, RiskLimits
 from nh_mcp.ops.rate_limit import LIMITS_BUCKET, RateLimiter
 from nh_mcp.services.limits import LimitService, SetResult
 from nh_mcp.tools.approval import ask
@@ -32,6 +35,25 @@ _NEXT = {
 }
 
 
+@with_config(ConfigDict(extra="forbid"))
+class OptionLimitsDraft(TypedDict):
+    """옵션 한도 셋. 함께 넣는다. premium_daily는 숫자만 쓴 문자열(원)."""
+
+    premium_daily: str
+    max_position: Whole
+    max_short: Whole
+
+
+def _options_data(value: OptionLimits | None) -> dict[str, JsonValue] | None:
+    if value is None:
+        return None
+    return {
+        "premium_daily": str(value.premium_daily),
+        "max_position": value.max_position,
+        "max_short": value.max_short,
+    }
+
+
 def _limits_data(value: RiskLimits | None) -> dict[str, JsonValue] | None:
     if value is None:
         return None
@@ -39,24 +61,50 @@ def _limits_data(value: RiskLimits | None) -> dict[str, JsonValue] | None:
         "daily_loss": str(value.daily_loss),
         "max_position": value.max_position,
         "max_order_qty": value.max_order_qty,
+        "options": _options_data(value.options),
     }
 
 
-def _parse(daily_loss: str, max_position: Whole, max_order_qty: Whole) -> RiskLimits | str:
-    """RiskLimits, 또는 입력이 잘못됐다고 알려 줄 문장."""
-    text = daily_loss.strip()
+def _amount(value: str) -> Decimal | None:
+    """0보다 큰 금액이면 그 값, 아니면 None."""
+    text = value.strip()
     if _AMOUNT.fullmatch(text) is None:
-        return 'daily_loss는 0보다 큰 금액을 숫자만으로 써 주세요. 예: "1000000"'
+        return None
     amount = Decimal(text)
-    if amount <= 0:
-        return "daily_loss는 0보다 커야 합니다."
+    return amount if amount > 0 else None
+
+
+def _parse_options(draft: OptionLimitsDraft) -> OptionLimits | str:
+    """OptionLimits, 또는 입력이 잘못됐다고 알려 줄 문장."""
+    amount = _amount(draft["premium_daily"])
+    if amount is None:
+        return 'options.premium_daily는 0보다 큰 금액을 숫자만으로 써 주세요. 예: "500000"'
+    position = whole(draft["max_position"], 1, _MAX_COUNT)
+    if position is None:
+        return f"options.max_position은 1 이상 {_MAX_COUNT} 이하의 정수여야 합니다."
+    short = whole(draft["max_short"], 0, _MAX_COUNT)
+    if short is None:
+        return f"options.max_short는 0 이상 {_MAX_COUNT} 이하의 정수여야 합니다."
+    return OptionLimits(amount, position, short)
+
+
+def _parse(
+    daily_loss: str, max_position: Whole, max_order_qty: Whole, options: OptionLimitsDraft | None
+) -> RiskLimits | str:
+    """RiskLimits, 또는 입력이 잘못됐다고 알려 줄 문장. options를 안 주면 옵션 한도는 None."""
+    amount = _amount(daily_loss)
+    if amount is None:
+        return 'daily_loss는 0보다 큰 금액을 숫자만으로 써 주세요. 예: "1000000"'
     position = whole(max_position, 1, _MAX_COUNT)
     if position is None:
         return f"max_position는 1 이상 {_MAX_COUNT} 이하의 정수여야 합니다."
     order_qty = whole(max_order_qty, 1, _MAX_COUNT)
     if order_qty is None:
         return f"max_order_qty는 1 이상 {_MAX_COUNT} 이하의 정수여야 합니다."
-    return RiskLimits(amount, position, order_qty)
+    option_limits = None if options is None else _parse_options(options)
+    if isinstance(option_limits, str):
+        return option_limits
+    return RiskLimits(amount, position, order_qty, option_limits)
 
 
 def _result_data(result: SetResult) -> dict[str, JsonValue]:
@@ -77,11 +125,12 @@ def register_limit_tools(
 ) -> None:
     @mcp.tool(annotations={"readOnlyHint": True})
     def get_risk_limits(market: str = "domestic") -> envelope.Response:
-        """내가 정한 위험 한도(하루 손실, 종목별 최대 계약 수, 1회 최대 계약 수)를 돌려준다.
+        """내가 정한 위험 한도(하루 손실, 종목별·1회 최대 계약 수, 옵션 한도)를 돌려준다.
 
         쓸 때: 주문하기 전에 한도가 정해져 있는지 볼 때, 사용자가 한도를 물을 때.
         쓰지 않을 때: 한도를 바꾸는 것은 set_risk_limits.
         한도가 없으면 limits가 null이다. 한도가 없으면 주문은 모두 막힌다.
+        옵션 한도가 없으면 limits.options가 null이고, 포지션을 늘리는 옵션 주문은 막힌다.
         """
         if market != "domestic":
             return ctx.invalid(DOMESTIC_ONLY)
@@ -96,34 +145,44 @@ def register_limit_tools(
 
     @mcp.tool(annotations={"readOnlyHint": False})
     async def set_risk_limits(
-        context: Context,
         daily_loss: str,
         max_position: Whole,
         max_order_qty: Whole,
         market: str = "domestic",
+        options: OptionLimitsDraft | None = None,
     ) -> envelope.Response | mcp_types.InputRequiredResult:
-        """위험 한도를 정하거나 바꾼다. 세 값을 모두 넣는다.
+        """위험 한도를 정하거나 바꾼다. 앞의 세 값은 늘 넣고, 옵션 한도는 options로 넣는다.
 
-        쓸 때: 사용자가 하루 손실, 종목별 최대 계약 수, 1회 최대 계약 수를 정하거나 바꾸자고 할 때.
+        쓸 때: 사용자가 하루 손실, 종목별 최대 계약 수, 1회 최대 계약 수, 옵션 한도를 정하거나
+        바꾸자고 할 때.
         쓰지 않을 때: 지금 한도를 보는 것은 get_risk_limits.
         daily_loss: 하루 손실 한도(원). 0보다 큰 숫자만 쓴 문자열. 예: "1000000".
-        낮추기(세 값이 모두 지금 이하)는 바로 적용된다. 처음 정하거나 하나라도 올리면 서버가
-        사용자 화면에 승인 창을 띄운다. 창을 못 띄우는 클라이언트면 적용하지 않고
-        outcome이 needs_approval이며 approval_url이 온다. 사용자에게 그 링크를 열라고 안내한다.
-        승인은 AI가 대신할 수 없고, 토큰 같은 인자도 없다.
+        max_order_qty는 선물과 옵션이 같이 쓴다.
+        options: {"premium_daily", "max_position", "max_short"} 셋을 함께 넣는다.
+        premium_daily는 오늘 옵션 매수에 쓸 프리미엄 합계 한도(원, daily_loss와 같은 모양),
+        max_position은 모든 옵션 종목의 계약 수 합계 상한(매수·매도 합, 1 이상),
+        max_short는 옵션 매도 계약 수 합계 상한(0 이상, 0이면 새 매도는 막힌다).
+        예: {"premium_daily": "500000", "max_position": 10, "max_short": 0}
+        options를 빼면 지금 옵션 한도를 그대로 둔다. 이 도구로 옵션 한도를 지우지는 못한다.
+        옵션 한도가 없으면 포지션을 늘리는 옵션 주문은 막힌다.
+        낮추기(모든 값이 지금 이하)는 바로 적용된다. 처음 정하거나(옵션 한도를 처음 넣는 것 포함)
+        하나라도 올리면 서버가 사용자 화면에 승인 창을 띄운다. 창을 못 띄우는 클라이언트면
+        적용하지 않고 outcome이 needs_approval이며 approval_url이 온다. 사용자에게 그 링크를
+        열라고 안내한다. 승인은 AI가 대신할 수 없고, 토큰 같은 인자도 없다.
         """
         user_id = ctx.user_id()
         if not limiter.allow(user_id, LIMITS_BUCKET):
             return ctx.too_many()
         if market != "domestic":
             return ctx.invalid(DOMESTIC_ONLY)
-        parsed = _parse(daily_loss, max_position, max_order_qty)
+        parsed = _parse(daily_loss, max_position, max_order_qty, options)
         if isinstance(parsed, str):
             return ctx.invalid(parsed)
         plan = service.plan(user_id, "domestic", parsed)
         approval = None
         if plan.needs_approval:
-            asked = await ask(context, "limits", plan.message, plan.state)
+            # Context를 인자로 받으면 인자가 lint 상한(5개)을 넘어 get_context()로 꺼낸다.
+            asked = await ask(get_context(), "limits", plan.message, plan.state)
             if isinstance(asked, mcp_types.InputRequiredResult):
                 return asked
             approval = asked

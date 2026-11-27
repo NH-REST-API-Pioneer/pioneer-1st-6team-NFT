@@ -13,7 +13,7 @@ from conftest import Serve
 from fakes import SETTINGS, World, browser_login
 
 from nh_mcp.auth.web import CALLBACK_PATH, LOGIN_PATH, SESSION_COOKIE, safe_return_to
-from nh_mcp.domain import RiskLimits, UserId
+from nh_mcp.domain import OptionLimits, RiskLimits, UserId
 from nh_mcp.services.limits import APPROVE_PATH, LimitService
 from nh_mcp.store import confirm_tokens, limits, users
 from nh_mcp.store.confirm_tokens import NewToken
@@ -21,6 +21,7 @@ from nh_mcp.tools.limits_page import APPLIED, CHANGED, GONE, REJECTED
 
 CURRENT = RiskLimits(Decimal("100000"), 3, 2)
 HIGHER = RiskLimits(Decimal("250000"), 7, 4)
+WITH_OPTIONS = RiskLimits(Decimal("100000"), 3, 2, OptionLimits(Decimal("500000"), 10, 1))
 
 type Step = Callable[[httpx2.AsyncClient, str, str], Awaitable[None]]
 
@@ -116,6 +117,27 @@ def test_owner_sees_current_and_new_values_and_get_changes_nothing(serve: Serve)
     assert stored(world) == CURRENT
     assert usable(world, token)
     assert pages[1].status_code == 200
+
+
+def test_page_shows_option_limits_in_korean(serve: Serve) -> None:
+    world = World()
+    limits.put(world.conn, me(world), "domestic", CURRENT, world.clock())
+    token = link(world, WITH_OPTIONS)
+    pages: list[httpx2.Response] = []
+
+    async def step(http: httpx2.AsyncClient, base: str, _: str) -> None:
+        pages.append(await http.get(base + path(token)))
+
+    browser(serve, world, step)
+
+    body = pages[0].text
+    for row in (
+        "<tr><td>옵션 하루 프리미엄</td><td>없음</td><td>500000원</td></tr>",
+        "<tr><td>옵션 전체 최대 계약</td><td>없음</td><td>10계약</td></tr>",
+        "<tr><td>옵션 매도 최대 계약</td><td>없음</td><td>1계약</td></tr>",
+    ):
+        assert row in body
+    assert stored(world) == CURRENT
 
 
 def test_first_time_page_shows_none_as_current(serve: Serve) -> None:

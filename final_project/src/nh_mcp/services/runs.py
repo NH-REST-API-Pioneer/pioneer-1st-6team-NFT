@@ -243,6 +243,8 @@ class RunMarket:
     async def symbol(self, user_id: UserId, symbol: str) -> SymbolInfo | None:
         """종목 마스터와 품목 정보로 만든 조건. 틱·거래 시간을 모르면 None(켜지 않는다).
 
+        승인은 선물만 받으므로(`futures`) 틱 칸은 하나다.
+
         종목이 없으면 UnknownSymbol, 마스터를 못 받으면 Unavailable.
         """
         contract = await self.queries.contract(symbol)
@@ -250,7 +252,7 @@ class RunMarket:
         if rules is None:
             return None
         return SymbolInfo(
-            SymbolTerms(rules.tick_size, contract.multiplier, Decimal(0)), rules.session
+            SymbolTerms(rules.ticks[0].tick, contract.multiplier, Decimal(0)), rules.session
         )
 
     async def account(self, user_id: UserId) -> AccountState:

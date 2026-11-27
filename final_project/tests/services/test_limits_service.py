@@ -8,7 +8,7 @@ from decimal import Decimal
 import pytest
 from fakes import T0, Clock
 
-from nh_mcp.domain import RiskLimits, TokenPurpose, UserId
+from nh_mcp.domain import OptionLimits, RiskLimits, TokenPurpose, UserId
 from nh_mcp.services.limits import LimitPlan, LimitService
 from nh_mcp.store import confirm_tokens, db, limits, users
 from nh_mcp.store.confirm_tokens import NewToken
@@ -18,6 +18,8 @@ CURRENT = RiskLimits(Decimal("100000"), 3, 2)
 LOWER = RiskLimits(Decimal("50000"), 3, 2)
 HIGHER = RiskLimits(Decimal("50000"), 5, 2)
 OTHER = RiskLimits(Decimal("70000"), 4, 2)
+OPTIONS = OptionLimits(Decimal("500000"), 10, 2)
+WITH_OPTIONS = RiskLimits(Decimal("100000"), 3, 2, OPTIONS)
 
 
 class Setup:
@@ -183,6 +185,41 @@ def test_lowering_that_became_a_raise_meanwhile_is_not_applied() -> None:
     assert s.stored() == RiskLimits(Decimal("10000"), 3, 2)
 
 
+def test_removing_option_limits_counts_as_lowering() -> None:
+    """옵션 한도가 없으면 늘리는 옵션 주문이 막힐 뿐이라 위험이 줄어든다."""
+    assert WITH_OPTIONS.raises(CURRENT) is False
+    assert CURRENT.raises(WITH_OPTIONS) is True
+
+
+def test_message_shows_option_limits_when_either_side_has_them() -> None:
+    s = Setup()
+    s.seed(WITH_OPTIONS)
+
+    plan = s.service.plan(
+        s.user,
+        "domestic",
+        RiskLimits(Decimal("100000"), 3, 2, OptionLimits(Decimal("700000"), 8, 0)),
+    )
+
+    assert plan.message == (
+        "한도를 바꿉니다. 하루 손실 100000→100000원, 종목별 최대 3→3계약, "
+        "1회 최대 2→2계약, 옵션 하루 프리미엄 500000원→700000원, 옵션 전체 최대 10계약→8계약, "
+        "옵션 매도 최대 2계약→0계약. 승인할까요?"
+    )
+
+
+def test_plan_without_options_carries_the_current_option_limits() -> None:
+    s = Setup()
+    s.seed(WITH_OPTIONS)
+
+    plan = s.service.plan(s.user, "domestic", LOWER)
+
+    assert plan.requested == RiskLimits(Decimal("50000"), 3, 2, OPTIONS)
+    assert plan.needs_approval is False
+    s.service.commit(s.user, "domestic", plan, None)
+    assert s.stored() == RiskLimits(Decimal("50000"), 3, 2, OPTIONS)
+
+
 def test_limits_are_per_user() -> None:
     s = Setup()
     plan = s.service.plan(s.user, "domestic", CURRENT)
@@ -206,9 +243,32 @@ def test_link_token_payload_holds_market_current_and_requested_as_strings() -> N
     assert row.purpose == "limits"
     assert json.loads(row.payload) == {
         "market": "domestic",
-        "current": {"daily_loss": "100000", "max_position": 3, "max_order_qty": 2},
-        "requested": {"daily_loss": "50000", "max_position": 5, "max_order_qty": 2},
+        "current": {"daily_loss": "100000", "max_position": 3, "max_order_qty": 2, "options": None},
+        "requested": {
+            "daily_loss": "50000",
+            "max_position": 5,
+            "max_order_qty": 2,
+            "options": None,
+        },
     }
+
+
+def test_link_payload_holds_option_limits_as_strings_and_counts() -> None:
+    s = Setup()
+    s.seed(CURRENT)
+    token = s.link_token(s.service.plan(s.user, "domestic", WITH_OPTIONS))
+
+    row = confirm_tokens.find(s.conn, token)
+
+    assert row is not None
+    payload = json.loads(row.payload)
+    assert payload["current"]["options"] is None
+    assert payload["requested"]["options"] == {
+        "premium_daily": "500000",
+        "max_position": 10,
+        "max_short": 2,
+    }
+    assert s.service.pending(s.user, token) == (CURRENT, WITH_OPTIONS)
 
 
 def test_first_time_link_payload_has_null_current() -> None:
@@ -340,6 +400,49 @@ def test_link_after_values_changed_elsewhere_is_changed_and_values_stay() -> Non
     assert s.stored() == CURRENT
 
 
+def test_approve_link_applies_first_time_option_limits() -> None:
+    s = Setup()
+    s.seed(CURRENT)
+    token = s.link_token(s.service.plan(s.user, "domestic", WITH_OPTIONS))
+
+    assert s.service.approve_link(s.user, token) == "applied"
+    assert s.stored() == WITH_OPTIONS
+
+
+def test_link_after_option_limits_changed_elsewhere_is_changed() -> None:
+    s = Setup()
+    s.seed(CURRENT)
+    token = s.link_token(s.service.plan(s.user, "domestic", WITH_OPTIONS))
+    meanwhile = RiskLimits(Decimal("100000"), 3, 2, OptionLimits(Decimal("1"), 1, 0))
+    s.seed(meanwhile)
+
+    assert s.service.approve_link(s.user, token) == "changed"
+    assert s.stored() == meanwhile
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"premium_daily": 500000, "max_position": 10, "max_short": 2},
+        {"premium_daily": "abc", "max_position": 10, "max_short": 2},
+        {"premium_daily": "500000", "max_position": "10", "max_short": 2},
+        {"premium_daily": "500000", "max_position": 10},
+        "500000",
+    ],
+)
+def test_malformed_option_limits_in_the_payload_are_invalid(options: object) -> None:
+    s = Setup()
+    requested = {"daily_loss": "100000", "max_position": 3, "max_order_qty": 2, "options": options}
+    payload = json.dumps({"market": "domestic", "current": None, "requested": requested})
+    token, _ = confirm_tokens.issue(
+        s.conn, NewToken(s.user, "limits", payload), T0, timedelta(minutes=10)
+    )
+
+    assert s.service.pending(s.user, token) is None
+    assert s.service.approve_link(s.user, token) == "invalid"
+    assert s.stored() is None
+
+
 def test_first_time_link_after_someone_set_limits_is_changed() -> None:
     s = Setup()
     token = s.link_token(s.service.plan(s.user, "domestic", CURRENT))
@@ -387,7 +490,12 @@ def test_audit_detail_names_outcome_and_method() -> None:
     ]
     first_set = s.actions()[1][2]
     assert first_set["market"] == "domestic"
-    assert first_set["requested"] == {"daily_loss": "100000", "max_position": 3, "max_order_qty": 2}
+    assert first_set["requested"] == {
+        "daily_loss": "100000",
+        "max_position": 3,
+        "max_order_qty": 2,
+        "options": None,
+    }
 
 
 def test_audit_records_a_declined_window_answer() -> None:

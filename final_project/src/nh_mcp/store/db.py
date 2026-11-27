@@ -49,6 +49,9 @@ CREATE TABLE IF NOT EXISTS risk_limits (
     max_position INTEGER NOT NULL,
     max_order_qty INTEGER NOT NULL,
     updated_at TEXT NOT NULL,
+    option_premium_daily TEXT,
+    option_max_position INTEGER,
+    option_max_short INTEGER,
     PRIMARY KEY (user_id, market)
 );
 """
@@ -159,14 +162,34 @@ CREATE TABLE IF NOT EXISTS strategy_events (
 CREATE INDEX IF NOT EXISTS strategy_events_by_run ON strategy_events (user_id, run_id, id);
 """
 
-# 사용자가 등록 화면에서 켠 기능 묶음(M4b, 지금은 'auto_run'만). 행이 있으면 켜진 것이고 기본은
-# 꺼짐이다.
+# 사용자가 등록 화면에서 켠 기능 묶음('auto_run', 'options', 'option_sell'). 행이 있으면 켜진 것이고
+# 기본은 꺼짐이다.
 USER_FEATURES = """
 CREATE TABLE IF NOT EXISTS user_features (
     user_id INTEGER NOT NULL REFERENCES users(id),
     feature TEXT NOT NULL,
     enabled_at TEXT NOT NULL,
     PRIMARY KEY (user_id, feature)
+);
+"""
+
+# 옵션 보유 기록(M5, store/option_holdings.py). 종목·방향마다 한 줄이고 닫힌 줄도 남는다.
+# close_reason이 NULL이면 보유 중, 'closed'는 만기 전에 잔고에서 사라짐, 'exercised_or_expired'는
+# 만기일이 지나 사라짐(행사 또는 소멸). 옛 DB에는 이 표가 없어 SCHEMA가 새로 만든다.
+OPTION_HOLDINGS = """
+CREATE TABLE IF NOT EXISTS option_holdings (
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    market TEXT NOT NULL CHECK (market IN ('domestic', 'overseas')),
+    symbol TEXT NOT NULL,
+    side TEXT NOT NULL CHECK (side IN ('buy', 'sell')),
+    quantity INTEGER NOT NULL,
+    expiry TEXT NOT NULL,
+    first_seen TEXT NOT NULL,
+    last_seen TEXT NOT NULL,
+    closed_at TEXT,
+    close_reason TEXT CHECK (close_reason IN ('closed', 'exercised_or_expired')),
+    CHECK ((closed_at IS NULL) = (close_reason IS NULL)),
+    PRIMARY KEY (user_id, market, symbol, side)
 );
 """
 
@@ -179,6 +202,7 @@ SCHEMA = (
     + TICK_RECORDINGS
     + STRATEGY_RUNS
     + USER_FEATURES
+    + OPTION_HOLDINGS
 )
 
 
@@ -207,10 +231,17 @@ def _table_sql(conn: sqlite3.Connection, name: str) -> str | None:
 #   남길 기록이 없다(M4a 설계 8절).
 _NEW_SHAPE = {"confirm_tokens": "'strategy'", "backtest_runs": "streams"}
 
-# 칸이 늘어난 표 → (칸 이름, 더할 칸 정의). 옛 표면 ALTER TABLE로 맨 뒤에 더한다(행은 그대로).
+# 늘어난 칸 (표, 칸 이름, 칸 타입). 옛 표면 ALTER TABLE로 이 순서대로 맨 뒤에 더한다(행은 그대로).
 # - orders(M4b): run_id가 없다. 주문 행은 지우지 않는다. 오늘의 UNKNOWN·SUBMITTED 행이 그 종목의
 #   늘리는 주문을 막고 있을 수 있다(불변식 5). 옛 행은 모두 수동 주문이라 NULL이 맞다.
-_NEW_COLUMNS = {"orders": ("run_id", "run_id TEXT")}
+# - risk_limits(M5): 옵션 한도 칸 셋이 없다. 셋 다 NULL이면 옵션 한도가 없는 것이고, 선물 한도는
+#   그대로 둔다.
+_NEW_COLUMNS = (
+    ("orders", "run_id", "TEXT"),
+    ("risk_limits", "option_premium_daily", "TEXT"),
+    ("risk_limits", "option_max_position", "INTEGER"),
+    ("risk_limits", "option_max_short", "INTEGER"),
+)
 
 
 def _columns(conn: sqlite3.Connection, name: str) -> set[str]:
@@ -228,8 +259,8 @@ def _migrate(conn: sqlite3.Connection) -> None:
         if (sql := _table_sql(conn, name)) is not None and marker not in sql
     ]
     missing = [
-        (name, definition)
-        for name, (column, definition) in _NEW_COLUMNS.items()
+        (name, f"{column} {kind}")
+        for name, column, kind in _NEW_COLUMNS
         if _table_sql(conn, name) is not None and column not in _columns(conn, name)
     ]
     if not stale and not missing:

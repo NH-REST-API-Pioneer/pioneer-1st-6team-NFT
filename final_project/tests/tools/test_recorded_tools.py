@@ -49,6 +49,21 @@ def test_quote_from_recorded_price_and_book(serve: Serve) -> None:
     assert (data["upper_limit"], data["lower_limit"]) == ("835.60", "668.55")
     assert len(data["book"]) == 10
     assert data["book"][0] == {"bid": "784.50", "bid_qty": 3, "ask": "784.60", "ask_qty": 3}
+    # 선물 시세에도 델타·변동성·이론가 칸이 오지만(녹화: 0.00000, 0.00, 787.33) 옵션 칸은 없다.
+    assert set(data) == {
+        "symbol",
+        "name",
+        "last",
+        "change",
+        "change_rate",
+        "open",
+        "high",
+        "low",
+        "volume",
+        "upper_limit",
+        "lower_limit",
+        "book",
+    }
 
 
 def test_empty_quote_for_a_symbol_nh_does_not_know_is_blocked(serve: Serve) -> None:

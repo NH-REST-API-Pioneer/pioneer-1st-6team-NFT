@@ -15,7 +15,7 @@ from fastmcp import Context, FastMCP
 from nh_mcp import envelope
 from nh_mcp.domain import KST, JsonValue, Market, OrderRequest, OrderType, Side
 from nh_mcp.ops.rate_limit import ORDER_BUCKET, PREVIEW_BUCKET, RateLimiter
-from nh_mcp.services.orders import OrderService
+from nh_mcp.services.orders import OPTION_ACTIONS, OptionTerms, OrderService
 from nh_mcp.tools.approval import ask
 from nh_mcp.tools.context import DOMESTIC_ONLY, ToolContext, Whole, whole
 
@@ -58,7 +58,9 @@ def _problem(draft: OrderDraft) -> str | None:
     """종목·방향·유형 칸이 잘못됐으면 알려 줄 문장."""
     code = draft["symbol"].strip()
     if not code or len(code) > MAX_SYMBOL_LENGTH:
-        return "symbol은 search_symbol 결과의 종목코드를 넣어 주세요."
+        return (
+            "symbol은 search_symbol(선물)이나 get_option_chain(옵션) 결과의 종목코드를 넣어 주세요."
+        )
     if draft["side"] not in _SIDES:
         return 'side는 "buy"(매수) 또는 "sell"(매도)입니다.'
     if draft["type"] not in _TYPES:
@@ -111,6 +113,14 @@ def _order_data(order: _OrderLike) -> dict[str, JsonValue]:
     }
 
 
+def _option_data(option: OptionTerms) -> dict[str, JsonValue]:
+    return {
+        "action": option.action,
+        "label": OPTION_ACTIONS[option.action],
+        "premium": None if option.premium is None else format(option.premium, "f"),
+    }
+
+
 def register_order_tools(
     mcp: FastMCP, ctx: ToolContext, orders: OrderService, limiter: RateLimiter
 ) -> None:
@@ -123,7 +133,14 @@ def register_order_tools(
         다음: 결과의 주문 내용(종목명, 매수/매도, 수량, 가격, 경고)을 사용자에게 보여 주고
         승인을 받은 뒤 place_order(confirm_token). 토큰은 2분 동안 한 번만 쓸 수 있다.
         order: {"symbol", "side", "type", "quantity", "price"}.
-        symbol은 search_symbol 결과의 코드만 쓴다. 코드를 추측해서 만들지 않는다.
+        symbol은 search_symbol(선물)이나 get_option_chain(옵션) 결과의 코드만 쓴다. 코드를 추측해서
+        만들지 않는다. 옵션이면 결과에 option{action, label, premium}이 더 있다. action은
+        new_buy(새 매수)·new_sell(새 매도, 보유 없이 파는 주문)·close(청산), premium은 매수의
+        가격·승수·수량의 곱(원, 시장가는 상한가로 셈)이다. 이것도 사용자에게 보여 준다.
+        옵션의 새 매수·새 매도는 사용자가 등록 화면에서 "옵션"을 켜고(아니면 error.rule이
+        options_off) 옵션 한도(set_risk_limits의 options)를 정해야 한다(아니면 LIMITS_NOT_SET).
+        새 매도는 "옵션 매도"도 켜야 한다(아니면 option_sell_off). 스위치는 사람만 켤 수 있다.
+        청산은 이 스위치와 옵션 한도에 막히지 않는다.
         side: "buy"(매수) 또는 "sell"(매도). type: "limit"(지정가) 또는 "market"(시장가).
         quantity: 계약 수. price: 지정가일 때만, 숫자만 쓴 문자열(예: "784.55"). 시장가는 뺀다.
         예: {"symbol": "A016C000", "side": "buy", "type": "limit", "quantity": 1, "price": "784.55"}
@@ -141,13 +158,16 @@ def register_order_tools(
 
         async def work() -> dict[str, JsonValue]:
             preview = await orders.preview(user_id, parsed)
-            return {
+            data: dict[str, JsonValue] = {
                 "order": _order_data(preview.order),
                 "name": preview.contract_name,
                 "warnings": list[JsonValue](preview.warnings),
                 "confirm_token": preview.confirm_token,
                 "expires_at": preview.expires_at.astimezone(KST).isoformat(timespec="seconds"),
             }
+            if preview.option is not None:
+                data["option"] = _option_data(preview.option)
+            return data
 
         return await ctx.answer(work())
 

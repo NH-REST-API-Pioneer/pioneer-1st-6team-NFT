@@ -12,13 +12,16 @@ from fakes import World
 from fastmcp import Client
 from fastmcp.client.elicitation import ElicitResult
 
-from nh_mcp.domain import RiskLimits, UserId
+from nh_mcp.domain import OptionLimits, RiskLimits, UserId
 from nh_mcp.store import limits, users
 
 CURRENT = RiskLimits(Decimal("100000"), 3, 2)
 ARGS: dict[str, Any] = {"daily_loss": "100000", "max_position": 3, "max_order_qty": 2}
 LOWER: dict[str, Any] = {"daily_loss": "50000", "max_position": 3, "max_order_qty": 2}
 HIGHER: dict[str, Any] = {"daily_loss": "50000", "max_position": 5, "max_order_qty": 2}
+OPTIONS = OptionLimits(Decimal("500000"), 10, 2)
+WITH_OPTIONS = RiskLimits(Decimal("100000"), 3, 2, OPTIONS)
+OPTION_ARGS: dict[str, Any] = {"premium_daily": "500000", "max_position": 10, "max_short": 2}
 
 
 @dataclass
@@ -114,7 +117,12 @@ def test_get_returns_my_limits_only(serve: Serve) -> None:
 
     theirs = asyncio.run(as_second_user())
 
-    assert mine["data"]["limits"] == {"daily_loss": "100000", "max_position": 3, "max_order_qty": 2}
+    assert mine["data"]["limits"] == {
+        "daily_loss": "100000",
+        "max_position": 3,
+        "max_order_qty": 2,
+        "options": None,
+    }
     assert theirs["data"]["limits"] is None
 
 
@@ -141,6 +149,7 @@ def test_first_time_accepted_in_the_window_applies(serve: Serve) -> None:
         "daily_loss": "100000",
         "max_position": 3,
         "max_order_qty": 2,
+        "options": None,
     }
     assert "approval_url" not in result["data"]
     assert stored(world) == CURRENT
@@ -300,7 +309,33 @@ def test_there_is_no_token_or_message_argument(serve: Serve) -> None:
             for name in t.input_schema["properties"]
         }
 
-    assert asyncio.run(names()) == {"daily_loss", "max_position", "max_order_qty", "market"}
+    assert asyncio.run(names()) == {
+        "daily_loss",
+        "max_position",
+        "max_order_qty",
+        "market",
+        "options",
+    }
+
+
+def test_the_options_argument_holds_only_the_three_option_limits(serve: Serve) -> None:
+    async def schema() -> dict[str, Any]:
+        async with serve(fresh().mcp) as url, Client(url, auth="admin-token") as client:
+            tools = await client.list_tools()
+        (tool,) = [t for t in tools if t.name == "set_risk_limits"]
+        found: dict[str, Any] = tool.input_schema["properties"]["options"]
+        return found
+
+    (draft, null) = asyncio.run(schema())["anyOf"]
+
+    assert null == {"type": "null"}
+    assert draft["properties"] == {
+        "premium_daily": {"type": "string"},
+        "max_position": {"type": "integer"},
+        "max_short": {"type": "integer"},
+    }
+    assert set(draft["required"]) == {"premium_daily", "max_position", "max_short"}
+    assert draft["additionalProperties"] is False
 
 
 def test_counts_are_advertised_as_integers(serve: Serve) -> None:
@@ -338,3 +373,215 @@ def test_the_eleventh_change_in_a_minute_is_refused_before_anything_is_stored(
     assert results[10]["error"]["retryable"] is True
     issued: tuple[int] = world.conn.execute("SELECT COUNT(*) FROM confirm_tokens").fetchone()
     assert issued[0] == 10
+
+
+# --- 옵션 한도 (M5) ---------------------------------------------------------------------
+
+
+def test_get_shows_option_limits(serve: Serve) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_OPTIONS, world.clock())
+
+    result = run(serve, world, "get_risk_limits", {})
+
+    assert result["data"]["limits"]["options"] == {
+        "premium_daily": "500000",
+        "max_position": 10,
+        "max_short": 2,
+    }
+
+
+def test_first_time_option_limits_ask_the_window_even_with_futures_unchanged(
+    serve: Serve,
+) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", CURRENT, world.clock())
+    window = Window("accept")
+
+    result = run(serve, world, "set_risk_limits", {**ARGS, "options": OPTION_ARGS}, window)
+
+    assert result["data"]["outcome"] == "applied"
+    assert stored(world) == WITH_OPTIONS
+    assert window.messages == [
+        "한도를 바꿉니다. 하루 손실 100000→100000원, 종목별 최대 3→3계약, "
+        "1회 최대 2→2계약, 옵션 하루 프리미엄 없음→500000원, 옵션 전체 최대 없음→10계약, "
+        "옵션 매도 최대 없음→2계약. 승인할까요?"
+    ]
+
+
+def test_first_time_option_limits_declined_keep_futures_only(serve: Serve) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", CURRENT, world.clock())
+
+    result = run(
+        serve, world, "set_risk_limits", {**ARGS, "options": OPTION_ARGS}, Window("decline")
+    )
+
+    assert result["data"]["outcome"] == "declined"
+    assert stored(world) == CURRENT
+
+
+def test_first_time_option_limits_without_a_window_give_a_link_and_store_nothing(
+    serve: Serve,
+) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", CURRENT, world.clock())
+
+    result = run(serve, world, "set_risk_limits", {**ARGS, "options": OPTION_ARGS})
+
+    assert result["data"]["outcome"] == "needs_approval"
+    assert stored(world) == CURRENT
+
+
+@pytest.mark.parametrize(
+    "raised",
+    [
+        {"premium_daily": "500000.01"},
+        {"max_position": 11},
+        {"max_short": 3},
+    ],
+)
+def test_raising_one_option_limit_asks_and_a_decline_keeps_them(
+    serve: Serve, raised: dict[str, Any]
+) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_OPTIONS, world.clock())
+    window = Window("decline")
+
+    result = run(
+        serve, world, "set_risk_limits", {**ARGS, "options": {**OPTION_ARGS, **raised}}, window
+    )
+
+    assert result["data"]["outcome"] == "declined"
+    assert len(window.messages) == 1
+    assert stored(world) == WITH_OPTIONS
+
+
+def test_lowering_option_limits_applies_without_the_window(serve: Serve) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_OPTIONS, world.clock())
+    window = Window("decline")
+    lower = {"premium_daily": "300000", "max_position": 4, "max_short": 0}
+
+    result = run(serve, world, "set_risk_limits", {**ARGS, "options": lower}, window)
+
+    assert result["data"]["outcome"] == "applied"
+    assert window.messages == []
+    assert stored(world) == RiskLimits(
+        Decimal("100000"), 3, 2, OptionLimits(Decimal("300000"), 4, 0)
+    )
+
+
+@pytest.mark.parametrize("omitted", [{}, {"options": None}])
+def test_omitting_options_keeps_the_current_option_limits(
+    serve: Serve, omitted: dict[str, Any]
+) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_OPTIONS, world.clock())
+    window = Window("decline")
+
+    result = run(serve, world, "set_risk_limits", {**LOWER, **omitted}, window)
+
+    assert result["data"]["outcome"] == "applied"
+    assert window.messages == []
+    assert stored(world) == RiskLimits(Decimal("50000"), 3, 2, OPTIONS)
+    assert result["data"]["requested"]["options"] == {
+        "premium_daily": "500000",
+        "max_position": 10,
+        "max_short": 2,
+    }
+
+
+def test_option_limits_are_per_user(serve: Serve) -> None:
+    """남이 옵션 한도를 정해 두었어도 내가 처음 정하는 것은 승인을 받는다."""
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_OPTIONS, world.clock())
+    second = users.get_or_create(world.conn, "g-admin2", "second@example.com", world.clock())
+    limits.put(world.conn, second, "domestic", CURRENT, world.clock())
+    window = Window("decline")
+
+    async def as_second_user() -> tuple[dict[str, Any], dict[str, Any]]:
+        async with (
+            serve(world.mcp) as url,
+            Client(url, auth="second-admin-token", elicitation_handler=window) as client,
+        ):
+            got = await client.call_tool("get_risk_limits", {})
+            sets = await client.call_tool("set_risk_limits", {**ARGS, "options": OPTION_ARGS})
+        assert got.structured_content is not None and sets.structured_content is not None
+        return got.structured_content, sets.structured_content
+
+    theirs, result = asyncio.run(as_second_user())
+
+    assert theirs["data"]["limits"]["options"] is None
+    assert result["data"]["outcome"] == "declined"
+    assert len(window.messages) == 1
+    assert limits.get(world.conn, second, "domestic") == CURRENT
+    assert stored(world) == WITH_OPTIONS
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        {"premium_daily": "0"},
+        {"premium_daily": "-1"},
+        {"premium_daily": "1e5"},
+        {"premium_daily": "NaN"},
+        {"premium_daily": ""},
+        {"max_position": 0},
+        {"max_position": True},
+        {"max_position": "10"},
+        {"max_position": 10.0},
+        {"max_position": 10**30},
+        {"max_short": -1},
+        {"max_short": False},
+        {"max_short": 2.0},
+    ],
+)
+def test_bad_option_values_are_invalid_input_and_never_ask_or_store(
+    serve: Serve, bad: dict[str, Any]
+) -> None:
+    world = fresh()
+    window = Window("accept")
+
+    result = run(
+        serve, world, "set_risk_limits", {**ARGS, "options": {**OPTION_ARGS, **bad}}, window
+    )
+
+    assert result["ok"] is False
+    assert result["error"]["code"] == "INVALID_INPUT"
+    assert window.messages == []
+    assert stored(world) is None
+
+
+async def _raw_set(serve: Serve, world: World, args: dict[str, Any], window: Window) -> bool:
+    async with (
+        serve(world.mcp) as url,
+        Client(url, auth="admin-token", elicitation_handler=window) as client,
+    ):
+        result = await client.call_tool("set_risk_limits", args, raise_on_error=False)
+    return result.is_error
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"premium_daily": "500000"},
+        {"premium_daily": "500000", "max_position": 10},
+        {"max_position": 10, "max_short": 2},
+        {"premium_daily": "500000", "max_short": 2},
+        {**OPTION_ARGS, "max_order_qty": 1},
+        {},
+    ],
+)
+def test_partial_or_unknown_option_fields_are_refused_and_change_nothing(
+    serve: Serve, options: dict[str, Any]
+) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", CURRENT, world.clock())
+    window = Window("accept")
+
+    is_error = asyncio.run(_raw_set(serve, world, {**ARGS, "options": options}, window))
+
+    assert is_error is True
+    assert window.messages == []
+    assert stored(world) == CURRENT

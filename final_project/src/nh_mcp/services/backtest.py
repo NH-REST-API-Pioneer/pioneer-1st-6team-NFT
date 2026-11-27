@@ -792,7 +792,10 @@ class BacktestService:
     async def _terms(
         self, user_id: UserId, contracts: list[Contract], fee_per_fill: Decimal
     ) -> dict[str, SymbolTerms]:
-        """종목마다 체결 조건: 종목 정보의 틱과 승수, 요청한 수수료. 틱을 모르면 막는다."""
+        """종목마다 체결 조건: 종목 정보의 틱과 승수, 요청한 수수료. 틱을 모르면 막는다.
+
+        종목은 `futures`를 지난 선물이라 틱 칸은 하나다.
+        """
         terms: dict[str, SymbolTerms] = {}
         for contract in contracts:
             rules = await self._products.rules_for(user_id, contract)
@@ -800,7 +803,9 @@ class BacktestService:
                 raise StrategyInvalid(
                     f"{contract.symbol} 종목의 틱 크기를 확인하지 못해 백테스트할 수 없습니다."
                 )
-            terms[contract.symbol] = SymbolTerms(rules.tick_size, contract.multiplier, fee_per_fill)
+            terms[contract.symbol] = SymbolTerms(
+                rules.ticks[0].tick, contract.multiplier, fee_per_fill
+            )
         return terms
 
     def _take(self, user_id: UserId) -> None:

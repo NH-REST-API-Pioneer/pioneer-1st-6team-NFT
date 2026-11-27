@@ -9,6 +9,9 @@
   오늘 주문 내역과 맞춰 보아 하나로 정해질 때만 주문번호를 붙인다. 그 종목에 `UNKNOWN`이
   남으면 늘리는 주문은 막는다. 잠금 안에서 보이는 `SUBMITTED`(전송 중에 멈춘 행)도 똑같이 다룬다.
 - 같은 사용자의 미리보기·주문·대조는 사용자별 잠금으로 하나씩 처리한다. 승인 창은 잠금 밖이다.
+- 옵션(콜·풋) 주문은 `_check`가 옵션 장부(`OptionBook`)와 "옵션"·"옵션 매도" 스위치를 더 넘긴다.
+  미리보기와 승인 창에는 새 매수·새 매도·청산과 매수 프리미엄을 보여 주고, 주문 직전 재검사에서
+  그것이 바뀌었으면 보내지 않는다.
 """
 
 import asyncio
@@ -16,10 +19,11 @@ import hashlib
 import json
 import sqlite3
 import time
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, replace
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from typing import cast
+from typing import Literal, cast
 
 from nh_mcp.config import ENV
 from nh_mcp.domain import (
@@ -28,9 +32,11 @@ from nh_mcp.domain import (
     Clock,
     Contract,
     JsonValue,
+    OptionBook,
     Order,
     OrderRequest,
     OrderType,
+    Quote,
     RiskDecision,
     RiskInput,
     RunSnapshot,
@@ -40,17 +46,26 @@ from nh_mcp.domain import (
 )
 from nh_mcp.guard.confirm import judge
 from nh_mcp.guard.env import orders_allowed
-from nh_mcp.guard.risk import DEMO_ONLY, LIMITS_NOT_SET, ORDER_FORMAT, TRADING_HOURS, evaluate
+from nh_mcp.guard.risk import (
+    DEMO_ONLY,
+    LIMITS_NOT_SET,
+    OPTION_KINDS,
+    ORDER_FORMAT,
+    TRADING_HOURS,
+    evaluate,
+    premium,
+)
 from nh_mcp.guard.strategy_scope import evaluate_scope, net_position
-from nh_mcp.markets.domestic import Ack, DomesticMarket, NHOrderState, NoSuchSymbol, OrderRow
+from nh_mcp.markets.domestic import Ack, DomesticMarket, Fill, NHOrderState, NoSuchSymbol, OrderRow
 from nh_mcp.markets.domestic_master import MasterUnavailable
 from nh_mcp.markets.domestic_products import DomesticProducts
 from nh_mcp.nh.client import NHError, Rejected
 from nh_mcp.nh.clients import KeyNotRegistered
 from nh_mcp.nh.limits import UnknownApi
 from nh_mcp.services.approval import Approval
+from nh_mcp.services.holdings import HoldingService
 from nh_mcp.services.queries import BrokerRejected, Unavailable, UnknownSymbol, call_nh
-from nh_mcp.store import audit, confirm_tokens, limits, orders
+from nh_mcp.store import audit, confirm_tokens, features, limits, orders
 from nh_mcp.store.confirm_tokens import NewToken
 from nh_mcp.store.orders import OrderStatus, Outcome, StoredOrder
 
@@ -60,6 +75,8 @@ HTTP_REQUEST_TIMEOUT = 408
 HTTP_SERVER_ERROR_FROM = 500
 UNKNOWN_RULE = "unknown_state"
 WARNING_CHANGED = "warning_changed"
+# 이 예외로 끝난 시세·주문가능수량 조회는 값을 모르는 것(None)으로 둔다.
+NOT_READ = (NHError, UnknownApi, KeyNotRegistered, NoSuchSymbol)
 
 SIDE_NAMES: dict[Side, str] = {"buy": "매수", "sell": "매도"}
 TYPE_NAMES: dict[OrderType, str] = {"limit": "지정가", "market": "시장가"}
@@ -85,6 +102,13 @@ UNKNOWN_HELD = (
     "이 종목에 응답을 받지 못한 주문이 있어 포지션을 늘리는 주문은 막습니다. "
     "get_orders로 확인하세요."
 )
+
+type OptionAction = Literal["new_buy", "new_sell", "close"]
+OPTION_ACTIONS: dict[OptionAction, str] = {
+    "new_buy": "새 매수",
+    "new_sell": "새 매도",
+    "close": "청산",
+}
 
 
 class LimitsNotSet(Exception):
@@ -139,10 +163,23 @@ class NotRunOrder(Exception):
 
 
 @dataclass(frozen=True)
+class OptionTerms:
+    """옵션 주문을 사람에게 보여 줄 때 더하는 것. 청산은 포지션을 늘리지 않는 주문이다.
+
+    premium은 매수의 가격·승수·수량의 곱(원, 시장가는 상한가로 셈)이다. 매도이거나 셀 수 없으면
+    None.
+    """
+
+    action: OptionAction
+    premium: Decimal | None
+
+
+@dataclass(frozen=True)
 class Preview:
     order: OrderRequest
     contract_name: str
     warnings: list[str]
+    option: OptionTerms | None
     confirm_token: str
     expires_at: datetime
 
@@ -160,11 +197,12 @@ class PendingOrder:
 
 @dataclass(frozen=True)
 class _Ticket:
-    """확인 토큰에 담긴 주문."""
+    """확인 토큰에 담긴 주문. option은 옵션 주문일 때만 있다."""
 
     order: OrderRequest
     contract_name: str
     warnings: list[str]
+    option: OptionTerms | None
 
 
 def _plain(value: Decimal) -> str:
@@ -182,11 +220,21 @@ def _order_json(order: OrderRequest) -> dict[str, JsonValue]:
     }
 
 
-def _payload(order: OrderRequest, contract_name: str, warnings: list[str]) -> str:
+def _option_json(option: OptionTerms | None) -> JsonValue:
+    if option is None:
+        return None
+    cost = None if option.premium is None else _plain(option.premium)
+    return {"action": option.action, "premium": cost}
+
+
+def _payload(
+    order: OrderRequest, contract_name: str, warnings: list[str], option: OptionTerms | None
+) -> str:
     values: dict[str, JsonValue] = {
         **_order_json(order),
         "name": contract_name,
         "warnings": list[JsonValue](warnings),
+        "option": _option_json(option),
     }
     return json.dumps(values, sort_keys=True, ensure_ascii=False)
 
@@ -221,11 +269,31 @@ def _price(raw: object) -> Decimal | None:
     return value
 
 
+def _option_of(values: dict[object, object]) -> OptionTerms | None:
+    """저장된 옵션 칸. 선물 주문은 None. 칸이 없거나 모양·값이 주문과 맞지 않으면 ValueError."""
+    if "option" not in values:
+        raise ValueError("옵션 칸이 없습니다.")
+    raw = values["option"]
+    if raw is None:
+        return None
+    terms = _object(raw)
+    if terms is None or set(terms) != {"action", "premium"}:
+        raise ValueError("옵션 칸의 모양이 다릅니다.")
+    action = next((a for a in OPTION_ACTIONS if a == terms["action"]), None)
+    cost = _price(terms["premium"])
+    side = values.get("side")
+    opening: OptionAction = "new_buy" if side == "buy" else "new_sell"
+    if action not in ("close", opening) or (side != "buy" and cost is not None):
+        raise ValueError("옵션 칸이 주문과 맞지 않습니다.")
+    return OptionTerms(action, cost)
+
+
 def _parse(payload: str) -> _Ticket | None:
     """우리가 쓴 payload를 다시 읽는다. 모양이 다르면 None(토큰을 쓸 수 없다)."""
     try:
         values = _object(json.loads(payload))
         price = None if values is None else _price(values.get("price"))
+        option = None if values is None else _option_of(values)
     except ValueError:
         return None
     if values is None:
@@ -251,7 +319,39 @@ def _parse(payload: str) -> _Ticket | None:
         quantity,
         price,
     )
-    return _Ticket(order, name, warnings)
+    return _Ticket(order, name, warnings, option)
+
+
+def _option_terms(
+    order: OrderRequest, contract: Contract, decision: RiskDecision
+) -> OptionTerms | None:
+    """옵션 주문이면 새 매수·새 매도·청산과 매수 프리미엄. 선물은 None."""
+    if contract.kind not in OPTION_KINDS:
+        return None
+    if order.side == "sell":
+        return OptionTerms("new_sell" if decision.increases_position else "close", None)
+    action: OptionAction = "new_buy" if decision.increases_position else "close"
+    return OptionTerms(action, premium(order, contract))
+
+
+def _option_label(option: OptionTerms | None) -> str:
+    if option is None:
+        return "옵션 아님"
+    cost = "" if option.premium is None else f"(프리미엄 {_plain(option.premium)}원)"
+    return OPTION_ACTIONS[option.action] + cost
+
+
+def _option_line(order: OrderRequest, option: OptionTerms) -> str:
+    line = f"옵션 {OPTION_ACTIONS[option.action]}입니다."
+    if option.action == "new_sell":
+        return line + " 보유하지 않은 옵션을 팔아 손실이 크게 날 수 있습니다."
+    if order.side == "sell":
+        return line
+    if option.premium is None:
+        return line + " 상한가를 몰라 프리미엄을 셀 수 없습니다."
+    if order.type == "market":
+        return line + f" 프리미엄은 많아야 {_plain(option.premium)}원입니다(시장가라 상한가로 셈)."
+    return line + f" 프리미엄 {_plain(option.premium)}원(가격·승수·수량의 곱)."
 
 
 def _message(ticket: _Ticket) -> str:
@@ -261,6 +361,8 @@ def _message(ticket: _Ticket) -> str:
         f"모의 계좌에 주문을 냅니다. {ticket.contract_name}({order.symbol}) "
         f"{SIDE_NAMES[order.side]} {TYPE_NAMES[order.type]} {order.quantity}계약{price}."
     ]
+    if ticket.option is not None:
+        lines.append(_option_line(order, ticket.option))
     lines += [f"주의: {warning}" for warning in ticket.warnings]
     lines.append("승인할까요?")
     return "\n".join(lines)
@@ -319,6 +421,68 @@ def _new_warnings(ticket: _Ticket, decision: RiskDecision) -> list[str]:
     return [warning for warning in decision.warnings if warning not in ticket.warnings]
 
 
+def _todays_limit(contract: Contract, quote: Quote | None) -> Contract:
+    """시장가 매수를 셀 상한가를 넣은 종목: 오늘 시세의 상한가와 마스터의 상한가 중 큰 값.
+
+    마스터는 하루 한 번 받고 전날 파일로 물러설 수 있는데, 옵션 상한가는 날마다 바뀐다. 둘 다
+    모르면 None이고, 그러면 늘리는 시장가 매수는 프리미엄을 셀 수 없어 막힌다.
+    """
+    live = None if quote is None else quote.upper_limit
+    known = [limit for limit in (live, contract.upper_limit) if limit is not None]
+    return replace(contract, upper_limit=max(known, default=None))
+
+
+def _at_market(order: Order) -> bool:
+    """주문가가 없거나 0인 미체결(시장가). 매수는 상한가로 센다."""
+    return order.price is None or order.price <= 0
+
+
+def _book(
+    account: AccountState, fills: list[Fill], contracts: Mapping[str, Contract]
+) -> OptionBook | None:
+    """모든 옵션 종목의 장부. contracts에는 계좌와 체결의 모든 종목이 있다.
+
+    미체결은 종목·방향마다 반대 방향 보유 수량을 넘는 만큼만 늘리는 주문으로 센다(다 체결된 뒤
+    포지션이 늘어나는 양). 시장가 미체결 매수는 contracts의 상한가로 센다(`_option_book`이 오늘
+    시세와 견준 값을 넣는다). 그 상한가를 모르거나 옵션 매수 체결가가 0 이하이면 None.
+    """
+    options = {symbol for symbol, c in contracts.items() if c.kind in OPTION_KINDS}
+    held = [p for p in account.positions if p.symbol in options]
+    resting = [o for o in account.open_orders if o.symbol in options]
+    pending: dict[Side, int] = {"buy": 0, "sell": 0}
+    for symbol in {o.symbol for o in resting}:
+        for side in pending:
+            waiting = sum(
+                o.remaining_quantity for o in resting if o.symbol == symbol and o.side == side
+            )
+            against = sum(p.quantity for p in held if p.symbol == symbol and p.side != side)
+            pending[side] += max(0, waiting - against)
+    pending_cost = Decimal(0)
+    for o in resting:
+        if o.side == "sell":
+            continue
+        contract = contracts[o.symbol]
+        price = contract.upper_limit if _at_market(o) else o.price
+        if price is None:
+            return None
+        pending_cost += price * contract.multiplier * o.remaining_quantity
+    spent = Decimal(0)
+    for fill in fills:
+        if fill.symbol not in options or fill.side == "sell":
+            continue
+        if fill.price <= 0:
+            return None
+        spent += fill.price * contracts[fill.symbol].multiplier * fill.quantity
+    return OptionBook(
+        long_total=sum(p.quantity for p in held if p.side == "buy"),
+        short_total=sum(p.quantity for p in held if p.side == "sell"),
+        pending_increase=pending["buy"] + pending["sell"],
+        pending_short=pending["sell"],
+        premium_spent=spent,
+        premium_pending=pending_cost,
+    )
+
+
 def _undecided(exc: Rejected) -> bool:
     """처리됐는지 모르는 거부인가.
 
@@ -356,6 +520,7 @@ class OrderService:
         self._domestic = domestic
         self._products = products
         self._orders_enabled = orders_enabled
+        self._holdings = HoldingService(conn, domestic)
         self._locks: dict[UserId, asyncio.Lock] = {}
 
     async def preview(self, user_id: UserId, order: OrderRequest) -> Preview:
@@ -366,7 +531,8 @@ class OrderService:
         try:
             async with self._lock(user_id):
                 contract, decision, _ = await self._check(user_id, order)
-                payload = _payload(order, contract.name, decision.warnings)
+                option = _option_terms(order, contract, decision)
+                payload = _payload(order, contract.name, decision.warnings, option)
                 new = NewToken(user_id, "order", payload)
                 token, expires_at = confirm_tokens.issue(self._conn, new, self._clock(), ORDER_TTL)
         except Exception as exc:
@@ -374,7 +540,7 @@ class OrderService:
             raise
         issued: dict[str, JsonValue] = {"outcome": "issued", "warnings": list(decision.warnings)}
         self._audit(user_id, "order.preview", detail | issued, started)
-        return Preview(order, contract.name, decision.warnings, token, expires_at)
+        return Preview(order, contract.name, decision.warnings, option, token, expires_at)
 
     async def pending(self, user_id: UserId, token: str) -> PendingOrder:
         """토큰의 주문을 승인 창에 띄울 모양으로. 토큰을 소진하지 않는다."""
@@ -404,13 +570,22 @@ class OrderService:
             try:
                 if not confirm_tokens.consume(self._conn, token, user_id, "order", self._clock()):
                     raise ConfirmInvalid()
-                _, decision, _ = await self._check(user_id, ticket.order)
+                contract, decision, _ = await self._check(user_id, ticket.order)
                 # 사람이 보지 못한 경고(예: 확인 뒤 종가 단일가 구간)가 생기면 보내지 않는다.
                 new = _new_warnings(ticket, decision)
                 if new:
                     raise RiskBlocked(
                         WARNING_CHANGED,
                         f"주문을 확인한 뒤 새 경고가 생겼습니다: {' '.join(new)} "
+                        "다시 미리보기 해 주세요.",
+                    )
+                # 승인 창에 "청산"으로 보인 매도가 새 매도로 나가는 일 등을 막는다.
+                option = _option_terms(ticket.order, contract, decision)
+                if option != ticket.option:
+                    raise RiskBlocked(
+                        WARNING_CHANGED,
+                        "주문을 확인한 뒤 옵션 주문이 바뀌었습니다: "
+                        f"{_option_label(ticket.option)} → {_option_label(option)}. "
                         "다시 미리보기 해 주세요.",
                     )
             except Exception as exc:
@@ -543,14 +718,21 @@ class OrderService:
         돌려주는 계좌는 다 읽은 것이다(못 읽은 행이 있으면 `account_unknown`으로 막힌다).
         """
         if order.market != "domestic":
-            raise RiskBlocked(ORDER_FORMAT, "국내 선물만 주문할 수 있습니다.")
+            raise RiskBlocked(ORDER_FORMAT, "국내(domestic) 선물과 옵션만 주문할 수 있습니다.")
         await self._reconcile(user_id, tolerate_failure=True)
-        contract = await self._contract(order.symbol)
+        # 이 검사에서 읽은 시세. 시장가 주문과 시장가 미체결 옵션 매수의 종목마다 한 번만 읽는다.
+        quotes: dict[str, Quote | None] = {}
+        master = await self._contract(order.symbol)
+        live = await self._quote(user_id, order.symbol, quotes) if order.type == "market" else None
+        contract = _todays_limit(master, live)
         rules = await self._products.rules_for(user_id, contract)
         user_limits = limits.get(self._conn, user_id, order.market)
         # 계좌를 읽지 못하면 규칙을 돌리지 않는다(Unavailable 등으로 바로 끝난다).
         account = await call_nh(self._domestic.account(user_id))
-        orderable = await self._orderable(user_id, order)
+        # 옵션 보유 기록을 맞춘다(다 읽은 계좌일 때만). 막히는 주문의 점검에서도 맞춘다.
+        await self._holdings.record(user_id, account)
+        orderable = await self._orderable(user_id, order, live)
+        option = contract.kind in OPTION_KINDS
         decision = evaluate(
             RiskInput(
                 order=order,
@@ -561,6 +743,9 @@ class OrderService:
                 orderable_qty=orderable,
                 now=self._clock(),
                 orders_enabled=self._orders_enabled,
+                options_enabled=features.enabled(self._conn, user_id, "options"),
+                option_sell=features.enabled(self._conn, user_id, "option_sell"),
+                option_book=await self._option_book(user_id, account, quotes) if option else None,
             )
         )
         if not decision.allowed:
@@ -578,16 +763,70 @@ class OrderService:
             raise UnknownSymbol(symbol)
         return contract
 
-    async def _orderable(self, user_id: UserId, order: OrderRequest) -> int | None:
-        """주문 가능 수량. 모르면 None이고, 그러면 규칙 7(증거금)이 늘리는 주문을 막는다."""
-        unknown = (NHError, UnknownApi, KeyNotRegistered, NoSuchSymbol)
-        upper_limit = None
+    async def _quote(
+        self, user_id: UserId, symbol: str, quotes: dict[str, Quote | None]
+    ) -> Quote | None:
+        """그 종목의 오늘 시세. 읽지 못하면 None. quotes에 이미 있으면 다시 읽지 않는다."""
+        if symbol not in quotes:
+            try:
+                quotes[symbol] = await self._domestic.quote(user_id, symbol)
+            except NOT_READ:
+                quotes[symbol] = None
+        return quotes[symbol]
+
+    async def _orderable(
+        self, user_id: UserId, order: OrderRequest, quote: Quote | None
+    ) -> int | None:
+        """주문 가능 수량. 시장가는 오늘 시세(quote)의 상한가로 묻는다.
+
+        모르면 None이고, 그러면 규칙 7(증거금)이 늘리는 주문을 막는다.
+        """
+        upper_limit = None if quote is None else quote.upper_limit
         try:
-            if order.type == "market":
-                upper_limit = (await self._domestic.quote(user_id, order.symbol)).upper_limit
             return await self._domestic.orderable_qty(user_id, order, upper_limit)
-        except unknown:
+        except NOT_READ:
             return None
+
+    async def _option_book(
+        self, user_id: UserId, account: AccountState, quotes: dict[str, Quote | None]
+    ) -> OptionBook | None:
+        """옵션 규칙이 볼 장부. 오늘 체결을 읽지 못하거나 계좌·체결의 종목이 마스터에 없거나, 시장가
+        미체결 옵션 매수의 시세를 읽지 못하면 None.
+
+        시장가 미체결 매수는 오늘 시세와 마스터의 상한가 중 큰 값으로 센다(`_todays_limit`).
+        None이면 늘리는 옵션 주문이 `option_book_unknown`으로 막히고, 청산은 지나간다.
+        """
+        try:
+            fills = await self._domestic.todays_fills(user_id)
+        except (NHError, UnknownApi, KeyNotRegistered):
+            return None
+        if fills is None:
+            return None
+        symbols = (
+            {p.symbol for p in account.positions}
+            | {o.symbol for o in account.open_orders}
+            | {f.symbol for f in fills}
+        )
+        contracts: dict[str, Contract] = {}
+        for symbol in symbols:
+            try:
+                found = await self._domestic.contract(symbol)
+            except MasterUnavailable:
+                return None
+            if found is None:
+                return None
+            contracts[symbol] = found
+        market_buys = {
+            o.symbol
+            for o in account.open_orders
+            if o.side == "buy" and _at_market(o) and contracts[o.symbol].kind in OPTION_KINDS
+        }
+        for symbol in market_buys:
+            quote = await self._quote(user_id, symbol, quotes)
+            if quote is None:
+                return None
+            contracts[symbol] = _todays_limit(contracts[symbol], quote)
+        return _book(account, fills, contracts)
 
     def _unknown_today(self, user_id: UserId, symbol: str) -> bool:
         """오늘 낸, 나갔는지 모르는 주문(UNKNOWN·멈춘 SUBMITTED)이 그 종목에 있는가.

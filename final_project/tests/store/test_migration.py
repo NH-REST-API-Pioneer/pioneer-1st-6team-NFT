@@ -1,12 +1,14 @@
 """배포된 DB(옛 confirm_tokens CHECK)를 새 코드로 다시 열 때의 이주."""
 
 import sqlite3
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
 
-from nh_mcp.store import db
+from nh_mcp.domain import AccountState, OptionLimits, Position, RiskLimits, UserId
+from nh_mcp.store import db, limits, option_holdings
 
 NOW = db.stamp(datetime(2026, 12, 1, 1, 0, tzinfo=UTC))
 LATER = db.stamp(datetime(2026, 12, 1, 1, 2, tzinfo=UTC))
@@ -251,3 +253,85 @@ def test_a_fresh_orders_table_has_the_same_columns_as_a_migrated_one(tmp_path: P
     migrated = columns(db.connect(path), "orders")
 
     assert migrated == columns(db.connect(":memory:"), "orders")
+
+
+# 옵션 한도(M5) 전의 risk_limits. 지금 SCHEMA에서 옵션 칸 셋만 뺀 모양이다.
+OPTION_COLUMNS = (
+    "    option_premium_daily TEXT,\n"
+    "    option_max_position INTEGER,\n"
+    "    option_max_short INTEGER,\n"
+)
+
+
+def make_m4b_db(path: Path) -> None:
+    """risk_limits에 옵션 칸이 없는 DB. 사용자 둘의 선물 한도를 넣는다."""
+    assert OPTION_COLUMNS in db.SCHEMA
+    conn = sqlite3.connect(path)
+    conn.executescript(db.SCHEMA.replace(OPTION_COLUMNS, "", 1))
+    for user in (1, 2):
+        conn.execute(
+            "INSERT INTO users (id, google_sub, email, created_at) VALUES (?, ?, ?, ?)",
+            (user, f"s{user}", f"u{user}@x.com", NOW),
+        )
+    conn.execute(
+        "INSERT INTO risk_limits (user_id, market, daily_loss, max_position, max_order_qty, "
+        "updated_at) VALUES (1, 'domestic', '1000000', 3, 1, ?), "
+        "(2, 'domestic', '250000.50', 5, 2, ?)",
+        (NOW, NOW),
+    )
+    conn.commit()
+    assert "option_premium_daily" not in columns(conn, "risk_limits")
+    conn.close()
+
+
+def test_m4b_risk_limits_gain_option_columns_and_keep_futures_limits(tmp_path: Path) -> None:
+    path = tmp_path / "nh.db"
+    make_m4b_db(path)
+
+    conn = db.connect(path)
+
+    first, second = UserId(1), UserId(2)
+    assert limits.get(conn, first, "domestic") == RiskLimits(Decimal("1000000"), 3, 1)
+    assert limits.get(conn, second, "domestic") == RiskLimits(Decimal("250000.50"), 5, 2)
+    with_options = RiskLimits(Decimal("1000000"), 3, 1, OptionLimits(Decimal("500000"), 10, 0))
+    limits.put(conn, first, "domestic", with_options, datetime(2026, 12, 1, 1, 5, tzinfo=UTC))
+    assert limits.get(conn, first, "domestic") == with_options
+    assert limits.get(conn, second, "domestic") == RiskLimits(Decimal("250000.50"), 5, 2)
+
+
+def test_a_fresh_risk_limits_table_has_the_same_columns_as_a_migrated_one(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "nh.db"
+    make_m4b_db(path)
+
+    migrated = columns(db.connect(path), "risk_limits")
+
+    assert migrated == columns(db.connect(":memory:"), "risk_limits")
+    assert migrated[-3:] == ["option_premium_daily", "option_max_position", "option_max_short"]
+
+
+def test_m5_database_without_option_holdings_gains_the_table(tmp_path: Path) -> None:
+    """옵션 보유 기록(M5) 전의 DB. 새 표는 SCHEMA가 만들고 다른 표는 그대로다."""
+    assert db.OPTION_HOLDINGS in db.SCHEMA
+    path = tmp_path / "nh.db"
+    old = sqlite3.connect(path)
+    old.executescript(db.SCHEMA.replace(db.OPTION_HOLDINGS, ""))
+    old.execute(
+        "INSERT INTO users (id, google_sub, email, created_at) VALUES (1, 's', 'a@x.com', ?)",
+        (NOW,),
+    )
+    old.commit()
+    assert columns(old, "option_holdings") == []
+    old.close()
+
+    conn = db.connect(path)
+
+    user = UserId(1)
+    held = Position("B016C725", "콜", "buy", 1, 1, None, None, None)
+    at = datetime(2026, 12, 1, 1, 0, tzinfo=UTC)
+    account = AccountState("domestic", "KRW", None, None, None, None, [held], [], at, True)
+    option_holdings.reconcile(conn, user, account, {"B016C725": date(2026, 12, 10)})
+    assert [h.symbol for h in option_holdings.load(conn, user, "domestic")] == ["B016C725"]
+    assert conn.execute("SELECT email FROM users").fetchone() == ("a@x.com",)
+    assert columns(conn, "option_holdings") == columns(db.connect(":memory:"), "option_holdings")

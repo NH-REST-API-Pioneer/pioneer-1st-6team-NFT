@@ -2,13 +2,14 @@ import sqlite3
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from nh_mcp.domain import RiskLimits, UserId
+from nh_mcp.domain import OptionLimits, RiskLimits, UserId
 from nh_mcp.store import db, limits, users
 from nh_mcp.store.limits import Change
 
 NOW = datetime(2026, 12, 1, 1, 0, tzinfo=UTC)
 A = RiskLimits(daily_loss=Decimal("1000000"), max_position=3, max_order_qty=1)
 B = RiskLimits(daily_loss=Decimal("2500000.50"), max_position=5, max_order_qty=2)
+A_OPTIONS = RiskLimits(Decimal("1000000"), 3, 1, OptionLimits(Decimal("300000.50"), 6, 0))
 
 
 def two_users(conn: sqlite3.Connection) -> tuple[UserId, UserId]:
@@ -92,3 +93,27 @@ def test_equal_decimals_with_different_spelling_count_as_unchanged() -> None:
     same_value = RiskLimits(daily_loss=Decimal("1000000.00"), max_position=3, max_order_qty=1)
 
     assert limits.put_if_unchanged(conn, user_a, "domestic", Change(same_value, B), NOW) is True
+
+
+def test_option_limits_round_trip_and_can_be_put_back_to_none() -> None:
+    conn = db.connect(":memory:")
+    user_a, user_b = two_users(conn)
+
+    limits.put(conn, user_a, "domestic", A_OPTIONS, NOW)
+    limits.put(conn, user_b, "domestic", A, NOW)
+
+    assert limits.get(conn, user_a, "domestic") == A_OPTIONS
+    assert limits.get(conn, user_b, "domestic") == A
+    limits.put(conn, user_a, "domestic", A, NOW)
+    assert limits.get(conn, user_a, "domestic") == A
+
+
+def test_put_if_unchanged_sees_a_change_in_option_limits_only() -> None:
+    conn = db.connect(":memory:")
+    user_a, _ = two_users(conn)
+    limits.put(conn, user_a, "domestic", A_OPTIONS, NOW)
+
+    # 선물 칸이 같아도 옵션 칸이 다르면 바뀐 것이다.
+    assert limits.put_if_unchanged(conn, user_a, "domestic", Change(A, B), NOW) is False
+    assert limits.get(conn, user_a, "domestic") == A_OPTIONS
+    assert limits.put_if_unchanged(conn, user_a, "domestic", Change(A_OPTIONS, B), NOW) is True

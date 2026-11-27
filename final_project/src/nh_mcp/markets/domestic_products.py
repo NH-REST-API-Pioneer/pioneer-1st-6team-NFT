@@ -1,7 +1,8 @@
-"""국내 선물의 틱 크기와 거래 구간: 품목별세부정보(`product-detail`)에서 읽는다.
+"""국내 선물·옵션의 틱 크기와 거래 구간: 품목별세부정보(`product-detail`)에서 읽는다.
 
 `product-detail`은 종목이 아니라 품목별 행이고 한글 품목명만 있다. 종목 마스터의 기초자산 이름
-(`under_name`)과 품목명을 `UNDERLYING_TO_PRODUCT`로 이어서 찾는다. 대응표의 근거는 `docs/nh-api.md`.
+(`under_name`)과 품목명을 `UNDERLYING_TO_PRODUCT`(선물)·`OPTION_UNDERLYING_TO_PRODUCT`(콜·풋)로
+이어서 찾는다. 대응표의 근거는 `docs/nh-api.md`.
 짝이 분명하지 않은 기초자산은 넣지 않는다. 표에 없으면 규칙을 모르는 것이고 모르면 막는다.
 
 시간 칸의 뜻은 (제안, 장중 시험에서 확인): `occurs1_cd_val_inf_2`는 시가 단일가 구간,
@@ -13,7 +14,7 @@ import re
 from datetime import date, time
 from decimal import Decimal, InvalidOperation
 
-from nh_mcp.domain import KST, Clock, Contract, InstrumentRules, Session, UserId
+from nh_mcp.domain import KST, Clock, Contract, InstrumentRules, Session, TickBand, UserId
 from nh_mcp.markets.domestic import JsonObject
 from nh_mcp.nh.client import NHError
 from nh_mcp.nh.clients import ClientPool, KeyNotRegistered
@@ -40,6 +41,17 @@ UNDERLYING_TO_PRODUCT: dict[str, str] = {
     "EUR": "유로선물(EUR)",
     "JPY": "엔선물(JPY)",
     "CNH": "위안선물(CNH)",
+}
+
+# 콜·풋이 같은 품목이다. 위클리(`WKI`·`WKM`), 미니, 코스닥150 옵션은 짝이 없어 규칙이 없다.
+OPTION_UNDERLYING_TO_PRODUCT: dict[str, str] = {"KOSPI": "코스피200옵션"}
+
+# 품목 행의 틱 하나 대신 쓰는 가격대별 호가 단위. 코스피200옵션은 명세에 없어 KRX 규칙을 따른다.
+TICK_LADDERS: dict[str, tuple[TickBand, ...]] = {
+    "코스피200옵션": (
+        TickBand(Decimal(0), Decimal("0.01")),
+        TickBand(Decimal(10), Decimal("0.05")),
+    ),
 }
 
 _RANGE = re.compile(r"(\d{2}):(\d{2})~(\d{2}):(\d{2})")
@@ -117,16 +129,22 @@ class DomesticProducts:
         self._lock = asyncio.Lock()
 
     async def rules_for(self, user_id: UserId, contract: Contract) -> InstrumentRules | None:
-        if contract.kind != "future":
+        if contract.kind == "future":
+            name = UNDERLYING_TO_PRODUCT.get(contract.underlying)
+        elif contract.kind in ("call", "put"):
+            name = OPTION_UNDERLYING_TO_PRODUCT.get(contract.underlying)
+        else:
             return None
-        name = UNDERLYING_TO_PRODUCT.get(contract.underlying)
         if name is None:
             return None
         products = await self._load(user_id)
         found = None if products is None else products.get(name)
         if found is None:
             return None
-        return InstrumentRules(contract, found[0], found[1])
+        tick, session = found
+        return InstrumentRules(
+            contract, TICK_LADDERS.get(name, (TickBand(Decimal(0), tick),)), session
+        )
 
     async def _load(self, user_id: UserId) -> dict[str, Product] | None:
         async with self._lock:

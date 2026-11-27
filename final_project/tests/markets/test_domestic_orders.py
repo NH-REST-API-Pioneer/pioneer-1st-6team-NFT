@@ -22,6 +22,7 @@ from nh_mcp.markets.domestic import (
     ORDERABLE_QTY,
     Ack,
     DomesticMarket,
+    Fill,
     OrderRow,
     to_nh_order,
 )
@@ -235,3 +236,48 @@ def test_todays_orders_reads_division_receive_time_and_state() -> None:
         ("new", None, "accepted"),
         (None, None, "accepted"),
     ]
+
+
+def test_todays_fills_asks_for_filled_rows_and_reads_quantity_and_price() -> None:
+    s = Setup()
+    rows = [
+        history_row(occurs1_exec_qty="2", occurs1_exec_pric="1.25", occurs1_rem_ord_qty="0"),
+        history_row(occurs1_trd_div="2", occurs1_exec_qty="1", occurs1_exec_pric="3.10"),
+        history_row(occurs1_exec_qty="0", occurs1_exec_pric=""),  # 체결 없는 행은 뺀다
+        history_row(occurs1_sym="", occurs1_trd_div=""),  # 빈 행
+    ]
+    s.nh.reply(ORDER_HISTORY, {"nrec": "0004", "nxt_key": "", "Occurs1": rows})
+
+    fills = asyncio.run(s.market.todays_fills(s.user))
+
+    assert s.body_of(ORDER_HISTORY)["exec_div"] == "1"
+    assert fills == [
+        Fill(SYMBOL, "buy", 2, Decimal("1.25")),
+        Fill(SYMBOL, "sell", 1, Decimal("3.10")),
+    ]
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        {"occurs1_exec_qty": "1", "occurs1_exec_pric": ""},
+        {"occurs1_exec_qty": "", "occurs1_exec_pric": "1.00"},
+        {"occurs1_exec_qty": "-1", "occurs1_exec_pric": "1.00"},
+        {"occurs1_trd_div": "9", "occurs1_exec_qty": "1", "occurs1_exec_pric": "1.00"},
+    ],
+)
+def test_todays_fills_with_an_unreadable_row_is_unknown(bad: dict[str, str]) -> None:
+    s = Setup()
+    rows = [history_row(occurs1_exec_qty="1", occurs1_exec_pric="1.00"), history_row(**bad)]
+    s.nh.reply(ORDER_HISTORY, {"nrec": "0002", "nxt_key": "", "Occurs1": rows})
+
+    assert asyncio.run(s.market.todays_fills(s.user)) is None
+
+
+def test_todays_fills_that_never_reach_the_last_page_are_unknown() -> None:
+    s = Setup()
+    page = [history_row(occurs1_exec_qty="1", occurs1_exec_pric="1.00")]
+    # 다음 쪽 열쇠가 되풀이되면 끝까지 받지 못한 것이다.
+    s.nh.reply(ORDER_HISTORY, {"nrec": "0001", "nxt_key": "K1", "Occurs1": page})
+
+    assert asyncio.run(s.market.todays_fills(s.user)) is None
