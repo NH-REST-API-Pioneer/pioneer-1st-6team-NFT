@@ -18,6 +18,8 @@ BUNDLE_TOOLS = {
     "stop_strategy",
     "get_strategy_status",
     "get_option_chain",
+    "preview_combo",
+    "place_combo",
 }
 
 

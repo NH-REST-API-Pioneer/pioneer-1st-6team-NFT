@@ -52,6 +52,7 @@ def _options_json(value: OptionLimits | None) -> dict[str, JsonValue] | None:
         "premium_daily": str(value.premium_daily),
         "max_position": value.max_position,
         "max_short": value.max_short,
+        "max_combo_loss": None if value.max_combo_loss is None else str(value.max_combo_loss),
     }
 
 
@@ -78,7 +79,10 @@ def _object(raw: object) -> dict[object, object] | None:
 
 
 def _options_from(raw: object) -> OptionLimits | None:
-    """저장된 payload의 옵션 한도. null이거나 칸이 없으면(M5 전) None, 모양이 다르면 ValueError."""
+    """저장된 payload의 옵션 한도. null이거나 칸이 없으면(M5 전) None, 모양이 다르면 ValueError.
+
+    묶음 한도 칸이 없는 payload(M6 전)는 묶음 한도가 없는 것이다.
+    """
     if raw is None:
         return None
     values = _object(raw)
@@ -86,9 +90,14 @@ def _options_from(raw: object) -> OptionLimits | None:
         raise ValueError
     premium = values.get("premium_daily")
     position, short = values.get("max_position"), values.get("max_short")
+    combo = values.get("max_combo_loss")
     if not isinstance(premium, str) or type(position) is not int or type(short) is not int:
         raise ValueError
-    return OptionLimits(Decimal(premium), position, short)
+    if combo is not None and not isinstance(combo, str):
+        raise ValueError
+    return OptionLimits(
+        Decimal(premium), position, short, None if combo is None else Decimal(combo)
+    )
 
 
 def _limits_from(raw: object) -> RiskLimits | None:
@@ -144,8 +153,21 @@ def _option_message(current: OptionLimits | None, requested: OptionLimits | None
     before, after = _option_values(current), _option_values(requested)
     return (
         f", 옵션 하루 프리미엄 {before[0]}→{after[0]}, 옵션 전체 최대 {before[1]}→{after[1]}, "
-        f"옵션 매도 최대 {before[2]}→{after[2]}"
+        f"옵션 매도 최대 {before[2]}→{after[2]}{_combo_message(current, requested)}"
     )
+
+
+def _combo_value(value: OptionLimits | None) -> str:
+    combo = None if value is None else value.max_combo_loss
+    return "없음" if combo is None else f"{combo}원"
+
+
+def _combo_message(current: OptionLimits | None, requested: OptionLimits | None) -> str:
+    """승인 문구의 묶음 한도 부분. 양쪽 다 묶음 한도가 없으면 빈 문자열."""
+    before, after = _combo_value(current), _combo_value(requested)
+    if before == after == "없음":
+        return ""
+    return f", 묶음 최대 손실 {before}→{after}"
 
 
 def _message(current: RiskLimits | None, requested: RiskLimits) -> str:
@@ -170,10 +192,16 @@ class LimitService:
         return limits.get(self._conn, user_id, market)
 
     def plan(self, user_id: UserId, market: Market, requested: RiskLimits) -> LimitPlan:
-        """requested.options가 None이면 지금 옵션 한도를 그대로 둔다. 옵션 한도는 지우지 않는다."""
+        """requested.options가 None이면 지금 옵션 한도를, requested.options.max_combo_loss가
+        None이면 지금 묶음 한도를 그대로 둔다. 옵션 한도와 묶음 한도는 지우지 않는다."""
         current = self.get(user_id, market)
-        if requested.options is None and current is not None:
-            requested = replace(requested, options=current.options)
+        kept = None if current is None else current.options
+        options = requested.options
+        if kept is not None and (options is None or options.max_combo_loss is None):
+            merged = (
+                kept if options is None else replace(options, max_combo_loss=kept.max_combo_loss)
+            )
+            requested = replace(requested, options=merged)
         needs_approval = current is None or current.raises(requested)
         return LimitPlan(
             needs_approval=needs_approval,

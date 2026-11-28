@@ -18,6 +18,7 @@ from nh_mcp.domain import (
     Candle,
     Clock,
     Contract,
+    FillCondition,
     JsonValue,
     Order,
     OrderError,
@@ -66,7 +67,8 @@ ALL_HISTORY: dict[str, JsonValue] = {
 TODAY_FILLS: dict[str, JsonValue] = ALL_HISTORY | {"exec_div": FILLED}
 # 주문 입력값(nh-api.md "국내 선물 신규주문 입력값").
 ORDER_TYPES: dict[OrderType, str] = {"limit": "1", "market": "2"}
-FAS = "1"  # exec_cnd_cd. 조건부·FOK·FAK는 쓰지 않는다.
+# exec_cnd_cd. FOK(2)는 쓰지 않는다. FAK는 묶음 다리만 쓴다(M6).
+FILL_CONDITIONS: dict[FillCondition, str] = {"fas": "1", "fak": "3"}
 MARKET_PRICE = "0"
 DAY_GENERAL = "1"  # orderable-quantity ord_sts: 주간_일반
 
@@ -277,12 +279,17 @@ _HHMMSS = re.compile(r"(\d{2})(\d{2})(\d{2})\d*")
 
 @dataclass(frozen=True)
 class OrderRow:
-    """주문 내역 한 행(대조·취소용). `received`는 거래소 접수 시각(KST, 그날), 모르면 None."""
+    """주문 내역 한 행(대조·취소용). `received`는 거래소 접수 시각(KST, 그날), 모르면 None.
+
+    `quantities_read`는 잔량(`occurs1_rem_ord_qty`)과 체결 수량(`occurs1_exec_qty`)을 둘 다
+    읽었는가다. `order`의 두 수량은 읽지 못하면 0이라, 끝났는지 볼 때는 이 값을 먼저 본다.
+    """
 
     order: Order
     division: Division | None
     received: time | None
     state: NHOrderState
+    quantities_read: bool
 
 
 def _received(text: str) -> time | None:
@@ -309,6 +316,8 @@ def parse_order_rows(body: JsonObject) -> list[OrderRow]:
                 division=DIVISIONS.get(_text(row, "occurs1_ord_div_cd")),
                 received=_received(_text(row, "occurs1_exch_rcv_tm")),
                 state=STATES.get(_text(row, "occurs1_ord_sts"), "accepted"),
+                quantities_read=_int(row, "occurs1_rem_ord_qty") is not None
+                and _int(row, "occurs1_exec_qty") is not None,
             )
         )
     return rows
@@ -367,7 +376,7 @@ def _plain(value: Decimal) -> str:
 
 
 def to_nh_order(order: OrderRequest) -> dict[str, str]:
-    """신규주문 입력값. 시장가는 가격 0, 체결 조건은 FAS 고정."""
+    """신규주문 입력값. 시장가는 가격 0. 체결 조건은 `order.fill`(시장가는 늘 FAS)."""
     if order.type == "market":
         price = MARKET_PRICE
     elif order.price is None:
@@ -380,7 +389,7 @@ def to_nh_order(order: OrderRequest) -> dict[str, str]:
         "ord_tp_cd": ORDER_TYPES[order.type],
         "ord_qty": str(order.quantity),
         "ord_pric": price,
-        "exec_cnd_cd": FAS,
+        "exec_cnd_cd": FILL_CONDITIONS[order.fill],
     }
 
 

@@ -123,7 +123,7 @@ def option_order(
     )
 
 
-EMPTY_BOOK = OptionBook(0, 0, 0, 0, Decimal(0), Decimal(0))
+EMPTY_BOOK = OptionBook(0, 0, 0, 0, Decimal(0), Decimal(0), {}, {})
 
 
 def book(**changes: object) -> OptionBook:

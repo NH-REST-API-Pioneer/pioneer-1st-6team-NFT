@@ -318,7 +318,9 @@ def test_there_is_no_token_or_message_argument(serve: Serve) -> None:
     }
 
 
-def test_the_options_argument_holds_only_the_three_option_limits(serve: Serve) -> None:
+def test_the_options_argument_holds_only_option_limits_with_the_combo_limit_optional(
+    serve: Serve,
+) -> None:
     async def schema() -> dict[str, Any]:
         async with serve(fresh().mcp) as url, Client(url, auth="admin-token") as client:
             tools = await client.list_tools()
@@ -333,6 +335,7 @@ def test_the_options_argument_holds_only_the_three_option_limits(serve: Serve) -
         "premium_daily": {"type": "string"},
         "max_position": {"type": "integer"},
         "max_short": {"type": "integer"},
+        "max_combo_loss": {"type": "string"},
     }
     assert set(draft["required"]) == {"premium_daily", "max_position", "max_short"}
     assert draft["additionalProperties"] is False
@@ -388,6 +391,7 @@ def test_get_shows_option_limits(serve: Serve) -> None:
         "premium_daily": "500000",
         "max_position": 10,
         "max_short": 2,
+        "max_combo_loss": None,
     }
 
 
@@ -489,6 +493,7 @@ def test_omitting_options_keeps_the_current_option_limits(
         "premium_daily": "500000",
         "max_position": 10,
         "max_short": 2,
+        "max_combo_loss": None,
     }
 
 
@@ -571,6 +576,9 @@ async def _raw_set(serve: Serve, world: World, args: dict[str, Any], window: Win
         {"premium_daily": "500000", "max_short": 2},
         {**OPTION_ARGS, "max_order_qty": 1},
         {},
+        {"max_combo_loss": "300000"},
+        {**OPTION_ARGS, "max_combo_loss": 300000},
+        {**OPTION_ARGS, "max_combo_loss": None},
     ],
 )
 def test_partial_or_unknown_option_fields_are_refused_and_change_nothing(
@@ -585,3 +593,104 @@ def test_partial_or_unknown_option_fields_are_refused_and_change_nothing(
     assert is_error is True
     assert window.messages == []
     assert stored(world) == CURRENT
+
+
+# --- 묶음 최대 손실 한도 (M6) -----------------------------------------------------------
+
+COMBO = OptionLimits(Decimal("500000"), 10, 2, Decimal("300000"))
+WITH_COMBO = RiskLimits(Decimal("100000"), 3, 2, COMBO)
+COMBO_ARGS: dict[str, Any] = {**OPTION_ARGS, "max_combo_loss": "300000"}
+
+
+def test_get_shows_the_combo_limit(serve: Serve) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_COMBO, world.clock())
+
+    result = run(serve, world, "get_risk_limits", {})
+
+    assert result["data"]["limits"]["options"]["max_combo_loss"] == "300000"
+
+
+def test_first_combo_limit_asks_the_window_and_applies_on_accept(serve: Serve) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_OPTIONS, world.clock())
+    window = Window("accept")
+
+    result = run(serve, world, "set_risk_limits", {**ARGS, "options": COMBO_ARGS}, window)
+
+    assert result["data"]["outcome"] == "applied"
+    assert stored(world) == WITH_COMBO
+    assert window.messages == [
+        "한도를 바꿉니다. 하루 손실 100000→100000원, 종목별 최대 3→3계약, "
+        "1회 최대 2→2계약, 옵션 하루 프리미엄 500000원→500000원, 옵션 전체 최대 10계약→10계약, "
+        "옵션 매도 최대 2계약→2계약, 묶음 최대 손실 없음→300000원. 승인할까요?"
+    ]
+
+
+@pytest.mark.parametrize(
+    ("before", "combo"),
+    [(WITH_OPTIONS, "300000"), (WITH_COMBO, "300000.01")],
+    ids=["first-set", "raise"],
+)
+def test_first_or_higher_combo_limit_declined_or_without_a_window_changes_nothing(
+    serve: Serve, before: RiskLimits, combo: str
+) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", before, world.clock())
+    args = {**ARGS, "options": {**OPTION_ARGS, "max_combo_loss": combo}}
+    window = Window("decline")
+
+    declined = run(serve, world, "set_risk_limits", args, window)
+    linked = run(serve, world, "set_risk_limits", args)
+
+    assert declined["data"]["outcome"] == "declined"
+    assert len(window.messages) == 1
+    assert linked["data"]["outcome"] == "needs_approval"
+    assert stored(world) == before
+
+
+def test_lowering_the_combo_limit_applies_without_the_window(serve: Serve) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_COMBO, world.clock())
+    window = Window("decline")
+    lower = {**OPTION_ARGS, "max_combo_loss": "100000"}
+
+    result = run(serve, world, "set_risk_limits", {**ARGS, "options": lower}, window)
+
+    assert result["data"]["outcome"] == "applied"
+    assert window.messages == []
+    assert stored(world) == RiskLimits(
+        Decimal("100000"), 3, 2, OptionLimits(Decimal("500000"), 10, 2, Decimal("100000"))
+    )
+
+
+@pytest.mark.parametrize(
+    "args",
+    [{**LOWER, "options": OPTION_ARGS}, LOWER],
+    ids=["options-without-combo", "no-options"],
+)
+def test_omitting_the_combo_limit_keeps_it(serve: Serve, args: dict[str, Any]) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_COMBO, world.clock())
+    window = Window("decline")
+
+    result = run(serve, world, "set_risk_limits", args, window)
+
+    assert result["data"]["outcome"] == "applied"
+    assert window.messages == []
+    assert stored(world) == RiskLimits(Decimal("50000"), 3, 2, COMBO)
+    assert result["data"]["requested"]["options"]["max_combo_loss"] == "300000"
+
+
+@pytest.mark.parametrize("bad", ["0", "-1", "1e5", "NaN", "", "abc", "1" * 40])
+def test_bad_combo_limit_is_invalid_input_and_never_asks_or_stores(serve: Serve, bad: str) -> None:
+    world = fresh()
+    limits.put(world.conn, me(world), "domestic", WITH_OPTIONS, world.clock())
+    window = Window("accept")
+    options = {**OPTION_ARGS, "max_combo_loss": bad}
+
+    result = run(serve, world, "set_risk_limits", {**ARGS, "options": options}, window)
+
+    assert result["error"]["code"] == "INVALID_INPUT"
+    assert window.messages == []
+    assert stored(world) == WITH_OPTIONS

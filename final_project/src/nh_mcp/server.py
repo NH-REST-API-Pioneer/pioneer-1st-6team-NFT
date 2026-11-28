@@ -4,12 +4,13 @@
 운영 서버를 만드는 create_server는 Google 로그인만 쓴다.
 """
 
+import asyncio
 import os
 import sqlite3
 from collections.abc import AsyncGenerator
 from contextlib import AsyncExitStack, asynccontextmanager
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from functools import partial
 from typing import TypedDict
 from urllib.parse import urlsplit
@@ -45,6 +46,7 @@ from nh_mcp.runner.runner import Runner
 from nh_mcp.runner.timing import WallTimer
 from nh_mcp.sandbox.client import SandboxClient
 from nh_mcp.services.backtest import BacktestService, Sources
+from nh_mcp.services.combos import ComboDeps, ComboService, combo_ids
 from nh_mcp.services.connection import ConnectionService
 from nh_mcp.services.holdings import HoldingService
 from nh_mcp.services.limits import APPROVE_PATH, LimitService
@@ -56,8 +58,9 @@ from nh_mcp.services.runs import LiveFeeds, RunMarket
 from nh_mcp.services.strategy import StrategyService
 from nh_mcp.services.symbols import SymbolService
 from nh_mcp.store import db, features
-from nh_mcp.tools.account import register_account_tools
+from nh_mcp.tools.account import OrderSources, register_account_tools
 from nh_mcp.tools.backtest import register_backtest_tools
+from nh_mcp.tools.combo import register_combo_tools
 from nh_mcp.tools.connection import register_connection_tools
 from nh_mcp.tools.context import ToolContext
 from nh_mcp.tools.features import FeatureGate
@@ -74,6 +77,10 @@ PORT = 8000
 
 def utc_now() -> datetime:
     return datetime.now(UTC)
+
+
+async def wall_sleep(delta: timedelta) -> None:
+    await asyncio.sleep(delta.total_seconds())
 
 
 def build_server(
@@ -204,10 +211,24 @@ def attach(mcp: FastMCP, wiring: Wiring) -> Parts:
         register_order_tools(mcp, ctx, orders, limiter)
         # 자동 실행 도구도 주문 스위치를 따른다. 사용자가 "자동 실행" 묶음을 켰을 때만 보인다.
         register_strategy_tools(mcp, ctx, strategies, limiter)
+        # 묶음 도구도 주문 스위치를 따르고 "옵션" 묶음을 켰을 때만 보인다. 다리 주문도 같은
+        # OrderService.place_leg로만 나간다(불변식 2).
+        register_combo_tools(
+            mcp,
+            ctx,
+            ComboService(
+                wiring.conn, wiring.clock, ComboDeps(domestic, products, orders), wall_sleep, True
+            ),
+            limiter,
+        )
     # 주문 스위치가 켜졌으면 get_orders가 응답을 못 받은 주문을 대조한다(UNKNOWN_STATE 안내가
     # get_orders를 가리킨다).
     register_account_tools(
-        mcp, ctx, queries, holdings, None if orders is None else orders.reconcile
+        mcp,
+        ctx,
+        queries,
+        holdings,
+        OrderSources(partial(combo_ids, wiring.conn), None if orders is None else orders.reconcile),
     )
     return Parts(login, store, pool, models, recorder, runner, strategies)
 

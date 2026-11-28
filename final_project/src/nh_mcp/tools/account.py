@@ -1,7 +1,8 @@
 """계좌 도구: get_account, get_orders. 계좌번호와 계좌명은 돌려주지 않는다."""
 
 import contextlib
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
+from dataclasses import dataclass
 from datetime import date, datetime
 
 from fastmcp import FastMCP
@@ -9,6 +10,7 @@ from fastmcp import FastMCP
 from nh_mcp import envelope
 from nh_mcp.domain import KST, ContractKind, JsonValue, Order, OrderError, Position, UserId
 from nh_mcp.services.holdings import AccountView, HoldingService
+from nh_mcp.services.orders import order_no_key
 from nh_mcp.services.queries import BrokerRejected, KeyMissing, QueryService, Unavailable
 from nh_mcp.store.option_holdings import Holding
 from nh_mcp.tools.context import DOMESTIC_ONLY, ToolContext, text
@@ -91,6 +93,18 @@ def _account(view: AccountView) -> dict[str, JsonValue]:
 
 # 응답을 못 받은 주문을 오늘 주문 내역과 맞춰 보는 함수(`OrderService.reconcile`).
 type Reconcile = Callable[[UserId], Awaitable[None]]
+# 그 사용자의 묶음 다리 주문: 비교용 주문번호 → 묶음 id(`services.combos.combo_ids`).
+type ComboIds = Callable[[UserId], Mapping[str, str]]
+
+
+@dataclass(frozen=True)
+class OrderSources:
+    """get_orders가 NH 주문 내역에 더하는 이 서버의 기록. reconcile은 주문 스위치가 켜졌을 때만."""
+
+    combo_ids: ComboIds
+    reconcile: Reconcile | None = None
+
+
 # 대조가 NH 쪽 사정으로 실패해도 목록은 보여 준다. 목록 조회가 같은 오류면 그때 오류로 답한다.
 _RECONCILE_SKIPPED = (Unavailable, BrokerRejected, KeyMissing)
 
@@ -100,9 +114,9 @@ def register_account_tools(
     ctx: ToolContext,
     queries: QueryService,
     holdings: HoldingService,
-    reconcile: Reconcile | None = None,
+    sources: OrderSources,
 ) -> None:
-    """`reconcile`은 주문 스위치가 켜졌을 때만 받는다. 그러면 get_orders가 목록 전에 대조한다."""
+    """`sources.reconcile`이 있으면(주문 스위치가 켜짐) get_orders가 목록 전에 대조한다."""
 
     @mcp.tool(annotations={"readOnlyHint": True})
     async def get_account(market: str = "domestic") -> envelope.Response:
@@ -131,6 +145,7 @@ def register_account_tools(
         쓸 때: 주문이 들어갔는지, 체결됐는지, 왜 거부됐는지 확인할 때.
         응답을 받지 못한 주문(UNKNOWN_STATE)은 다시 주문하기 전에 반드시 이것으로 확인한다.
         쓰지 않을 때: 잔고와 손익은 get_account.
+        옵션 묶음(place_combo)의 다리 주문에는 combo_id가 있다. 묶음 밖 주문은 null이다.
         day: 주문 오류 내역을 볼 날짜(YYYY-MM-DD). 비우면 오늘.
         """
         if market != "domestic":
@@ -143,12 +158,16 @@ def register_account_tools(
 
         async def work() -> dict[str, JsonValue]:
             user_id = ctx.user_id()
-            if reconcile is not None:
+            if sources.reconcile is not None:
                 with contextlib.suppress(*_RECONCILE_SKIPPED):
-                    await reconcile(user_id)
+                    await sources.reconcile(user_id)
             orders, errors = await queries.orders(user_id, when)
+            combos = sources.combo_ids(user_id)
+            rows: list[JsonValue] = [
+                _order(o) | {"combo_id": combos.get(order_no_key(o.order_no))} for o in orders
+            ]
             return {
-                "orders": [_order(o) for o in orders],
+                "orders": rows,
                 "order_errors": [_order_error(e) for e in errors],
                 "day": when.isoformat(),
             }

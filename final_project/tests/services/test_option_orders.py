@@ -55,6 +55,9 @@ RECORDED = FIXTURES / "nh" / "domestic"
 OPTION_MASTER = FIXTURES / "master" / "kospi200_options.mst"
 CALL = "B016C725"  # 코스피200 C 202612 725.0, 승수 250000, 마스터 상한가 103.25
 PUT = "C016C725"  # 코스피200 P 202612 725.0, 마스터 상한가 103.15
+CALL_720 = "B016C720"  # 같은 계열(코스피200 콜 2026-12-10)의 다른 행사가
+CALL_730 = "B016C730"
+MINI_CALL = "B056C605"  # 미니코스피 C 202612 605.0, 승수 50000. 만기와 종류는 같고 품목이 다르다
 FUTURE = "A016C000"  # 코스피200 F 202612
 NOT_IN_MASTER = "B016CZZZ"
 # 하루 프리미엄 100만 원, 옵션 계약 합계 4, 매도 합계 2. 선물은 종목별 3, 1회 수량 2.
@@ -521,6 +524,72 @@ def test_a_token_whose_option_terms_do_not_fit_the_order_is_unusable(case: str) 
         s.message(token)
     with pytest.raises(ConfirmInvalid):
         s.place(token)
+    assert s.order_calls() == 0
+
+
+# ---- 보호를 풀어 버리는 청산 ---------------------------------------------------------
+
+
+def test_closing_the_long_leg_first_is_blocked_while_selling_is_off() -> None:
+    # 725 콜 매수 1 · 730 콜 매도 1(매도형이 아닌 수직 스프레드)을 든 사용자.
+    s = Setup()
+    s.holding(held("1", 1), held("2", 1, CALL_730))
+
+    assert s.blocked(SELL) == "option_uncover"
+    # 판 다리를 되사는 청산은 된다.
+    buy_back = s.preview(replace(BUY, symbol=CALL_730))
+    assert buy_back.option == OptionTerms("close", Decimal("500000.00"))
+    # 매도를 켠 사용자는 막지 않는다.
+    s.switch("option_sell", True)
+    assert s.preview(SELL).option == OptionTerms("close", None)
+
+
+def test_the_account_is_counted_per_series_with_resting_closing_sells() -> None:
+    s = Setup()
+    # 매수 2 - 이번 1 = 1 >= 매도 1.
+    s.holding(held("1", 2), held("2", 1, CALL_730))
+    assert s.preview(SELL).option == OptionTerms("close", None)
+    # 보유 매수를 되파는 미체결 매도 1이 있으면 2 - 1 - 1 = 0 < 1.
+    s.waiting(resting("2", 1, price="2.00"))
+    assert s.blocked(SELL) == "option_uncover"
+
+
+@pytest.mark.parametrize(
+    ("other_long", "short", "rule"),
+    [
+        (CALL_720, CALL_730, None),  # 같은 계열의 매수가 남아 매도를 덮는다
+        (MINI_CALL, CALL_730, "option_uncover"),  # 품목이 다른 매수는 덮지 않는다
+        (None, PUT, None),  # 매도가 다른 계열(풋)이면 풀릴 보호가 없다
+    ],
+    ids=["same_series_long_left", "mini_long", "short_put"],
+)
+def test_only_longs_of_the_same_series_cover_a_short(
+    other_long: str | None, short: str, rule: str | None
+) -> None:
+    s = Setup()
+    rows = [held("1", 1), held("2", 1, short)]
+    if other_long is not None:
+        rows.append(held("1", 1, other_long))
+    s.holding(*rows)
+
+    if rule is None:
+        assert s.preview(SELL).option == OptionTerms("close", None)
+    else:
+        assert s.blocked(SELL) == rule
+
+
+def test_place_and_place_auto_recheck_the_cover() -> None:
+    s = Setup()
+    s.holding(held("1", 1))
+    token = s.preview(SELL).confirm_token
+    s.holding(held("1", 1), held("2", 1, CALL_730))  # 미리보기 뒤 같은 계열의 매도가 생겼다
+
+    with pytest.raises(RiskBlocked) as caught:
+        s.place(token)
+    assert caught.value.rule == "option_uncover"
+    with pytest.raises(RiskBlocked) as caught:
+        asyncio.run(s.service.place_auto(s.user, run(), SELL))
+    assert caught.value.rule == "option_uncover"
     assert s.order_calls() == 0
 
 

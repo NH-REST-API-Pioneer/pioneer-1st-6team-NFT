@@ -1,6 +1,7 @@
 """주문 기록. 전송 전에 SUBMITTED 행을 먼저 쓰고, 응답을 받으면 갱신한다.
 
-`run_id`는 자동 주문을 낸 전략 실행이다. 수동 주문은 None(NULL)이다.
+`run_id`는 자동 주문을 낸 전략 실행이다. 수동 주문은 None(NULL)이다. `combo_id`는 다리 주문이 속한
+옵션 묶음(M6)이다. 묶음 밖 주문은 None이다.
 """
 
 import sqlite3
@@ -32,11 +33,12 @@ class StoredOrder:
     submitted_at: datetime
     updated_at: datetime
     run_id: str | None
+    combo_id: str | None
 
 
 _COLUMNS = (
     "id, user_id, market, symbol, side, order_type, quantity, price, status, "
-    "nh_order_no, msg_cd, msg_cntn, submitted_at, updated_at, run_id"
+    "nh_order_no, msg_cd, msg_cntn, submitted_at, updated_at, run_id, combo_id"
 )
 
 _STATUSES: tuple[OrderStatus, ...] = (
@@ -77,7 +79,19 @@ def _row(row: tuple[object, ...]) -> StoredOrder:
         submitted_at=parse_stamp(str(row[12])),
         updated_at=parse_stamp(str(row[13])),
         run_id=None if row[14] is None else str(row[14]),
+        combo_id=None if row[15] is None else str(row[15]),
     )
+
+
+@dataclass(frozen=True)
+class Origin:
+    """주문을 낸 곳. 둘 다 None이면 사람이 낸 한 종목 주문이다."""
+
+    run_id: str | None = None  # 자동 주문을 낸 전략 실행
+    combo_id: str | None = None  # 다리 주문이 속한 옵션 묶음
+
+
+MANUAL = Origin()
 
 
 def insert_submitted(
@@ -85,13 +99,13 @@ def insert_submitted(
     user_id: UserId,
     order: OrderRequest,
     now: datetime,
-    run_id: str | None = None,
+    origin: Origin = MANUAL,
 ) -> int:
     with conn:
         cursor = conn.execute(
             "INSERT INTO orders (user_id, market, symbol, side, order_type, quantity, price, "
-            "status, submitted_at, updated_at, run_id) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, 'SUBMITTED', ?, ?, ?)",
+            "status, submitted_at, updated_at, run_id, combo_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, 'SUBMITTED', ?, ?, ?, ?)",
             (
                 user_id,
                 order.market,
@@ -102,7 +116,8 @@ def insert_submitted(
                 None if order.price is None else str(order.price),
                 stamp(now),
                 stamp(now),
-                run_id,
+                origin.run_id,
+                origin.combo_id,
             ),
         )
     if cursor.lastrowid is None:
@@ -152,6 +167,15 @@ def get(conn: sqlite3.Connection, user_id: UserId, order_id: int) -> StoredOrder
 def list_for(conn: sqlite3.Connection, user_id: UserId) -> list[StoredOrder]:
     rows = conn.execute(
         f"SELECT {_COLUMNS} FROM orders WHERE user_id = ? ORDER BY id", (user_id,)
+    ).fetchall()
+    return [_row(row) for row in rows]
+
+
+def list_for_combo(conn: sqlite3.Connection, user_id: UserId, combo_id: str) -> list[StoredOrder]:
+    """그 묶음의 다리 주문, 낸 순서대로."""
+    rows = conn.execute(
+        f"SELECT {_COLUMNS} FROM orders WHERE user_id = ? AND combo_id = ? ORDER BY id",
+        (user_id, combo_id),
     ).fetchall()
     return [_row(row) for row in rows]
 

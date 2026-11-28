@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from nh_mcp.domain import OrderRequest, UserId
 from nh_mcp.store import db, orders, users
-from nh_mcp.store.orders import Outcome
+from nh_mcp.store.orders import Origin, Outcome
 
 NOW = datetime(2026, 12, 1, 1, 0, tzinfo=UTC)
 LIMIT_BUY = OrderRequest("domestic", "A016C000", "buy", "limit", 1, Decimal("350.05"))
@@ -46,12 +46,31 @@ def test_insert_tags_an_automatic_order_with_its_run() -> None:
     conn = db.connect(":memory:")
     user_a, _ = two_users(conn)
 
-    auto = orders.insert_submitted(conn, user_a, LIMIT_BUY, NOW, "run-1")
+    auto = orders.insert_submitted(conn, user_a, LIMIT_BUY, NOW, Origin(run_id="run-1"))
     manual = orders.insert_submitted(conn, user_a, LIMIT_BUY, NOW)
     orders.update(conn, user_a, auto, Outcome("ACCEPTED", nh_order_no="0000123"), NOW)
 
     tagged = {row.id: row.run_id for row in orders.list_for(conn, user_a)}
     assert tagged == {auto: "run-1", manual: None}
+
+
+def test_combo_legs_are_tagged_and_listed_in_the_order_they_were_sent() -> None:
+    conn = db.connect(":memory:")
+    user_a, _ = two_users(conn)
+
+    first = orders.insert_submitted(conn, user_a, LIMIT_BUY, NOW, Origin(combo_id="combo-1"))
+    manual = orders.insert_submitted(conn, user_a, LIMIT_BUY, NOW)
+    other = orders.insert_submitted(conn, user_a, LIMIT_BUY, NOW, Origin(combo_id="combo-2"))
+    second = orders.insert_submitted(conn, user_a, MARKET_SELL, NOW, Origin(combo_id="combo-1"))
+
+    assert [o.id for o in orders.list_for_combo(conn, user_a, "combo-1")] == [first, second]
+    tagged = {row.id: (row.combo_id, row.run_id) for row in orders.list_for(conn, user_a)}
+    assert tagged == {
+        first: ("combo-1", None),
+        manual: (None, None),
+        other: ("combo-2", None),
+        second: ("combo-1", None),
+    }
 
 
 def test_update_changes_status_and_keeps_fields_that_were_not_given() -> None:

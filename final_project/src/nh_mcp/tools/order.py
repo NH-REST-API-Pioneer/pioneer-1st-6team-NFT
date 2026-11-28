@@ -20,7 +20,7 @@ from nh_mcp.tools.approval import ask
 from nh_mcp.tools.context import DOMESTIC_ONLY, ToolContext, Whole, whole
 
 # 부호, 지수, NaN, Infinity, 전각 숫자, 밑줄, 쉼표를 모두 막으려고 ASCII 숫자만 받는다.
-_PRICE = re.compile(r"[0-9]{1,12}(\.[0-9]{1,6})?")
+PRICE = re.compile(r"[0-9]{1,12}(\.[0-9]{1,6})?")
 _SIDES: dict[str, Side] = {"buy": "buy", "sell": "sell"}
 _TYPES: dict[str, OrderType] = {"limit": "limit", "market": "market"}
 MAX_QUANTITY = 10**6
@@ -71,7 +71,7 @@ def _problem(draft: OrderDraft) -> str | None:
 def _limit_price(raw: str | None) -> Decimal | str:
     """지정가의 가격, 또는 잘못됐다고 알려 줄 문장."""
     text = "" if raw is None else raw.strip()
-    if _PRICE.fullmatch(text) is None:
+    if PRICE.fullmatch(text) is None:
         return '지정가 주문의 price는 0보다 큰 가격을 숫자만으로 써 주세요. 예: "784.55"'
     value = Decimal(text)
     if value <= 0:

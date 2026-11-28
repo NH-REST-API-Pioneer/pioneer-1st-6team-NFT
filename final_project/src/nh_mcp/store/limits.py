@@ -12,13 +12,17 @@ from nh_mcp.store.db import stamp
 def _read(conn: sqlite3.Connection, user_id: UserId, market: Market) -> RiskLimits | None:
     row = conn.execute(
         "SELECT daily_loss, max_position, max_order_qty, option_premium_daily, "
-        "option_max_position, option_max_short FROM risk_limits WHERE user_id = ? AND market = ?",
+        "option_max_position, option_max_short, option_max_combo_loss FROM risk_limits "
+        "WHERE user_id = ? AND market = ?",
         (user_id, market),
     ).fetchone()
     if row is None:
         return None
-    # 옵션 칸 셋은 `put`이 함께 쓰고 함께 비운다.
-    options = None if row[3] is None else OptionLimits(Decimal(row[3]), int(row[4]), int(row[5]))
+    # 옵션 칸 셋은 `put`이 함께 쓰고 함께 비운다. 묶음 칸은 따로 비어 있을 수 있다.
+    combo = None if row[6] is None else Decimal(row[6])
+    options = (
+        None if row[3] is None else OptionLimits(Decimal(row[3]), int(row[4]), int(row[5]), combo)
+    )
     return RiskLimits(
         daily_loss=Decimal(row[0]),
         max_position=int(row[1]),
@@ -33,20 +37,22 @@ def get(conn: sqlite3.Connection, user_id: UserId, market: Market) -> RiskLimits
 
 _UPSERT = (
     "INSERT INTO risk_limits (user_id, market, daily_loss, max_position, max_order_qty, "
-    "updated_at, option_premium_daily, option_max_position, option_max_short) "
-    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
+    "updated_at, option_premium_daily, option_max_position, option_max_short, "
+    "option_max_combo_loss) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
     "ON CONFLICT (user_id, market) DO UPDATE SET daily_loss = excluded.daily_loss, "
     "max_position = excluded.max_position, max_order_qty = excluded.max_order_qty, "
     "updated_at = excluded.updated_at, option_premium_daily = excluded.option_premium_daily, "
     "option_max_position = excluded.option_max_position, "
-    "option_max_short = excluded.option_max_short"
+    "option_max_short = excluded.option_max_short, "
+    "option_max_combo_loss = excluded.option_max_combo_loss"
 )
 
 
 def _values(
     user_id: UserId, market: Market, new: RiskLimits, now: datetime
-) -> tuple[int, str, str, int, int, str, str | None, int | None, int | None]:
+) -> tuple[int, str, str, int, int, str, str | None, int | None, int | None, str | None]:
     options = new.options
+    combo = None if options is None else options.max_combo_loss
     return (
         user_id,
         market,
@@ -57,6 +63,7 @@ def _values(
         None if options is None else str(options.premium_daily),
         None if options is None else options.max_position,
         None if options is None else options.max_short,
+        None if combo is None else str(combo),
     )
 
 

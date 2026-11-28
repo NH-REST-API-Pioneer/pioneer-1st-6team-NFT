@@ -81,6 +81,25 @@ def test_market_order_sends_price_zero() -> None:
     }
 
 
+def test_a_combo_leg_is_a_limit_fak_order() -> None:
+    leg = OrderRequest("domestic", "B016C725", "sell", "limit", 2, Decimal("1.25"), "fak")
+
+    assert to_nh_order(leg) == {
+        "sym": "B016C725",
+        "trd_div": "2",
+        "ord_tp_cd": "1",
+        "ord_qty": "2",
+        "ord_pric": "1.25",
+        "exec_cnd_cd": "3",
+    }
+
+
+def test_a_market_fak_order_cannot_be_made() -> None:
+    """NH는 시장가에 FAS만 받는다(`domestic_order.md:31`). 그런 주문은 만들어지지도 않는다."""
+    with pytest.raises(ValueError):
+        OrderRequest("domestic", SYMBOL, "buy", "market", 1, None, "fak")
+
+
 def test_price_is_a_plain_decimal_string_never_exponent_form() -> None:
     big = OrderRequest("domestic", SYMBOL, "buy", "limit", 1, Decimal("1E+3"))
     trailing = OrderRequest("domestic", SYMBOL, "buy", "limit", 1, Decimal("784.50"))

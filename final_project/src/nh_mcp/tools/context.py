@@ -13,6 +13,7 @@ from nh_mcp.auth.access import current_user_id
 from nh_mcp.config import ENV
 from nh_mcp.domain import Clock, JsonValue, UserId
 from nh_mcp.services.backtest import RunnerUnavailable, StrategyFailed, StrategyInvalid
+from nh_mcp.services.combos import NotResumable, UnknownCombo
 from nh_mcp.services.options import OPTION_SWITCH_RULES, UnknownExpiry
 from nh_mcp.services.orders import (
     ConfirmInvalid,
@@ -40,6 +41,10 @@ UNAVAILABLE = "NH 모의 서버가 답하지 않습니다. 잠시 뒤 다시 시
 RUNNER_UNAVAILABLE = "전략 실행기가 바쁘거나 답하지 않습니다. 잠시 뒤 다시 시도해 주세요."
 # 사용자가 등록 화면의 묶음 스위치를 켜야 풀리는 거절. 문구 끝에 등록 화면 주소를 붙인다.
 SWITCH_RULES = frozenset({AUTO_RUN_OFF}) | OPTION_SWITCH_RULES
+# 묶음 한도(max_combo_loss)가 없어 묶음 규칙이 막은 것. 한 종목 주문의 LimitsNotSet과 같은 코드로
+# 답한다. guard.risk.LIMITS_NOT_SET과 같은 값이다(도구는 guard를 못 부른다).
+LIMITS_NOT_SET_RULE = "limits_not_set"
+COMBO_LIMIT_HINT = " 사용자와 값을 정한 뒤 set_risk_limits의 options.max_combo_loss로 정하세요."
 
 # 문구가 늘 같은 서비스 예외 → (오류 코드, 문구).
 _FIXED: dict[type[Exception], tuple[envelope.ErrorCode, str]] = {
@@ -59,7 +64,8 @@ _FIXED: dict[type[Exception], tuple[envelope.ErrorCode, str]] = {
     ),
     ConfirmInvalid: (
         "CONFIRM_EXPIRED",
-        "확인 토큰이 없거나 만료됐거나 이미 썼습니다. preview_order부터 다시 하세요.",
+        "확인 토큰이 없거나 만료됐거나 이미 썼습니다. 그 토큰을 준 미리보기(preview_order, "
+        "preview_combo, preview_strategy)부터 다시 하세요.",
     ),
     NotApproved: (
         "CONFIRM_EXPIRED",
@@ -69,6 +75,10 @@ _FIXED: dict[type[Exception], tuple[envelope.ErrorCode, str]] = {
         "INVALID_INPUT",
         "오늘 주문 내역에 남은 수량이 있는 그 주문번호가 없습니다. "
         "get_orders로 주문번호를 확인하세요.",
+    ),
+    UnknownCombo: (
+        "INVALID_INPUT",
+        "그 combo_id의 묶음이 없습니다. place_combo 결과의 combo_id를 그대로 넣어 주세요.",
     ),
 }
 
@@ -121,9 +131,9 @@ class ToolContext:
             case BrokerRejected():
                 response = envelope.error("BROKER_REJECTED", f"NH가 거부했습니다: {exc}", meta)
             case RiskBlocked(rule=rule, message=message):
-                if rule in SWITCH_RULES:
-                    message = f"{message} 등록 화면: {self.keys_url}"
-                response = envelope.error("RISK_BLOCKED", message, meta, rule=rule)
+                response = self._blocked(rule, message, meta)
+            case NotResumable(message=message):
+                response = envelope.error("INVALID_INPUT", message, meta)
             case MarketClosed(message=message):
                 response = envelope.error("MARKET_CLOSED", message, meta)
             case UnknownState(message=message):
@@ -135,6 +145,14 @@ class ToolContext:
             case _:
                 raise exc
         return response
+
+    def _blocked(self, rule: str, message: str, meta: envelope.Meta) -> envelope.Response:
+        """규칙이 막은 것. 스위치 규칙이면 등록 화면 주소를 붙인다."""
+        if rule == LIMITS_NOT_SET_RULE:
+            return envelope.error("LIMITS_NOT_SET", message + COMBO_LIMIT_HINT, meta)
+        if rule in SWITCH_RULES:
+            message = f"{message} 등록 화면: {self.keys_url}"
+        return envelope.error("RISK_BLOCKED", message, meta, rule=rule)
 
 
 def _strategy_error(

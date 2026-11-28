@@ -267,6 +267,7 @@ def test_link_payload_holds_option_limits_as_strings_and_counts() -> None:
         "premium_daily": "500000",
         "max_position": 10,
         "max_short": 2,
+        "max_combo_loss": None,
     }
     assert s.service.pending(s.user, token) == (CURRENT, WITH_OPTIONS)
 
@@ -428,6 +429,8 @@ def test_link_after_option_limits_changed_elsewhere_is_changed() -> None:
         {"premium_daily": "500000", "max_position": "10", "max_short": 2},
         {"premium_daily": "500000", "max_position": 10},
         "500000",
+        {"premium_daily": "500000", "max_position": 10, "max_short": 2, "max_combo_loss": 1},
+        {"premium_daily": "500000", "max_position": 10, "max_short": 2, "max_combo_loss": "x"},
     ],
 )
 def test_malformed_option_limits_in_the_payload_are_invalid(options: object) -> None:
@@ -506,3 +509,88 @@ def test_audit_records_a_declined_window_answer() -> None:
     seen = [(action, d["outcome"]) for _, action, d in s.actions()]
 
     assert seen == [("limits.approve", "declined"), ("limits.set", "declined")]
+
+
+# --- 묶음 최대 손실 한도 (M6) -----------------------------------------------------------
+
+COMBO = OptionLimits(Decimal("500000"), 10, 2, Decimal("300000"))
+WITH_COMBO = RiskLimits(Decimal("100000"), 3, 2, COMBO)
+
+
+def _combo(value: str) -> RiskLimits:
+    return RiskLimits(
+        Decimal("100000"), 3, 2, OptionLimits(Decimal("500000"), 10, 2, Decimal(value))
+    )
+
+
+def test_first_setting_or_raising_the_combo_limit_is_a_raise_and_lowering_is_not() -> None:
+    assert WITH_OPTIONS.raises(WITH_COMBO) is True
+    assert WITH_COMBO.raises(_combo("300000.01")) is True
+    assert WITH_COMBO.raises(_combo("300000")) is False
+    assert WITH_COMBO.raises(_combo("1")) is False
+    # 지우는 것은 묶음 주문을 막을 뿐이라 낮추기다(도구로는 지울 수 없다).
+    assert WITH_COMBO.raises(WITH_OPTIONS) is False
+
+
+def test_first_combo_limit_needs_approval_and_the_message_names_it() -> None:
+    s = Setup()
+    s.seed(WITH_OPTIONS)
+
+    plan = s.service.plan(s.user, "domestic", WITH_COMBO)
+
+    assert plan.needs_approval is True
+    assert plan.message.endswith(", 묶음 최대 손실 없음→300000원. 승인할까요?")
+    assert s.stored() == WITH_OPTIONS
+
+
+def test_lowering_the_combo_limit_needs_no_approval() -> None:
+    s = Setup()
+    s.seed(WITH_COMBO)
+
+    plan = s.service.plan(s.user, "domestic", _combo("100000"))
+    s.service.commit(s.user, "domestic", plan, "declined")
+
+    assert plan.needs_approval is False
+    assert "묶음 최대 손실 300000원→100000원" in plan.message
+    assert s.stored() == _combo("100000")
+
+
+def test_plan_with_options_but_no_combo_limit_keeps_the_current_combo_limit() -> None:
+    s = Setup()
+    s.seed(WITH_COMBO)
+
+    plan = s.service.plan(
+        s.user, "domestic", RiskLimits(Decimal("100000"), 3, 2, OptionLimits(Decimal("1"), 1, 0))
+    )
+
+    assert plan.requested.options == OptionLimits(Decimal("1"), 1, 0, Decimal("300000"))
+    assert plan.needs_approval is False
+
+
+def test_approve_link_applies_a_first_combo_limit() -> None:
+    s = Setup()
+    s.seed(WITH_OPTIONS)
+    token = s.link_token(s.service.plan(s.user, "domestic", WITH_COMBO))
+
+    row = confirm_tokens.find(s.conn, token)
+    assert row is not None
+    assert json.loads(row.payload)["requested"]["options"]["max_combo_loss"] == "300000"
+    assert s.service.approve_link(s.user, token) == "applied"
+    assert s.stored() == WITH_COMBO
+
+
+def test_link_payload_from_before_the_combo_limit_reads_it_as_none() -> None:
+    """M6 배포 전에 발급한 링크(묶음 칸 없음)도 그대로 승인된다."""
+    s = Setup()
+    s.seed(CURRENT)
+    options = {"premium_daily": "500000", "max_position": 10, "max_short": 2}
+    requested = {"daily_loss": "100000", "max_position": 3, "max_order_qty": 2, "options": options}
+    current = {"daily_loss": "100000", "max_position": 3, "max_order_qty": 2, "options": None}
+    payload = json.dumps({"market": "domestic", "current": current, "requested": requested})
+    token, _ = confirm_tokens.issue(
+        s.conn, NewToken(s.user, "limits", payload), T0, timedelta(minutes=10)
+    )
+
+    assert s.service.pending(s.user, token) == (CURRENT, WITH_OPTIONS)
+    assert s.service.approve_link(s.user, token) == "applied"
+    assert s.stored() == WITH_OPTIONS

@@ -14,6 +14,7 @@ _PURPOSES: dict[str, TokenPurpose] = {
     "order": "order",
     "limits": "limits",
     "strategy": "strategy",
+    "combo": "combo",
 }
 
 

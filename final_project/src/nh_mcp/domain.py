@@ -188,6 +188,8 @@ class AccountState:
 
 
 type OrderType = Literal["limit", "market"]
+# 체결 조건. 한 종목 주문은 fas, 묶음 다리만 fak(M6). NH는 시장가에 FAS만 받는다.
+type FillCondition = Literal["fas", "fak"]
 
 
 @dataclass(frozen=True)
@@ -200,19 +202,103 @@ class OrderRequest:
     type: OrderType
     quantity: int
     price: Decimal | None
+    fill: FillCondition = "fas"
+
+    def __post_init__(self) -> None:
+        if self.fill == "fak" and self.type == "market":
+            raise ValueError("시장가 주문은 FAS만 됩니다.")
+
+
+@dataclass(frozen=True)
+class Leg:
+    """옵션 묶음의 다리 하나. 지정가만 받는다. price는 계약당 프리미엄(포인트)."""
+
+    symbol: str
+    side: Side
+    price: Decimal
+
+
+@dataclass(frozen=True)
+class ComboRequest:
+    """옵션 묶음 주문 요청. 다리는 둘이고 수량은 다리마다 같다(1:1).
+
+    slippage는 순가격 허용 폭(포인트, 0 이상, 0.01 단위)이다.
+    """
+
+    market: Market
+    legs: tuple[Leg, Leg]
+    quantity: int
+    slippage: Decimal
+
+
+# guard가 다리에서 읽은 묶음 구조. AI가 붙인 이름은 믿지 않는다(`docs/options.md` "묶음 주문").
+type Structure = Literal[
+    "debit_vertical",
+    "credit_vertical",
+    "long_straddle",
+    "long_strangle",
+    "short_straddle",
+    "short_strangle",
+]
+
+
+@dataclass(frozen=True)
+class Unbounded:
+    """최대 손실이 한정되지 않는다(기초자산이 오를수록 손실이 커진다)."""
+
+
+# 묶음 전체의 최대 손실(원).
+type MaxLoss = Decimal | Unbounded
+
+
+@dataclass(frozen=True)
+class ComboPlan:
+    """guard가 묶음 요청에서 만든 계획. 확인 토큰에 묶여 승인 뒤에 바뀌지 않는다.
+
+    sequence는 보낼 다리 순서(legs의 위치)다. 사는 다리가 먼저, 둘 다 같은 방향이면 콜이 먼저다.
+    net_debit은 계약당 (사는 가격 합 - 파는 가격 합)이고 받는 구조는 음수다. worst_net_debit은
+    net_debit + slippage, max_loss는 worst_net_debit 기준이다.
+    """
+
+    structure: Structure
+    sequence: tuple[int, int]
+    net_debit: Decimal
+    worst_net_debit: Decimal
+    max_loss: MaxLoss
+
+
+@dataclass(frozen=True)
+class ComboContext:
+    """묶음 경로에서 온 다리가 guard에 넘기는 그 묶음. 승인된 요청과 계획이다.
+
+    guard는 요청의 다리에서 파는 다리를 덮을 사는 다리 종목을 찾는다. 서비스가 따로 알려 주지
+    않는다.
+    """
+
+    request: ComboRequest
+    plan: ComboPlan
 
 
 @dataclass(frozen=True)
 class OptionLimits:
-    """옵션 한도 셋. 하나만 있는 경우는 없다. 없으면 RiskLimits.options가 None이다."""
+    """옵션 한도. 앞의 셋은 함께 있다. 없으면 RiskLimits.options가 None이다.
+
+    max_combo_loss(M6)는 선택이다. 없으면 묶음 주문만 막힌다.
+    """
 
     premium_daily: Decimal  # 원. 오늘 옵션 매수에 쓸 수 있는 프리미엄 합계
     max_position: int  # 모든 옵션 종목의 계약 수 합계 상한(매수·매도 합)
     max_short: int  # 매도 포지션 계약 수 합계 상한. 매도를 켠 사용자에게만 의미가 있다
+    max_combo_loss: Decimal | None = None  # 원. 묶음 하나의 최대 손실 상한
 
     def raises(self, new: "OptionLimits") -> bool:
+        """묶음 한도를 처음 정하는 것도 올리기다. 지우는 것은 묶음 주문을 막을 뿐이라 낮추기다."""
+        combo_up = new.max_combo_loss is not None and (
+            self.max_combo_loss is None or new.max_combo_loss > self.max_combo_loss
+        )
         return (
-            new.premium_daily > self.premium_daily
+            combo_up
+            or new.premium_daily > self.premium_daily
             or new.max_position > self.max_position
             or new.max_short > self.max_short
         )
@@ -274,12 +360,45 @@ class InstrumentRules:
 
 
 @dataclass(frozen=True)
+class OptionSeries:
+    """품목(기초자산 이름)·만기·종류(콜 또는 풋)가 같은 옵션들. 스프레드 매도 다리의 보호와 보호를
+    풀어 버리는 청산을 이 단위로 센다. 품목이 다르면(미니·코스닥150) 승수가 달라 서로 덮지 않는다.
+    """
+
+    underlying: str
+    expiry: date
+    kind: ContractKind
+
+
+@dataclass(frozen=True)
+class SeriesCount:
+    """한 계열 또는 한 종목의 옵션 계약 수. 미체결 매도는 종목마다 보유 매수까지가 청산이고, 넘는
+    만큼이 새 매도다.
+    """
+
+    long: int  # 보유 매수
+    short: int  # 보유 매도
+    pending_short: int  # 미체결 새 매도
+    pending_close_long: int  # 보유 매수를 되파는 미체결 매도
+
+    def plus(self, other: "SeriesCount") -> "SeriesCount":
+        return SeriesCount(
+            self.long + other.long,
+            self.short + other.short,
+            self.pending_short + other.pending_short,
+            self.pending_close_long + other.pending_close_long,
+        )
+
+
+@dataclass(frozen=True)
 class OptionBook:
     """옵션 규칙이 보는 계좌의 옵션 쪽. 모든 옵션 종목의 합이고 선물은 들어가지 않는다.
 
     pending_increase는 다 체결되면 포지션을 늘리는 미체결 옵션 주문의 수량, pending_short는 그중
     새 매도다. 금액은 가격·승수·수량의 곱(원)이고, 시장가 매수는 오늘 시세와 마스터의 상한가 중
-    큰 값으로 센다.
+    큰 값으로 센다. series는 같은 보유·미체결을 계열마다 나눈 것이고, 보유나 미체결 매도가 있는
+    계열만 들어 있다. symbols는 같은 수를 종목마다 센 것이다(묶음 파는 다리의 보호를 사는 다리
+    종목으로 셀 때 쓴다).
     """
 
     long_total: int  # 보유 옵션 매수 계약 합
@@ -288,6 +407,8 @@ class OptionBook:
     pending_short: int
     premium_spent: Decimal  # 오늘 체결된 옵션 매수(청산 매수 포함)
     premium_pending: Decimal  # 미체결 옵션 매수(청산 매수 포함)
+    series: Mapping[OptionSeries, SeriesCount]
+    symbols: Mapping[str, SeriesCount]
 
 
 @dataclass(frozen=True)
@@ -296,6 +417,9 @@ class RiskInput:
 
     options_enabled·option_sell은 사용자의 "옵션"·"옵션 매도" 스위치다. option_book은 옵션
     주문에만 채우고, 만들지 못했으면 None이다. 선물 주문은 셋을 보지 않는다.
+
+    combo는 묶음 경로에서 온 다리일 때 그 묶음이고, 한 종목 주문은 None이다. 최대 손실이 한정된
+    묶음의 파는 다리는 그 묶음 사는 다리 종목의 보유로 덮일 때만 나간다(`docs/options.md`).
     """
 
     order: OrderRequest
@@ -309,6 +433,7 @@ class RiskInput:
     options_enabled: bool
     option_sell: bool
     option_book: OptionBook | None
+    combo: ComboContext | None = None
 
 
 @dataclass(frozen=True)
@@ -320,7 +445,7 @@ class RiskDecision:
     increases_position: bool
 
 
-type TokenPurpose = Literal["order", "limits", "strategy"]
+type TokenPurpose = Literal["order", "limits", "strategy", "combo"]
 
 
 @dataclass(frozen=True)

@@ -135,6 +135,7 @@ def test_page_shows_option_limits_in_korean(serve: Serve) -> None:
         "<tr><td>옵션 하루 프리미엄</td><td>없음</td><td>500000원</td></tr>",
         "<tr><td>옵션 전체 최대 계약</td><td>없음</td><td>10계약</td></tr>",
         "<tr><td>옵션 매도 최대 계약</td><td>없음</td><td>1계약</td></tr>",
+        "<tr><td>묶음 최대 손실</td><td>없음</td><td>없음</td></tr>",
     ):
         assert row in body
     assert stored(world) == CURRENT
@@ -373,3 +374,58 @@ def test_login_with_a_foreign_return_to_lands_on_keys(serve: Serve, target: str)
     browser(serve, world, step, login=False)
 
     assert landed == ["/keys"]
+
+
+# --- 묶음 최대 손실 한도 (M6) -----------------------------------------------------------
+
+
+def _with_combo(value: str) -> RiskLimits:
+    return RiskLimits(
+        Decimal("100000"), 3, 2, OptionLimits(Decimal("500000"), 10, 1, Decimal(value))
+    )
+
+
+@pytest.mark.parametrize(
+    ("before", "requested"),
+    [(WITH_OPTIONS, _with_combo("300000")), (_with_combo("300000"), _with_combo("400000"))],
+    ids=["first-set", "raise"],
+)
+def test_combo_limit_link_applies_only_for_its_owner_with_csrf_by_post(
+    serve: Serve, before: RiskLimits, requested: RiskLimits
+) -> None:
+    world = World()
+    limits.put(world.conn, me(world), "domestic", before, world.clock())
+    mine = link(world, requested)
+    other = users.get_or_create(world.conn, "g-someone", "someone@example.com", world.clock())
+    limits.put(world.conn, other, "domestic", before, world.clock())
+    theirs = link(world, requested, owner=other)
+    answers: list[httpx2.Response] = []
+
+    async def logged_out(http: httpx2.AsyncClient, base: str, _: str) -> None:
+        answers.append(await http.post(base + path(mine), data={"decision": "approve"}))
+
+    async def bypasses(http: httpx2.AsyncClient, base: str, csrf_token: str) -> None:
+        answers.append(await http.get(base + path(mine)))
+        for form in ({"decision": "approve"}, {"csrf": "forged", "decision": "approve"}):
+            answers.append(await http.post(base + path(mine), data=form))
+        form = {"csrf": csrf_token, "decision": "approve"}
+        answers.append(await http.post(base + path(theirs), data=form))
+
+    browser(serve, world, logged_out, login=False)
+    browser(serve, world, bypasses)
+
+    assert [a.status_code for a in answers] == [403, 200, 403, 403, 200]
+    assert "<td>묶음 최대 손실</td>" in answers[1].text
+    assert GONE in answers[4].text
+    assert stored(world) == before
+    assert limits.get(world.conn, other, "domestic") == before
+    assert usable(world, mine)
+
+    async def approve(http: httpx2.AsyncClient, base: str, csrf_token: str) -> None:
+        form = {"csrf": csrf_token, "decision": "approve"}
+        answers.append(await http.post(base + path(mine), data=form))
+
+    browser(serve, world, approve)
+
+    assert APPLIED in answers[5].text
+    assert stored(world) == requested

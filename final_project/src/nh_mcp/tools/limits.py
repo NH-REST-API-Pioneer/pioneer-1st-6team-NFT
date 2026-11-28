@@ -2,7 +2,7 @@
 
 import re
 from decimal import Decimal
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 import mcp_types
 from fastmcp import FastMCP
@@ -37,11 +37,12 @@ _NEXT = {
 
 @with_config(ConfigDict(extra="forbid"))
 class OptionLimitsDraft(TypedDict):
-    """옵션 한도 셋. 함께 넣는다. premium_daily는 숫자만 쓴 문자열(원)."""
+    """옵션 한도. 앞의 셋은 함께 넣는다. 금액은 숫자만 쓴 문자열(원). max_combo_loss는 선택."""
 
     premium_daily: str
     max_position: Whole
     max_short: Whole
+    max_combo_loss: NotRequired[str]
 
 
 def _options_data(value: OptionLimits | None) -> dict[str, JsonValue] | None:
@@ -51,6 +52,7 @@ def _options_data(value: OptionLimits | None) -> dict[str, JsonValue] | None:
         "premium_daily": str(value.premium_daily),
         "max_position": value.max_position,
         "max_short": value.max_short,
+        "max_combo_loss": None if value.max_combo_loss is None else str(value.max_combo_loss),
     }
 
 
@@ -75,7 +77,7 @@ def _amount(value: str) -> Decimal | None:
 
 
 def _parse_options(draft: OptionLimitsDraft) -> OptionLimits | str:
-    """OptionLimits, 또는 입력이 잘못됐다고 알려 줄 문장."""
+    """OptionLimits, 또는 입력이 잘못됐다고 알려 줄 문장. max_combo_loss를 안 주면 None."""
     amount = _amount(draft["premium_daily"])
     if amount is None:
         return 'options.premium_daily는 0보다 큰 금액을 숫자만으로 써 주세요. 예: "500000"'
@@ -85,7 +87,11 @@ def _parse_options(draft: OptionLimitsDraft) -> OptionLimits | str:
     short = whole(draft["max_short"], 0, _MAX_COUNT)
     if short is None:
         return f"options.max_short는 0 이상 {_MAX_COUNT} 이하의 정수여야 합니다."
-    return OptionLimits(amount, position, short)
+    combo_text = draft.get("max_combo_loss")
+    combo = None if combo_text is None else _amount(combo_text)
+    if combo_text is not None and combo is None:
+        return 'options.max_combo_loss는 0보다 큰 금액을 숫자만으로 써 주세요. 예: "300000"'
+    return OptionLimits(amount, position, short, combo)
 
 
 def _parse(
@@ -131,6 +137,7 @@ def register_limit_tools(
         쓰지 않을 때: 한도를 바꾸는 것은 set_risk_limits.
         한도가 없으면 limits가 null이다. 한도가 없으면 주문은 모두 막힌다.
         옵션 한도가 없으면 limits.options가 null이고, 포지션을 늘리는 옵션 주문은 막힌다.
+        묶음 최대 손실 한도가 없으면 limits.options.max_combo_loss가 null이고, 묶음 주문만 막힌다.
         """
         if market != "domestic":
             return ctx.invalid(DOMESTIC_ONLY)
@@ -163,12 +170,16 @@ def register_limit_tools(
         max_position은 모든 옵션 종목의 계약 수 합계 상한(매수·매도 합, 1 이상),
         max_short는 옵션 매도 계약 수 합계 상한(0 이상, 0이면 새 매도는 막힌다).
         예: {"premium_daily": "500000", "max_position": 10, "max_short": 0}
-        options를 빼면 지금 옵션 한도를 그대로 둔다. 이 도구로 옵션 한도를 지우지는 못한다.
+        max_combo_loss는 선택이다. 묶음 주문 하나의 최대 손실 상한(원, daily_loss와 같은 모양).
+        예: {"premium_daily": "500000", "max_position": 10, "max_short": 0,
+        "max_combo_loss": "300000"}. 빼면 지금 묶음 한도를 그대로 둔다. 없으면 묶음 주문만 막힌다.
+        options를 빼면 지금 옵션 한도를 그대로 둔다. 이 도구로 옵션 한도나 묶음 한도를 지우지는
+        못한다.
         옵션 한도가 없으면 포지션을 늘리는 옵션 주문은 막힌다.
-        낮추기(모든 값이 지금 이하)는 바로 적용된다. 처음 정하거나(옵션 한도를 처음 넣는 것 포함)
-        하나라도 올리면 서버가 사용자 화면에 승인 창을 띄운다. 창을 못 띄우는 클라이언트면
-        적용하지 않고 outcome이 needs_approval이며 approval_url이 온다. 사용자에게 그 링크를
-        열라고 안내한다. 승인은 AI가 대신할 수 없고, 토큰 같은 인자도 없다.
+        낮추기(모든 값이 지금 이하)는 바로 적용된다. 처음 정하거나(옵션 한도나 묶음 한도를 처음
+        넣는 것 포함) 하나라도 올리면 서버가 사용자 화면에 승인 창을 띄운다. 창을 못 띄우는
+        클라이언트면 적용하지 않고 outcome이 needs_approval이며 approval_url이 온다. 사용자에게
+        그 링크를 열라고 안내한다. 승인은 AI가 대신할 수 없고, 토큰 같은 인자도 없다.
         """
         user_id = ctx.user_id()
         if not limiter.allow(user_id, LIMITS_BUCKET):

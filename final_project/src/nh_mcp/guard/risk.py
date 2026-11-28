@@ -1,7 +1,8 @@
 """주문 리스크 규칙. 순수 함수이고 입력이 모자라면 막는다.
 
 옵션(콜·풋)의 늘리는 주문은 선물의 종목별 포지션 한도 대신 옵션 규칙 7개(`_check_options`)를
-지난다. 옵션 청산은 옵션 규칙에 걸리지 않는다(`docs/options.md`).
+지난다. 옵션 청산은 옵션 규칙에 걸리지 않고, 보호를 풀어 버리는 청산(`_check_uncover`)만 막는다
+(`docs/options.md`).
 """
 
 from collections.abc import Callable
@@ -9,17 +10,21 @@ from decimal import Decimal
 
 from nh_mcp.domain import (
     KST,
+    ComboContext,
     Contract,
     ContractKind,
     InstrumentRules,
     OptionBook,
     OptionLimits,
+    OptionSeries,
     Order,
     OrderRequest,
     Position,
     RiskDecision,
     RiskInput,
     RiskLimits,
+    SeriesCount,
+    Unbounded,
 )
 from nh_mcp.guard.env import orders_allowed
 
@@ -38,8 +43,13 @@ OPTION_SELL_OFF = "option_sell_off"
 OPTION_SHORT_LIMIT = "option_short_limit"
 OPTION_POSITION_LIMIT = "option_position_limit"
 PREMIUM_LIMIT = "premium_limit"
+OPTION_UNCOVER = "option_uncover"
+COMBO_UNCOVERED = "combo_uncovered"
 
 OPTION_KINDS: frozenset[ContractKind] = frozenset({"call", "put"})
+
+# 보유도 미체결 매도도 없는 계열.
+NO_SERIES = SeriesCount(0, 0, 0, 0)
 
 # 만기까지 이 일수 이하로 남으면 경고한다.
 EXPIRY_WARN_DAYS = 3
@@ -187,16 +197,68 @@ def premium(order: OrderRequest, contract: Contract) -> Decimal | None:
     return price * contract.multiplier * order.quantity
 
 
+def option_series(contract: Contract) -> OptionSeries:
+    """옵션 종목이 속한 계열. 옵션에만 부른다."""
+    return OptionSeries(contract.underlying, contract.expiry, contract.kind)
+
+
 type OptionCheck = Callable[[RiskInput, OptionLimits, OptionBook, Contract], Block | None]
 
 
-def _check_option_short(
-    inp: RiskInput, limits: OptionLimits, book: OptionBook, _: Contract
+def _cover_symbol(combo: ComboContext, order: OrderRequest) -> str | None:
+    """이 매도가 묶음의 파는 다리면 그 묶음의 사는 다리 종목. 아니거나 사는 다리가 없으면 None."""
+    legs = combo.request.legs
+    if not any((leg.symbol, leg.side) == (order.symbol, "sell") for leg in legs):
+        return None
+    return next((leg.symbol for leg in legs if leg.side == "buy"), None)
+
+
+def _covers(count: SeriesCount, against: SeriesCount, quantity: int) -> bool:
+    """보유 매수 - 미체결 매수 청산 >= 보유 매도 + 미체결 새 매도 + 이번 수량."""
+    return count.long - count.pending_close_long >= (
+        against.short + against.pending_short + quantity
+    )
+
+
+def _check_combo_sell(
+    combo: ComboContext, order: OrderRequest, book: OptionBook, contract: Contract
 ) -> Block | None:
-    """규칙 4·5: 늘리는 매도는 "옵션 매도"가 켜져 있고 매도 계약 수 합계 안이어야 한다."""
+    """최대 손실이 한정된 묶음의 파는 다리. 계좌에서 다시 센 두 조건이 맞아야 나간다.
+
+    종목: 묶음 사는 다리 종목의 보유가 이 종목의 매도와 이번 수량을 덮는다. 사는 다리가 아직
+    체결되지 않았거나 사용자가 직접 되팔았으면 막는다. 같은 계열의 다른 매수로는 덮이지 않는다.
+    계열: 같은 계열 전체로도 덮는다. 보유 매수 하나가 두 묶음의 매도를 함께 덮지 못한다.
+    걸어 둔 매수 청산이 체결되면 보호가 사라지므로 그 수량은 보호로 세지 않는다. 묶음의 기록은
+    믿지 않는다.
+    """
+    cover = _cover_symbol(combo, order)
+    own = NO_SERIES if cover is None else book.symbols.get(cover, NO_SERIES)
+    sold = book.symbols.get(order.symbol, NO_SERIES)
+    series = book.series.get(option_series(contract), NO_SERIES)
+    if _covers(own, sold, order.quantity) and _covers(series, series, order.quantity):
+        return None
+    return (
+        COMBO_UNCOVERED,
+        f"묶음의 사는 다리({cover or '없음'})를 이 매도만큼 보유하고 있지 않아 파는 다리를 보낼 수 "
+        "없습니다. 사는 다리가 아직 체결되지 않았거나 직접 청산했으면 이렇게 됩니다. get_account로 "
+        "보유를 확인해 주세요.",
+    )
+
+
+def _check_option_short(
+    inp: RiskInput, limits: OptionLimits, book: OptionBook, contract: Contract
+) -> Block | None:
+    """규칙 4·5: 늘리는 매도는 "옵션 매도"가 켜져 있고 매도 계약 수 합계 안이어야 한다.
+
+    최대 손실이 한정된 묶음의 파는 다리는 두 규칙 대신 사는 다리의 보호(`_check_combo_sell`)를
+    지난다. 스위치를 켰어도 보호가 없으면 막는다. 한정되지 않는 묶음은 두 규칙을 그대로 지난다.
+    """
     order = inp.order
     if order.side == "buy":
         return None
+    combo = inp.combo
+    if combo is not None and not isinstance(combo.plan.max_loss, Unbounded):
+        return _check_combo_sell(combo, order, book, contract)
     if not inp.option_sell:
         return (
             OPTION_SELL_OFF,
@@ -286,6 +348,46 @@ def _check_options(inp: RiskInput, limits: RiskLimits, contract: Contract) -> Bl
     return None
 
 
+def _check_uncover(inp: RiskInput, contract: Contract) -> Block | None:
+    """보호를 풀어 버리는 청산. "옵션 매도"가 꺼진 사용자가 보유 매수 옵션을 되팔아, 같은 계열에서
+    보유 매수 - 미체결 매수 청산 - 이번 수량 < 보유 매도 + 미체결 새 매도가 되면 막는다. 걸어 둔 새
+    매도는 체결되면 보유 매도가 된다. 판 옵션을 되사는 청산은 된다.
+
+    "옵션"이 꺼져 있으면 "옵션 매도"도 꺼진 것으로 본다. 장부를 모르면 어느 보유 매도가 같은
+    계열인지 알 수 없어, 보유 매도나 다른 종목에 걸어 둔 매도가 하나라도 있을 때만 막는다. 둘 다
+    없으면 풀릴 보호도 없다.
+    """
+    order = inp.order
+    if order.side == "buy" or (inp.options_enabled and inp.option_sell):
+        return None
+    book = inp.option_book
+    if book is None:
+        held_short = any(p.side == "sell" for p in inp.account.positions)
+        resting_sell = any(
+            o.side == "sell" and o.symbol != order.symbol for o in inp.account.open_orders
+        )
+        if not (held_short or resting_sell):
+            return None
+        return (
+            OPTION_BOOK_UNKNOWN,
+            "계좌의 옵션 보유·미체결을 확인할 수 없어, 보유 매도나 걸어 둔 매도가 있는 동안 매수 "
+            "옵션을 되파는 청산은 막습니다. 판 옵션을 되사는 청산은 됩니다.",
+        )
+    count = book.series.get(option_series(contract), NO_SERIES)
+    left = count.long - count.pending_close_long - order.quantity
+    shorts = count.short + count.pending_short
+    if shorts == 0 or left >= shorts:
+        return None
+    return (
+        OPTION_UNCOVER,
+        "'옵션 매도'가 꺼져 있어 같은 만기·종류의 매도를 덮는 매수 옵션을 되팔 수 없습니다. "
+        f"보유 매수 {count.long} - 미체결 매수 청산 {count.pending_close_long} - 이번 주문 "
+        f"{order.quantity} = {left}계약 < 보유 매도 {count.short} + 미체결 새 매도 "
+        f"{count.pending_short} = {shorts}계약. 판 옵션을 먼저 되사거나 걸어 둔 매도를 취소해 "
+        "주세요.",
+    )
+
+
 def _check_daily_loss(inp: RiskInput, limits: RiskLimits) -> Block | None:
     realized = inp.account.realized_pnl
     unrealized = inp.account.unrealized_pnl
@@ -333,20 +435,19 @@ def _first_block(inp: RiskInput, limits: RiskLimits, increasing: bool) -> Block 
     for block in blocks:
         if block is not None:
             return block
+    contract = None if inp.instrument is None else inp.instrument.contract
+    option = contract if contract is not None and contract.kind in OPTION_KINDS else None
     if not increasing:
-        return None
-    instrument = inp.instrument
-    if instrument is not None and instrument.contract.kind in OPTION_KINDS:
-        block = _check_options(inp, limits, instrument.contract)
-    else:
-        block = _check_position(inp, limits)
+        return None if option is None else _check_uncover(inp, option)
+    block = _check_position(inp, limits) if option is None else _check_options(inp, limits, option)
     return block or _check_daily_loss(inp, limits) or _check_margin(inp)
 
 
 def evaluate(inp: RiskInput) -> RiskDecision:
     """규칙을 순서대로 돌려 첫 차단에서 멈춘다. 늘리는 주문에만 5~7번을 건다.
 
-    옵션은 5번(종목별 포지션 한도) 자리에 옵션 규칙 7개를 건다.
+    옵션은 5번(종목별 포지션 한도) 자리에 옵션 규칙 7개를 건다. 옵션 청산에는 보호를 풀어 버리는
+    청산 규칙(`option_uncover`) 하나만 건다.
     """
     increasing = increases_position(inp.order, inp.account.positions, inp.account.open_orders)
     if inp.limits is None:

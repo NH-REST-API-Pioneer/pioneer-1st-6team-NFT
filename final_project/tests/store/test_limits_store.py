@@ -117,3 +117,19 @@ def test_put_if_unchanged_sees_a_change_in_option_limits_only() -> None:
     assert limits.put_if_unchanged(conn, user_a, "domestic", Change(A, B), NOW) is False
     assert limits.get(conn, user_a, "domestic") == A_OPTIONS
     assert limits.put_if_unchanged(conn, user_a, "domestic", Change(A_OPTIONS, B), NOW) is True
+
+
+def test_combo_limit_round_trips_as_decimal_and_alone_changes_the_row() -> None:
+    conn = db.connect(":memory:")
+    user_a, _ = two_users(conn)
+    combo = OptionLimits(Decimal("300000.50"), 6, 0, Decimal("250000.25"))
+    with_combo = RiskLimits(Decimal("1000000"), 3, 1, combo)
+    limits.put(conn, user_a, "domestic", A_OPTIONS, NOW)
+
+    # 묶음 칸만 달라도 바뀐 것이다.
+    assert limits.put_if_unchanged(conn, user_a, "domestic", Change(with_combo, B), NOW) is False
+    assert limits.put_if_unchanged(conn, user_a, "domestic", Change(A_OPTIONS, with_combo), NOW)
+    stored = limits.get(conn, user_a, "domestic")
+    assert stored == with_combo
+    assert stored is not None and stored.options is not None
+    assert type(stored.options.max_combo_loss) is Decimal

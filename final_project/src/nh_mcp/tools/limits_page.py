@@ -32,11 +32,12 @@ _LABELS = (
     "옵션 하루 프리미엄",
     "옵션 전체 최대 계약",
     "옵션 매도 최대 계약",
+    "묶음 최대 손실",
 )
 
 
 def _value(limits: RiskLimits | None) -> tuple[str, ...]:
-    """_LABELS 순서의 값. 옵션 한도가 없으면 옵션 칸은 "없음"이다."""
+    """_LABELS 순서의 값. 옵션 한도나 묶음 한도가 없으면 그 칸은 "없음"이다."""
     if limits is None:
         return ("없음",) * len(_LABELS)
     futures = (
@@ -46,12 +47,14 @@ def _value(limits: RiskLimits | None) -> tuple[str, ...]:
     )
     options = limits.options
     if options is None:
-        return (*futures, "없음", "없음", "없음")
+        return (*futures, "없음", "없음", "없음", "없음")
+    combo = options.max_combo_loss
     return (
         *futures,
         f"{options.premium_daily}원",
         f"{options.max_position}계약",
         f"{options.max_short}계약",
+        "없음" if combo is None else f"{combo}원",
     )
 
 

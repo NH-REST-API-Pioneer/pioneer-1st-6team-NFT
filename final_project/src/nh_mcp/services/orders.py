@@ -1,9 +1,12 @@
 """주문 유스케이스: 미리보기, 주문, 취소, 응답을 못 받은 주문의 대조.
 
-- NH로 신규 주문을 보내는 곳은 `_submit` 하나이고 `_submit`을 부르는 곳은 `place`·`place_auto`
-  둘이다. `place`는 토큰을 소진한 뒤 리스크 규칙(`guard.risk.evaluate`)을 다시 돌려 통과해야
-  보낸다. `place_auto`(실행 중인 전략)는 같은 리스크 규칙에 승인 범위 규칙
+- NH로 신규 주문을 보내는 곳은 `_submit` 하나이고 `_submit`을 부르는 곳은 `place`·`place_auto`·
+  `place_leg` 셋이다. `place`는 토큰을 소진한 뒤 리스크 규칙(`guard.risk.evaluate`)을 다시 돌려
+  통과해야 보낸다. `place_auto`(실행 중인 전략)는 같은 리스크 규칙에 승인 범위 규칙
   (`guard.strategy_scope.evaluate_scope`)을 더 지나야 보낸다. 사람 승인은 `start_strategy` 한 번.
+  `place_leg`(옵션 묶음의 다리, M6)는 같은 리스크 규칙을 묶음과 함께 지난다. 순서를 짜는
+  `services.combos.ComboService`가 부르고, 사람 승인은 묶음 토큰 한 번이다. 보내기 직전에 그
+  실행이 아직 묶음을 쥐고 있고 다리 주문이 실행이 본 그대로인지 잠금 안에서 확인한다(`LegClaim`).
 - 취소를 보내는 곳은 `cancel` 하나다. 전략은 `cancel_run_order`로 자기 주문만 취소한다.
 - 응답을 받지 못한 주문(시간 초과, HTTP 5xx·408)은 `UNKNOWN`으로 두고 다시 보내지 않는다.
   오늘 주문 내역과 맞춰 보아 하나로 정해질 때만 주문번호를 붙인다. 그 종목에 `UNKNOWN`이
@@ -19,7 +22,7 @@ import hashlib
 import json
 import sqlite3
 import time
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -30,17 +33,21 @@ from nh_mcp.domain import (
     KST,
     AccountState,
     Clock,
+    ComboContext,
     Contract,
     JsonValue,
     OptionBook,
+    OptionSeries,
     Order,
     OrderRequest,
     OrderType,
+    Position,
     Quote,
     RiskDecision,
     RiskInput,
     RunSnapshot,
     ScopeInput,
+    SeriesCount,
     Side,
     UserId,
 )
@@ -49,10 +56,12 @@ from nh_mcp.guard.env import orders_allowed
 from nh_mcp.guard.risk import (
     DEMO_ONLY,
     LIMITS_NOT_SET,
+    NO_SERIES,
     OPTION_KINDS,
     ORDER_FORMAT,
     TRADING_HOURS,
     evaluate,
+    option_series,
     premium,
 )
 from nh_mcp.guard.strategy_scope import evaluate_scope, net_position
@@ -65,9 +74,9 @@ from nh_mcp.nh.limits import UnknownApi
 from nh_mcp.services.approval import Approval
 from nh_mcp.services.holdings import HoldingService
 from nh_mcp.services.queries import BrokerRejected, Unavailable, UnknownSymbol, call_nh
-from nh_mcp.store import audit, confirm_tokens, features, limits, orders
+from nh_mcp.store import audit, combos, confirm_tokens, features, limits, orders
 from nh_mcp.store.confirm_tokens import NewToken
-from nh_mcp.store.orders import OrderStatus, Outcome, StoredOrder
+from nh_mcp.store.orders import MANUAL, OrderStatus, Origin, Outcome, StoredOrder
 
 ORDER_TTL = timedelta(minutes=2)
 # 이 HTTP 상태로 거부되면 NH 안쪽에서 처리됐는지 알 수 없다(서버 오류, 시간 초과).
@@ -75,6 +84,7 @@ HTTP_REQUEST_TIMEOUT = 408
 HTTP_SERVER_ERROR_FROM = 500
 UNKNOWN_RULE = "unknown_state"
 WARNING_CHANGED = "warning_changed"
+LEASE_LOST = "lease_lost"
 # 이 예외로 끝난 시세·주문가능수량 조회는 값을 모르는 것(None)으로 둔다.
 NOT_READ = (NHError, UnknownApi, KeyNotRegistered, NoSuchSymbol)
 
@@ -154,12 +164,32 @@ class InvalidCancel(Exception):
         self.order_no = order_no
 
 
+class LeaseLost(Exception):
+    """묶음 실행이 묶음을 쥔 것을 잃었거나, 그 묶음의 다리 주문이 실행이 본 것과 다르다.
+
+    다른 실행이 묶음을 쥐었거나 다리를 더 보냈다는 뜻이다. 아무것도 보내지 않았다.
+    """
+
+
 class NotRunOrder(Exception):
     """그 전략이 낸, 주문번호를 받은 행이 아니다(`cancel_run_order`). 아무것도 보내지 않았다."""
 
     def __init__(self, order_id: int) -> None:
         super().__init__(order_id)
         self.order_id = order_id
+
+
+@dataclass(frozen=True)
+class LegClaim:
+    """묶음 실행이 다리 하나를 보낼 자격. `place_leg`가 사용자 잠금 안에서 확인한다.
+
+    held는 실행이 지금 쥔 묶음 기한, until은 늘릴 기한, sent는 실행이 본 그 묶음의 다리 주문 수다.
+    """
+
+    combo_id: str
+    held: datetime
+    sent: int
+    until: datetime
 
 
 @dataclass(frozen=True)
@@ -378,13 +408,14 @@ def _blocked(decision: RiskDecision) -> Exception:
     return RiskBlocked(decision.rule or ORDER_FORMAT, decision.message)
 
 
-def _failure(exc: Exception) -> dict[str, JsonValue]:
+def failure(exc: Exception) -> dict[str, JsonValue]:
     """감사 로그에 남길 실패 내용. 예외 메시지는 넣지 않는다(이름과 규칙, NH 코드만)."""
     rules: dict[type[Exception], str] = {
         LimitsNotSet: LIMITS_NOT_SET,
         MarketClosed: TRADING_HOURS,
         UnknownState: UNKNOWN_RULE,
         OrdersDisabled: DEMO_ONLY,
+        LeaseLost: LEASE_LOST,
     }
     if isinstance(exc, RiskBlocked):
         return {"outcome": "blocked", "rule": exc.rule}
@@ -437,6 +468,27 @@ def _at_market(order: Order) -> bool:
     return order.price is None or order.price <= 0
 
 
+def _counts(
+    held: list[Position], resting: list[Order], contracts: Mapping[str, Contract]
+) -> tuple[dict[OptionSeries, SeriesCount], dict[str, SeriesCount]]:
+    """옵션 보유와 미체결 매도를 계열마다, 종목마다 센다. 미체결 매도는 종목마다 보유 매수까지가
+    청산이다.
+    """
+    by_series: dict[OptionSeries, SeriesCount] = {}
+    by_symbol: dict[str, SeriesCount] = {}
+    for symbol in {p.symbol for p in held} | {o.symbol for o in resting}:
+        long = sum(p.quantity for p in held if p.symbol == symbol and p.side == "buy")
+        short = sum(p.quantity for p in held if p.symbol == symbol and p.side == "sell")
+        selling = sum(
+            o.remaining_quantity for o in resting if o.symbol == symbol and o.side == "sell"
+        )
+        count = SeriesCount(long, short, max(0, selling - long), min(selling, long))
+        by_symbol[symbol] = count
+        key = option_series(contracts[symbol])
+        by_series[key] = by_series.get(key, NO_SERIES).plus(count)
+    return by_series, by_symbol
+
+
 def _book(
     account: AccountState, fills: list[Fill], contracts: Mapping[str, Contract]
 ) -> OptionBook | None:
@@ -445,6 +497,7 @@ def _book(
     미체결은 종목·방향마다 반대 방향 보유 수량을 넘는 만큼만 늘리는 주문으로 센다(다 체결된 뒤
     포지션이 늘어나는 양). 시장가 미체결 매수는 contracts의 상한가로 센다(`_option_book`이 오늘
     시세와 견준 값을 넣는다). 그 상한가를 모르거나 옵션 매수 체결가가 0 이하이면 None.
+    같은 보유·미체결을 계열마다, 종목마다 나눈 수(`_counts`)도 담는다.
     """
     options = {symbol for symbol, c in contracts.items() if c.kind in OPTION_KINDS}
     held = [p for p in account.positions if p.symbol in options]
@@ -473,6 +526,7 @@ def _book(
         if fill.price <= 0:
             return None
         spent += fill.price * contracts[fill.symbol].multiplier * fill.quantity
+    series, symbols = _counts(held, resting, contracts)
     return OptionBook(
         long_total=sum(p.quantity for p in held if p.side == "buy"),
         short_total=sum(p.quantity for p in held if p.side == "sell"),
@@ -480,7 +534,31 @@ def _book(
         pending_short=pending["sell"],
         premium_spent=spent,
         premium_pending=pending_cost,
+        series=series,
+        symbols=symbols,
     )
+
+
+def _assume_filled(account: AccountState, fill: Fill) -> AccountState:
+    """fill이 다 체결됐다고 본 계좌(묶음 미리보기에서 다음 다리를 볼 때). 그 종목의 반대 방향 보유를
+    먼저 줄이고 남는 만큼 새 보유로 더한다. 다리는 FAK라 미체결로 남지 않는다.
+    """
+    left = fill.quantity
+    positions: list[Position] = []
+    for p in account.positions:
+        if p.symbol == fill.symbol and p.side != fill.side and left > 0:
+            used = min(left, p.quantity)
+            left -= used
+            if p.quantity > used:
+                rest = p.quantity - used
+                positions.append(replace(p, quantity=rest, closable=min(p.closable, rest)))
+            continue
+        positions.append(p)
+    if left > 0:
+        positions.append(
+            Position(fill.symbol, fill.symbol, fill.side, left, left, fill.price, None, Decimal(0))
+        )
+    return replace(account, positions=positions)
 
 
 def _undecided(exc: Rejected) -> bool:
@@ -536,7 +614,7 @@ class OrderService:
                 new = NewToken(user_id, "order", payload)
                 token, expires_at = confirm_tokens.issue(self._conn, new, self._clock(), ORDER_TTL)
         except Exception as exc:
-            self._audit(user_id, "order.preview", detail | _failure(exc), started)
+            self._audit(user_id, "order.preview", detail | failure(exc), started)
             raise
         issued: dict[str, JsonValue] = {"outcome": "issued", "warnings": list(decision.warnings)}
         self._audit(user_id, "order.preview", detail | issued, started)
@@ -558,7 +636,7 @@ class OrderService:
         try:
             ticket = self._ticket(user_id, token)
         except ConfirmInvalid as exc:
-            self._audit(user_id, "order.place", _failure(exc), started)
+            self._audit(user_id, "order.place", failure(exc), started)
             raise
         detail: dict[str, JsonValue] = {"order": _order_json(ticket.order)}
         self._audit(user_id, "order.approve", detail | {"outcome": approval}, started)
@@ -589,10 +667,10 @@ class OrderService:
                         "다시 미리보기 해 주세요.",
                     )
             except Exception as exc:
-                self._audit(user_id, "order.place", detail | _failure(exc), started)
+                self._audit(user_id, "order.place", detail | failure(exc), started)
                 raise
             try:
-                stored = await self._submit(user_id, ticket.order, detail, started, run_id=None)
+                stored = await self._submit(user_id, ticket.order, detail, started, MANUAL)
             except asyncio.CancelledError:
                 cancelled: dict[str, JsonValue] = {"outcome": "unknown", "cancelled": True}
                 self._audit(user_id, "order.place", detail | cancelled, started)
@@ -618,7 +696,7 @@ class OrderService:
                 if scope.rule is not None:
                     raise RiskBlocked(scope.rule, scope.message)
             except Exception as exc:
-                self._audit(user_id, "order.place", detail | _failure(exc), started)
+                self._audit(user_id, "order.place", detail | failure(exc), started)
                 raise
             # 경고(시장가, 종가 단일가, 만기 임박)는 막지 않고 감사 로그에 남긴다. 주문마다 사람이
             # 보는 미리보기가 없어 `warning_changed`(본 것과 다르면 막기)는 뜻이 없다. 셋 다 켤 때
@@ -626,12 +704,81 @@ class OrderService:
             shown: dict[str, JsonValue] = {"warnings": list[JsonValue](decision.warnings)}
             warned = detail | shown
             try:
-                stored = await self._submit(user_id, order, warned, started, run_id=run.run_id)
+                origin = Origin(run_id=run.run_id)
+                stored = await self._submit(user_id, order, warned, started, origin)
             except asyncio.CancelledError:
                 cancelled: dict[str, JsonValue] = {"outcome": "unknown", "cancelled": True}
                 self._audit(user_id, "order.place", warned | cancelled, started)
                 raise
         return self._placed(user_id, stored, warned, started)
+
+    async def preview_legs(
+        self, user_id: UserId, combo: ComboContext, first: OrderRequest, then: OrderRequest | None
+    ) -> list[str]:
+        """옵션 묶음 미리보기의 다리별 검사(`docs/options.md` 묶음 규칙 6). 보내지 않는다.
+
+        first는 지금 계좌로, then은 first가 그 가격에 다 체결됐다고 본 계좌로 본다. 막히면
+        `preview`와 같은 예외다. 두 검사의 경고를 겹치지 않게 모아 돌려준다.
+        """
+        self._require_enabled()
+        if first.price is None:
+            raise RiskBlocked(ORDER_FORMAT, "묶음 다리는 지정가만 받습니다.")
+        assumed = Fill(first.symbol, first.side, first.quantity, first.price)
+        async with self._lock(user_id):
+            _, decision, _ = await self._check(user_id, first, combo)
+            warnings = list(decision.warnings)
+            if then is not None:
+                _, after, _ = await self._check(user_id, then, combo, assumed)
+                warnings += [w for w in after.warnings if w not in warnings]
+        return warnings
+
+    async def place_leg(
+        self,
+        user_id: UserId,
+        claim: LegClaim,
+        combo: ComboContext,
+        order: OrderRequest,
+        shown: Sequence[str],
+    ) -> StoredOrder:
+        """옵션 묶음의 다리 하나. 쥔 기한 늘리기 → 검사(묶음과 함께) → 쥔 것 확인 → 전송.
+
+        확인 토큰과 승인 창은 묶음에 한 번이다. 잠금에 들어서면 묶음 기한을 claim.held에서
+        claim.until로 늘린다(쥔 값이 같을 때만). 보내기 바로 앞에서 아직 claim.until로 쥐고 있고
+        그 묶음의 다리 주문이 claim.sent개인지 다시 본다. 둘 중 하나라도 아니면 `LeaseLost`이고
+        아무것도 보내지 않는다. 잠금을 기다리거나 검사하는 동안 기한이 지나 다른 실행이 묶음을
+        쥐었다는 뜻이다. `LeaseLost`가 아닌 결과에서는 쥔 기한이 claim.until이다.
+
+        shown은 사람이 묶음 승인 창에서 본 경고다. 그 밖의 경고가 생기면 보내지 않는다. 막히거나
+        응답을 받지 못하면 `place`와 같은 예외다. 다시 보낼지는 부른 쪽이 주문 내역을 보고 정한다.
+        """
+        self._require_enabled()
+        started = time.perf_counter_ns()
+        detail: dict[str, JsonValue] = {"order": _order_json(order), "combo_id": claim.combo_id}
+        async with self._lock(user_id):
+            try:
+                if not combos.renew(self._conn, user_id, claim.combo_id, claim.held, claim.until):
+                    raise LeaseLost()
+                _, decision, _ = await self._check(user_id, order, combo)
+                new = [warning for warning in decision.warnings if warning not in shown]
+                if new:
+                    raise RiskBlocked(
+                        WARNING_CHANGED,
+                        f"묶음을 확인한 뒤 새 경고가 생겼습니다: {' '.join(new)} "
+                        "다시 미리보기 해 주세요.",
+                    )
+                if not combos.holds(self._conn, user_id, claim.combo_id, claim.until, claim.sent):
+                    raise LeaseLost()
+            except Exception as exc:
+                self._audit(user_id, "order.place", detail | failure(exc), started)
+                raise
+            try:
+                origin = Origin(combo_id=claim.combo_id)
+                stored = await self._submit(user_id, order, detail, started, origin)
+            except asyncio.CancelledError:
+                cancelled: dict[str, JsonValue] = {"outcome": "unknown", "cancelled": True}
+                self._audit(user_id, "order.place", detail | cancelled, started)
+                raise
+        return self._placed(user_id, stored, detail, started)
 
     async def cancel_run_order(self, user_id: UserId, run_id: str, order_id: int) -> Ack:
         """실행 중인 전략이 자기 주문을 취소한다. `order_id`는 `place_auto`가 돌려준 행 번호다.
@@ -658,7 +805,7 @@ class OrderService:
         try:
             target = await self._cancellable(user_id, order_no)
         except Exception as exc:
-            self._audit(user_id, "order.cancel", detail | _failure(exc), started)
+            self._audit(user_id, "order.cancel", detail | failure(exc), started)
             raise
         try:
             ack = await self._domestic.send_cancel(user_id, target)
@@ -711,9 +858,17 @@ class OrderService:
         return ticket
 
     async def _check(
-        self, user_id: UserId, order: OrderRequest
+        self,
+        user_id: UserId,
+        order: OrderRequest,
+        combo: ComboContext | None = None,
+        assumed: Fill | None = None,
     ) -> tuple[Contract, RiskDecision, AccountState]:
         """데이터를 모아 규칙을 돌린다. 막히면 예외. 잠금 안에서만 부른다.
+
+        combo는 옵션 묶음의 다리일 때 그 묶음이다(`RiskInput.combo`). assumed가 있으면 읽은
+        계좌와 오늘 체결에 그 체결을 더한 가상의 계좌로 본다(묶음 미리보기의 다음 다리). 옵션 보유
+        기록에는 읽은 계좌만 적는다.
 
         돌려주는 계좌는 다 읽은 것이다(못 읽은 행이 있으면 `account_unknown`으로 막힌다).
         """
@@ -731,6 +886,8 @@ class OrderService:
         account = await call_nh(self._domestic.account(user_id))
         # 옵션 보유 기록을 맞춘다(다 읽은 계좌일 때만). 막히는 주문의 점검에서도 맞춘다.
         await self._holdings.record(user_id, account)
+        if assumed is not None:
+            account = _assume_filled(account, assumed)
         orderable = await self._orderable(user_id, order, live)
         option = contract.kind in OPTION_KINDS
         decision = evaluate(
@@ -745,7 +902,10 @@ class OrderService:
                 orders_enabled=self._orders_enabled,
                 options_enabled=features.enabled(self._conn, user_id, "options"),
                 option_sell=features.enabled(self._conn, user_id, "option_sell"),
-                option_book=await self._option_book(user_id, account, quotes) if option else None,
+                option_book=(
+                    await self._option_book(user_id, account, quotes, assumed) if option else None
+                ),
+                combo=combo,
             )
         )
         if not decision.allowed:
@@ -788,10 +948,14 @@ class OrderService:
             return None
 
     async def _option_book(
-        self, user_id: UserId, account: AccountState, quotes: dict[str, Quote | None]
+        self,
+        user_id: UserId,
+        account: AccountState,
+        quotes: dict[str, Quote | None],
+        assumed: Fill | None,
     ) -> OptionBook | None:
         """옵션 규칙이 볼 장부. 오늘 체결을 읽지 못하거나 계좌·체결의 종목이 마스터에 없거나, 시장가
-        미체결 옵션 매수의 시세를 읽지 못하면 None.
+        미체결 옵션 매수의 시세를 읽지 못하면 None. assumed는 오늘 체결에 더해 센다(`_check`).
 
         시장가 미체결 매수는 오늘 시세와 마스터의 상한가 중 큰 값으로 센다(`_todays_limit`).
         None이면 늘리는 옵션 주문이 `option_book_unknown`으로 막히고, 청산은 지나간다.
@@ -802,6 +966,8 @@ class OrderService:
             return None
         if fills is None:
             return None
+        if assumed is not None:
+            fills = [*fills, assumed]
         symbols = (
             {p.symbol for p in account.positions}
             | {o.symbol for o in account.open_orders}
@@ -883,18 +1049,17 @@ class OrderService:
         order: OrderRequest,
         detail: dict[str, JsonValue],
         started: int,
-        *,
-        run_id: str | None,
+        origin: Origin,
     ) -> StoredOrder:
         """NH로 신규 주문을 보내는 유일한 곳. SUBMITTED를 먼저 쓰고, 응답으로 상태를 바꾼다.
 
-        `run_id`는 자동 주문을 낸 전략 실행(수동은 None)이고 주문 행에 함께 쓴다.
+        `origin`은 주문을 낸 곳(전략 실행, 옵션 묶음, 둘 다 없으면 사람)이고 주문 행에 함께 쓴다.
 
         응답을 받지 못하면 UNKNOWN으로 두고 다시 보내지 않는다. SUBMITTED를 쓰지 못하면
         보내지 않는다. 보낸 뒤 결과 기록이나 다시 읽기에 실패하면 감사 로그에 unknown을 남기고
         UnknownState로 알린다. 갱신하지 못한 행은 SUBMITTED로 남아 나갔는지 모르는 행이 된다.
         """
-        order_id = orders.insert_submitted(self._conn, user_id, order, self._clock(), run_id)
+        order_id = orders.insert_submitted(self._conn, user_id, order, self._clock(), origin)
         try:
             ack = await self._domestic.send_order(user_id, order)
         except Rejected as exc:

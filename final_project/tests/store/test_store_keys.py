@@ -1,12 +1,14 @@
 import os
 import secrets
 import sqlite3
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
+from decimal import Decimal
 from pathlib import Path
 
-from nh_mcp.domain import Market, UserId
+from nh_mcp.domain import Market, OrderRequest, UserId
 from nh_mcp.keys.vault import KEY_BYTES, Slot, Vault
-from nh_mcp.store import db, nh_keys, users
+from nh_mcp.store import combos, db, nh_keys, orders, users
+from nh_mcp.store.orders import Origin
 
 NOW = datetime(2026, 12, 1, 1, 0, tzinfo=UTC)
 
@@ -102,3 +104,35 @@ def test_get_or_create_is_stable_per_google_account() -> None:
     first = users.get_or_create(conn, "google-sub-a", "a@example.com", NOW)
     again = users.get_or_create(conn, "google-sub-a", "a-new@example.com", NOW)
     assert first == again
+
+
+def test_user_b_cannot_read_claim_renew_hold_or_release_user_a_combo() -> None:
+    conn = db.connect(":memory:")
+    user_a, user_b = two_users(conn)
+    combos.insert(conn, combos.Combo("combo-a", user_a, "domestic", "{}", "{}", NOW))
+    until = NOW + timedelta(seconds=90)
+
+    assert combos.get(conn, user_b, "combo-a") is None
+    assert combos.claim(conn, user_b, "combo-a", NOW, until) is False
+    assert combos.claim(conn, user_a, "combo-a", NOW, until) is True
+    assert combos.renew(conn, user_b, "combo-a", until, until + timedelta(seconds=90)) is False
+    assert combos.holds(conn, user_b, "combo-a", until, 0) is False
+    assert combos.holds(conn, user_a, "combo-a", until, 0) is True
+    combos.release(conn, user_b, "combo-a", until)
+
+    row = combos.get(conn, user_a, "combo-a")
+    assert row is not None and row.lease_until == until
+
+
+def test_user_b_cannot_list_user_a_combo_legs() -> None:
+    conn = db.connect(":memory:")
+    user_a, user_b = two_users(conn)
+    leg = OrderRequest("domestic", "B016C725", "buy", "limit", 1, Decimal("1.25"), "fak")
+    mine = orders.insert_submitted(conn, user_a, leg, NOW, Origin(combo_id="combo-a"))
+    orders.insert_submitted(conn, user_a, leg, NOW)
+    # 같은 묶음 id를 단 남의 행이 있어도 내 다리 목록에 섞이지 않는다.
+    theirs = orders.insert_submitted(conn, user_b, leg, NOW, Origin(combo_id="combo-a"))
+
+    assert [o.id for o in orders.list_for_combo(conn, user_a, "combo-a")] == [mine]
+    assert [o.id for o in orders.list_for_combo(conn, user_b, "combo-a")] == [theirs]
+    assert orders.list_for_combo(conn, user_b, "combo-b") == []
